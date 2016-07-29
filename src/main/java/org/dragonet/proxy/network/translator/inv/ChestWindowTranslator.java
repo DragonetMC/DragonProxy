@@ -28,16 +28,16 @@ public class ChestWindowTranslator implements InventoryTranslator {
 
     @Override
     public boolean open(UpstreamSession session, CachedWindow window) {
-        Position pos = new Position((int)session.getEntityCache().getClientEntity().x, session.getEntityCache().getClientEntity().y - 4, (int)session.getEntityCache().getClientEntity().z);
+        Position pos = new Position((int)session.getEntityCache().getClientEntity().x, (int)session.getEntityCache().getClientEntity().y - 4, (int)session.getEntityCache().getClientEntity().z);
         session.getDataCache().put(CacheKey.WINDOW_OPENED_ID, window.windowId);
         session.getDataCache().put(CacheKey.WINDOW_BLOCK_POSITION, pos);
         session.sendFakeBlock(pos.getX(), pos.getY(), pos.getZ(), 54, 0);
         CompoundTag tag = new CompoundTag()
             .putString("id", "Chest")
-            .putInt("x", pos.getX().intValue())
-            .putInt("y", pos.getY().intValue())
-            .putInt("z", pos.getZ().intValue());
-        session.sendPacket(new BlockEntityDataPacket(pos.getX().intValue(), pos.getY().intValue(),  pos.getZ().intValue(), tag));
+            .putInt("x", (int)pos.x)
+            .putInt("y", (int)pos.y)
+            .putInt("z", (int)pos.z);
+        session.sendPacket(new BlockEntityDataPacket((int)pos.x, (int)pos.y, (int)pos.z, tag));
         WindowOpenPacket pk = new WindowOpenPacket();
         pk.windowID = (byte)(window.windowId & 0xFF);
         pk.slots = window.size <= 27 ? (short)(InventoryType.SlotSize.CHEST & 0xFFFF) : (short)(InventoryType.SlotSize.DOUBLE_CHEST & 0xFFFF);
