@@ -16,7 +16,7 @@ import org.dragonet.inventory.InventoryType;
 import org.dragonet.inventory.PEInventorySlot;
 import org.dragonet.net.packet.minecraft.WindowItemsPacket;
 import org.dragonet.net.packet.minecraft.WindowOpenPacket;
-import org.dragonet.net.packet.minecrafr.BlockEntityDataPacket;
+import org.dragonet.net.packet.minecraft.BlockEntityDataPacket;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedWindow;
