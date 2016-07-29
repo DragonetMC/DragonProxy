@@ -38,6 +38,7 @@ public class DragonProxy {
     public static void main(String[] args) {
         new DragonProxy().run(args);
     }
+	
     public final static boolean IS_RELEASE = true; //DO NOT CHANGE, ONLY ON PRODUCTION
 
     @Getter

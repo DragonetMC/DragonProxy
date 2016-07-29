@@ -1,10 +1,9 @@
 ![Logo](http://dragonet.org/assets/img/Dragonet.png)
-[![Build Status](https://drone.io/github.com/DragonetMC/DragonProxy/status.png)](https://drone.io/github.com/DragonetMC/DragonProxy/latest)
+# DragonProxy [![Build Status](https://drone.io/github.com/DragonetMC/DragonProxy/status.png)](https://drone.io/github.com/DragonetMC/DragonProxy/latest)
 
 ```
 Currently updating to 0.15! (FAST)
 ```
-Wanna donate to help us? Go to http://dragonet.org/donate.php
 
 A proxy for **Minecraft: Pocket Edition/Windows 10 Edition** connecting to multiple **Minecraft PC/Mac or Pocket Edition** servers.
 It works like BungeeCord but much more powerful than that. ;)
@@ -14,6 +13,8 @@ You can switch between servers even between PE and PC servers by using command `
 Video by **[@MrPowerGamerBR](https://github.com/MrPowerGamerBR)** (On an older version): https://www.youtube.com/watch?v=oRSKQMzZYDE
 
 ![Screenshot](https://raw.githubusercontent.com/DragonetMC/DragonProxy/master/screenshots/TheArchon.png)
+
+Wanna donate to help us? Go to http://dragonet.org/donate.php
 
 ## Installation
 [![Build Status](https://drone.io/github.com/DragonetMC/DragonProxy/status.png)](https://drone.io/github.com/DragonetMC/DragonProxy/files) [Download](https://drone.io/github.com/DragonetMC/DragonProxy/files)
