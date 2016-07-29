@@ -34,10 +34,10 @@ public class ChestWindowTranslator implements InventoryTranslator {
         session.sendFakeBlock(pos.getX(), pos.getY(), pos.getZ(), 54, 0);
         CompoundTag tag = new CompoundTag()
             .putString("id", "Chest")
-            .putInt("x", (int)pos.x)
-            .putInt("y", (int)pos.y)
-            .putInt("z", (int)pos.z);
-        session.sendPacket(new BlockEntityDataPacket((int)pos.x, (int)pos.y, (int)pos.z, tag));
+            .putInt("x", (int)pos.getX())
+            .putInt("y", (int)pos.getY())
+            .putInt("z", (int)pos.getZ());
+        session.sendPacket(new BlockEntityDataPacket((int)pos.getX(), (int)pos.getY(), (int)pos.getZ(), tag));
         WindowOpenPacket pk = new WindowOpenPacket();
         pk.windowID = (byte)(window.windowId & 0xFF);
         pk.slots = window.size <= 27 ? (short)(InventoryType.SlotSize.CHEST & 0xFFFF) : (short)(InventoryType.SlotSize.DOUBLE_CHEST & 0xFFFF);
