@@ -1,8 +1,8 @@
 ![Logo](http://dragonet.org/assets/img/Dragonet.png)
+[![Build Status](https://drone.io/github.com/DragonetMC/DragonProxy/status.png)](https://drone.io/github.com/DragonetMC/DragonProxy/latest)
 
-# DragonProxy [![Build status indicator](https://circleci.com/gh/DragonetMC/DragonProxy/tree/master.svg?style=badge)](https://circleci.com/gh/DragonetMC/DragonProxy/tree/master)
-```html
-Currently updating to 0.15! (Slowly)
+```
+Currently updating to 0.15! (FAST)
 ```
 Wanna donate to help us? Go to http://dragonet.org/donate.php
 
@@ -16,7 +16,7 @@ Video by **[@MrPowerGamerBR](https://github.com/MrPowerGamerBR)** (On an older v
 ![Screenshot](https://raw.githubusercontent.com/DragonetMC/DragonProxy/master/screenshots/TheArchon.png)
 
 ## Installation
-[![Build status indicator](https://circleci.com/gh/DragonetMC/DragonProxy/tree/master.svg?style=badge)](https://circleci.com/gh/DragonetMC/DragonProxy/tree/master) [Download from CircleCI](https://circleci.com/gh/DragonetMC/DragonProxy/tree/master) - You must be logged in with GitHub to download a build.
+[![Build Status](https://drone.io/github.com/DragonetMC/DragonProxy/status.png)](https://drone.io/github.com/DragonetMC/DragonProxy/files) [Download](https://drone.io/github.com/DragonetMC/DragonProxy/files)
 
 #### Supported Remote Server Types
 - For PC/Mac Servers: `Bukkit`/`Spigot`/`Glowstone`/`SpongeVanilla`/`BungeeCord`
