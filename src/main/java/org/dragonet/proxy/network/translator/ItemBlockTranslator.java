@@ -38,6 +38,23 @@ public class ItemBlockTranslator {
         onewayOverride(119, 90); //End portal -> Nether portal
         onewayOverride(176, 63, "Banner"); //Sign         =\_
         onewayOverride(177, 68, "Banner"); //Wall sign    =/ We send banner as sign [Banner]
+        onewayOverride(36, 248);
+        onewayOverride(84, 248);
+        onewayOverride(122, 248);
+        onewayOverride(130, 248);
+        onewayOverride(137, 248);
+        onewayOverride(138, 248);
+        onewayOverride(160, 248);
+        onewayOverride(166, 248);
+        onewayOverride(168, 248);
+        onewayOverride(169, 248);
+        onewayOverride(176, 248);
+        onewayOverride(177, 248);
+        onewayOverride(188, 248);
+        onewayOverride(189, 248);
+        onewayOverride(190, 248);
+        onewayOverride(191, 248);
+        onewayOverride(192, 248);
     }
 
     private static void swap(int pcId, int peId) {
