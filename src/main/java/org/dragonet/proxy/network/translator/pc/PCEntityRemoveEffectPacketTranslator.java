@@ -18,7 +18,7 @@ import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.data.game.values.MagicValues;
+import org.spacehq.mc.protocol.data.MagicValues;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityRemoveEffectPacket;
 
 public class PCEntityRemoveEffectPacketTranslator implements PCPacketTranslator<ServerEntityRemoveEffectPacket> {

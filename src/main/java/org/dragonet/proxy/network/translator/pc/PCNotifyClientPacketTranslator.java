@@ -17,7 +17,7 @@ import org.dragonet.net.packet.minecraft.PEPacket;
 import org.dragonet.net.packet.minecraft.SetPlayerGameTypePacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.data.game.values.entity.player.GameMode;
+import org.spacehq.mc.protocol.data.game.entity.player.GameMode;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
 
 public class PCNotifyClientPacketTranslator implements PCPacketTranslator<ServerNotifyClientPacket> {

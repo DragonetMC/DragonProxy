@@ -17,12 +17,12 @@ import org.dragonet.net.packet.minecraft.RespawnPacket;
 import org.dragonet.net.packet.minecraft.SetHealthPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.packet.ingame.server.entity.player.ServerUpdateHealthPacket;
+import org.spacehq.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
 
-public class PCUpdateHealthPacketTranslator implements PCPacketTranslator<ServerUpdateHealthPacket> {
+public class PCUpdateHealthPacketTranslator implements PCPacketTranslator<ServerPlayerHealthPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerUpdateHealthPacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerPlayerHealthPacket packet) {
         SetHealthPacket h = new SetHealthPacket((int) packet.getHealth());
         if (packet.getHealth() > 0 && h.health <= 0) {
             h.health = 1;

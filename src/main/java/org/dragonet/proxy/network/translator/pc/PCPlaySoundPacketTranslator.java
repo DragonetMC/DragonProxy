@@ -17,8 +17,12 @@ import org.dragonet.net.packet.minecraft.LevelEventPacket;
 import org.dragonet.net.packet.minecraft.PEPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.data.game.values.world.CustomSound;
-import org.spacehq.mc.protocol.data.game.values.world.GenericSound;
+import org.spacehq.mc.protocol.data.game.world.sound.CustomSound;
+
+//Again, is this right? lol
+import org.spacehq.mc.protocol.data.game.world.sound.BuiltinSound;
+
+
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerPlaySoundPacket;
 
 public class PCPlaySoundPacketTranslator implements PCPacketTranslator<ServerPlaySoundPacket> {
@@ -28,9 +32,9 @@ public class PCPlaySoundPacketTranslator implements PCPacketTranslator<ServerPla
         try {
             String soundName = null;
 
-            if (GenericSound.class.isAssignableFrom(packet.getSound().getClass())) {
-                GenericSound sound = (GenericSound) packet.getSound();
-                for (Field f : GenericSound.class.getDeclaredFields()) {
+            if (BuiltinSound.class.isAssignableFrom(packet.getSound().getClass())) {
+                BuiltinSound sound = (BuiltinSound) packet.getSound();
+                for (Field f : BuiltinSound.class.getDeclaredFields()) {
                     boolean saved = f.isAccessible();
                     f.setAccessible(true);
                     if (f.get(null).equals(sound)) {

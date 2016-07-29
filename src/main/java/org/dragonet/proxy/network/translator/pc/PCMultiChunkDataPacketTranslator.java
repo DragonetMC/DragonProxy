@@ -21,13 +21,13 @@ import org.dragonet.proxy.nbt.PENBT;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.data.game.Chunk;
-import org.spacehq.mc.protocol.packet.ingame.server.world.ServerMultiChunkDataPacket;
+import org.spacehq.mc.protocol.data.game.chunk.Chunk;
+import org.spacehq.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
 
-public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<ServerMultiChunkDataPacket> {
+public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<ServerChunkDataPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerMultiChunkDataPacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerChunkDataPacket packet) {
 
         session.getProxy().getGeneralThreadPool().execute(() -> {
             ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
@@ -39,23 +39,23 @@ public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<Serv
             ByteArrayOutputStream bosTiles = new ByteArrayOutputStream();
 
             try {
-                for (int col = 0; col < packet.getColumns(); col++) {
+                for (packet.getColumn();;) {
                     bos1.reset();
                     bos2.reset();
                     bosTiles.reset();
 
                     FullChunkPacket chunkToSend = new FullChunkPacket();
-                    chunkToSend.chunkX = packet.getX(col);
-                    chunkToSend.chunkZ = packet.getZ(col);
+                    chunkToSend.chunkX = packet.getColumn().getX();
+                    chunkToSend.chunkZ = packet.getColumn().getZ();
                     chunkToSend.order = FullChunkPacket.ChunkOrder.COLUMNS;
-                    Chunk[] pcChunks = packet.getChunks(col);
+                    Chunk[] pcChunks = packet.getColumn().getChunks();
                     for (int x = 0; x < 16; x++) {
                         for (int z = 0; z < 16; z++) {
                             for (int y = 0; y < 128; y++) {
                                 if (pcChunks[y >> 4] == null || pcChunks[y >> 4].isEmpty()) {
                                     dos1.writeByte((byte) 0);
                                 } else {
-                                    int pcBlock = pcChunks[y >> 4].getBlocks().getBlock(x, y % 16, z);
+                                    int pcBlock = pcChunks[y >> 4].getBlocks().get(x, y % 16, z).getData();
                                     int peBlock = ItemBlockTranslator.translateToPE(pcBlock);
                                     dos1.writeByte((byte) (peBlock & 0xFF));
                                     if (peBlock == 63 || peBlock == 68) {
@@ -76,8 +76,8 @@ public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<Serv
                     for (int x = 0; x < 16; x++) {
                         for (int z = 0; z < 16; z++) {
                             for (int y = 0; y < 128; y += 2) {
-                                byte data1 = pcChunks[y >> 4] == null || pcChunks[y >> 4].isEmpty() ? (byte) 0 : (byte) ((pcChunks[y >> 4].getBlocks().getData(x, y % 16, z) & 0xF) << 4);
-                                data1 |= pcChunks[(y + 1) >> 4] == null || pcChunks[(y + 1) >> 4].isEmpty() ? (byte) 0 : (byte) (pcChunks[(y + 1) >> 4].getBlocks().getData(x, (y + 1) % 16, z) & 0xF);
+                                byte data1 = pcChunks[y >> 4] == null || pcChunks[y >> 4].isEmpty() ? (byte) 0 : (byte) ((pcChunks[y >> 4].getBlocks().get(x, y % 16, z).getData() & 0xF) << 4);
+                                data1 |= pcChunks[(y + 1) >> 4] == null || pcChunks[(y + 1) >> 4].isEmpty() ? (byte) 0 : (byte) (pcChunks[(y + 1) >> 4].getBlocks().get(x, (y + 1) % 16, z).getData() & 0xF);
                                 dos1.writeByte(data1);
                                 byte data2 = pcChunks[y >> 4] == null || pcChunks[y >> 4].isEmpty() ? (byte) 0 : (byte) ((pcChunks[y >> 4].getSkyLight().get(x, y % 16, z) & 0xF) << 4);
                                 data2 |= pcChunks[(y + 1) >> 4] == null || pcChunks[(y + 1) >> 4].isEmpty() ? (byte) 0 : (byte) (pcChunks[(y + 1) >> 4].getSkyLight().get(x, (y + 1) % 16, z) & 0xF);

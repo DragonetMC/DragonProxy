@@ -18,8 +18,8 @@ import java.util.Set;
 import java.util.UUID;
 import lombok.Data;
 import org.dragonet.proxy.entity.EntityType;
-import org.spacehq.mc.protocol.data.game.EntityMetadata;
-import org.spacehq.mc.protocol.data.game.values.entity.ObjectType;
+import org.spacehq.mc.protocol.data.game.entity.metadata.EntityMetadata;
+import org.spacehq.mc.protocol.data.game.entity.type.object.ObjectType;
 
 @Data
 public class CachedEntity {

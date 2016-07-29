@@ -19,7 +19,7 @@ import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.data.game.values.MagicValues;
+import org.spacehq.mc.protocol.data.MagicValues;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityEffectPacket;
 
 public class PCEntityEffectPacketTranslator implements PCPacketTranslator<ServerEntityEffectPacket> {
@@ -46,7 +46,7 @@ public class PCEntityEffectPacketTranslator implements PCPacketTranslator<Server
         }
         eff.effect.setAmpilifier(packet.getAmplifier());
         eff.effect.setDuration(packet.getDuration());
-        eff.effect.setParticles(!packet.getHideParticles());
+        eff.effect.setParticles(packet.getShowParticles());
         return new PEPacket[]{eff};
     }
 
