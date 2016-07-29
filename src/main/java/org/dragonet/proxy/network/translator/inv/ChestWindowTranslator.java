@@ -16,20 +16,28 @@ import org.dragonet.inventory.InventoryType;
 import org.dragonet.inventory.PEInventorySlot;
 import org.dragonet.net.packet.minecraft.WindowItemsPacket;
 import org.dragonet.net.packet.minecraft.WindowOpenPacket;
+import org.dragonet.net.packet.minecrafr.BlockEntityDataPacket;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.InventoryTranslator;
+import org.dragonet.proxy.nbt.tag.CompoundTag;
 import org.spacehq.mc.protocol.data.game.Position;
 
 public class ChestWindowTranslator implements InventoryTranslator {
 
     @Override
     public boolean open(UpstreamSession session, CachedWindow window) {
-        Position pos = new Position((int)session.getEntityCache().getClientEntity().x, session.getEntityCache().getClientEntity().y > 64.0d ? 0 : 127, (int)session.getEntityCache().getClientEntity().z);
+        Position pos = new Position((int)session.getEntityCache().getClientEntity().x, session.getEntityCache().getClientEntity().y - 4, (int)session.getEntityCache().getClientEntity().z);
         session.getDataCache().put(CacheKey.WINDOW_OPENED_ID, window.windowId);
         session.getDataCache().put(CacheKey.WINDOW_BLOCK_POSITION, pos);
         session.sendFakeBlock(pos.getX(), pos.getY(), pos.getZ(), 54, 0);
+        CompoundTag tag = new CompoundTag()
+            .putString("id", "Chest")
+            .putInt("x", (int) pos.getX())
+            .putInt("y", (int) pos.getY())
+            .putInt("z", (int) pos.getZ());
+        session.sendPacket(new BlockEntityDataPacket((int) pos.getX(), (int) pos.getY(), (int) pos.getZ(), tag));
         WindowOpenPacket pk = new WindowOpenPacket();
         pk.windowID = (byte)(window.windowId & 0xFF);
         pk.slots = window.size <= 27 ? (short)(InventoryType.SlotSize.CHEST & 0xFFFF) : (short)(InventoryType.SlotSize.DOUBLE_CHEST & 0xFFFF);
