@@ -1,0 +1,10 @@
+machine:
+  java:
+    version: oraclejdk8
+
+checkout:
+    post:
+        - mvn package
+test:
+    post:
+        - cp target/dragonproxy-*.jar $CIRCLE_ARTIFACTS/
