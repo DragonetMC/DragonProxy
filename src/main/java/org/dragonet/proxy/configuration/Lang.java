@@ -86,6 +86,10 @@ public class Lang extends PropertiesConfig {
     public final static String MESSAGE_UNSUPPORTED_CLIENT = "message_unsupported_client";
 
     public final static String QUERY_FAILED = "query_failed";
+
+    public final static String LOGGING_ENABLED = "logging_true";
+
+    public final static String LOGGING_DISABLED = "logging_false";
     
     public Lang(String langFileName) throws IOException {
         super("/en_US.properties", langFileName, false);
