@@ -20,7 +20,7 @@ import java.util.Map;
 import lombok.Getter;
 import org.dragonet.proxy.entity.EntityType;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.spacehq.mc.protocol.data.game.values.MagicValues;
+import org.spacehq.mc.protocol.data.MagicValues;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnObjectPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;

@@ -45,7 +45,7 @@ import org.dragonet.raknet.protocol.EncapsulatedPacket;
 import org.spacehq.mc.auth.exception.request.RequestException;
 import org.spacehq.mc.auth.service.AuthenticationService;
 import org.spacehq.mc.protocol.MinecraftProtocol;
-import org.spacehq.mc.protocol.data.game.values.PlayerListEntry;
+import org.spacehq.mc.protocol.data.game.PlayerListEntry;
 
 /**
  * Maintaince the connection between the proxy and Minecraft: Pocket Edition

@@ -15,8 +15,8 @@ package org.dragonet.proxy.network.translator.pc;
 import org.dragonet.net.packet.minecraft.PEPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.data.game.values.PlayerListEntry;
-import org.spacehq.mc.protocol.data.game.values.PlayerListEntryAction;
+import org.spacehq.mc.protocol.data.game.PlayerListEntry;
+import org.spacehq.mc.protocol.data.game.PlayerListEntryAction;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerPlayerListEntryPacket;
 
 public class PCPlayerListItemPacketTranslator implements PCPacketTranslator<ServerPlayerListEntryPacket> {

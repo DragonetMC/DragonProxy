@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.Map;
 import org.dragonet.inventory.PEInventorySlot;
 import org.dragonet.proxy.nbt.tag.CompoundTag;
-import org.spacehq.mc.protocol.data.game.ItemStack;
+import org.spacehq.mc.protocol.data.game.entity.metadata.ItemStack;
 
 public class ItemBlockTranslator {
     
