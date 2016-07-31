@@ -22,6 +22,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 import org.apache.commons.lang3.ArrayUtils;
 import org.codehaus.jettison.json.JSONArray;
@@ -60,15 +61,80 @@ public class LoginPacket extends PEPacket {
     public void encode() {
         try {
             setChannel(NetworkChannel.CHANNEL_PRIORITY);
+            
+            // Basic info
+            JSONObject jsonBasic = new JSONObject();
+            String b64Signature;
+            String b64User;
+            {
+                JSONObject jsonSignature = new JSONObject();
+                jsonSignature.put("alg", "ES384");
+                jsonSignature.put("x5u", "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAE+SKWsy2I5ecBTPZEfNgwgvuin2/iqqi3haMxXPpknsVKINpp5E7jlygXqBmSJad5VG+1uq75V9irGEtmpUINP5xhYiOrlEma+2aBJIUe17UT/r50yTnDhDrPoOY/eAHL");
+                b64Signature = Base64.getEncoder().encodeToString(jsonSignature.toString().getBytes("UTF-8"));
+            }
+            {
+                JSONObject jsonUser = new JSONObject();
+                jsonUser.put("exp", System.currentTimeMillis() / 1000L + (60*10));
+                JSONObject jsonUserInfo = new JSONObject();
+                jsonUserInfo.put("displayName", username);
+                jsonUserInfo.put("identity", clientUuid.toString());
+                jsonUser.put("extraData", jsonUserInfo);
+                jsonUser.put("identityPublicKey", "");
+                jsonUser.put("nbf", System.currentTimeMillis() / 1000L);
+                b64User = Base64.getEncoder().encodeToString(jsonUser.toString().getBytes("UTF-8"));
+            }
+            String b64Basic = b64Signature + "." + b64User;
+            
+            // Meta info
+            JSONObject jsonMeta = new JSONObject();
+            String strMeta;
+            {
+                jsonMeta.put("ClientRandomId", clientID);
+                jsonMeta.put("ServerAddress", serverAddress);
+                jsonMeta.put("SkinId", skin.getModel());
+                jsonMeta.put("SkinData", Base64.getEncoder().encodeToString(skin.getData()));
+                strMeta = Base64.getEncoder().encodeToString(jsonMeta.toString().getBytes("UTF-8"));
+            }
+            String b64Meta = b64Signature + "." + strMeta;
+            byte[] chainData;
+            {
+                byte[] dataBasic = b64Basic.getBytes("UTF-8");
+                byte[] dataMeta = b64Meta.getBytes("UTF-8");
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                PEBinaryWriter writer = new PEBinaryWriter(bos);
+                writer.switchEndianness();
+                writer.writeInt(dataBasic.length);
+                writer.switchEndianness();
+                writer.write(dataBasic);
+                writer.switchEndianness();
+                writer.writeInt(dataMeta.length);
+                writer.switchEndianness();
+                writer.write(dataMeta);
+                
+                chainData = bos.toByteArray();
+            }
+            
+            
+            JSONObject jsonChain = new JSONObject();
+            jsonChain.put("chain", chainData);
+            String strChain = jsonChain.toString();
+            byte[] b64Chain = Base64.getEncoder().encode(strChain.getBytes("UTF-8"));
+            Deflater deflater = new Deflater(7);
+            deflater.setInput(b64Chain);
+            deflater.finish();
+            byte[] buff = new byte[40960];
+            int deflated = deflater.deflate(buff);
+            buff = ArrayUtils.subarray(buff, 0, deflated);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
             writer.writeInt(protocol);
-            
-            //TODO
-            
+            writer.switchEndianness();
+            writer.writeInt(buff.length); // L-int
+            writer.switchEndianness();
+            writer.write(buff);
             this.setData(bos.toByteArray());
-        } catch (IOException e) {
+        } catch (IOException | JSONException e) {
         }
     }
 
@@ -99,7 +165,7 @@ public class LoginPacket extends PEPacket {
                 readerPayload.switchEndianness();
                 strMetaData = new String(readerPayload.read(restLen), "UTF-8");
             }
-
+            
             // Decode basic info
             {
                 JSONObject data = new JSONObject(strJsonData);
