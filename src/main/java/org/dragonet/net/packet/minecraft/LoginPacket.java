@@ -79,11 +79,13 @@ public class LoginPacket extends PEPacket {
                 jsonUserInfo.put("displayName", username);
                 jsonUserInfo.put("identity", clientUuid.toString());
                 jsonUser.put("extraData", jsonUserInfo);
-                jsonUser.put("identityPublicKey", "");
+                jsonUser.put("identityPublicKey", ""); // publicKey
                 jsonUser.put("nbf", System.currentTimeMillis() / 1000L);
                 b64User = Base64.getEncoder().encodeToString(jsonUser.toString().getBytes("UTF-8"));
             }
             String b64Basic = b64Signature + "." + b64User;
+            
+            System.out.println(b64Basic);
             
             // Meta info
             JSONObject jsonMeta = new JSONObject();
@@ -96,6 +98,9 @@ public class LoginPacket extends PEPacket {
                 strMeta = Base64.getEncoder().encodeToString(jsonMeta.toString().getBytes("UTF-8"));
             }
             String b64Meta = b64Signature + "." + strMeta;
+            
+            System.out.println(b64Meta);
+            
             byte[] chainData;
             {
                 byte[] dataBasic = b64Basic.getBytes("UTF-8");
@@ -114,7 +119,6 @@ public class LoginPacket extends PEPacket {
                 chainData = bos.toByteArray();
             }
             
-            
             JSONObject jsonChain = new JSONObject();
             jsonChain.put("chain", chainData);
             String strChain = jsonChain.toString();
@@ -129,9 +133,7 @@ public class LoginPacket extends PEPacket {
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
             writer.writeInt(protocol);
-            writer.switchEndianness();
-            writer.writeInt(buff.length); // L-int
-            writer.switchEndianness();
+            writer.writeInt(buff.length);
             writer.write(buff);
             this.setData(bos.toByteArray());
         } catch (IOException | JSONException e) {

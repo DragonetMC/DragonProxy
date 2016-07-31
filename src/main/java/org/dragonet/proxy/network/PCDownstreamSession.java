@@ -128,6 +128,10 @@ public class PCDownstreamSession implements DownstreamSession<Packet> {
     }
 
     @Override
+    public void onTick() {
+    }
+
+    @Override
     public void disconnect() {
         if (remoteClient != null && remoteClient.getSession().isConnected()) {
             remoteClient.getSession().disconnect("Disconnect");

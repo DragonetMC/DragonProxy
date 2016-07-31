@@ -25,6 +25,14 @@ public class CLIENT_HANDSHAKE_DataPacket extends Packet {
 
     @Override
     public void encode() {
+        super.encode();
+        this.putAddress(new InetSocketAddress(address, port));
+        for (int i = 0; i < 10; i++) {
+            this.putAddress(systemAddresses[i]);
+        }
+        
+        this.putLong(sendPing);
+        this.putLong(sendPong);
     }
 
     @Override

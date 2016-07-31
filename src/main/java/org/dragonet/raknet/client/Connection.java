@@ -364,7 +364,7 @@ public class Connection {
             return;
         }
         System.out.println("Recieved encapulated packet INDEX=" + packet.messageIndex);
-        if(packet.messageIndex == -1){
+        if(packet.messageIndex == null || packet.messageIndex == -1){
             handleEncapsulatedPacketRoute(packet);
         } else {
             if(packet.messageIndex < reliableWindowStart || packet.messageIndex > reliableWindowEnd){
@@ -419,7 +419,6 @@ public class Connection {
                     SERVER_HANDSHAKE_DataPacket pk = new SERVER_HANDSHAKE_DataPacket();
                     pk.buffer = packet.buffer;
                     pk.decode();
-
                     CLIENT_HANDSHAKE_DataPacket response = new CLIENT_HANDSHAKE_DataPacket();
                     response.address = "0.0.0.0";
                     response.port = 0;
@@ -438,12 +437,10 @@ public class Connection {
                     response.sendPing = Instant.now().toEpochMilli();
                     response.sendPong = Instant.now().toEpochMilli();
                     response.encode();
-
                     EncapsulatedPacket sendPacket = new EncapsulatedPacket();
                     sendPacket.reliability = 0;
                     sendPacket.buffer = response.buffer;
-                    addToQueue(sendPacket, RakNet.PRIORITY_IMMEDIATE);
-
+                    addToQueue(sendPacket, RakNet.PRIORITY_IMMEDIATE);;
                     if(!manager.portChecking){
                         state = STATE_CONNECTED;
                         manager.streamOpen(this.id);
@@ -488,7 +485,7 @@ public class Connection {
         if(state == STATE_CONNECTED || state == STATE_CONNECTING_3){
             if(packet.buffer[0] >= 0x80 || packet.buffer[0] <= 0x8f && packet instanceof DataPacket){
                 packet.decode();
-
+                
                 DataPacket dp = (DataPacket) packet;
                 if(dp.seqNumber < windowStart || dp.seqNumber > windowEnd || receivedWindow.containsKey(dp.seqNumber)){
                     return;
@@ -499,7 +496,7 @@ public class Connection {
                 NACKQueue.remove(dp.seqNumber);
                 ACKQueue.put(dp.seqNumber, dp.seqNumber);
                 receivedWindow.put(dp.seqNumber, dp.seqNumber);
-
+                
                 if(diff != 1){
                     for(int i = lastSeqNumber + 1; i < dp.seqNumber; i++){
                         if(!receivedWindow.containsKey(i)){
@@ -513,7 +510,7 @@ public class Connection {
                     windowStart += diff;
                     windowEnd += diff;
                 }
-
+                  
                 for(Object pk : dp.packets){
                     if(pk instanceof EncapsulatedPacket) {
                         handleEncapsulatedPacket((EncapsulatedPacket) pk);
@@ -558,9 +555,9 @@ public class Connection {
                 request2.serverPort = manager.getClient().getServerEndpoint().getPort();
                 request2.encode();
                 sendPacket(request2);
-                if(reply1.mtuSize == this.mtuSize){
+                //if(reply1.mtuSize == this.mtuSize){
                     state = STATE_CONNECTING_2;
-                }
+                //}
             } else if(state == STATE_CONNECTING_2 && packet instanceof OPEN_CONNECTION_REPLY_2){
                 OPEN_CONNECTION_REPLY_2 reply2 = (OPEN_CONNECTION_REPLY_2) packet;
                 if(((OPEN_CONNECTION_REPLY_2) packet).clientPort == manager.getSocket().getSocket().getLocalPort() || !manager.portChecking){
@@ -568,7 +565,6 @@ public class Connection {
                     connect.clientID = JRakLibClient.getClientID();
                     connect.sendPing = sessionID;
                     connect.encode();
-
                     EncapsulatedPacket pk = new EncapsulatedPacket();
                     pk.reliability = 0;
                     pk.buffer = connect.buffer;

@@ -27,6 +27,7 @@ import org.dragonet.net.packet.minecraft.StartGamePacket;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.PocketServer;
 import org.dragonet.proxy.utilities.Binary;
+import org.dragonet.proxy.utilities.DefaultSkin;
 import org.dragonet.proxy.utilities.Versioning;
 import org.dragonet.raknet.RakNet;
 import org.dragonet.raknet.client.ClientHandler;
@@ -53,6 +54,13 @@ public class PEDownstreamSession implements DownstreamSession<PEPacket>, ClientI
     public PEDownstreamSession(DragonProxy proxy, UpstreamSession upstream) {
         this.proxy = proxy;
         this.upstream = upstream;
+    }
+    
+    @Override
+    public void onTick(){
+        if(handler != null){
+            while(handler.handlePacket()){}
+        }
     }
 
     public void connect(PocketServer serverInfo) {
@@ -107,13 +115,14 @@ public class PEDownstreamSession implements DownstreamSession<PEPacket>, ClientI
     @Override
     public void connectionOpened(long serverId) {
         connected = true;
-
+        
         LoginPacket pkLogin = new LoginPacket();
         pkLogin.clientID = client.getId();
         pkLogin.clientUuid = UUID.nameUUIDFromBytes(("DragonProxyPlayer:" + upstream.getUsername()).getBytes());
         pkLogin.protocol = Versioning.MINECRAFT_PE_PROTOCOL;
         pkLogin.serverAddress = "0.0.0.0:0";
         pkLogin.username = upstream.getUsername();
+        pkLogin.skin = DefaultSkin.getDefaultSkin();
         
         System.out.println("[DEBUG] Remote pocket server downstream established! ");
         
@@ -131,6 +140,9 @@ public class PEDownstreamSession implements DownstreamSession<PEPacket>, ClientI
     public void handleEncapsulated(EncapsulatedPacket packet, int flags) {
         byte[] buffer = Arrays.copyOfRange(packet.buffer, 1, packet.buffer.length);
         PEPacket pk = Protocol.decode(buffer);
+        
+        System.out.println("GOT PACKET = " + pk.getClass().getSimpleName());
+        
         if(StartGamePacket.class.isAssignableFrom(pk.getClass())){
             // Translate
             StartGamePacket start = (StartGamePacket) pk;
@@ -151,18 +163,19 @@ public class PEDownstreamSession implements DownstreamSession<PEPacket>, ClientI
 
     @Override
     public void handleRaw(byte[] payload) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void handleOption(String option, String value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void sendPacket(PEPacket packet, boolean immediate) {
         if (packet == null) {
             return;
         }
+        
+        System.out.println("SENDING " + packet.getClass().getSimpleName());
+        
         boolean overridedImmediate = immediate || packet.isShouldSendImmidate();
         packet.encode();
         if (packet.getData().length > 512 && !BatchPacket.class.isAssignableFrom(packet.getClass())) {

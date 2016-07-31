@@ -22,6 +22,7 @@ package org.dragonet.raknet.client;
 import org.dragonet.raknet.protocol.EncapsulatedPacket;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import org.dragonet.raknet.RakNet;
 
@@ -45,10 +46,14 @@ public class ClientHandler {
     }
 
     public void sendEncapsulated(String identifier, EncapsulatedPacket packet, int flags){
-        ByteBuffer bb = ByteBuffer.allocate(packet.getTotalLength());
-        bb.put(RakNet.PACKET_ENCAPSULATED).put((byte) identifier.getBytes().length).put(identifier.getBytes()).put((byte)(flags & 0xFF)).put(packet.toBinary(true));
-        client.pushMainToThreadPacket(Arrays.copyOf(bb.array(), bb.position()));
-        bb = null;
+        byte[] buffer = org.dragonet.proxy.utilities.Binary.appendBytes(
+                RakNet.PACKET_ENCAPSULATED,
+                new byte[]{(byte) (identifier.length() & 0xff)},
+                identifier.getBytes(StandardCharsets.UTF_8),
+                new byte[]{(byte) (flags & 0xff)},
+                packet.toBinary(true)
+        );
+        this.client.pushMainToThreadPacket(buffer);
     }
 
     public void sendRaw(byte[] payload){

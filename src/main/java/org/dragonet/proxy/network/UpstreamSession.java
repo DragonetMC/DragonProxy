@@ -132,6 +132,8 @@ public class UpstreamSession {
 
     public void onTick() {
         entityCache.onTick();
+        if(downstream != null)
+            downstream.onTick();
     }
 
     /**

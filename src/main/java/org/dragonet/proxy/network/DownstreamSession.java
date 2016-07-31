@@ -13,10 +13,12 @@
 package org.dragonet.proxy.network;
 
 public interface DownstreamSession<PACKET> {
-
+    
     public void connect(String addr, int port);
-
+    
     public boolean isConnected();
+    
+    public void onTick();
 
     public void send(PACKET packet);
 
