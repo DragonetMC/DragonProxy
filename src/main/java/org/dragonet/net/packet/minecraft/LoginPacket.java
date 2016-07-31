@@ -82,10 +82,9 @@ public class LoginPacket extends PEPacket {
                 jsonUser.put("identityPublicKey", ""); // publicKey
                 jsonUser.put("nbf", System.currentTimeMillis() / 1000L);
                 b64User = Base64.getEncoder().encodeToString(jsonUser.toString().getBytes("UTF-8"));
+                System.out.println(jsonUser.toString());
             }
             String b64Basic = b64Signature + "." + b64User;
-            
-            System.out.println(b64Basic);
             
             // Meta info
             JSONObject jsonMeta = new JSONObject();
@@ -98,8 +97,6 @@ public class LoginPacket extends PEPacket {
                 strMeta = Base64.getEncoder().encodeToString(jsonMeta.toString().getBytes("UTF-8"));
             }
             String b64Meta = b64Signature + "." + strMeta;
-            
-            System.out.println(b64Meta);
             
             byte[] chainData;
             {
