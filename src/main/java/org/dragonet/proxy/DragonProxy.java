@@ -17,6 +17,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
@@ -112,15 +115,7 @@ public class DragonProxy {
 	//Check for startup arguments
         checkArguments(args);
 
-	//Should we save console log? Set it in config file
-        if(config.isLog_console()){
-            console.startFile("console.log");
-            logger.info("Saving console output enabled"); //TODO: Translations
-        } else {
-            logger.info("Saving console output disabled");
-        }
-		
-	//Load language file
+        //Load language file
         try {
             lang = new Lang(config.getLang());
         } catch (IOException ex) {
@@ -128,6 +123,17 @@ public class DragonProxy {
             ex.printStackTrace();
             return;
         }
+
+        //Should we save console log? Set it in config file
+        if(config.isLog_console()){
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = new Date();
+            console.startFile("logs/" + dateFormat.format(date) + ".log");
+            logger.info(lang.get(Lang.LOGGING_ENABLED));
+        } else {
+            logger.info(lang.get(Lang.LOGGING_DISABLED));
+        }
+
 	//Load some more stuff
         logger.info(lang.get(Lang.INIT_LOADING, Versioning.RELEASE_VERSION));
         logger.info(lang.get(Lang.INIT_MC_PC_SUPPORT, Versioning.MINECRAFT_PC_VERSION));
@@ -188,7 +194,7 @@ public class DragonProxy {
 
     public void shutdown() {
         logger.info(lang.get(Lang.SHUTTING_DOWN));
-
+        logger.info("--------END OF LOG--------");
         isDebug = false;
         this.shuttingDown = true;
         network.shutdown();
@@ -196,7 +202,6 @@ public class DragonProxy {
             Thread.sleep(2000); //Wait for all clients disconnected
         } catch (Exception e) {
         }
-        System.out.println("Goodbye!");
         System.exit(0);
     }
 }
