@@ -39,7 +39,7 @@ public class DragonProxy {
         new DragonProxy().run(args);
     }
 	
-    public final static boolean IS_RELEASE = true; //DO NOT CHANGE, ONLY ON PRODUCTION
+    public final static boolean IS_RELEASE = false; //DO NOT CHANGE, ONLY ON PRODUCTION
 
     @Getter
     private final Logger logger = Logger.getLogger("DragonProxy");
