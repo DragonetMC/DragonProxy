@@ -1,14 +1,8 @@
 ![Logo](http://dragonet.org/assets/img/Dragonet.png)
 # DragonProxy [![Build Status](https://drone.io/github.com/DragonetMC/DragonProxy/status.png)](https://drone.io/github.com/DragonetMC/DragonProxy/latest)
 
-```
-Currently updating to 0.15! (FAST)
-```
-
 A proxy for **Minecraft: Pocket Edition/Windows 10 Edition** connecting to multiple **Minecraft PC/Mac or Pocket Edition** servers.
 It works like BungeeCord but much more powerful than that. ;)
-
-You can switch between servers even between PE and PC servers by using command `/server blah`, you can change the default prefix `/` if it conflicts with BungeeCord one. 
 
 Video by **[@MrPowerGamerBR](https://github.com/MrPowerGamerBR)** (On an older version): https://www.youtube.com/watch?v=oRSKQMzZYDE
 
@@ -18,14 +12,12 @@ Wanna donate to help us? Go to http://dragonet.org/donate.php
 
 ## Installation
 [![Build Status](https://drone.io/github.com/DragonetMC/DragonProxy/status.png)](https://drone.io/github.com/DragonetMC/DragonProxy/files) [Download](https://drone.io/github.com/DragonetMC/DragonProxy/files)
+Once compiled, run `dragonproxy-*.jar` in `proxy/target` where '*' is the version number.
 
 #### Supported Remote Server Types
 - For PC/Mac Servers: `Bukkit`/`Spigot`/`Glowstone`/`SpongeVanilla`/`BungeeCord`
-- For Pocket Edition Servers: `MiNet`, `Nukkit`, `PocketMine-MP (and all forks)`
+- For Pocket Edition Servers: `MiNET`, `Nukkit`, `PocketMine-MP (and all forks)`
 - Not listed is **NOT** mean unsupported, just **untested**.
-
-## Usage
-Please see the **Usage.md** file.
 
 ## Community
 **Website:** [http://dragonet.org](http://dragonet.org)  
@@ -36,5 +28,5 @@ Please see the **Usage.md** file.
 Updated tutorial coming soon to the wiki
 
 ## Libraries Used
-* RakLib Port by the Nukkit project @ [Site](http://nukkit.cn)
+* RakLib Port by the Nukkit project @ [Site](http://nukkit.io)
 * @Steveice10 's MCProtocolLib @ [Link](https://github.com/Steveice10/MCProtocolLib)
