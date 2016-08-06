@@ -1,8 +1,7 @@
 ![Logo](http://dragonet.org/assets/img/Dragonet.png)
 # DragonProxy [![Build Status](https://drone.io/github.com/DragonetMC/DragonProxy/status.png)](https://drone.io/github.com/DragonetMC/DragonProxy/latest)
 
-A proxy for **Minecraft: Pocket Edition/Windows 10 Edition** connecting to multiple **Minecraft PC/Mac or Pocket Edition** servers.
-It works like BungeeCord but much more powerful than that. ;)
+A proxy for **Minecraft: Pocket Edition** connecting to **Minecraft PC/Mac** servers.
 
 Video by **[@MrPowerGamerBR](https://github.com/MrPowerGamerBR)** (On an older version): https://www.youtube.com/watch?v=oRSKQMzZYDE
 
