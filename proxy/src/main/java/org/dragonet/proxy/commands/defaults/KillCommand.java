@@ -15,6 +15,7 @@ package org.dragonet.proxy.commands.defaults;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.commands.ConsoleCommand;
 
+// Only use if you have to. Clients will eventually timeout.
 public class KillCommand implements ConsoleCommand {
 
     @Override
