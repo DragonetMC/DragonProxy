@@ -62,7 +62,6 @@ public class UDPServerSocket {
         packet.setPort(socketAddress.getPort());
         packet.setLength(buffer.position());
         packet.setData(Arrays.copyOf(buffer.array(), packet.getLength()));
-        //MainLogger.getLogger().debug(TextFormat.YELLOW + "In: " + Binary.bytesToHexString(packet.getData(), true));
         return packet;
         /*DatagramPacket packet = new DatagramPacket(new byte[65536], 65536);
 

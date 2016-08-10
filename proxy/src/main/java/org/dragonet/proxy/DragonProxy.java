@@ -24,6 +24,7 @@ import org.dragonet.proxy.network.SessionRegister;
 import org.dragonet.proxy.network.RaknetInterface;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.ServerConfig;
+import org.dragonet.proxy.utilities.MCColor;
 import org.dragonet.proxy.utilities.Versioning;
 import org.dragonet.proxy.utilities.Terminal;
 import org.dragonet.proxy.utilities.Logger;
@@ -116,7 +117,7 @@ public class DragonProxy {
 
         // Put at the top instead
         if(!IS_RELEASE) {
-            logger.warning(Terminal.YELLOW + "This is a development build. It may contain bugs. Do not use on production.\n");
+            logger.warning(MCColor.YELLOW + "This is a development build. It may contain bugs. Do not use on production.\n");
         }
 
         // Check for startup arguments
@@ -186,7 +187,7 @@ public class DragonProxy {
             if(arg.toLowerCase().contains("--debug")){
                 isDebug = true;
                 getLogger().debug = true;
-                logger.info(Terminal.CYAN + "Proxy is running in debug mode.");
+                logger.info(MCColor.DARK_AQUA + "Proxy is running in debug mode.");
             }
         }
     }

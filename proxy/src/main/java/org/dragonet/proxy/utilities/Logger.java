@@ -33,15 +33,15 @@ public class Logger {
     }
 
     private void log(String level, String message) {
-        log(Terminal.WHITE, level, message);
+        log(MCColor.WHITE, level, message);
     }
 
     private void log(String levelColor, String level, String message) {
         StringBuilder builder = new StringBuilder();
 
-        builder.append(Terminal.CYAN + "[" + consoleDate.format(calender.getTime()) + "] ");
-        builder.append(levelColor + "[" + level + "] ");
-        builder.append(message + Terminal.WHITE);
+        builder.append(MCColor.toANSI(MCColor.AQUA + "[" + consoleDate.format(calender.getTime()) + "] "));
+        builder.append(MCColor.toANSI(levelColor + "[" + level + "] "));
+        builder.append(MCColor.toANSI(message + MCColor.WHITE));
 
         System.out.println(builder.toString());
     }
@@ -51,14 +51,14 @@ public class Logger {
     }
 
     public void warning(String message) {
-        log(Terminal.YELLOW, "WARNING", message);
+        log(MCColor.YELLOW, "WARNING", message);
     }
 
     public void severe(String message) {
-        log(Terminal.RED, "SEVERE", message);
+        log(MCColor.RED, "SEVERE", message);
     }
 
     public void debug(String message) {
-        if(debug) log(Terminal.BLACK, "DEBUG", message);
+        if(debug) log(MCColor.GRAY, "DEBUG", message);
     }
 }

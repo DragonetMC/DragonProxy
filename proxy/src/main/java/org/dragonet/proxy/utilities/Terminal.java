@@ -1,7 +1,7 @@
 
 package org.dragonet.proxy.utilities;
 
-//TODO: Make enum
+@Deprecated
 public class Terminal {
 	public static final String ITALIC		= "\u001B[3m";
 	public static final String UNDERLINE		= "\u001B[4m";
