@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.logging.Logger;
 
 import org.dragonet.proxy.network.SessionRegister;
 import org.dragonet.proxy.network.RaknetInterface;
@@ -27,6 +26,7 @@ import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.ServerConfig;
 import org.dragonet.proxy.utilities.Versioning;
 import org.dragonet.proxy.utilities.Terminal;
+import org.dragonet.proxy.utilities.Logger;
 import org.dragonet.proxy.commands.CommandRegister;
 
 import org.mcstats.Metrics;
@@ -42,7 +42,7 @@ public class DragonProxy {
     public final static boolean IS_RELEASE = false; //DO NOT CHANGE, ONLY ON PRODUCTION
 
     @Getter
-    private final Logger logger = Logger.getLogger("DragonProxy");
+    private Logger logger;
 
     private final TickerThread ticker = new TickerThread(this);
 
@@ -79,7 +79,8 @@ public class DragonProxy {
     private boolean isDebug = false;
 
     public void run(String[] args) {
-        //Need to initialize config before console
+        logger = new Logger(this);
+
         try {
             File fileConfig = new File("config.yml");
             if (!fileConfig.exists()) {
@@ -100,27 +101,27 @@ public class DragonProxy {
             return;
         }
 
-        //Initialize console
+        // Initialize console command reader
         console = new ConsoleManager(this);
         console.startConsole();
 
-	    //Put at the top instead
+	    // Put at the top instead
 	    if(!IS_RELEASE) {
 	    	logger.warning(Terminal.YELLOW + "This is a development build. It may contain bugs. Do not use on production.\n");
 	    }
 
-	    //Check for startup arguments
+	    // Check for startup arguments
         checkArguments(args);
 
-    	//Should we save console log? Set it in config file
+    	// Should we save console log? Set it in config file
         if(config.isLog_console()){
-            console.startFile("console.log");
-            logger.info("Saving console output enabled"); //TODO: Translations
+            //console.startFile("console.log");
+            //logger.info("Saving console output enabled"); //TODO: Translations
         } else {
-            logger.info("Saving console output disabled");
+            //logger.info("Saving console output disabled");
         }
 		
-	    //Load language file
+	    // Load language file
         try {
             lang = new Lang(config.getLang());
         } catch (IOException ex) {
@@ -128,7 +129,7 @@ public class DragonProxy {
             ex.printStackTrace();
             return;
         }
-	    //Load some more stuff
+	    // Load some more stuff
         logger.info(lang.get(Lang.INIT_LOADING, Versioning.RELEASE_VERSION));
         logger.info(lang.get(Lang.INIT_MC_PC_SUPPORT, Versioning.MINECRAFT_PC_VERSION));
         logger.info(lang.get(Lang.INIT_MC_PE_SUPPORT, Versioning.MINECRAFT_PE_VERSION));
@@ -138,28 +139,30 @@ public class DragonProxy {
             return;
         }
 		
-	    //Init session and command stuff
+	    // Init session and command stuff
         sessionRegister = new SessionRegister(this);
         commandRegister = new CommandRegister(this);
 
+        // Start metrics
         try {
             metrics = new ServerMetrics(this);
             metrics.start();
+            logger.debug("Started metrics");
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.debug("Failed to start metrics: " + ex.getMessage());
         }
 
-        //Create thread pool
+        // Create thread pool
         logger.info(lang.get(Lang.INIT_CREATING_THREAD_POOL, config.getThread_pool_size()));
         generalThreadPool = Executors.newScheduledThreadPool(config.getThread_pool_size());
 
-        //Bind
+        // Bind
         logger.info(lang.get(Lang.INIT_BINDING, config.getUdp_bind_ip(), config.getUdp_bind_port()));
         network = new RaknetInterface(this,
                 config.getUdp_bind_ip(), //IP
                 config.getUdp_bind_port()); //Port
 
-        //MOTD
+        // MOTD
         motd = config.getMotd();
         motd = motd.replace("&", "§");
 
@@ -193,10 +196,10 @@ public class DragonProxy {
         this.shuttingDown = true;
         network.shutdown();
         try{
-            Thread.sleep(2000); //Wait for all clients disconnected
+            Thread.sleep(2000); // Wait for all clients disconnected
         } catch (Exception e) {
         }
-        System.out.println("Goodbye!"); //Should only show if it took too long to stop
+        System.out.println("Goodbye!"); // Should only show if it took too long to stop
         System.exit(0);
     }
 }
