@@ -11,6 +11,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <groupId>org.dragonet.proxy</groupId>
     <artifactId>proxy</artifactId>
     <version>0.0.6-preR1</version>
     <packaging>jar</packaging>
@@ -31,12 +32,6 @@
     </repositories>
 
     <dependencies>
-        <dependency>
-            <groupId>org.dragonet.proxy</groupId>
-            <artifactId>protocol</artifactId>
-            <version>0.0.6-preR1</version>
-            <scope>compile</scope>
-        </dependency>
         <dependency>
             <groupId>org.codehaus.jettison</groupId>
             <artifactId>jettison</artifactId>
@@ -73,6 +68,12 @@
             <artifactId>guava</artifactId>
             <version>19.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.dragonet.proxy</groupId>
+            <artifactId>protocol</artifactId>
+            <version>0.0.6-preR1</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -96,11 +97,6 @@
                     <archive>
                         <manifestEntries>
                             <Main-Class>org.dragonet.proxy.DragonProxy</Main-Class>
-                            <Implementation-Title>${project.name}</Implementation-Title>
-                            <Implementation-Version></Implementation-Version>
-                            <Implementation-Vendor>Dragonet Project</Implementation-Vendor>
-                            <Specification-Title>Minecraft PE Proxy</Specification-Title>
-                            <Specification-Vendor>Dragonet Project</Specification-Vendor>
                             <Sealed>true</Sealed>
                         </manifestEntries>
                         <manifestSections>

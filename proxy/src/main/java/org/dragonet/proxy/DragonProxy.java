@@ -104,9 +104,6 @@ public class DragonProxy {
         console = new ConsoleManager(this);
         console.startConsole();
 
-        logger.info(Terminal.GREEN + "\n\n              DRAGONPROXY MULTI MAVEN MODULE TEST\n   " +
-                "This is not ready for production yet and may not ever be ;)\n");
-
 	    //Put at the top instead
 	    if(!IS_RELEASE) {
 	    	logger.warning(Terminal.YELLOW + "This is a development build. It may contain bugs. Do not use on production.\n");
@@ -144,12 +141,12 @@ public class DragonProxy {
 	    //Init session and command stuff
         sessionRegister = new SessionRegister(this);
         commandRegister = new CommandRegister(this);
-		
-        if (IS_RELEASE) {
-            try {
-                metrics = new ServerMetrics(this);
-                metrics.start();
-            } catch (IOException ex) { }
+
+        try {
+            metrics = new ServerMetrics(this);
+            metrics.start();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
 
         //Create thread pool
@@ -199,7 +196,7 @@ public class DragonProxy {
             Thread.sleep(2000); //Wait for all clients disconnected
         } catch (Exception e) {
         }
-        System.out.println("Goodbye!");
+        System.out.println("Goodbye!"); //Should only show if it took too long to stop
         System.exit(0);
     }
 }
