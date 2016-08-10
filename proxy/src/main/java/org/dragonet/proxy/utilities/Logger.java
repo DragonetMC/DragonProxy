@@ -24,6 +24,8 @@ public class Logger {
     private Calendar calender;
     private SimpleDateFormat consoleDate;
 
+    public boolean debug = false;
+
     public Logger(DragonProxy proxy) {
         proxy = proxy;
         calender = Calendar.getInstance();
@@ -57,6 +59,6 @@ public class Logger {
     }
 
     public void debug(String message) {
-        return; // Temp fix because this threw an NPE
+        if(debug) log(Terminal.BLACK, "DEBUG", message);
     }
 }

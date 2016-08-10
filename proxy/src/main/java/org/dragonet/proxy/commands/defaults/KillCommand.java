@@ -6,22 +6,20 @@
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
  *
- * You can view LICENCE file for details. 
+ * You can view LICENCE file for details.
  *
  * @author The Dragonet Team
  */
-package org.dragonet.proxy.commands;
+package org.dragonet.proxy.commands.defaults;
 
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.commands.ConsoleCommand;
 
-public class HelpCommand implements ConsoleCommand {
+public class KillCommand implements ConsoleCommand {
 
     @Override
     public void execute(DragonProxy proxy, String[] args) {
-		proxy.getLogger().info("---- All commands for DragonProxy ----");
-		proxy.getLogger().info("help - Show this help page");
-		proxy.getLogger().info("stop - Stop DragonProxy server!");
-        proxy.getLogger().info("test - For testing only\n");
+        proxy.getLogger().info("Forcefully killing proxy...");
+        System.exit(0);
     }
-
 }

@@ -28,6 +28,7 @@ import org.dragonet.proxy.utilities.Versioning;
 import org.dragonet.proxy.utilities.Terminal;
 import org.dragonet.proxy.utilities.Logger;
 import org.dragonet.proxy.commands.CommandRegister;
+import org.dragonet.proxy.commands.ConsoleCommandReader;
 
 import org.mcstats.Metrics;
 import lombok.Getter;
@@ -70,7 +71,7 @@ public class DragonProxy {
     @Getter
     private String authMode;
 
-    private ConsoleManager console;
+    private ConsoleCommandReader console;
 
     private Metrics metrics;
 
@@ -102,16 +103,8 @@ public class DragonProxy {
         }
 
         // Initialize console command reader
-        console = new ConsoleManager(this);
+        console = new ConsoleCommandReader(this);
         console.startConsole();
-
-	    // Put at the top instead
-	    if(!IS_RELEASE) {
-	    	logger.warning(Terminal.YELLOW + "This is a development build. It may contain bugs. Do not use on production.\n");
-	    }
-
-	    // Check for startup arguments
-        checkArguments(args);
 
     	// Should we save console log? Set it in config file
         if(config.isLog_console()){
@@ -120,6 +113,14 @@ public class DragonProxy {
         } else {
             //logger.info("Saving console output disabled");
         }
+
+        // Put at the top instead
+        if(!IS_RELEASE) {
+            logger.warning(Terminal.YELLOW + "This is a development build. It may contain bugs. Do not use on production.\n");
+        }
+
+        // Check for startup arguments
+        checkArguments(args);
 		
 	    // Load language file
         try {
@@ -149,7 +150,7 @@ public class DragonProxy {
             metrics.start();
             logger.debug("Started metrics");
         } catch (IOException ex) {
-            logger.debug("Failed to start metrics: " + ex.getMessage());
+            logger.warning("Failed to start metrics: " + ex);
         }
 
         // Create thread pool
@@ -184,6 +185,7 @@ public class DragonProxy {
         for(String arg : args){
             if(arg.toLowerCase().contains("--debug")){
                 isDebug = true;
+                getLogger().debug = true;
                 logger.info(Terminal.CYAN + "Proxy is running in debug mode.");
             }
         }

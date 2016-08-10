@@ -10,9 +10,10 @@
  *
  * @author The Dragonet Team
  */
-package org.dragonet.proxy.commands;
+package org.dragonet.proxy.commands.defaults;
 
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.commands.ConsoleCommand;
 
 public class StopCommand implements ConsoleCommand {
 
@@ -20,5 +21,4 @@ public class StopCommand implements ConsoleCommand {
     public void execute(DragonProxy proxy, String[] args) {
         proxy.shutdown();
     }
-
 }

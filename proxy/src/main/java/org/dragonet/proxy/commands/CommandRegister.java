@@ -18,6 +18,8 @@ import java.util.Map;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
 
+import org.dragonet.proxy.commands.defaults.*;
+
 public final class CommandRegister {
 
     private final Map<String, ConsoleCommand> commandMap = Collections.synchronizedMap(new HashMap<String, ConsoleCommand>());
@@ -32,7 +34,8 @@ public final class CommandRegister {
     public void registerDefaults() {
         commandMap.put("stop", new StopCommand());
         commandMap.put("help", new HelpCommand());
-        commandMap.put("test", new TestCommand()); //FOR TESTING	
+        commandMap.put("kill", new KillCommand()); // Bad things could happen
+        commandMap.put("test", new TestCommand()); // FOR TESTING
     }
 
     public void callCommand(String cmd) {

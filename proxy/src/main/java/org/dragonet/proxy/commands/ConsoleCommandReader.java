@@ -10,15 +10,16 @@
  *
  * @author The Dragonet Team
  */
-package org.dragonet.proxy;
+package org.dragonet.proxy.commands;
 
 import java.io.IOException;
 
 import jline.console.ConsoleReader;
 
+import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.utilities.Logger;
 
-public class ConsoleManager {
+public class ConsoleCommandReader {
 
     private final Logger logger;
 
@@ -26,7 +27,7 @@ public class ConsoleManager {
 
     private ConsoleReader reader;
 
-    public ConsoleManager(DragonProxy proxy) {
+    public ConsoleCommandReader(DragonProxy proxy) {
         this.proxy = proxy;
         this.logger = proxy.getLogger();
 
@@ -60,7 +61,7 @@ public class ConsoleManager {
 
                     proxy.getCommandRegister().callCommand(command);
                 } catch (Exception ex) {
-                    logger.severe("Error while reading commands: " + ex);
+                    logger.severe("Error while reading command: " + ex);
                 }
             }
         }

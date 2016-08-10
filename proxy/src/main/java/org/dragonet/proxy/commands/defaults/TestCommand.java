@@ -10,14 +10,14 @@
  *
  * @author The Dragonet Team
  */
-package org.dragonet.proxy.commands;
+package org.dragonet.proxy.commands.defaults;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import org.dragonet.proxy.protocol.packet.FullChunkPacket;
-import org.dragonet.proxy.protocol.packet.ChangeDimensionPacket;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.commands.ConsoleCommand;
 
 /*
  * Used for testing during development.
@@ -30,35 +30,7 @@ public class TestCommand implements ConsoleCommand {
         UpstreamSession cli = proxy.getSessionRegister().getAll().values().toArray(new UpstreamSession[0])[0];
 
         cli.sendChat("Initiating... ");
-
-        /*if (args.length == 1 && args[0].equals("chunk_before")) {
-            cli.sendChat("Sending far chunk... ");
-            for(int x = 1490; x<1510; x++){
-                for(int z = 1240; z<1260; z++){
-                    sendFarChunk(cli, x, z);
-                }
-            }
-            
-            //try{
-            //    Thread.sleep(2000L);
-            //}catch(Exception e){}
-        }
-
-        cli.sendChat("Moving location... ");
-        //MovePlayerPacket pkMove = new MovePlayerPacket(0, 40000.0f, 64.0f, 20000.0f, 0.0f, 0.0f, 0.0f, false);
-        //pkMove.mode = MovePlayerPacket.MODE_RESET;
-        //cli.sendPacket(pkMove, true);
-        ChangeDimensionPacket pkDim = new ChangeDimensionPacket((byte)1, 40000, 72, 20000, (byte)0);
-        cli.sendPacket(pkDim, true);
-        
-        if (args.length == 1 && args[0].equals("chunk_after")) {
-            cli.sendChat("Sending far chunk... ");
-            for(int x = 1490; x<1510; x++){
-                for(int z = 1240; z<1260; z++){
-                    sendFarChunk(cli, x, z);
-                }
-            }
-        }*/
+        sendFarChunk(cli, 150, 999);
     }
 
     private void sendFarChunk(UpstreamSession cli, int x, int z) {
@@ -95,5 +67,4 @@ public class TestCommand implements ConsoleCommand {
             e.printStackTrace();
         }
     }
-
 }
