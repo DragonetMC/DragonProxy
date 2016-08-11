@@ -13,9 +13,13 @@
 package org.dragonet.proxy.commands.defaults;
 
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.commands.ConsoleCommand;
+import org.dragonet.proxy.commands.Command;
 
-public class StopCommand implements ConsoleCommand {
+public class StopCommand extends Command {
+
+    public StopCommand(String name) {
+        super(name, "Stop the proxy");
+    }
 
     @Override
     public void execute(DragonProxy proxy, String[] args) {

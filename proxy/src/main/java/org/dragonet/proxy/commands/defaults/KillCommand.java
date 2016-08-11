@@ -13,10 +13,14 @@
 package org.dragonet.proxy.commands.defaults;
 
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.commands.ConsoleCommand;
+import org.dragonet.proxy.commands.Command;
 
 // Only use if you have to. Clients will eventually timeout.
-public class KillCommand implements ConsoleCommand {
+public class KillCommand extends Command {
+
+    public KillCommand(String name) {
+        super(name, "Forcefully kill the proxy");
+    }
 
     @Override
     public void execute(DragonProxy proxy, String[] args) {

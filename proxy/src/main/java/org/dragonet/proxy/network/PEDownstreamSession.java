@@ -124,7 +124,7 @@ public class PEDownstreamSession implements DownstreamSession<PEPacket>, ClientI
         pkLogin.username = upstream.getUsername();
         pkLogin.skin = DefaultSkin.getDefaultSkin();
         
-        System.out.println("[DEBUG] Remote pocket server downstream established! ");
+        proxy.getLogger().debug("Remote pocket server downstream established!");
         
         sendPacket(pkLogin, true);
     }
@@ -133,15 +133,15 @@ public class PEDownstreamSession implements DownstreamSession<PEPacket>, ClientI
     public void connectionClosed(String reason) {
         connected = false;
         upstream.disconnect(reason);
-        System.out.println("[DEBUG] Remote pocket server downstream CLOSED! ");
+        proxy.getLogger().debug("Remote pocket server downstream CLOSED!");
     }
 
     @Override
     public void handleEncapsulated(EncapsulatedPacket packet, int flags) {
         byte[] buffer = Arrays.copyOfRange(packet.buffer, 1, packet.buffer.length);
         PEPacket pk = Protocol.decode(buffer);
-        
-        System.out.println("GOT PACKET = " + pk.getClass().getSimpleName());
+
+        proxy.getLogger().debug("GOT PACKET = " + pk.getClass().getSimpleName());
         
         if(StartGamePacket.class.isAssignableFrom(pk.getClass())){
             // Translate

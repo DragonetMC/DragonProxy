@@ -24,10 +24,7 @@ import org.dragonet.proxy.network.SessionRegister;
 import org.dragonet.proxy.network.RaknetInterface;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.ServerConfig;
-import org.dragonet.proxy.utilities.MCColor;
-import org.dragonet.proxy.utilities.Versioning;
-import org.dragonet.proxy.utilities.Terminal;
-import org.dragonet.proxy.utilities.Logger;
+import org.dragonet.proxy.utilities.*;
 import org.dragonet.proxy.commands.CommandRegister;
 import org.dragonet.proxy.commands.ConsoleCommandReader;
 
@@ -78,6 +75,7 @@ public class DragonProxy {
 
     private String motd;
 
+    @Getter
     private boolean isDebug = false;
 
     public void run(String[] args) {
@@ -108,12 +106,12 @@ public class DragonProxy {
         console.startConsole();
 
     	// Should we save console log? Set it in config file
-        if(config.isLog_console()){
-            //console.startFile("console.log");
-            //logger.info("Saving console output enabled"); //TODO: Translations
+       /* if(config.isLog_console()){
+            console.startFile("console.log");
+            logger.info("Saving console output enabled");
         } else {
-            //logger.info("Saving console output disabled");
-        }
+            logger.info("Saving console output disabled");
+        } */
 
         // Put at the top instead
         if(!IS_RELEASE) {
@@ -149,7 +147,7 @@ public class DragonProxy {
         try {
             metrics = new ServerMetrics(this);
             metrics.start();
-            logger.debug("Started metrics");
+            logger.debug("Started metrics succesfully.");
         } catch (IOException ex) {
             logger.warning("Failed to start metrics: " + ex);
         }
@@ -171,10 +169,6 @@ public class DragonProxy {
         network.setBroadcastName(motd, -1, -1);
         ticker.start();
         logger.info(lang.get(Lang.INIT_DONE));
-    }
-
-    public boolean isDebug(){
-        return isDebug;
     }
 
     public void onTick() {
@@ -200,9 +194,11 @@ public class DragonProxy {
         network.shutdown();
         try{
             Thread.sleep(2000); // Wait for all clients disconnected
-        } catch (Exception e) {
+        } catch (Exception ex) {
+            System.out.println("Exception while shutting down!");
+            ex.printStackTrace();
         }
-        System.out.println("Goodbye!"); // Should only show if it took too long to stop
+        System.out.println("Goodbye!");
         System.exit(0);
     }
 }

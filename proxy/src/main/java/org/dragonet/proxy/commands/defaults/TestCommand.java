@@ -17,19 +17,23 @@ import java.util.Arrays;
 import org.dragonet.proxy.protocol.packet.FullChunkPacket;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.commands.ConsoleCommand;
+import org.dragonet.proxy.commands.Command;
 
 /*
  * Used for testing during development.
  * You do not need to use this command.
  */
-public class TestCommand implements ConsoleCommand {
+public class TestCommand extends Command {
+
+    public TestCommand(String name) {
+        super(name, "Testing");
+    }
 
     @Override
     public void execute(DragonProxy proxy, String[] args) {
         UpstreamSession cli = proxy.getSessionRegister().getAll().values().toArray(new UpstreamSession[0])[0];
 
-        cli.sendChat("Initiating... ");
+        proxy.getLogger().info("Intializing...");
         sendFarChunk(cli, 150, 999);
     }
 

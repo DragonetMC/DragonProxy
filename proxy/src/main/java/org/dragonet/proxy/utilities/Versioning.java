@@ -14,6 +14,7 @@ package org.dragonet.proxy.utilities;
 
 public class Versioning {
 
+    public final static int VERSION_INT = 00601; // 0.0.6.01 (You can't have preR1 in an int!)
     public final static String RELEASE_VERSION = "0.0.6-preR1";
 
     public final static String MINECRAFT_PC_VERSION = "1.8.9";

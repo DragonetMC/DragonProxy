@@ -70,5 +70,4 @@ public class MCColor {
     public static String clean(String message) {
         return message = message.replaceAll((char) 0x1b + "[0-9;\\[\\(]+[Bm]", "");
     }
-
 }

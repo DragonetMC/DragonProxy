@@ -22,7 +22,7 @@ import org.dragonet.proxy.commands.defaults.*;
 
 public final class CommandRegister {
 
-    private final Map<String, ConsoleCommand> commandMap = Collections.synchronizedMap(new HashMap<String, ConsoleCommand>());
+    private final Map<String, Command> commandMap = Collections.synchronizedMap(new HashMap<String, Command>());
 
     private final DragonProxy proxy;
 
@@ -32,10 +32,14 @@ public final class CommandRegister {
     }
 
     public void registerDefaults() {
-        commandMap.put("stop", new StopCommand());
-        commandMap.put("help", new HelpCommand());
-        commandMap.put("kill", new KillCommand()); // Bad things could happen
-        commandMap.put("test", new TestCommand()); // FOR TESTING
+        registerCommand("stop", new StopCommand("stop"));
+        registerCommand("help", new HelpCommand("help"));
+        registerCommand("kill", new KillCommand("kill")); // Bad things could happen
+        registerCommand("test", new TestCommand("test")); // FOR TESTING
+    }
+
+    public void registerCommand(String command, Command console) {
+        commandMap.put(command, console);
     }
 
     public void callCommand(String cmd) {
@@ -54,11 +58,15 @@ public final class CommandRegister {
             proxy.getLogger().warning(proxy.getLang().get(Lang.COMMAND_NOT_FOUND));
             return;
         }
-        ConsoleCommand command = commandMap.get(label);
+        Command command = commandMap.get(label);
         if (command == null) {
             proxy.getLogger().warning(proxy.getLang().get(Lang.COMMAND_NOT_FOUND));
             return;
         }
         command.execute(proxy, args);
+    }
+
+    public Map<String, Command> getCommands() {
+        return commandMap;
     }
 }

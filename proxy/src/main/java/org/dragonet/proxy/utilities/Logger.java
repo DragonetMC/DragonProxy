@@ -41,7 +41,7 @@ public class Logger {
 
         builder.append(MCColor.toANSI(MCColor.AQUA + "[" + consoleDate.format(calender.getTime()) + "] "));
         builder.append(MCColor.toANSI(levelColor + "[" + level + "] "));
-        builder.append(MCColor.toANSI(message + MCColor.WHITE));
+        builder.append(MCColor.toANSI(message + MCColor.WHITE + MCColor.RESET));
 
         System.out.println(builder.toString());
     }

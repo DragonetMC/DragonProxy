@@ -40,6 +40,7 @@ import org.dragonet.proxy.configuration.RemoteServer;
 import org.dragonet.proxy.network.cache.EntityCache;
 import org.dragonet.proxy.network.cache.WindowCache;
 import org.dragonet.proxy.utilities.HTTP;
+import org.dragonet.proxy.utilities.MCColor;
 import org.dragonet.proxy.utilities.Versioning;
 import org.dragonet.raknet.protocol.EncapsulatedPacket;
 import org.spacehq.mc.auth.exception.request.RequestException;
@@ -153,7 +154,7 @@ public class UpstreamSession {
      * @param reason The reason of disconnection.
      */
     public void onDisconnect(String reason) {
-        proxy.getLogger().info(proxy.getLang().get(Lang.CLIENT_DISCONNECTED, proxy.getAuthMode().equals("cls") ? "unknown(CLS)" : username, remoteAddress, reason));
+        proxy.getLogger().info(proxy.getLang().get(Lang.CLIENT_DISCONNECTED, proxy.getAuthMode().equals("cls") ? "unknown" : username, remoteAddress, reason));
         if (downstream != null) {
             downstream.disconnect();
         }
@@ -167,7 +168,7 @@ public class UpstreamSession {
 
     public void onLogin(LoginPacket packet) {
         if (username != null) {
-            disconnect("Already logged in, \nthis must be an error! ");
+            disconnect("Already logged in, this must be an error! ");
             return;
         }
 
@@ -254,12 +255,12 @@ public class UpstreamSession {
             HTTP.performGetRequest("http://api.dragonet.org/cls/update_token.php?" + String.format("username=%s&oldtoken=%s&newtoken=%s", name, obj.get("token").getAsString(), authSvc.getAccessToken()));
             protocol = new MinecraftProtocol(authSvc.getSelectedProfile(), authSvc.getAccessToken());
 
-            if(proxy.isDebug()) System.out.println("[DEBUG] Initially joining [" + proxy.getConfig().getDefault_server() + "]... ");
+            proxy.getLogger().debug("Initially joining [" + proxy.getConfig().getDefault_server() + "]... ");
             connectToServer(proxy.getConfig().getRemote_servers().get(proxy.getConfig().getDefault_server()));
         } else {
             protocol = new MinecraftProtocol(username);
-            
-            if(proxy.isDebug()) System.out.println("[DEBUG] Initially joining [" + proxy.getConfig().getDefault_server() + "]... ");
+
+            proxy.getLogger().debug("Initially joining [" + proxy.getConfig().getDefault_server() + "]... ");
             connectToServer(proxy.getConfig().getRemote_servers().get(proxy.getConfig().getDefault_server()));
         }
     }
