@@ -186,7 +186,7 @@ public class PEDownstreamSession implements DownstreamSession<PEPacket>, ClientI
         }
 
         EncapsulatedPacket encapsulated = new EncapsulatedPacket();
-        encapsulated.buffer = Binary.appendBytes((byte) 0xfe, packet.getData());
+        encapsulated.buffer = packet.getData();
         encapsulated.needACK = true;
         encapsulated.reliability = (byte) 2;
         encapsulated.messageIndex = 0;
