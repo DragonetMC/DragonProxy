@@ -23,9 +23,6 @@
         <!--<module>protocol</module>-->
         <module>proxy</module>
     </modules>
-    <build>
-	<defaultGoal>clean install</defaultGoal>
-    </build>
 
     <dependencies>
         <dependency>
