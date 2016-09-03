@@ -1,6 +1,0 @@
-.*
-build
-out
-target/
-!.gitignore
-dependency-reduced-pom.xml

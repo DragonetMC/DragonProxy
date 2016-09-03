@@ -68,12 +68,12 @@
             <artifactId>guava</artifactId>
             <version>19.0</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.dragonet.proxy</groupId>
             <artifactId>protocol</artifactId>
             <version>0.0.6-preR1</version>
             <scope>compile</scope>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <build>
