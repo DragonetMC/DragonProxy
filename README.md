@@ -1,5 +1,5 @@
 ![Logo](http://dragonet.org/assets/img/Dragonet.png)
-# DragonProxy [![Build Status](https://drone.io/github.com/DragonetMC/DragonProxy/status.png)](https://drone.io/github.com/DragonetMC/DragonProxy/latest)
+# DragonProxy DISCONTINUED... FOR NOW =D [![Build Status](https://drone.io/github.com/DragonetMC/DragonProxy/status.png)](https://drone.io/github.com/DragonetMC/DragonProxy/latest)
 
 A proxy for **Minecraft: Pocket Edition** connecting to **Minecraft PC/Mac** servers.
 
