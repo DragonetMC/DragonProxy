@@ -17,6 +17,7 @@ import org.dragonet.proxy.protocol.packet.SetPlayerGameTypePacket;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
+import org.dragonet.proxy.protocol.packet.AdventureSettingsPacket;
 import org.spacehq.mc.protocol.data.game.values.entity.player.GameMode;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 
@@ -29,8 +30,14 @@ public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoin
 
         if (session.getProxy().getAuthMode().equals("online")) {
             //Online mode already sent packets
+            
             SetPlayerGameTypePacket pkSetGameMode = new SetPlayerGameTypePacket(packet.getGameMode() == GameMode.CREATIVE ? 1 : 0);
-            return new PEPacket[]{pkSetGameMode};
+            
+            AdventureSettingsPacket adv = new AdventureSettingsPacket();
+            int settings = 0x1 | 0x20 | 0x40;
+            adv.flags = settings;
+            
+            return new PEPacket[]{pkSetGameMode, adv};
         }
 
         session.getDataCache().put(CacheKey.PACKET_JOIN_GAME_PACKET, packet);

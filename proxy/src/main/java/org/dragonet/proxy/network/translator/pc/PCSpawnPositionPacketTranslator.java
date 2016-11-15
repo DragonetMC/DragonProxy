@@ -20,6 +20,7 @@ import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
+import org.dragonet.proxy.protocol.packet.AdventureSettingsPacket;
 import org.spacehq.mc.protocol.data.game.values.entity.player.GameMode;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerSpawnPositionPacket;
@@ -53,9 +54,13 @@ public class PCSpawnPositionPacketTranslator implements PCPacketTranslator<Serve
         ret.y = packet.getPosition().getY();
         ret.z = packet.getPosition().getZ();
 
+        AdventureSettingsPacket adv = new AdventureSettingsPacket();
+        int settings = 0x1 | 0x20 | 0x40;
+        adv.flags = settings;
+        
         LoginStatusPacket stat = new LoginStatusPacket();
         stat.status = LoginStatusPacket.PLAYER_SPAWN;
-        return new PEPacket[]{ret, stat};
+        return new PEPacket[]{ret, adv, stat};
     }
 
 }
