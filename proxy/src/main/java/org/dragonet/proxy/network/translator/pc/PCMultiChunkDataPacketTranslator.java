@@ -55,11 +55,14 @@ public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<Serv
     							if (pcChunks[y >> 4] == null || pcChunks[y >> 4].isEmpty()) {
     								dos1.writeByte((byte) 0);
     							} else {
+									dos1.writeByte(1);
+    								/*
     								int pcBlock = pcChunks[y >> 4].getBlocks().getBlock(x, y % 16, z);
     								int peBlock = pcBlock;
     								peBlock = ItemBlockTranslator.translateToPE(peBlock);
     								dos1.writeByte((byte) (peBlock & 0xFF));
     								// dos1.writeByte((byte) 1);
+									*/
     							}
     						}
     					}
