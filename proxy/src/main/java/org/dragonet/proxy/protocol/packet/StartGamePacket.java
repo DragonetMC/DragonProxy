@@ -41,8 +41,8 @@ public class StartGamePacket extends PEPacket {
     public float lightningLevel;
     public boolean commandsEnabled;
     public boolean texturepackRequired;
-    public String levelId;
-    public String worldName;
+    public String levelId = "LEVEL";
+    public String worldName = "REMOTEWORLD";
 
 
     @Override
