@@ -18,8 +18,8 @@ import org.dragonet.proxy.utilities.io.PEBinaryWriter;
 
 public class PickUpItemPacket extends PEPacket {
 
-    public int target;
-    public int eid;
+    public long target;
+    public long eid;
 
     @Override
     public int pid() {
@@ -32,8 +32,8 @@ public class PickUpItemPacket extends PEPacket {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
-            writer.writeInt(target);
-            writer.writeInt(eid);
+            writer.writeVarLong(target);
+            writer.writeVarLong(eid);
             this.setData(bos.toByteArray());
         } catch (IOException e) {
         }

@@ -7,13 +7,14 @@ package org.dragonet.proxy.protocol.packet;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import org.dragonet.inventory.PEInventorySlot;
+
 import org.dragonet.proxy.protocol.inf.mcpe.NetworkChannel;
 import org.dragonet.proxy.utilities.io.PEBinaryWriter;
 
 public class AddPaintingPacket extends PEPacket {
 
     public long eid;
+    public long rtid;
     public int x;
     public int y;
     public int z;
@@ -33,10 +34,9 @@ public class AddPaintingPacket extends PEPacket {
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
             writer.writeLong(eid);
-            writer.writeInt(x);
-            writer.writeInt(y);
-            writer.writeInt(z);
-            writer.writeInt(direction);
+            writer.writeLong(rtid);
+            writer.writeBlockCoords(x, y, z);
+            writer.writeVarInt(direction);
             writer.writeString(title == null ? "" : title);
             this.setData(bos.toByteArray());
         } catch (IOException e) {

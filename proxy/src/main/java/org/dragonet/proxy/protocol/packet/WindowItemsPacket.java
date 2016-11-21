@@ -44,17 +44,17 @@ public class WindowItemsPacket extends PEPacket {
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
             writer.writeByte(this.windowID);
-            writer.writeShort((short) (this.slots.length & 0xFFFF));
+            writer.writeUnsignedVarInt(this.slots.length);
             for (PEInventorySlot slot : this.slots) {
                 PEInventorySlot.writeSlot(writer, slot);
             }
             if (hotbar != null && windowID == PEWindowConstantID.PLAYER_INVENTORY && hotbar.length > 0) {
-                writer.writeShort((short) (this.hotbar.length & 0xFFFF));
+                writer.writeUnsignedVarInt(this.hotbar.length & 0xFFFF);
                 for (int slot : hotbar) {
-                    writer.writeInt(slot);
+                    writer.writeVarInt(slot);
                 }
             } else {
-                writer.writeShort((short) 0);
+                writer.writeUnsignedVarInt(0);
             }
             this.setData(bos.toByteArray());
         } catch (IOException e) {
@@ -67,16 +67,16 @@ public class WindowItemsPacket extends PEPacket {
             PEBinaryReader reader = new PEBinaryReader(new ByteArrayInputStream(this.getData()));
             reader.readByte();
             this.windowID = reader.readByte();
-            short cnt = reader.readShort();
+            int cnt = reader.readUnsignedVarInt();
             slots = new PEInventorySlot[cnt];
             for (int i = 0; i < cnt; i++) {
                 slots[i] = PEInventorySlot.readSlot(reader);
             }
             if (this.windowID == PEWindowConstantID.PLAYER_INVENTORY) {
-                short hcnt = reader.readShort();
+                int hcnt = reader.readUnsignedVarInt();
                 hotbar = new int[hcnt];
                 for (int i = 0; i < hcnt; i++) {
-                    hotbar[i] = reader.readInt();
+                    hotbar[i] = reader.readVarInt();
                 }
             }
             this.setLength(reader.totallyRead());

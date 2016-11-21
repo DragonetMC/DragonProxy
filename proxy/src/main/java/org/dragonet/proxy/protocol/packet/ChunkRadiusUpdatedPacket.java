@@ -34,7 +34,7 @@ public class ChunkRadiusUpdatedPacket extends PEPacket {
             setChannel(NetworkChannel.CHANNEL_WORLD_EVENTS);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             PEBinaryWriter writer = new PEBinaryWriter(bos);
-            writer.writeInt(this.radius);
+            writer.writeVarInt(this.radius);
             this.setData(bos.toByteArray());
         } catch (IOException e) {
         }

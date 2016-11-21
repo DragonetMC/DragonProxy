@@ -53,12 +53,12 @@ public class MobEffectPacket extends PEPacket {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
-            writer.writeLong(eid);
+            writer.writeVarLong(eid);
             writer.writeByte(action.getActionID());
-            writer.writeByte((byte) (effect.getEffect() & 0xFF));
-            writer.writeByte((byte) (effect.getAmpilifier() & 0xFF));
+            writer.writeVarInt(effect.getEffect());
+            writer.writeVarInt(effect.getAmpilifier());
             writer.writeByte((byte) (effect.isParticles() ? 1 : 0));
-            writer.writeInt(effect.getDuration());
+            writer.writeVarInt(effect.getDuration());
             this.setData(bos.toByteArray());
         } catch (IOException e) {
         }

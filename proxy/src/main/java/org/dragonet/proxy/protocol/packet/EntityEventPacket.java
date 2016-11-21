@@ -49,8 +49,9 @@ public class EntityEventPacket extends PEPacket {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
-            writer.writeLong(eid);
+            writer.writeVarLong(eid);
             writer.writeByte(event);
+            writer.writeUnsignedVarInt(0);
             this.setData(bos.toByteArray());
         } catch (IOException e) {
         }
@@ -62,7 +63,7 @@ public class EntityEventPacket extends PEPacket {
             setChannel(NetworkChannel.CHANNEL_ENTITY_SPAWNING);
             PEBinaryReader reader = new PEBinaryReader(new ByteArrayInputStream(this.getData()));
             reader.readByte(); //PID
-            eid = reader.readLong();
+            eid = reader.readVarLong();
             event = reader.readByte();
             this.setLength(reader.totallyRead());
         } catch (IOException e) {

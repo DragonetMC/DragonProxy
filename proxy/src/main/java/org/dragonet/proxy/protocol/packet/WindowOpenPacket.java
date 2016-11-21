@@ -21,7 +21,7 @@ public class WindowOpenPacket extends PEPacket {
 
     public byte windowID;
     public byte type;
-    public short slots;
+    public int slots;
     public int x;
     public int y;
     public int z;
@@ -41,10 +41,9 @@ public class WindowOpenPacket extends PEPacket {
             writer.writeByte((byte) (this.pid() & 0xFF));
             writer.writeByte(this.windowID);
             writer.writeByte(this.type);
-            writer.writeShort(this.slots);
-            writer.writeInt(this.x);
-            writer.writeInt(this.y);
-            writer.writeInt(this.z);
+            writer.writeVarInt(this.slots);
+            writer.writeBlockCoords(x, y, z);
+            writer.writeVarLong(-1L);
             this.setData(bos.toByteArray());
         } catch (IOException e) {
         }

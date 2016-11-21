@@ -24,13 +24,12 @@ public class PCBlockChangePacketTranslator implements PCPacketTranslator<ServerB
     @Override
     public PEPacket[] translate(UpstreamSession session, ServerBlockChangePacket packet) {
         UpdateBlockPacket pk = new UpdateBlockPacket();
-        pk.records = new UpdateBlockPacket.UpdateBlockRecord[]{new UpdateBlockPacket.UpdateBlockRecord()};
-        pk.records[0].flags = UpdateBlockPacket.FLAG_ALL;
-        pk.records[0].block = (byte) (ItemBlockTranslator.translateToPE(packet.getRecord().getId()) & 0xFF);
-        pk.records[0].meta = (byte) (packet.getRecord().getData() & 0xFF);
-        pk.records[0].x = packet.getRecord().getPosition().getX();
-        pk.records[0].y = (byte) (packet.getRecord().getPosition().getY() & 0xFF);
-        pk.records[0].z = packet.getRecord().getPosition().getZ();
+        pk.flags = UpdateBlockPacket.FLAG_ALL;
+        pk.block = (byte) (ItemBlockTranslator.translateToPE(packet.getRecord().getId()) & 0xFF);
+        pk.meta = (byte) (packet.getRecord().getData() & 0xFF);
+        pk.x = packet.getRecord().getPosition().getX();
+        pk.y = (byte) (packet.getRecord().getPosition().getY() & 0xFF);
+        pk.z = packet.getRecord().getPosition().getZ();
         return new PEPacket[]{pk};
     }
 

@@ -12,9 +12,12 @@
  */
 package org.dragonet.proxy.utilities.io;
 
+import org.dragonet.proxy.utilities.VarInt;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -55,6 +58,65 @@ public class PEBinaryReader implements Closeable {
         public byte[] address;
         public short port;
     }
+    public int readVarInt() throws IOException {
+        return VarInt.decodeZigZag32(readUnsignedVarInt());
+    }
+
+    public int readUnsignedVarInt() throws IOException {
+        return readVar(5).intValue();
+    }
+
+    public long readVarLong() throws IOException {
+        return VarInt.decodeZigZag64(readUnsignedVarLong()).longValue();
+    }
+
+    public BigInteger readUnsignedVarLong() throws IOException {
+        return readVar(10);
+    }
+
+
+    public BigInteger readVar(int maxLength) throws IOException {
+        BigInteger result = BigInteger.ZERO;
+        int offset = 0;
+        int b;
+
+        do {
+            if (offset >= maxLength) {
+                throw new IllegalArgumentException("VarInt overflow");
+            }
+
+            b = readByte();
+            result = result.or(BigInteger.valueOf((b & 0x7f) << (offset * 7)));
+            offset++;
+        } while ((b & 0x80) > 0);
+
+        return result;
+    }
+
+    public float[] readVector3f() throws IOException {
+        // FORCED to use LITTLE-ENDIAN
+        if(endianness != PEBinaryUtils.LITTLE_ENDIAN) {
+            switchEndianness();
+            float[] r = readVector3f();
+            switchEndianness();
+            return r;
+        } else {
+            float[] r = new float[] {
+                    readFloat(),
+                    readFloat(),
+                    readFloat()
+            };
+            return r;
+        }
+    }
+
+    public int[] readBlockCoords() throws IOException {
+        return new int[] {
+                readVarInt(),
+                readUnsignedVarInt(),
+                readVarInt()
+        };
+    }
 
     public BinaryAddress readAddress() throws IOException {
         BinaryAddress addr = new BinaryAddress();
@@ -75,16 +137,11 @@ public class PEBinaryReader implements Closeable {
         return new UUID(first, last);
     }
 
-    public String readString() throws IOException {
-        falloc(2);
-        return readString(2);
-    }
 
-    public String readString(int lenLen) throws IOException {
-        falloc(lenLen);
-        int length = (int) readNat(lenLen);
-        falloc(length);
-        return new String(read(length), StandardCharsets.UTF_8);
+    public String readString() throws IOException {
+        int len = readVarInt();
+        falloc(len);
+        return new String(read(len), StandardCharsets.UTF_8);
     }
 
     public byte readByte() throws IOException {
@@ -139,36 +196,6 @@ public class PEBinaryReader implements Closeable {
     public long readNat(int length) throws IOException {
         falloc(length);
         return PEBinaryUtils.read(read(length), 0, length, endianness);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T readType(Class<T> clazz, Object[] args) throws IOException {
-        if (clazz.equals(String.class)) {
-            if (args.length > 0) {
-                Object arg = args[0];
-                if (arg instanceof Integer) {
-                    return (T) readString((int) arg);
-                }
-            }
-            return (T) readString();
-        } else if (clazz.equals(Byte.class)) {
-            return (T) (Byte) readByte();
-        } else if (clazz.equals(Short.class)) {
-            return (T) (Short) readShort();
-        } else if (clazz.equals(Integer.class)) {
-            return (T) (Integer) readInt();
-        } else if (clazz.equals(Long.class)) {
-            return (T) (Long) readLong();
-        } else if (clazz.equals(Float.class)) {
-            return (T) (Float) readFloat();
-        } else if (clazz.equals(Double.class)) {
-            return (T) (Double) readDouble();
-        }
-        return getUnknownTypeValue(clazz, args);
-    }
-
-    protected <T> T getUnknownTypeValue(Class<T> clazz, Object[] args) throws IOException {
-        throw new java.lang.UnsupportedOperationException(String.format("Trying to read unknown type %s from class %s", clazz.getSimpleName(), getClass().getName()));
     }
 
     protected void falloc(int l) throws IOException {

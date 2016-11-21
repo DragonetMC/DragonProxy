@@ -20,6 +20,7 @@ import org.dragonet.proxy.utilities.io.PEBinaryWriter;
 
 public class DisconnectPacket extends PEPacket {
 
+    public boolean hideWindow;
     public String message;
 
     public DisconnectPacket(String message) {
@@ -41,6 +42,7 @@ public class DisconnectPacket extends PEPacket {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
+            writer.writeByte(hideWindow ? (byte)0x01 : (byte)0x00);
             writer.writeString(message);
             this.setData(bos.toByteArray());
         } catch (IOException e) {
@@ -52,6 +54,7 @@ public class DisconnectPacket extends PEPacket {
         try {
             PEBinaryReader reader = new PEBinaryReader(new ByteArrayInputStream(this.getData()));
             reader.readByte(); //PID
+            this.hideWindow = (reader.readByte() & 0b1) > 0;
             this.message = reader.readString();
             this.setLength(reader.totallyRead());
         } catch (IOException e) {

@@ -57,12 +57,10 @@ public class PlayerActionPacket extends PEPacket {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
-            writer.writeLong(eid);
-            writer.writeInt(action);
-            writer.writeInt(x);
-            writer.writeInt(y);
-            writer.writeInt(z);
-            writer.writeInt(face);
+            writer.writeVarLong(eid);
+            writer.writeVarInt(action);
+            writer.writeBlockCoords(x, y, z);
+            writer.writeVarInt(face);
             this.setData(bos.toByteArray());
         } catch (IOException e) {
         }

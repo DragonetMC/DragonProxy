@@ -64,11 +64,11 @@ public final class PEPacketIDs {
     public final static byte RESPAWN_PACKET = 0x2c;
     public final static byte DROP_ITEM_PACKET = 0x2d;
     public final static byte INVENTORY_ACTION_PACKET = 0x2e;
-    public final static byte CONTAINER_OPEN_PACKET = 0x2f;
-    public final static byte CONTAINER_CLOSE_PACKET = 0x30;
-    public final static byte CONTAINER_SET_SLOT_PACKET = 0x31;
-    public final static byte CONTAINER_SET_DATA_PACKET = 0x32;
-    public final static byte CONTAINER_SET_CONTENT_PACKET = 0x33;
+    public final static byte WINDOW_OPEN_PACKET = 0x2f;
+    public final static byte WINDOW_CLOSE_PACKET = 0x30;
+    public final static byte WINDOW_SET_SLOT_PACKET = 0x31;
+    public final static byte WINDOW_SET_DATA_PACKET = 0x32;
+    public final static byte WINDOW_SET_CONTENT_PACKET = 0x33;
     public final static byte CRAFTING_DATA_PACKET = 0x34;
     public final static byte CRAFTING_EVENT_PACKET = 0x35;
     public final static byte ADVENTURE_SETTINGS_PACKET = 0x36;
@@ -78,7 +78,7 @@ public final class PEPacketIDs {
     public final static byte SET_COMMANDS_ENABLED_PACKET = 0x3a;
     public final static byte SET_DIFFICULTY_PACKET = 0x3b;
     public final static byte CHANGE_DIMENSION_PACKET = 0x3c;
-    public final static byte SET_PLAYER_GAME_TYPE_PACKET = 0x3d;
+    public final static byte SET_PLAYER_GAMETYPE_PACKET = 0x3d;
     public final static byte PLAYER_LIST_PACKET = 0x3e;
     public final static byte EVENT_PACKET = 0x3f;
     public final static byte SPAWN_EXPERIENCE_ORB_PACKET = 0x40;

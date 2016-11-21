@@ -28,7 +28,8 @@ public class ChatPacket extends PEPacket {
         TRANSLATION(2),
         POPUP(3),
         TIP(4),
-        SYSTEM(5);
+        SYSTEM(5),
+        WHISPER(6);
 
         private int type;
 
@@ -54,6 +55,8 @@ public class ChatPacket extends PEPacket {
                     return TIP;
                 case 5:
                     return SYSTEM;
+                case 6:
+                    return WHISPER;
                 default:
                     return RAW;
             }
@@ -97,10 +100,10 @@ public class ChatPacket extends PEPacket {
                 case TRANSLATION:
                     writer.writeString(this.message);
                     if (this.params == null) {
-                        writer.writeByte((byte) 0);
+                        writer.writeUnsignedVarInt(0);
                         break;
                     }
-                    writer.writeByte((byte) (this.params.length & 0xFF));
+                    writer.writeUnsignedVarInt((byte) (this.params.length & 0xFF));
                     for (int i = 0; i < this.params.length; i++) {
                         writer.writeString(this.params[i]);
                     }

@@ -333,14 +333,12 @@ public class UpstreamSession {
 
     public void sendFakeBlock(int x, int y, int z, int id, int meta) {
         UpdateBlockPacket pkBlock = new UpdateBlockPacket();
-        UpdateBlockPacket.UpdateBlockRecord rec = new UpdateBlockPacket.UpdateBlockRecord();
-        rec.flags = UpdateBlockPacket.FLAG_ALL;
-        rec.x = x;
-        rec.y = (byte) (y & 0xFF);
-        rec.z = z;
-        rec.block = (byte) (id & 0xFF);
-        rec.meta = (byte) (meta & 0xFF);
-        pkBlock.records = new UpdateBlockPacket.UpdateBlockRecord[]{rec};
+        pkBlock.flags = UpdateBlockPacket.FLAG_ALL;
+        pkBlock.x = x;
+        pkBlock.y = (byte) (y & 0xFF);
+        pkBlock.z = z;
+        pkBlock.block = (byte) (id & 0xFF);
+        pkBlock.meta = (byte) (meta & 0xFF);
         sendPacket(pkBlock, true);
     }
 

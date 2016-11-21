@@ -20,17 +20,30 @@ import org.dragonet.proxy.utilities.io.PEBinaryWriter;
 
 public class StartGamePacket extends PEPacket {
 
+    public long eid;
+    public long rtid;
+    public float x;
+    public float y;
+    public float z;
     public int seed;
     public byte dimension;
     public int generator;
     public int gamemode;
-    public long eid;
+    public int difficulty;
     public int spawnX;
     public int spawnY;
     public int spawnZ;
-    public float x;
-    public float y;
-    public float z;
+
+    public boolean achivementDisabled;
+    public int staticTime;
+    public boolean eduMode;
+    public float rainLevel;
+    public float lightningLevel;
+    public boolean commandsEnabled;
+    public boolean texturepackRequired;
+    public String levelId;
+    public String worldName;
+
 
     @Override
     public int pid() {
@@ -43,21 +56,28 @@ public class StartGamePacket extends PEPacket {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
-            writer.writeInt(this.seed);
-            writer.writeByte(this.dimension);
-            writer.writeInt(this.generator);
-            writer.writeInt(this.gamemode);
-            writer.writeLong(this.eid);
-            writer.writeInt(this.spawnX);
-            writer.writeInt(this.spawnY);
-            writer.writeInt(this.spawnZ);
-            writer.writeFloat(this.x);
-            writer.writeFloat(this.y + 1.62f);
-            writer.writeFloat(this.z);
-            writer.writeByte((byte) 0x01); //userPerm
-            writer.writeByte((byte) 0x01); //globalPerm
-            writer.writeByte((byte) 0x00);
-            writer.writeString(""); //Unknown string
+            writer.writeVarLong(this.eid);
+            writer.writeVarLong(this.rtid);
+            writer.writeVector3f(x, y + 1.62f, z);
+            writer.writeFloat(0f); //Should be in LE
+            writer.writeFloat(0f); //Should be in LE
+            writer.writeVarInt(this.seed);
+            writer.writeVarInt(this.dimension);
+            writer.writeVarInt(this.generator);
+            writer.writeVarInt(this.gamemode);
+            writer.writeVarInt(this.difficulty);
+            writer.writeBlockCoords(spawnX, spawnY, spawnZ);
+            writer.writeBoolean(this.achivementDisabled);
+            writer.writeVarInt(staticTime);
+            writer.writeBoolean(this.eduMode);
+            writer.switchEndianness(); // enter LE
+            writer.writeFloat(this.rainLevel);
+            writer.writeFloat(this.lightningLevel);
+            writer.switchEndianness(); // out of LE
+            writer.writeBoolean(this.commandsEnabled);
+            writer.writeBoolean(this.texturepackRequired);
+            writer.writeString(this.levelId);
+            writer.writeString(this.worldName);
             this.setData(bos.toByteArray());
         } catch (IOException e) {
         }

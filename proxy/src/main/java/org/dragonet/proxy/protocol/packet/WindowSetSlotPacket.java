@@ -23,8 +23,8 @@ import org.dragonet.proxy.utilities.io.PEBinaryWriter;
 public class WindowSetSlotPacket extends PEPacket {
 
     public byte windowID;
-    public short slot;
-    public short hotbarSlot;
+    public int slot;
+    public int hotbarSlot;
     public PEInventorySlot item;
 
     public WindowSetSlotPacket(byte[] data) {
@@ -45,8 +45,8 @@ public class WindowSetSlotPacket extends PEPacket {
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
             writer.writeByte(this.windowID);
-            writer.writeShort(this.slot);
-            writer.writeShort(this.hotbarSlot);;
+            writer.writeVarInt(this.slot);
+            writer.writeVarInt(this.hotbarSlot);;
             PEInventorySlot.writeSlot(writer, this.item);
             this.setData(bos.toByteArray());
         } catch (IOException e) {
