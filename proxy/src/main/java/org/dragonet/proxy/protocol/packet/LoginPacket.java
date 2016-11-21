@@ -144,6 +144,7 @@ public class LoginPacket extends PEPacket {
             PEBinaryReader reader = new PEBinaryReader(new ByteArrayInputStream(this.getData()));
             reader.readByte(); //PID
             this.protocol = reader.readInt();
+            this.gameEdition = reader.readByte();
 
             byte[] buff = new byte[40960];
             int len = reader.readUnsignedVarInt();
