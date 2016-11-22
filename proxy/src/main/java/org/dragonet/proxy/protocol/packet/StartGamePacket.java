@@ -35,13 +35,13 @@ public class StartGamePacket extends PEPacket {
     public int spawnZ;
 
     public boolean achivementDisabled;
-    public int staticTime;
+    public int staticTime = -1;
     public boolean eduMode;
     public float rainLevel;
     public float lightningLevel;
     public boolean commandsEnabled;
     public boolean texturepackRequired;
-    public String levelId = "LEVEL";
+    public String levelId = "UkVNT1RFV09STEQ="; // base64 version of REMOTEWORLD
     public String worldName = "REMOTEWORLD";
 
 

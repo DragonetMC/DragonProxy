@@ -44,7 +44,7 @@ public class BatchPacket extends PEPacket {
             PEBinaryWriter packetCombiner = new PEBinaryWriter(packetCombinerData);
             for (PEPacket pk : packets) {
                 pk.encode();
-                packetCombiner.writeInt(pk.getData().length);
+                packetCombiner.writeUnsignedVarInt(pk.getData().length);
                 packetCombiner.write(pk.getData());
             }
             Deflater def = new Deflater(7);
@@ -57,7 +57,7 @@ public class BatchPacket extends PEPacket {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
-            writer.writeInt(deflateBuffer.length);
+            writer.writeUnsignedVarInt(deflateBuffer.length);
             writer.write(deflateBuffer);
             this.setData(bos.toByteArray());
         } catch (IOException e) {
@@ -70,12 +70,12 @@ public class BatchPacket extends PEPacket {
             packets = new ArrayList<>();
             PEBinaryReader reader = new PEBinaryReader(new ByteArrayInputStream(this.getData()));
             reader.readByte(); //PID
-            int size = reader.readInt();
+            int size = reader.readUnsignedVarInt();
             byte[] payload = reader.read(size);
             Inflater inf = new Inflater();
             inf.setInput(payload);
             byte[] decompressedPayload = new byte[1024 * 1024 * 64];
-            int decompressedSize = 0;
+            int decompressedSize;
             try {
                 decompressedSize = inf.inflate(decompressedPayload);
             } catch (DataFormatException ex) {
@@ -87,7 +87,7 @@ public class BatchPacket extends PEPacket {
             PEBinaryReader dataReader = new PEBinaryReader(new ByteArrayInputStream(decompressedPayload));
             int offset = 0;
             while (offset < decompressedSize) {
-                int pkLen = dataReader.readInt();
+                int pkLen = dataReader.readUnsignedVarInt();
                 offset += 4;
                 byte[] pkData = dataReader.read(pkLen);
                 offset += pkLen;

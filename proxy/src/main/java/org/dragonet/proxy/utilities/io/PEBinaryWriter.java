@@ -82,7 +82,7 @@ public class PEBinaryWriter implements Flushable, Closeable {
         BigInteger BIX7F = BigInteger.valueOf(0x7f);
         BigInteger BIX80 = BigInteger.valueOf(0x80);
         while (!v.and(i).equals(BigInteger.ZERO)) {
-            writeInt(v.and(BIX7F).or(BIX80).intValue());
+            writeByte(v.and(BIX7F).or(BIX80).byteValue());
             v = v.shiftRight(7);
         }
 
