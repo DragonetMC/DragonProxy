@@ -72,6 +72,7 @@ public class EntityMetaData {
                 writer.write(entry.getValue().encode());
             }
             writer.writeByte((byte) 0x7F);
+            writer.close();
             return bos.toByteArray();
         } catch (IOException e) {
         }

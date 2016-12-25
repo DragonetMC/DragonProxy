@@ -82,7 +82,7 @@ public class JRakLibClient extends Thread{
             ping.pingID = System.currentTimeMillis() - startTime; //Amount since start.
             ping.encode();
             socket.writePacket(ping.buffer, new InetSocketAddress(serverIP, serverPort));
-
+            socket.close();
             DatagramPacket pkt = socket.readPacketBlocking(delay);
             if(pkt != null && pkt.getData()[0] == UNCONNECTED_PONG.ID){
                 UNCONNECTED_PONG pong = new UNCONNECTED_PONG();

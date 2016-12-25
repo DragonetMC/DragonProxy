@@ -27,7 +27,7 @@ public class Logger {
     public boolean debug = false;
 
     public Logger(DragonProxy proxy) {
-        proxy = proxy;
+        this.proxy = proxy;
         calender = Calendar.getInstance();
         consoleDate = new SimpleDateFormat("HH:mm:ss");
     }

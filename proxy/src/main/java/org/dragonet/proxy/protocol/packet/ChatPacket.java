@@ -91,6 +91,7 @@ public class ChatPacket extends PEPacket {
             switch (this.type) {
                 case POPUP:
                 case CHAT:
+                case WHISPER:
                     writer.writeString(this.source);
                 case RAW:
                 case TIP:
@@ -123,6 +124,7 @@ public class ChatPacket extends PEPacket {
             switch (this.type) {
                 case POPUP:
                 case CHAT:
+                case WHISPER:
                     this.source = reader.readString();
                 case RAW:
                 case TIP:
