@@ -12,18 +12,23 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.protocol.packet.BlockEntityDataPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
-import org.dragonet.proxy.nbt.tag.CompoundTag;
+import java.io.IOException;
+import java.nio.ByteOrder;
+
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.MessageTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerUpdateSignPacket;
 
+import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.BlockEntityDataPacket;
+import cn.nukkit.network.protocol.DataPacket;
+
 public class PCUpdateSignPacketTranslator implements PCPacketTranslator<ServerUpdateSignPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerUpdateSignPacket packet) {
+    public DataPacket[] translate(UpstreamSession session, ServerUpdateSignPacket packet) {
         CompoundTag root = new CompoundTag();
         root.putString("id", "Sign");
         root.putInt("x", packet.getPosition().getX());
@@ -33,7 +38,19 @@ public class PCUpdateSignPacketTranslator implements PCPacketTranslator<ServerUp
         root.putString("Text2", MessageTranslator.translate(packet.getLines()[1]));
         root.putString("Text3", MessageTranslator.translate(packet.getLines()[2]));
         root.putString("Text4", MessageTranslator.translate(packet.getLines()[3]));
-        return new PEPacket[]{new BlockEntityDataPacket(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ(), root)};
+        
+        
+        BlockEntityDataPacket pkBlockData = new BlockEntityDataPacket();
+        pkBlockData.x = packet.getPosition().getX();
+        pkBlockData.y = packet.getPosition().getY();
+        pkBlockData.z = packet.getPosition().getZ();
+        try {
+			pkBlockData.namedTag = NBTIO.write(root, ByteOrder.LITTLE_ENDIAN, true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        
+        return new DataPacket[]{pkBlockData};
     }
 
 }

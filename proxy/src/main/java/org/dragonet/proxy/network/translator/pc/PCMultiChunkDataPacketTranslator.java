@@ -14,18 +14,19 @@ package org.dragonet.proxy.network.translator.pc;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import org.dragonet.proxy.protocol.packet.FullChunkPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
+
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.data.game.Chunk;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerMultiChunkDataPacket;
 
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.FullChunkDataPacket;
+
 public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<ServerMultiChunkDataPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerMultiChunkDataPacket packet) {
+    public DataPacket[] translate(UpstreamSession session, ServerMultiChunkDataPacket packet) {
 
         session.getProxy().getGeneralThreadPool().execute(() -> {
     		ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
@@ -43,11 +44,11 @@ public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<Serv
     				bos2.reset();
     				bosTiles.reset();
 
-    				FullChunkPacket pePacket = new FullChunkPacket();
+    				FullChunkDataPacket pePacket = new FullChunkDataPacket();
 
     				pePacket.chunkX = packet.getX(col);
     				pePacket.chunkZ = packet.getZ(col);
-    				pePacket.order = FullChunkPacket.ChunkOrder.COLUMNS;
+    				//pePacket.order = FullChunkDataPacket.ChunkOrder.COLUMNS;
     				Chunk[] pcChunks = packet.getChunks(col);
     				for (int x = 0; x < 16; x++) {
     					for (int z = 0; z < 16; z++) {
@@ -137,10 +138,12 @@ public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<Serv
 
     				dos1.write(bosTiles.toByteArray());
 
-                    pePacket.chunkData = bos1.toByteArray();
+                    pePacket.data = bos1.toByteArray();
                     session.sendPacket(pePacket, true);
                 }
             } catch (Exception e) {
+            	System.err.println("Error while processing ChunkData packet");
+            	e.printStackTrace();
             }
         }
         );

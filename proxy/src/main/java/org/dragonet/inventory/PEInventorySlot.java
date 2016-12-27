@@ -18,12 +18,15 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
+
 import org.dragonet.proxy.nbt.PENBT;
 import org.dragonet.proxy.nbt.tag.CompoundTag;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.utilities.io.PEBinaryReader;
 import org.dragonet.proxy.utilities.io.PEBinaryWriter;
 import org.spacehq.mc.protocol.data.game.ItemStack;
+
+import cn.nukkit.item.Item;
 
 public class PEInventorySlot {
 
@@ -95,7 +98,7 @@ public class PEInventorySlot {
         }
     }
 
-    public static PEInventorySlot fromItemStack(ItemStack item) {
+    public static Item fromItemStack(ItemStack item) {
         return ItemBlockTranslator.translateToPE(item);
     }
 

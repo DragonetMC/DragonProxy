@@ -12,13 +12,16 @@
  */
 package org.dragonet.proxy.network.translator;
 
-import java.util.LinkedHashMap;
 import java.util.HashMap;
-import java.util.Set;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import org.dragonet.inventory.PEInventorySlot;
-import org.dragonet.proxy.nbt.tag.CompoundTag;
+import java.util.Set;
+
 import org.spacehq.mc.protocol.data.game.ItemStack;
+
+import cn.nukkit.item.Item;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.Tag;
 
 public class ItemBlockTranslator {
     
@@ -129,26 +132,35 @@ public class ItemBlockTranslator {
         return peTag;
     }
     
-    public static PEInventorySlot translateToPE(ItemStack item){
+    public static Item translateToPE(ItemStack item){
         if(item == null || item.getId() == 0) return null;
-        PEInventorySlot inv = new PEInventorySlot((short)translateToPE(item.getId()), (byte)(item.getAmount() & 0xFF), (short)item.getData(), translateNBT(item.getId(), item.getNBT()));
+
+        Item inv = new Item(translateToPE(item.getId()), item.getData(), (item.getAmount() & 0xFF));
         CompoundTag d = new CompoundTag();
         d.putShort("id", item.getId());
         d.putShort("amount", item.getAmount());
         d.putShort("data", item.getData());
-        inv.nbt.putCompound(DRAGONET_COMPOUND, d);
+        inv.setCompoundTag(translateNBT(item.getId(), item.getNBT()));
+        
+        //inv.putCompound(DRAGONET_COMPOUND, d);
+        d.setName(DRAGONET_COMPOUND);
+        inv.setNamedTag(d);
+        
         return inv;
     }
     
-    public static ItemStack translateToPC(PEInventorySlot slot){
+    public static ItemStack translateToPC(Item slot){
         ItemStack item = null;
-        if(slot.nbt.contains(DRAGONET_COMPOUND)){
-            item = new ItemStack(
-                    slot.nbt.getCompound(DRAGONET_COMPOUND).getShort("id"), 
-                    slot.nbt.getCompound(DRAGONET_COMPOUND).getShort("amount"), 
-                    slot.nbt.getCompound(DRAGONET_COMPOUND).getShort("data"));
+        Tag tag = null;
+        if((tag = slot.getNamedTagEntry(DRAGONET_COMPOUND)) != null){
+        	if(tag instanceof CompoundTag){
+			    item = new ItemStack(
+			            ((CompoundTag) tag).getShort("id"), 
+			            ((CompoundTag) tag).getShort("amount"), 
+			            ((CompoundTag) tag).getShort("data"));
+			}
         }else{
-            item = new ItemStack(translateToPC((int)slot.id), (int)(slot.count & 0xFF), (int)slot.meta);
+            item = new ItemStack(translateToPC((int)slot.getId()), (int)(slot.count & 0xFF), (int)slot.getDamage());
         }
         return item;
     }

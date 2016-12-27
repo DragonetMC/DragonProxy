@@ -12,11 +12,12 @@
  */
 package org.dragonet.proxy.network.translator;
 
-import org.dragonet.proxy.protocol.packet.PEPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.spacehq.packetlib.packet.Packet;
 
-public interface PEPacketTranslator<P extends PEPacket> {
+import cn.nukkit.network.protocol.DataPacket;
+
+public interface PEPacketTranslator<P extends DataPacket> {
 
     /**
      * Translate a packet from PE version to PC version.

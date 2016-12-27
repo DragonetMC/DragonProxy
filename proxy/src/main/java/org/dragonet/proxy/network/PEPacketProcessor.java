@@ -13,14 +13,23 @@
 package org.dragonet.proxy.network;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
+import java.util.List;
+
 import lombok.Getter;
+
 import org.dragonet.proxy.protocol.Protocol;
-import org.dragonet.proxy.protocol.packet.BatchPacket;
-import org.dragonet.proxy.protocol.packet.LoginPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
-import org.dragonet.proxy.protocol.packet.PEPacketIDs;
 import org.spacehq.packetlib.packet.Packet;
+
+import cn.nukkit.network.protocol.BatchPacket;
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.LoginPacket;
+import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.utils.Binary;
+import cn.nukkit.utils.BinaryStream;
+import cn.nukkit.utils.Zlib;
 
 public class PEPacketProcessor implements Runnable {
 
@@ -45,7 +54,7 @@ public class PEPacketProcessor implements Runnable {
         while (cnt < MAX_PACKETS_PER_CYCLE && !packets.isEmpty()) {
             cnt++;
             byte[] bin = packets.pop();
-            PEPacket packet = Protocol.decode(bin);
+            DataPacket packet = Protocol.decode(bin);
             if (packet == null) {
                 continue;
             }
@@ -53,22 +62,37 @@ public class PEPacketProcessor implements Runnable {
         }
     }
 
-    public void handlePacket(PEPacket packet) {
+    public void handlePacket(DataPacket packet) {
         if (packet == null) {
             return;
         }
 
         if (BatchPacket.class.isAssignableFrom(packet.getClass())) {
-            ((BatchPacket) packet).packets.stream().filter((pk) -> !(pk == null)).forEach((pk) -> {
-                handlePacket(pk);
-            });
+            //((BatchPacket) packet).packets.stream().filter((pk) -> !(pk == null)).forEach((pk) -> {
+            //    handlePacket(pk);
+            //});
+        	System.err.println("Batch packet 2");
+        	BatchPacket pack = (BatchPacket) packet;
+        	
+        	//pack.setBuffer(pack.payload, 1);
+        	pack.decode();
+        	
+        	for(DataPacket pk : processBatch(pack)){
+                try {
+                	handlePacket(pk);
+                } catch (Exception e){
+                	e.printStackTrace();
+                }
+        	}
+
             return;
         }
+        
         switch (packet.pid()) {
-            case PEPacketIDs.LOGIN_PACKET:
+            case ProtocolInfo.LOGIN_PACKET:
                 client.onLogin((LoginPacket) packet);
                 break;
-            case PEPacketIDs.TEXT_PACKET:  //Login
+            case ProtocolInfo.TEXT_PACKET:  //Login
                 if (client.getDataCache().get(CacheKey.AUTHENTICATION_STATE) != null) {
                     PacketTranslatorRegister.translateToPC(client, packet);
                     break;
@@ -87,6 +111,39 @@ public class PEPacketProcessor implements Runnable {
                 client.getDownstream().send(translated);
                 break;
         }
+    }
+    
+    private List<DataPacket> processBatch(BatchPacket packet) {
+        byte[] data;
+        try {
+            data = Zlib.inflate(packet.payload, 64 * 1024 * 1024);
+        } catch (Exception e) {
+        	e.printStackTrace();
+            return Collections.EMPTY_LIST;
+        }
+
+        int len = data.length;
+        BinaryStream stream = new BinaryStream(data);
+        try {
+            List<DataPacket> packets = new ArrayList<>();
+            while (stream.offset < len) {
+                byte[] buf = stream.getByteArray();
+
+                DataPacket pk;
+                if ((pk = Protocol.decode(buf)) != null) {
+                    if (pk.pid() == ProtocolInfo.BATCH_PACKET) {
+                        throw new IllegalStateException("Invalid BatchPacket inside BatchPacket");
+                    }
+                    packets.add(pk);
+                }
+            }
+            return packets;
+
+        } catch (Exception e) {
+            System.err.println("BatchPacket 0x" + Binary.bytesToHexString(packet.payload));
+            e.printStackTrace();
+        }
+        return Collections.EMPTY_LIST;
     }
 
 }

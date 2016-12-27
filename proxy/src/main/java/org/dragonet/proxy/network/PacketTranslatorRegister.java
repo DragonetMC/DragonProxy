@@ -13,16 +13,10 @@
 package org.dragonet.proxy.network;
 
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
+
 import java.util.HashMap;
 import java.util.Map;
-import org.dragonet.proxy.protocol.packet.ChatPacket;
-import org.dragonet.proxy.protocol.packet.InteractPacket;
-import org.dragonet.proxy.protocol.packet.MovePlayerPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
-import org.dragonet.proxy.protocol.packet.PlayerActionPacket;
-import org.dragonet.proxy.protocol.packet.PlayerEquipmentPacket;
-import org.dragonet.proxy.protocol.packet.UseItemPacket;
-import org.dragonet.proxy.protocol.packet.WindowClosePacket;
+
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.*;
 import org.dragonet.proxy.network.translator.pe.*;
@@ -48,15 +42,25 @@ import org.spacehq.mc.protocol.packet.ingame.server.world.ServerBlockChangePacke
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerMultiBlockChangePacket;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerMultiChunkDataPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
+import org.spacehq.mc.protocol.packet.ingame.server.world.ServerPlaySoundPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerSpawnPositionPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerUpdateSignPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerUpdateTimePacket;
 import org.spacehq.packetlib.packet.Packet;
 
+import cn.nukkit.network.protocol.ContainerClosePacket;
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.InteractPacket;
+import cn.nukkit.network.protocol.MobEquipmentPacket;
+import cn.nukkit.network.protocol.MovePlayerPacket;
+import cn.nukkit.network.protocol.PlayerActionPacket;
+import cn.nukkit.network.protocol.TextPacket;
+import cn.nukkit.network.protocol.UseItemPacket;
+
 public final class PacketTranslatorRegister {
 
     private final static Map<Class<? extends Packet>, PCPacketTranslator> PC_TO_PE_TRANSLATOR = new HashMap<>();
-    private final static Map<Class<? extends PEPacket>, PEPacketTranslator> PE_TO_PC_TRANSLATOR = new HashMap<>();
+    private final static Map<Class<? extends DataPacket>, PEPacketTranslator> PE_TO_PC_TRANSLATOR = new HashMap<>();
 
     /**
      * PC to PE
@@ -67,25 +71,25 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerSpawnPositionPacket.class, new PCSpawnPositionPacketTranslator());
 
         //Settings && Weather
-        //PC_TO_PE_TRANSLATOR.put(ServerNotifyClientPacket.class, new PCNotifyClientPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerNotifyClientPacket.class, new PCNotifyClientPacketTranslator());
         
         // Chat
         PC_TO_PE_TRANSLATOR.put(ServerChatPacket.class, new PCChatPacketTranslator());
 
         // Map
         PC_TO_PE_TRANSLATOR.put(ServerMultiChunkDataPacket.class, new PCMultiChunkDataPacketTranslator());
-        /*
+        
         PC_TO_PE_TRANSLATOR.put(ServerUpdateTimePacket.class, new PCUpdateTimePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerBlockChangePacket.class, new PCBlockChangePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerMultiBlockChangePacket.class, new PCMultiBlockChangePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerUpdateSignPacket.class, new PCUpdateSignPacketTranslator());
-        //PC_TO_PE_TRANSLATOR.put(ServerPlaySoundPacket.class, new PCPlaySoundPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerPlaySoundPacket.class, new PCPlaySoundPacketTranslator());
 
         // Entity
         PC_TO_PE_TRANSLATOR.put(ServerPlayerPositionRotationPacket.class, new PCPlayerPositionRotationPacketTranslator());
-        // PC_TO_PE_TRANSLATOR.put(ServerSpawnMobPacket.class, new PCSpawnMobPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerSpawnMobPacket.class, new PCSpawnMobPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayerListEntryPacket.class, new PCPlayerListItemPacketTranslator());
-        // PC_TO_PE_TRANSLATOR.put(ServerSpawnPlayerPacket.class, new PCSpawnPlayerPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerSpawnPlayerPacket.class, new PCSpawnPlayerPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerSpawnObjectPacket.class, new PCSpawnObjectPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityMetadataPacket.class, new PCEntityMetadataPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerDestroyEntitiesPacket.class, new PCDestroyEntitiesPacketTranslator());
@@ -100,7 +104,7 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerOpenWindowPacket.class, new PCOpenWindowPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerWindowItemsPacket.class, new PCWindowItemsTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerSetSlotPacket.class, new PCSetSlotPacketTranslator());
-        */
+        
     }
 
     /**
@@ -108,7 +112,7 @@ public final class PacketTranslatorRegister {
      */
     static {
         // Chat
-        PE_TO_PC_TRANSLATOR.put(ChatPacket.class, new PEChatPacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(TextPacket.class, new PEChatPacketTranslator());
 
         // Entity
         PE_TO_PC_TRANSLATOR.put(UseItemPacket.class, new PEUseItemPacketTranslator());
@@ -117,11 +121,11 @@ public final class PacketTranslatorRegister {
         PE_TO_PC_TRANSLATOR.put(InteractPacket.class, new PEInteractPacketTranslator());
         
         //Inventory
-        PE_TO_PC_TRANSLATOR.put(WindowClosePacket.class, new PEWindowClosePacketTranslator());
-        PE_TO_PC_TRANSLATOR.put(PlayerEquipmentPacket.class, new PEPlayerEquipmentPacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(ContainerClosePacket.class, new PEWindowClosePacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(MobEquipmentPacket.class, new PEPlayerEquipmentPacketTranslator());
     }
 
-    public static PEPacket[] translateToPE(UpstreamSession session, Packet packet) {
+    public static DataPacket[] translateToPE(UpstreamSession session, Packet packet) {
         if (packet == null) {
             return null;
         }
@@ -137,7 +141,7 @@ public final class PacketTranslatorRegister {
         }
     }
 
-    public static Packet[] translateToPC(UpstreamSession session, PEPacket packet) {
+    public static Packet[] translateToPC(UpstreamSession session, DataPacket packet) {
         if (packet == null) {
             return null;
         }

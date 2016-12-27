@@ -12,7 +12,6 @@
  */
 package org.dragonet.proxy.network.translator.pe;
 
-import org.dragonet.proxy.protocol.packet.PlayerActionPacket;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
@@ -26,6 +25,8 @@ import org.spacehq.mc.protocol.packet.ingame.client.ClientRequestPacket;
 import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerActionPacket;
 import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerStatePacket;
 import org.spacehq.packetlib.packet.Packet;
+
+import cn.nukkit.network.protocol.PlayerActionPacket;
 
 public class PEPlayerActionPacketTranslator implements PEPacketTranslator<PlayerActionPacket> {
 
@@ -64,11 +65,11 @@ public class PEPlayerActionPacketTranslator implements PEPacketTranslator<Player
             return new Packet[]{act};
         }
         if (session.getDataCache().containsKey(CacheKey.BLOCK_BREAKING_POSITION)) {
-            if (packet.action == PlayerActionPacket.ACTION_FINISH_BREAK) {
+            if (packet.action == PlayerActionPacket.ACTION_STOP_BREAK) {
                 ClientPlayerActionPacket act = new ClientPlayerActionPacket(PlayerAction.FINISH_DIGGING, (Position) session.getDataCache().remove(CacheKey.BLOCK_BREAKING_POSITION), MagicValues.key(Face.class, packet.face));
                 return new Packet[]{act};
             }
-            if (packet.action == PlayerActionPacket.ACTION_CANCEL_BREAK) {
+            if (packet.action == PlayerActionPacket.ACTION_ABORT_BREAK) {
                 ClientPlayerActionPacket act = new ClientPlayerActionPacket(PlayerAction.CANCEL_DIGGING, (Position) session.getDataCache().remove(CacheKey.BLOCK_BREAKING_POSITION), MagicValues.key(Face.class, packet.face));
                 return new Packet[]{act};
             }

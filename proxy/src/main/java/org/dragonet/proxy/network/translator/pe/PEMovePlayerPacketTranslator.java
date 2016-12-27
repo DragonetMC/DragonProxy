@@ -12,12 +12,13 @@
  */
 package org.dragonet.proxy.network.translator.pe;
 
-import org.dragonet.proxy.protocol.packet.MovePlayerPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
 import org.spacehq.packetlib.packet.Packet;
+
+import cn.nukkit.network.protocol.MovePlayerPacket;
 
 public class PEMovePlayerPacketTranslator implements PEPacketTranslator<MovePlayerPacket> {
     

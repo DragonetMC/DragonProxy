@@ -14,9 +14,9 @@ package org.dragonet.proxy.network;
 
 import java.net.InetSocketAddress;
 import java.util.Arrays;
+
 import lombok.Getter;
-import org.dragonet.proxy.protocol.packet.BatchPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
+
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.utilities.Binary;
@@ -26,6 +26,9 @@ import org.dragonet.raknet.protocol.EncapsulatedPacket;
 import org.dragonet.raknet.server.RakNetServer;
 import org.dragonet.raknet.server.ServerHandler;
 import org.dragonet.raknet.server.ServerInstance;
+
+import cn.nukkit.network.protocol.BatchPacket;
+import cn.nukkit.network.protocol.DataPacket;
 
 public class RaknetInterface implements ServerInstance {
 
@@ -108,7 +111,7 @@ public class RaknetInterface implements ServerInstance {
         handler.closeSession(identifier, reason);
     }
 
-    public void sendPacket(String identifier, PEPacket packet, boolean immediate) {
+    public void sendPacket(String identifier, DataPacket packet, boolean immediate) {
         if (identifier == null || packet == null) {
             return;
         }
@@ -121,17 +124,18 @@ public class RaknetInterface implements ServerInstance {
         }catch(Exception e){}
 
         
-        boolean overridedImmediate = immediate || packet.isShouldSendImmidate();
+        boolean overridedImmediate = immediate || false; /*packet.isShouldSendImmidate();*/
         packet.encode();
-        if (packet.getData().length > 512 && !BatchPacket.class.isAssignableFrom(packet.getClass())) {
+        if (packet.getBuffer().length > 512 && !BatchPacket.class.isAssignableFrom(packet.getClass())) {
             BatchPacket pkBatch = new BatchPacket();
-            pkBatch.packets.add(packet);
+            pkBatch.payload = packet.get();
             sendPacket(identifier, pkBatch, overridedImmediate);
             return;
         }
 
+
         EncapsulatedPacket encapsulated = new EncapsulatedPacket();
-        encapsulated.buffer = Binary.appendBytes((byte) 0xfe, packet.getData());
+        encapsulated.buffer = Binary.appendBytes((byte) 0xfe, packet.getBuffer());
         encapsulated.needACK = true;
         encapsulated.reliability = (byte) 2;
         encapsulated.messageIndex = 0;

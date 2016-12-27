@@ -12,9 +12,21 @@
  */
 package org.dragonet.proxy.network;
 
+import cn.nukkit.network.protocol.BatchPacket;
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.LoginPacket;
+import cn.nukkit.network.protocol.PlayStatusPacket;
+import cn.nukkit.network.protocol.ResourcePacksInfoPacket;
+import cn.nukkit.network.protocol.SetSpawnPositionPacket;
+import cn.nukkit.network.protocol.StartGamePacket;
+import cn.nukkit.network.protocol.TextPacket;
+import cn.nukkit.network.protocol.UpdateBlockPacket;
+import cn.nukkit.network.protocol.RemoveEntityPacket;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,8 +34,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
 import lombok.Getter;
-import org.dragonet.proxy.protocol.packet.*;
+
 import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.PocketServer;
@@ -94,26 +107,28 @@ public class UpstreamSession {
         packetProcessorScheule = proxy.getGeneralThreadPool().scheduleAtFixedRate(packetProcessor, 10, 50, TimeUnit.MILLISECONDS);
     }
 
-    public void sendPacket(PEPacket packet) {
+    public void sendPacket(DataPacket packet) {
         sendPacket(packet, false);
     }
 
-    public void sendPacket(PEPacket packet, boolean immediate) {
+    public void sendPacket(DataPacket packet, boolean immediate) {
         proxy.getNetwork().sendPacket(raknetID, packet, immediate);
     }
 
-    public void sendAllPackets(PEPacket[] packets, boolean immediate) {
+    public void sendAllPackets(DataPacket[] packets, boolean immediate) {
         if (packets.length < 5) {
-            for (PEPacket packet : packets) {
+            for (DataPacket packet : packets) {
                 sendPacket(packet);
             }
         } else {
+        	System.err.println("Batch Packet 1");
             BatchPacket batch = new BatchPacket();
             boolean mustImmediate = immediate;
             if (!mustImmediate) {
-                for (PEPacket packet : packets) {
-                    if (packet.isShouldSendImmidate()) {
-                        batch.packets.add(packet);
+                for (DataPacket packet : packets) {
+                	//sendPacket(packet, mustImmediate);
+                    if (true) {
+                        batch.putByteArray(packet.getBuffer());
                         mustImmediate = true;
                         break;
                     }
@@ -164,23 +179,23 @@ public class UpstreamSession {
             return;
         }
 
-        LoginStatusPacket status = new LoginStatusPacket();
+        PlayStatusPacket status = new PlayStatusPacket();
         if (packet.protocol != Versioning.MINECRAFT_PE_PROTOCOL) {
-            status.status = LoginStatusPacket.LOGIN_FAILED_CLIENT;
+            status.status = PlayStatusPacket.LOGIN_FAILED_CLIENT;
             sendPacket(status, true);
             disconnect(proxy.getLang().get(Lang.MESSAGE_UNSUPPORTED_CLIENT));
             return;
         }
-        status.status = LoginStatusPacket.LOGIN_SUCCESS;
+        status.status = PlayStatusPacket.LOGIN_SUCCESS;
         sendPacket(status, true);
 
-        sendPacket(new ResourcePackInfoPacket(), true);
+        sendPacket(new ResourcePacksInfoPacket(), true);
 
         this.username = packet.username;
         proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, username, remoteAddress));
         if (proxy.getAuthMode().equals("online")) {
             StartGamePacket pkStartGame = new StartGamePacket();
-            pkStartGame.eid = 0; //Use EID 0 for eaisier management
+            pkStartGame.entityRuntimeId = 0; //Use EID 0 for eaisier management
             pkStartGame.dimension = (byte) 0;
             pkStartGame.seed = 0;
             pkStartGame.generator = 1;
@@ -198,8 +213,8 @@ public class UpstreamSession {
             pkSpawn.z = 0;
             sendPacket(pkSpawn, true);
 
-            LoginStatusPacket pkStat = new LoginStatusPacket();
-            pkStat.status = LoginStatusPacket.PLAYER_SPAWN;
+            PlayStatusPacket pkStat = new PlayStatusPacket();
+            pkStat.status = PlayStatusPacket.PLAYER_SPAWN;
             sendPacket(pkStat, true);
 
             dataCache.put(CacheKey.AUTHENTICATION_STATE, "email");
@@ -270,7 +285,10 @@ public class UpstreamSession {
             BatchPacket batch = new BatchPacket();
             this.entityCache.getEntities().entrySet().forEach((ent) -> {
                 if(ent.getKey() != 0){
-                    batch.packets.add(new RemoveEntityPacket(ent.getKey()));
+                	RemoveEntityPacket pkRemoveEntity = new RemoveEntityPacket();
+                	pkRemoveEntity.eid = ent.getKey();
+                	sendPacket(pkRemoveEntity, true);
+                    //batch.packets.add(pkRemoveEntity);
                 }
             });
             this.entityCache.reset(true);
@@ -294,8 +312,8 @@ public class UpstreamSession {
         pkStartGame.y = 72.0f;
         sendPacket(pkStartGame, true);
 
-        LoginStatusPacket pkStat = new LoginStatusPacket();
-        pkStat.status = LoginStatusPacket.PLAYER_SPAWN;
+        PlayStatusPacket pkStat = new PlayStatusPacket();
+        pkStat.status = PlayStatusPacket.PLAYER_SPAWN;
         sendPacket(pkStat, true);
 
         sendChat(reason);
@@ -310,16 +328,16 @@ public class UpstreamSession {
             }
             return;
         }
-        ChatPacket pk = new ChatPacket();
-        pk.type = ChatPacket.TextType.CHAT;
+        TextPacket pk = new TextPacket();
+        pk.type = TextPacket.TYPE_CHAT;
         pk.source = "";
         pk.message = chat;
         sendPacket(pk, true);
     }
 
     public void sendPopup(String text) {
-        ChatPacket pk = new ChatPacket();
-        pk.type = ChatPacket.TextType.POPUP;
+        TextPacket pk = new TextPacket();
+        pk.type = TextPacket.TYPE_POPUP;
         pk.source = "";
         pk.message = text;
         sendPacket(pk, true);
@@ -331,8 +349,8 @@ public class UpstreamSession {
         pkBlock.x = x;
         pkBlock.y = (byte) (y & 0xFF);
         pkBlock.z = z;
-        pkBlock.block = (byte) (id & 0xFF);
-        pkBlock.meta = (byte) (meta & 0xFF);
+        pkBlock.blockId = (byte) (id & 0xFF);
+        pkBlock.blockData = (byte) (meta & 0xFF);
         sendPacket(pkBlock, true);
     }
 

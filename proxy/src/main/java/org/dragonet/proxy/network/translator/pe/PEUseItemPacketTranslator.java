@@ -12,7 +12,6 @@
  */
 package org.dragonet.proxy.network.translator.pe;
 
-import org.dragonet.proxy.protocol.packet.UseItemPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
@@ -23,6 +22,8 @@ import org.spacehq.mc.protocol.data.game.values.MagicValues;
 import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerPlaceBlockPacket;
 import org.spacehq.mc.protocol.packet.ingame.client.player.ClientSwingArmPacket;
 import org.spacehq.packetlib.packet.Packet;
+
+import cn.nukkit.network.protocol.UseItemPacket;
 
 public class PEUseItemPacketTranslator implements PEPacketTranslator<UseItemPacket> {
 

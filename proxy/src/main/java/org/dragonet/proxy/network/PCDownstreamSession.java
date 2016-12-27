@@ -14,7 +14,7 @@ package org.dragonet.proxy.network;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.dragonet.proxy.protocol.packet.PEPacket;
+
 import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
@@ -27,6 +27,8 @@ import org.spacehq.packetlib.event.session.PacketReceivedEvent;
 import org.spacehq.packetlib.event.session.SessionAdapter;
 import org.spacehq.packetlib.packet.Packet;
 import org.spacehq.packetlib.tcp.TcpSessionFactory;
+
+import cn.nukkit.network.protocol.DataPacket;
 
 /**
  * Maintaince the connection between the proxy and remote Minecraft server.
@@ -106,7 +108,7 @@ public class PCDownstreamSession implements DownstreamSession<Packet> {
                 */
                 //Handle the packet
                 try {
-                    PEPacket[] packets = PacketTranslatorRegister.translateToPE(upstream, event.getPacket());
+                    DataPacket[] packets = PacketTranslatorRegister.translateToPE(upstream, event.getPacket());
                     if (packets == null) {
                         return;
                     }

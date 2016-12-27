@@ -12,7 +12,6 @@
  */
 package org.dragonet.proxy.network.translator.pe;
 
-import org.dragonet.proxy.protocol.packet.PlayerEquipmentPacket;
 import org.dragonet.proxy.network.InventoryTranslatorRegister;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedWindow;
@@ -24,10 +23,12 @@ import org.spacehq.mc.protocol.packet.ingame.client.player.ClientChangeHeldItemP
 import org.spacehq.mc.protocol.packet.ingame.client.window.ClientWindowActionPacket;
 import org.spacehq.packetlib.packet.Packet;
 
-public class PEPlayerEquipmentPacketTranslator implements PEPacketTranslator<PlayerEquipmentPacket> {
+import cn.nukkit.network.protocol.MobEquipmentPacket;
+
+public class PEPlayerEquipmentPacketTranslator implements PEPacketTranslator<MobEquipmentPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, PlayerEquipmentPacket packet) {
+    public Packet[] translate(UpstreamSession session, MobEquipmentPacket packet) {
         if (packet.selectedSlot > 8) {
             return null;
         }

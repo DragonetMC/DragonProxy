@@ -12,7 +12,6 @@
  */
 package org.dragonet.proxy.network.translator.pe;
 
-import org.dragonet.proxy.protocol.packet.ChatPacket;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
@@ -21,10 +20,12 @@ import org.dragonet.proxy.utilities.PatternChecker;
 import org.spacehq.mc.protocol.packet.ingame.client.ClientChatPacket;
 import org.spacehq.packetlib.packet.Packet;
 
-public class PEChatPacketTranslator implements PEPacketTranslator<ChatPacket> {
+import cn.nukkit.network.protocol.TextPacket;
+
+public class PEChatPacketTranslator implements PEPacketTranslator<TextPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, ChatPacket packet) {
+    public Packet[] translate(UpstreamSession session, TextPacket packet) {
         if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE) != null) {
             if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE).equals("email")) {
                 if (!PatternChecker.matchEmail(packet.message.trim())) {
