@@ -14,6 +14,7 @@ package org.dragonet.proxy.protocol.packet;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
 import lombok.Data;
 import org.dragonet.proxy.protocol.inf.mcpe.NetworkChannel;
 import org.dragonet.proxy.utilities.io.PEBinaryWriter;
@@ -28,18 +29,12 @@ public class UpdateBlockPacket extends PEPacket {
     public final static byte FLAG_ALL = (byte) (FLAG_NEIGHBORS | FLAG_NETWORK);
     public final static byte FLAG_ALL_PRIORITY = (byte) (FLAG_ALL | FLAG_PRIORITY);
 
-    @Data
-    public static class UpdateBlockRecord {
-
-        public int x;
-        public int z;
-        public byte y;
-        public byte block;
-        public byte meta;
-        public byte flags;
-    }
-
-    public UpdateBlockRecord[] records;
+    public int x;
+    public int z;
+    public int y;
+    public int block;
+    public int meta;
+    public int flags;
 
     @Override
     public int pid() {
@@ -54,17 +49,9 @@ public class UpdateBlockPacket extends PEPacket {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
-            if (this.records == null) {
-                writer.writeInt(0);
-            } else {
-                for (UpdateBlockRecord rec : this.records) {
-                    writer.writeInt(rec.x);
-                    writer.writeInt(rec.z);
-                    writer.writeByte(rec.y);
-                    writer.writeByte(rec.block);
-                    writer.writeByte((byte) (rec.flags << 4 | rec.meta));
-                }
-            }
+            writer.writeBlockCoords(x, y, z);
+            writer.writeUnsignedVarInt(block);
+            writer.writeUnsignedVarInt(flags << 4 | meta);
             this.setData(bos.toByteArray());
         } catch (IOException e) {
         }

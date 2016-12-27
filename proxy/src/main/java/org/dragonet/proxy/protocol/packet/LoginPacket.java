@@ -37,6 +37,7 @@ public class LoginPacket extends PEPacket {
 
     public String username;
     public int protocol;
+    public byte gameEdition;
     public UUID clientUuid;
     public long clientID;
     public String publicKey;
@@ -143,9 +144,10 @@ public class LoginPacket extends PEPacket {
             PEBinaryReader reader = new PEBinaryReader(new ByteArrayInputStream(this.getData()));
             reader.readByte(); //PID
             this.protocol = reader.readInt();
+            this.gameEdition = reader.readByte();
 
             byte[] buff = new byte[40960];
-            int len = reader.readInt();
+            int len = reader.readUnsignedVarInt();
             Inflater inf = new Inflater();
             inf.setInput(reader.read(len));
             int out = inf.inflate(buff);

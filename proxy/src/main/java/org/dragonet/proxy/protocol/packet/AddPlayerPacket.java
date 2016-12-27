@@ -25,6 +25,7 @@ public class AddPlayerPacket extends PEPacket {
     public UUID uuid;
     public String username;
     public long eid;
+    public long rtid;
     public float x;
     public float y;
     public float z;
@@ -51,16 +52,15 @@ public class AddPlayerPacket extends PEPacket {
             writer.writeByte((byte) (this.pid() & 0xFF));
             writer.writeUUID(uuid);
             writer.writeString(this.username);
-            writer.writeLong(this.eid);
-            writer.writeFloat(this.x);
-            writer.writeFloat(this.y);
-            writer.writeFloat(this.z);
-            writer.writeFloat(this.speedX);
-            writer.writeFloat(this.speedY);
-            writer.writeFloat(this.speedZ);
-            writer.writeFloat(this.yaw);
-            writer.writeFloat(this.yaw); //Head rotation
+            writer.writeVarLong(this.eid);
+            writer.writeVarLong(rtid);
+            writer.writeVector3f(x, y, z);
+            writer.writeVector3f(speedX, speedY, speedZ);
+            writer.switchEndianness(); // Switch to little-endian
             writer.writeFloat(this.pitch);
+            writer.writeFloat(this.yaw); //Head rotation
+            writer.writeFloat(this.yaw);
+            writer.switchEndianness();  // Switch back
             PEInventorySlot.writeSlot(writer, this.item);
             writer.writeByte((byte) 0x00); // TODO Fix metadata, one of the reasons why skins didn't work properly!
             //writer.write(this.metadata.encode());

@@ -44,7 +44,7 @@ public class PlayerEquipmentPacket extends PEPacket {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
-            writer.writeLong(eid);
+            writer.writeVarLong(eid);
             PEInventorySlot.writeSlot(writer, item);
             writer.writeByte((byte) (slot & 0xFF));
             writer.writeByte((byte) (selectedSlot & 0xFF));

@@ -21,6 +21,7 @@ import org.dragonet.proxy.utilities.io.PEBinaryWriter;
 public class AddItemEntityPacket extends PEPacket {
 
     public long eid;
+    public long rtid;
     public PEInventorySlot item;
     public float x;
     public float y;
@@ -42,13 +43,10 @@ public class AddItemEntityPacket extends PEPacket {
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
             writer.writeLong(eid);
+            writer.writeLong(rtid);
             PEInventorySlot.writeSlot(writer, item);
-            writer.writeFloat(x);
-            writer.writeFloat(y);
-            writer.writeFloat(z);
-            writer.writeFloat(speedX);
-            writer.writeFloat(speedY);
-            writer.writeFloat(speedZ);
+            writer.writeVector3f(x, y, z);
+            writer.writeVector3f(speedX, speedY, speedZ);
             this.setData(bos.toByteArray());
         } catch (IOException e) {
         }

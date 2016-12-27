@@ -30,18 +30,17 @@ public class PCEntityPositionPacketTranslator implements PCPacketTranslator<Serv
 
         e.relativeMove(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ());
 
-        MoveEntitiesPacket.MoveEntityData data = new MoveEntitiesPacket.MoveEntityData();
-        data.eid = e.eid;
-        data.yaw = e.yaw;
-        data.headYaw = e.yaw;
-        data.pitch = e.pitch;
-        data.x = (float) e.x;
-        data.y = (float) e.y;
+        MoveEntitiesPacket pk = new MoveEntitiesPacket();
+        pk.eid = e.eid;
+        pk.yaw = e.yaw;
+        pk.headYaw = e.yaw;
+        pk.pitch = e.pitch;
+        pk.x = (float) e.x;
+        pk.y = (float) e.y;
         if(e.player){
-            data.y += 1.62f;
+            pk.y += 1.62f;
         }
-        data.z = (float) e.z;
-        MoveEntitiesPacket pk = new MoveEntitiesPacket(new MoveEntitiesPacket.MoveEntityData[]{data});
+        pk.z = (float) e.z;
         return new PEPacket[]{pk};
     }
 

@@ -37,7 +37,7 @@ public class InteractPacket extends PEPacket {
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
             writer.writeByte(action);
-            writer.writeLong(target);
+            writer.writeVarLong(target);
             this.setData(bos.toByteArray());
         } catch (IOException e) {
         }
@@ -49,7 +49,7 @@ public class InteractPacket extends PEPacket {
             PEBinaryReader reader = new PEBinaryReader(new ByteArrayInputStream(this.getData()));
             reader.readByte();
             this.action = reader.readByte();
-            this.target = reader.readLong();
+            this.target = reader.readVarLong();
             this.setLength(reader.totallyRead());
         } catch (IOException e) {
         }

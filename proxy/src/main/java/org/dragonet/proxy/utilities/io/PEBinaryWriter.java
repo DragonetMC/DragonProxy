@@ -12,10 +12,13 @@
  */
 package org.dragonet.proxy.utilities.io;
 
+import org.dragonet.proxy.utilities.VarInt;
+
 import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
@@ -23,6 +26,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class PEBinaryWriter implements Flushable, Closeable {
+
+    private static final BigInteger UNSIGNED_LONG_MAX_VALUE = new BigInteger("FFFFFFFFFFFFFFFF", 16);
 
     protected OutputStream os;
     protected boolean endianness;
@@ -55,13 +60,63 @@ public class PEBinaryWriter implements Flushable, Closeable {
         os.close();
     }
 
+    public void writeVarInt(int value) throws IOException {
+        writeUnsignedVarInt(VarInt.encodeZigZag32(value));
+    }
+
+    public void writeUnsignedVarInt(long value) throws IOException {
+        writeVar(BigInteger.valueOf(value));
+    }
+
+    public void writeVarLong(long value) throws IOException {
+        writeUnsignedVarLong(VarInt.encodeZigZag64(value));
+    }
+
+    public void writeUnsignedVarLong(BigInteger value) throws IOException {
+        writeVar(value);
+    }
+
+    public void writeVar(BigInteger v) throws IOException {
+        v = v.and(UNSIGNED_LONG_MAX_VALUE);
+        BigInteger i = BigInteger.valueOf(-128);
+        BigInteger BIX7F = BigInteger.valueOf(0x7f);
+        BigInteger BIX80 = BigInteger.valueOf(0x80);
+        while (!v.and(i).equals(BigInteger.ZERO)) {
+            writeByte(v.and(BIX7F).or(BIX80).byteValue());
+            v = v.shiftRight(7);
+        }
+
+        writeByte(v.byteValue());
+    }
+
+    public void writeVector3f(float x, float y, float z) throws IOException {
+        // FORCED to use LITTLE-ENDIAN
+        if(endianness != PEBinaryUtils.LITTLE_ENDIAN) {
+            switchEndianness();
+            writeVector3f(x, y , z);
+            switchEndianness();
+        } else {
+            writeFloat(x);
+            writeFloat(y);
+            writeFloat(z);
+        }
+    }
+
+    public void writeBlockCoords(int x, int y, int z) throws IOException {
+        writeVarInt(x);
+        writeUnsignedVarInt(y);
+        writeVarInt(z);
+    }
+
     public void writeUUID(UUID uuid) throws IOException {
         writeLong(uuid.getMostSignificantBits());
         writeLong(uuid.getLeastSignificantBits());
     }
 
     public void writeString(String string) throws IOException {
-        writeString(string, 2);
+        byte[] data = string.getBytes(StandardCharsets.UTF_8);
+        writeUnsignedVarInt(data.length);
+        write(data);
     }
 
     public void writeAddress(InetAddress addr, short port) throws IOException {
@@ -76,14 +131,12 @@ public class PEBinaryWriter implements Flushable, Closeable {
         }
     }
 
-    public void writeString(String string, int lenPrefix) throws IOException {
-        byte[] bin = string.getBytes(StandardCharsets.UTF_8);
-        write(bin.length, lenPrefix);
-        os.write(bin);
-    }
-
     public void writeByte(byte b) throws IOException {
         os.write(b);
+    }
+
+    public void writeBoolean(boolean b) throws IOException {
+        writeByte(b ? (byte)0x01 : (byte)0x00);
     }
 
     public void writeShort(short s) throws IOException {
@@ -126,38 +179,5 @@ public class PEBinaryWriter implements Flushable, Closeable {
 
     public void writeNat(int oneByte) throws IOException {
         os.write(oneByte);
-    }
-
-    public <T> void writeObject(T obj, Object[] args) throws IOException {
-        if (obj instanceof CharSequence) {
-            boolean written = false;
-            if (args.length > 0) {
-                if (args[0] instanceof Integer) {
-                    writeString(obj.toString(), (int) args[0]);
-                    written = true;
-                }
-            }
-            if (!written) {
-                writeString(obj.toString());
-            }
-        } else if (obj instanceof Byte) {
-            writeByte((byte) (Byte) obj);
-        } else if (obj instanceof Short) {
-            writeShort((short) (Short) obj);
-        } else if (obj instanceof Integer) {
-            writeInt((int) (Integer) obj);
-        } else if (obj instanceof Long) {
-            writeLong((long) (Long) obj);
-        } else if (obj instanceof Float) {
-            writeFloat((float) (Float) obj);
-        } else if (obj instanceof Double) {
-            writeDouble((double) (Double) obj);
-        } else {
-            writeUnknownType(obj, args);
-        }
-    }
-
-    protected <T> void writeUnknownType(T obj, Object[] args) throws IOException {
-        throw new UnsupportedOperationException(String.format("Unknown object type %s", obj.getClass().getName()));
     }
 }

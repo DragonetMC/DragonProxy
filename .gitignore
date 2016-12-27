@@ -13,6 +13,7 @@ target/
 !.gitattributes
 worlds
 logs
-config.yml
 console.log
 dependency-reduced-pom.xml
+nb-configuration.xml
+*.iml

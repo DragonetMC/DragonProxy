@@ -30,8 +30,8 @@ public class MovePlayerPacket extends PEPacket {
     public float y;
     public float z;
     public float yaw;
+    public float headYaw;
     public float pitch;
-    public float bodyYaw;
     public byte mode;
     public boolean onGround;
 
@@ -43,14 +43,14 @@ public class MovePlayerPacket extends PEPacket {
         mode = MODE_NORMAL;
     }
 
-    public MovePlayerPacket(long eid, float x, float y, float z, float yaw, float pitch, float bodyYaw, boolean onGround) {
+    public MovePlayerPacket(long eid, float x, float y, float z, float yaw, float headYaw, float pitch, boolean onGround) {
         this.eid = eid;
         this.x = x;
         this.y = y;
         this.z = z;
         this.yaw = yaw;
+        this.headYaw = headYaw;
         this.pitch = pitch;
-        this.bodyYaw = bodyYaw;
         this.onGround = onGround;
         mode = MODE_NORMAL;
     }
@@ -68,15 +68,11 @@ public class MovePlayerPacket extends PEPacket {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
-            writer.writeLong(this.eid);
-            writer.writeFloat(this.x);
-            writer.writeFloat(this.y + 1.62f);
-            writer.writeFloat(this.z);
-            writer.writeFloat(this.yaw);
-            writer.writeFloat(this.bodyYaw);
-            writer.writeFloat(this.pitch);
+            writer.writeVarLong(this.eid);
+            writer.writeVector3f(x, y + 1.62f, z);
+            writer.writeVector3f(yaw, headYaw, pitch);
             writer.writeByte(this.mode);
-            writer.writeByte((byte) (this.onGround ? (byte) 1 : (byte) 0));
+            writer.writeByte(this.onGround ? (byte) 1 : (byte) 0);
             this.setData(bos.toByteArray());
         } catch (IOException e) {
         }
@@ -88,12 +84,14 @@ public class MovePlayerPacket extends PEPacket {
             PEBinaryReader reader = new PEBinaryReader(new ByteArrayInputStream(this.getData()));
             reader.readByte(); //PID
             this.eid = reader.readLong();
+            reader.switchEndianness(); // enter LE
             this.x = reader.readFloat();
             this.y = reader.readFloat() - 1.62f;
             this.z = reader.readFloat();
             this.yaw = reader.readFloat();
-            this.bodyYaw = reader.readFloat();
+            this.headYaw = reader.readFloat();
             this.pitch = reader.readFloat();
+            reader.switchEndianness(); // out of LE
             this.mode = reader.readByte();
             this.onGround = reader.readByte() > 0;
             this.setLength(reader.totallyRead());

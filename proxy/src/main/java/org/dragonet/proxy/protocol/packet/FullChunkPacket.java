@@ -52,10 +52,10 @@ public class FullChunkPacket extends PEPacket {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
-            writer.writeInt(chunkX);
-            writer.writeInt(chunkZ);
+            writer.writeVarInt(chunkX);
+            writer.writeVarInt(chunkZ);
             writer.writeByte(order != null ? order.getType() : (byte) 0); //Default to COLUMNS
-            writer.writeInt(chunkData.length);
+            writer.writeUnsignedVarInt(chunkData.length);
             writer.write(chunkData);
             this.setData(bos.toByteArray());
         } catch (IOException e) {

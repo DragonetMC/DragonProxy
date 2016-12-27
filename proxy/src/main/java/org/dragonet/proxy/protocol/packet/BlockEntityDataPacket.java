@@ -49,9 +49,7 @@ public class BlockEntityDataPacket extends PEPacket {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
-            writer.writeInt(x);
-            writer.writeInt(y);
-            writer.writeInt(z);
+            writer.writeBlockCoords(x, y, z);
             PENBT.write(peTag, bos, ByteOrder.LITTLE_ENDIAN);
             this.setData(bos.toByteArray());
         } catch (IOException e) {

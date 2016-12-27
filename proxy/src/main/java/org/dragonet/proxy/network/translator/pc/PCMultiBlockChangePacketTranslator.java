@@ -23,19 +23,18 @@ public class PCMultiBlockChangePacketTranslator implements PCPacketTranslator<Se
 
     @Override
     public PEPacket[] translate(UpstreamSession session, ServerMultiBlockChangePacket packet) {
-        UpdateBlockPacket pk = new UpdateBlockPacket();
-        pk.records = new UpdateBlockPacket.UpdateBlockRecord[packet.getRecords().length];
+        UpdateBlockPacket[] packets = new UpdateBlockPacket[packet.getRecords().length];
         byte generalFlag = packet.getRecords().length > 64 ? UpdateBlockPacket.FLAG_PRIORITY : UpdateBlockPacket.FLAG_ALL;
-        for (int i = 0; i < pk.records.length; i++) {
-            pk.records[i] = new UpdateBlockPacket.UpdateBlockRecord();
-            pk.records[i].flags = generalFlag;
-            pk.records[i].x = packet.getRecords()[i].getPosition().getX();
-            pk.records[i].y = (byte) (packet.getRecords()[i].getPosition().getY() & 0xFF);
-            pk.records[i].z = packet.getRecords()[i].getPosition().getZ();
-            pk.records[i].block = (byte) (ItemBlockTranslator.translateToPE(packet.getRecords()[i].getId()) & 0xFF);
-            pk.records[i].meta = (byte) (packet.getRecords()[i].getData() & 0xFF);
+        for (int i = 0; i < packets.length; i++) {
+            packets[i] = new UpdateBlockPacket();
+            packets[i].flags = generalFlag;
+            packets[i].x = packet.getRecords()[i].getPosition().getX();
+            packets[i].y = (byte) (packet.getRecords()[i].getPosition().getY() & 0xFF);
+            packets[i].z = packet.getRecords()[i].getPosition().getZ();
+            packets[i].block = (byte) (ItemBlockTranslator.translateToPE(packet.getRecords()[i].getId()) & 0xFF);
+            packets[i].meta = (byte) (packet.getRecords()[i].getData() & 0xFF);
         }
-        return new PEPacket[]{pk};
+        return packets;
     }
 
 }

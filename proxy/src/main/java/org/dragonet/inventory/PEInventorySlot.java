@@ -29,23 +29,23 @@ public class PEInventorySlot {
 
     public final static PEInventorySlot AIR = new PEInventorySlot();
 
-    public short id;
-    public byte count;
-    public short meta;
+    public int id;
+    public int count;
+    public int meta;
     public CompoundTag nbt;
 
     public PEInventorySlot() {
-        this((short) 0, (byte) 0, (short) 0);
+        this(0, 0, 0);
     }
 
-    public PEInventorySlot(short id, byte count, short meta) {
+    public PEInventorySlot(int id, int count, int meta) {
         this.id = id;
         this.count = count;
         this.meta = meta;
         nbt = new CompoundTag("");
     }
 
-    public PEInventorySlot(short id, byte count, short meta, CompoundTag nbt) {
+    public PEInventorySlot(int id, int count, int meta, CompoundTag nbt) {
         this.id = id;
         this.count = count;
         this.meta = meta;
@@ -53,12 +53,13 @@ public class PEInventorySlot {
     }
 
     public static PEInventorySlot readSlot(PEBinaryReader reader) throws IOException {
-        short id = (short) (reader.readShort() & 0xFFFF); //Unsigned
+        short id = (short) (reader.readVarInt() & 0xFFFF); //Unsigned
         if (id <= 0) {
             return new PEInventorySlot((short) 0, (byte) 0, (short) 0);
         }
-        byte count = reader.readByte();
-        short meta = reader.readShort();
+        int mixedData = reader.readVarInt();
+        int count = reader.readByte() & 0xFF;
+        int meta = mixedData >> 8;
         if(meta == -1){
             meta = 0;
         }
@@ -78,9 +79,9 @@ public class PEInventorySlot {
             writer.writeShort((short) 0);
             return;
         }
-        writer.writeShort(slot.id);
-        writer.writeByte(slot.count);
-        writer.writeShort(slot.meta);
+        writer.writeVarInt(slot.id);
+        int mixedData = slot.meta << 8 | slot.count;
+        writer.writeVarInt(mixedData);
         if (slot.nbt == null) {
             writer.writeShort((short) 0);
         } else {

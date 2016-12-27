@@ -12,18 +12,23 @@
  */
 package org.dragonet.proxy.protocol.packet;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import lombok.Data;
 import org.dragonet.proxy.protocol.inf.mcpe.NetworkChannel;
 import org.dragonet.proxy.utilities.io.PEBinaryWriter;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 public class MoveEntitiesPacket extends PEPacket {
 
-    public MoveEntityData[] entities;
+    public long eid;
+    public float x;
+    public float y;
+    public float z;
+    public float yaw;
+    public float headYaw;
+    public float pitch;
 
-    public MoveEntitiesPacket(MoveEntityData[] entities) {
-        this.entities = entities;
+    public MoveEntitiesPacket() {
     }
 
     @Override
@@ -38,16 +43,11 @@ public class MoveEntitiesPacket extends PEPacket {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
-            writer.writeInt(this.entities.length);
-            for (MoveEntityData d : this.entities) {
-                writer.writeLong(d.eid);
-                writer.writeFloat(d.x);
-                writer.writeFloat(d.y);
-                writer.writeFloat(d.z);
-                writer.writeFloat(d.yaw);
-                writer.writeFloat(d.headYaw);
-                writer.writeFloat(d.pitch);
-            }
+            writer.writeVarLong(eid);
+            writer.writeVector3f(x, y, z);
+            writer.writeByte((byte) (this.pitch / (360d / 256d)));
+            writer.writeByte((byte) (this.headYaw / (360d / 256d)));
+            writer.writeByte((byte) (this.yaw / (360d / 256d)));
             this.setData(bos.toByteArray());
         } catch (IOException e) {
         }
@@ -55,18 +55,6 @@ public class MoveEntitiesPacket extends PEPacket {
 
     @Override
     public void decode() {
-    }
-
-    @Data
-    public static class MoveEntityData {
-
-        public long eid;
-        public float x;
-        public float y;
-        public float z;
-        public float yaw;
-        public float headYaw;
-        public float pitch;
     }
 
 }

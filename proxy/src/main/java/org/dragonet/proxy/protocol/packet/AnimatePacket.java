@@ -19,7 +19,7 @@ import org.dragonet.proxy.utilities.io.PEBinaryWriter;
 
 public class AnimatePacket extends PEPacket {
 
-    public byte action;
+    public int action;
     public long eid;
 
     @Override
@@ -34,7 +34,7 @@ public class AnimatePacket extends PEPacket {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
-            writer.writeByte(action);
+            writer.writeVarInt(action);
             writer.writeLong(eid);
             this.setData(bos.toByteArray());
         } catch (IOException e) {

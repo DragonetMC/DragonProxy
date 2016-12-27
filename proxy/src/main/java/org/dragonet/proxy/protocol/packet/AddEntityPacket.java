@@ -17,6 +17,7 @@ import java.io.IOException;
 import lombok.Data;
 import org.dragonet.proxy.entity.meta.EntityMetaData;
 import org.dragonet.proxy.protocol.inf.mcpe.NetworkChannel;
+import org.dragonet.proxy.utilities.VarInt;
 import org.dragonet.proxy.utilities.io.PEBinaryWriter;
 
 public class AddEntityPacket extends PEPacket {
@@ -29,13 +30,14 @@ public class AddEntityPacket extends PEPacket {
         public byte flag;
 
         public void writeTo(PEBinaryWriter writer) throws IOException {
-            writer.writeLong(eid1);
-            writer.writeLong(eid2);
+            writer.writeVarLong(eid1);
+            writer.writeVarLong(eid2);
             writer.writeByte(flag);
         }
     }
 
     public long eid;
+    public long rtid;
     public int type;
     public float x;
     public float y;
@@ -45,6 +47,7 @@ public class AddEntityPacket extends PEPacket {
     public float speedZ;
     public float yaw;
     public float pitch;
+    public int modifiers;
     public EntityMetaData meta;
     public EntityLink[] links;
 
@@ -61,17 +64,17 @@ public class AddEntityPacket extends PEPacket {
             PEBinaryWriter writer = new PEBinaryWriter(bos);
             writer.writeByte((byte) (this.pid() & 0xFF));
             writer.writeLong(eid);
-            writer.writeInt(type);
-            writer.writeFloat(x);
-            writer.writeFloat(y);
-            writer.writeFloat(z);
-            writer.writeFloat(speedX);
-            writer.writeFloat(speedY);
-            writer.writeFloat(speedZ);
+            writer.writeLong(rtid);
+            writer.writeUnsignedVarInt(type);
+            writer.writeVector3f(x, y, z);
+            writer.writeVector3f(speedX, speedY, speedZ);
+            writer.switchEndianness(); // enter LE
             writer.writeFloat(yaw);
             writer.writeFloat(pitch);
+            writer.writeUnsignedVarInt(modifiers);
+            writer.switchEndianness();  // out of LE
             writer.write(this.meta.encode());
-            writer.writeShort((short) (this.links == null ? 0 : this.links.length));
+            writer.writeUnsignedVarInt(this.links == null ? 0 : this.links.length);
             if (this.links != null) {
                 for (EntityLink link : links) {
                     link.writeTo(writer);

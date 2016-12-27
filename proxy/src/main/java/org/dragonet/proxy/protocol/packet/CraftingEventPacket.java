@@ -45,10 +45,10 @@ public class CraftingEventPacket extends PEPacket {
             PEBinaryReader reader = new PEBinaryReader(new ByteArrayInputStream(this.getData()));
             reader.readByte();
             this.windowId = reader.readByte();
-            this.craftType = reader.readInt();
+            this.craftType = reader.readUnsignedVarInt();
             this.uuid = reader.readUUID();
 
-            int size = reader.readInt();
+            int size = reader.readUnsignedVarInt();
             input = new PEInventorySlot[size > 128 ? 128 : size];
             for (int i = 0; i < size; i++) {
                 input[i] = PEInventorySlot.readSlot(reader);

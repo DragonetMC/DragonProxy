@@ -114,12 +114,12 @@ public class RaknetInterface implements ServerInstance {
         }
         
         //Debug
-        /*
+
         System.out.println("Sending [" + packet.getClass().getSimpleName() + "] after 2 seconds... ");
         try{
             Thread.sleep(2000L);
         }catch(Exception e){}
-        */
+
         
         boolean overridedImmediate = immediate || packet.isShouldSendImmidate();
         packet.encode();

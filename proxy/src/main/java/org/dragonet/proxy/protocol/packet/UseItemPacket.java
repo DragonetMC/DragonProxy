@@ -50,17 +50,14 @@ public class UseItemPacket extends PEPacket {
         try {
             PEBinaryReader reader = new PEBinaryReader(new ByteArrayInputStream(this.getData()));
             reader.readByte(); //PID
-            this.x = reader.readInt();
-            this.y = reader.readInt();
-            this.z = reader.readInt();
-            this.face = reader.readByte() & 0xFF;
-            this.fx = reader.readFloat();
-            this.fy = reader.readFloat();
-            this.fz = reader.readFloat();
-            this.posX = reader.readFloat();
-            this.posY = reader.readFloat();
-            this.posZ = reader.readFloat();
-            this.slot = reader.readInt();
+            int[] bpos = reader.readBlockCoords();
+            x = bpos[0]; y = bpos[1]; z = bpos[2];
+            this.face = reader.readVarInt();
+            float[] fv = reader.readVector3f();
+            fx = fv[0]; fy = fv[1]; fz = fv[2];
+            float[] fpos = reader.readVector3f();
+            posX = fpos[0]; posY = fpos[1]; posZ = fpos[2];
+            this.slot = reader.readByte() & 0xFF; // NOT 100% sure for this field
             this.item = PEInventorySlot.readSlot(reader);
         } catch (IOException e) {
         }

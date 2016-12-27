@@ -23,15 +23,7 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import lombok.Getter;
-import org.dragonet.proxy.protocol.packet.BatchPacket;
-import org.dragonet.proxy.protocol.packet.ChatPacket;
-import org.dragonet.proxy.protocol.packet.LoginPacket;
-import org.dragonet.proxy.protocol.packet.LoginStatusPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
-import org.dragonet.proxy.protocol.packet.RemoveEntityPacket;
-import org.dragonet.proxy.protocol.packet.SetSpawnPositionPacket;
-import org.dragonet.proxy.protocol.packet.StartGamePacket;
-import org.dragonet.proxy.protocol.packet.UpdateBlockPacket;
+import org.dragonet.proxy.protocol.packet.*;
 import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.PocketServer;
@@ -181,7 +173,9 @@ public class UpstreamSession {
         }
         status.status = LoginStatusPacket.LOGIN_SUCCESS;
         sendPacket(status, true);
-        
+
+        sendPacket(new ResourcePackInfoPacket(), true);
+
         this.username = packet.username;
         proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, username, remoteAddress));
         if (proxy.getAuthMode().equals("online")) {
@@ -333,14 +327,12 @@ public class UpstreamSession {
 
     public void sendFakeBlock(int x, int y, int z, int id, int meta) {
         UpdateBlockPacket pkBlock = new UpdateBlockPacket();
-        UpdateBlockPacket.UpdateBlockRecord rec = new UpdateBlockPacket.UpdateBlockRecord();
-        rec.flags = UpdateBlockPacket.FLAG_ALL;
-        rec.x = x;
-        rec.y = (byte) (y & 0xFF);
-        rec.z = z;
-        rec.block = (byte) (id & 0xFF);
-        rec.meta = (byte) (meta & 0xFF);
-        pkBlock.records = new UpdateBlockPacket.UpdateBlockRecord[]{rec};
+        pkBlock.flags = UpdateBlockPacket.FLAG_ALL;
+        pkBlock.x = x;
+        pkBlock.y = (byte) (y & 0xFF);
+        pkBlock.z = z;
+        pkBlock.block = (byte) (id & 0xFF);
+        pkBlock.meta = (byte) (meta & 0xFF);
         sendPacket(pkBlock, true);
     }
 
