@@ -26,29 +26,6 @@ public class PEChatPacketTranslator implements PEPacketTranslator<TextPacket> {
 
     @Override
     public Packet[] translate(UpstreamSession session, TextPacket packet) {
-        if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE) != null) {
-            if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE).equals("email")) {
-                if (!PatternChecker.matchEmail(packet.message.trim())) {
-                    session.sendChat(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
-                    session.disconnect(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
-                    return null;
-                }
-                session.getDataCache().put(CacheKey.AUTHENTICATION_EMAIL, packet.message.trim());
-                session.getDataCache().put(CacheKey.AUTHENTICATION_STATE, "password");
-                session.sendChat(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_PASSWORD));
-            } else if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE).equals("password")) {
-                if (session.getDataCache().get(CacheKey.AUTHENTICATION_EMAIL) == null || packet.message.equals(" ")) {
-                    session.sendChat(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
-                    session.disconnect(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
-                    return null;
-                }
-                session.sendChat(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_LOGGIN_IN));
-                session.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
-                session.authenticate(packet.message); //We NEVER cache password for better security. 
-            }
-            return null;
-        }
-
         ClientChatPacket pk = new ClientChatPacket(packet.message);
         return new Packet[]{pk};
     }
