@@ -50,18 +50,19 @@ public class RaknetInterface implements ServerInstance {
         sessions = this.proxy.getSessionRegister();
     }
 
-    public void setBroadcastName(String serverName, int players, int maxPlayers) {
+    public void setBroadcastName() {
         String name = "MCPE;";
-        name += serverName + ";";
+        name += proxy.getConfig().getMotd() + ";";
         name += Versioning.MINECRAFT_PE_PROTOCOL + ";";
         name += Versioning.MINECRAFT_PE_VERSION + ";";
-        name += players + ";" + maxPlayers;
+        name += sessions.getOnlineCount() + ";" + proxy.getConfig().getMax_players();
         if (handler != null) {
             handler.sendOption("name", name);
         }
     }
 
     public void onTick() {
+    	setBroadcastName();
         while (handler.handlePacket()) {
         }
     }
@@ -70,6 +71,7 @@ public class RaknetInterface implements ServerInstance {
     public void openSession(String identifier, String address, int port, long clientID) {
         UpstreamSession session = new UpstreamSession(proxy, identifier, new InetSocketAddress(address, port));
         sessions.newSession(session);
+        setBroadcastName();
     }
 
     @Override
@@ -79,6 +81,7 @@ public class RaknetInterface implements ServerInstance {
             return;
         }
         session.onDisconnect(proxy.getLang().get(Lang.MESSAGE_CLIENT_DISCONNECT)); //It will handle rest of the things. 
+        setBroadcastName();
     }
 
     @Override
@@ -119,8 +122,11 @@ public class RaknetInterface implements ServerInstance {
         //Debug
 
         System.out.println("Sending [" + packet.getClass().getSimpleName() + "] after 2 seconds... ");
+        if(packet.getClass().getSimpleName().contains("Chunk")){
+        	System.out.print("");
+        }
         try{
-            Thread.sleep(2000L);
+            //Thread.sleep(2000L);
         }catch(Exception e){}
 
         

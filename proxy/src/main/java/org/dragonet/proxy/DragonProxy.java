@@ -84,7 +84,6 @@ public class DragonProxy {
 
     public void run(String[] args) {
         logger = new Logger(this);
-
         // Load config.yml 
 
         try {
@@ -188,7 +187,7 @@ public class DragonProxy {
         motd = config.getMotd();
         motd = motd.replace("&", "§");
 
-        network.setBroadcastName(motd, -1, -1);
+        network.setBroadcastName();
         ticker.start();
         logger.info(lang.get(Lang.INIT_DONE));
     }
