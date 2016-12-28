@@ -20,13 +20,80 @@ import java.util.List;
 
 import lombok.Getter;
 
+import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.protocol.Protocol;
+import org.dragonet.proxy.utilities.PatternChecker;
 import org.spacehq.packetlib.packet.Packet;
 
+import cn.nukkit.Server;
+import cn.nukkit.network.protocol.AddEntityPacket;
+import cn.nukkit.network.protocol.AddHangingEntityPacket;
+import cn.nukkit.network.protocol.AddItemEntityPacket;
+import cn.nukkit.network.protocol.AddItemPacket;
+import cn.nukkit.network.protocol.AddPaintingPacket;
+import cn.nukkit.network.protocol.AddPlayerPacket;
+import cn.nukkit.network.protocol.AdventureSettingsPacket;
+import cn.nukkit.network.protocol.AnimatePacket;
+import cn.nukkit.network.protocol.AvailableCommandsPacket;
 import cn.nukkit.network.protocol.BatchPacket;
+import cn.nukkit.network.protocol.BlockEntityDataPacket;
+import cn.nukkit.network.protocol.BlockEventPacket;
+import cn.nukkit.network.protocol.BossEventPacket;
+import cn.nukkit.network.protocol.ChangeDimensionPacket;
+import cn.nukkit.network.protocol.ChunkRadiusUpdatedPacket;
+import cn.nukkit.network.protocol.CommandStepPacket;
+import cn.nukkit.network.protocol.ContainerClosePacket;
+import cn.nukkit.network.protocol.ContainerOpenPacket;
+import cn.nukkit.network.protocol.ContainerSetContentPacket;
+import cn.nukkit.network.protocol.ContainerSetDataPacket;
+import cn.nukkit.network.protocol.ContainerSetSlotPacket;
+import cn.nukkit.network.protocol.CraftingDataPacket;
+import cn.nukkit.network.protocol.CraftingEventPacket;
 import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.DisconnectPacket;
+import cn.nukkit.network.protocol.DropItemPacket;
+import cn.nukkit.network.protocol.EntityEventPacket;
+import cn.nukkit.network.protocol.ExplodePacket;
+import cn.nukkit.network.protocol.FullChunkDataPacket;
+import cn.nukkit.network.protocol.GameRulesChangedPacket;
+import cn.nukkit.network.protocol.HurtArmorPacket;
+import cn.nukkit.network.protocol.InteractPacket;
+import cn.nukkit.network.protocol.InventoryActionPacket;
+import cn.nukkit.network.protocol.ItemFrameDropItemPacket;
+import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.LoginPacket;
+import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
+import cn.nukkit.network.protocol.MobEquipmentPacket;
+import cn.nukkit.network.protocol.MoveEntityPacket;
+import cn.nukkit.network.protocol.MovePlayerPacket;
+import cn.nukkit.network.protocol.PlayStatusPacket;
+import cn.nukkit.network.protocol.PlayerActionPacket;
+import cn.nukkit.network.protocol.PlayerInputPacket;
+import cn.nukkit.network.protocol.PlayerListPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.network.protocol.RemoveBlockPacket;
+import cn.nukkit.network.protocol.RemoveEntityPacket;
+import cn.nukkit.network.protocol.ReplaceSelectedItemPacket;
+import cn.nukkit.network.protocol.RequestChunkRadiusPacket;
+import cn.nukkit.network.protocol.ResourcePackClientResponsePacket;
+import cn.nukkit.network.protocol.ResourcePacksInfoPacket;
+import cn.nukkit.network.protocol.RespawnPacket;
+import cn.nukkit.network.protocol.SetCommandsEnabledPacket;
+import cn.nukkit.network.protocol.SetDifficultyPacket;
+import cn.nukkit.network.protocol.SetEntityDataPacket;
+import cn.nukkit.network.protocol.SetEntityLinkPacket;
+import cn.nukkit.network.protocol.SetEntityMotionPacket;
+import cn.nukkit.network.protocol.SetHealthPacket;
+import cn.nukkit.network.protocol.SetPlayerGameTypePacket;
+import cn.nukkit.network.protocol.SetSpawnPositionPacket;
+import cn.nukkit.network.protocol.SetTimePacket;
+import cn.nukkit.network.protocol.SpawnExperienceOrbPacket;
+import cn.nukkit.network.protocol.StartGamePacket;
+import cn.nukkit.network.protocol.TakeItemEntityPacket;
+import cn.nukkit.network.protocol.TextPacket;
+import cn.nukkit.network.protocol.UpdateBlockPacket;
+import cn.nukkit.network.protocol.UseItemPacket;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.Zlib;
@@ -54,96 +121,57 @@ public class PEPacketProcessor implements Runnable {
         while (cnt < MAX_PACKETS_PER_CYCLE && !packets.isEmpty()) {
             cnt++;
             byte[] bin = packets.pop();
-            DataPacket packet = Protocol.decode(bin);
-            if (packet == null) {
+            DataPacket[] packets = Protocol.decode(bin);
+            if (packets == null || packets.length < 1) {
                 continue;
             }
-            handlePacket(packet);
+            
+            for(DataPacket packet : packets){
+            	handlePacket(packet);
+            }
         }
     }
 
     public void handlePacket(DataPacket packet) {
-        if (packet == null) {
-            return;
-        }
-
-        if (BatchPacket.class.isAssignableFrom(packet.getClass())) {
-            //((BatchPacket) packet).packets.stream().filter((pk) -> !(pk == null)).forEach((pk) -> {
-            //    handlePacket(pk);
-            //});
-        	System.err.println("Batch packet 2");
-        	BatchPacket pack = (BatchPacket) packet;
-        	
-        	//pack.setBuffer(pack.payload, 1);
-        	pack.decode();
-        	
-        	for(DataPacket pk : processBatch(pack)){
+        if (packet != null) {
+            if(packet.pid() == ProtocolInfo.LOGIN_PACKET){
                 try {
-                	handlePacket(pk);
+                	client.onLogin((LoginPacket) packet);
                 } catch (Exception e){
                 	e.printStackTrace();
                 }
-        	}
-
-            return;
-        }
-        
-        switch (packet.pid()) {
-            case ProtocolInfo.LOGIN_PACKET:
-                client.onLogin((LoginPacket) packet);
-                break;
-            case ProtocolInfo.TEXT_PACKET:  //Login
-                if (client.getDataCache().get(CacheKey.AUTHENTICATION_STATE) != null) {
-                    PacketTranslatorRegister.translateToPC(client, packet);
-                    break;
-                }
-            default:
-                if (client.getDownstream() == null) {
-                    break;
-                }
-                if (!client.getDownstream().isConnected()) {
-                    break;
-                }
-                Packet[] translated = PacketTranslatorRegister.translateToPC(client, packet);
-                if (translated == null || translated.length == 0) {
-                    break;
-                }
-                client.getDownstream().send(translated);
-                break;
-        }
-    }
-    
-    private List<DataPacket> processBatch(BatchPacket packet) {
-        byte[] data;
-        try {
-            data = Zlib.inflate(packet.payload, 64 * 1024 * 1024);
-        } catch (Exception e) {
-        	e.printStackTrace();
-            return Collections.EMPTY_LIST;
-        }
-
-        int len = data.length;
-        BinaryStream stream = new BinaryStream(data);
-        try {
-            List<DataPacket> packets = new ArrayList<>();
-            while (stream.offset < len) {
-                byte[] buf = stream.getByteArray();
-
-                DataPacket pk;
-                if ((pk = Protocol.decode(buf)) != null) {
-                    if (pk.pid() == ProtocolInfo.BATCH_PACKET) {
-                        throw new IllegalStateException("Invalid BatchPacket inside BatchPacket");
-                    }
-                    packets.add(pk);
-                }
+                return;
             }
-            return packets;
-
-        } catch (Exception e) {
-            System.err.println("BatchPacket 0x" + Binary.bytesToHexString(packet.payload));
-            e.printStackTrace();
+        
+	        if(packet.pid() == ProtocolInfo.TEXT_PACKET && client.getDataCache().get(CacheKey.AUTHENTICATION_STATE) != null){
+	        	TextPacket pack = (TextPacket) packet;
+	            if (client.getDataCache().get(CacheKey.AUTHENTICATION_STATE).equals("email")) {
+	                if (!PatternChecker.matchEmail(pack.message.trim())) {
+	                	
+	                    client.sendChat(client.getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
+	                    client.disconnect(client.getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
+	                    return;
+	                }
+	                client.getDataCache().put(CacheKey.AUTHENTICATION_EMAIL, pack.message.trim());
+	                client.getDataCache().put(CacheKey.AUTHENTICATION_STATE, "password");
+	                client.sendChat(client.getProxy().getLang().get(Lang.MESSAGE_ONLINE_PASSWORD));
+	            } else if (client.getDataCache().get(CacheKey.AUTHENTICATION_STATE).equals("password")) {
+	                if (client.getDataCache().get(CacheKey.AUTHENTICATION_EMAIL) == null || pack.message.equals(" ")) {
+	                    client.sendChat(client.getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
+	                    client.disconnect(client.getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
+	                    return;
+	                }
+	                client.sendChat(client.getProxy().getLang().get(Lang.MESSAGE_ONLINE_LOGGIN_IN));
+	                client.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
+	                client.authenticateOnlineMode(pack.message); //We NEVER cache password for better security. 
+	            }
+	            return;
+	        }
+	        
+	        Packet[] translated = PacketTranslatorRegister.translateToPC(client, packet);
+            if (translated != null && translated.length > 0 && client.getDownstream() != null && client.getDownstream().isConnected()) {
+                client.getDownstream().send(translated);
+            }
         }
-        return Collections.EMPTY_LIST;
     }
-
 }

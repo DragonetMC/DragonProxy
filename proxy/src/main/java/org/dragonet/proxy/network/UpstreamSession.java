@@ -12,12 +12,20 @@
  */
 package org.dragonet.proxy.network;
 
+import cn.nukkit.entity.data.EntityMetadata;
+import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.AdventureSettingsPacket;
 import cn.nukkit.network.protocol.BatchPacket;
+import cn.nukkit.network.protocol.ContainerSetContentPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.LoginPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.network.protocol.ResourcePacksInfoPacket;
+import cn.nukkit.network.protocol.RespawnPacket;
+import cn.nukkit.network.protocol.SetCommandsEnabledPacket;
+import cn.nukkit.network.protocol.SetEntityDataPacket;
 import cn.nukkit.network.protocol.SetSpawnPositionPacket;
+import cn.nukkit.network.protocol.SetTimePacket;
 import cn.nukkit.network.protocol.StartGamePacket;
 import cn.nukkit.network.protocol.TextPacket;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
@@ -107,6 +115,8 @@ public class UpstreamSession {
         packetProcessorScheule = proxy.getGeneralThreadPool().scheduleAtFixedRate(packetProcessor, 10, 50, TimeUnit.MILLISECONDS);
     }
 
+    
+    
     public void sendPacket(DataPacket packet) {
         sendPacket(packet, false);
     }
@@ -138,21 +148,86 @@ public class UpstreamSession {
         }
     }
 
+    public void sendChat(String chat) {
+        if (chat.contains("\n")) {
+            String[] lines = chat.split("\n");
+            for (String line : lines) {
+                sendChat(line);
+            }
+            return;
+        }
+        TextPacket pk = new TextPacket();
+        pk.type = TextPacket.TYPE_SYSTEM;
+        pk.source = "";
+        pk.message = chat;
+        sendPacket(pk, true);
+    }
+
+    public void sendPopup(String text) {
+        TextPacket pk = new TextPacket();
+        pk.type = TextPacket.TYPE_POPUP;
+        pk.source = "";
+        pk.message = text;
+        sendPacket(pk, true);
+    }
+
+    public void sendFakeBlock(int x, int y, int z, int id, int meta) {
+        UpdateBlockPacket pkBlock = new UpdateBlockPacket();
+        pkBlock.flags = UpdateBlockPacket.FLAG_ALL;
+        pkBlock.x = x;
+        pkBlock.y = (byte) (y & 0xFF);
+        pkBlock.z = z;
+        pkBlock.blockId = (byte) (id & 0xFF);
+        pkBlock.blockData = (byte) (meta & 0xFF);
+        sendPacket(pkBlock, true);
+    }
+
+    
+    
+    public void onLogin(LoginPacket packet) {
+        if (username != null) {
+            disconnect("Already logged in, this must be an error! ");
+            return;
+        }
+
+        PlayStatusPacket status = new PlayStatusPacket(); // Required; Tells the client that his connection was accepted or denied
+        if (packet.protocol != Versioning.MINECRAFT_PE_PROTOCOL) {
+            status.status = PlayStatusPacket.LOGIN_FAILED_CLIENT;
+            sendPacket(status, true);
+            disconnect(proxy.getLang().get(Lang.MESSAGE_UNSUPPORTED_CLIENT));
+            return;
+        }
+        status.status = PlayStatusPacket.LOGIN_SUCCESS;
+        sendPacket(status, true);
+
+        minimalClientHandshake();
+
+        this.username = packet.username;
+        proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, username, remoteAddress));
+        
+        switch(proxy.getAuthMode()){
+        case "online":
+            dataCache.put(CacheKey.AUTHENTICATION_STATE, "email");
+
+            sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_NOTICE, username));
+            sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_EMAIL));
+            break;
+        case "cls":
+        	authenticateCLSMode();
+            break;
+        case "offline":
+            protocol = new MinecraftProtocol(username);
+
+            proxy.getLogger().debug("Initially joining [" + proxy.getConfig().getDefault_server() + "]... ");
+            connectToServer(proxy.getConfig().getRemote_servers().get(proxy.getConfig().getDefault_server()));
+            break;
+        }
+    }
+    
     public void onTick() {
         entityCache.onTick();
         if(downstream != null)
             downstream.onTick();
-    }
-
-    /**
-     * Disconnected from server. 
-     * @param reason 
-     */
-    public void disconnect(String reason) {
-        if(!connecting) {
-            proxy.getNetwork().closeSession(raknetID, reason);
-            //RakNet server will call onDisconnect()
-        }
     }
 
     /**
@@ -169,109 +244,23 @@ public class UpstreamSession {
         packetProcessorScheule.cancel(true);
     }
 
+    public void onConnected() {
+        connecting = false;
+    }
+    
+    /**
+     * Disconnected from server. 
+     * @param reason 
+     */
+    public void disconnect(String reason) {
+        if(!connecting) {
+            proxy.getNetwork().closeSession(raknetID, reason);
+            //RakNet server will call onDisconnect()
+        }
+    }
+    
     public void handlePacketBinary(EncapsulatedPacket packet) {
         packetProcessor.putPacket(packet.buffer);
-    }
-
-    public void onLogin(LoginPacket packet) {
-        if (username != null) {
-            disconnect("Already logged in, this must be an error! ");
-            return;
-        }
-
-        PlayStatusPacket status = new PlayStatusPacket();
-        if (packet.protocol != Versioning.MINECRAFT_PE_PROTOCOL) {
-            status.status = PlayStatusPacket.LOGIN_FAILED_CLIENT;
-            sendPacket(status, true);
-            disconnect(proxy.getLang().get(Lang.MESSAGE_UNSUPPORTED_CLIENT));
-            return;
-        }
-        status.status = PlayStatusPacket.LOGIN_SUCCESS;
-        sendPacket(status, true);
-
-        sendPacket(new ResourcePacksInfoPacket(), true);
-
-        this.username = packet.username;
-        proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, username, remoteAddress));
-        if (proxy.getAuthMode().equals("online")) {
-            StartGamePacket pkStartGame = new StartGamePacket();
-            pkStartGame.entityRuntimeId = 0; //Use EID 0 for eaisier management
-            pkStartGame.dimension = (byte) 0;
-            pkStartGame.seed = 0;
-            pkStartGame.generator = 1;
-            pkStartGame.spawnX = 0;
-            pkStartGame.spawnY = 0;
-            pkStartGame.spawnZ = 0;
-            pkStartGame.x = 0.0f;
-            pkStartGame.y = 72.0f;
-            pkStartGame.z = 0.0f;
-            sendPacket(pkStartGame, true);
-
-            SetSpawnPositionPacket pkSpawn = new SetSpawnPositionPacket();
-            pkSpawn.x = 0;
-            pkSpawn.y = 72;
-            pkSpawn.z = 0;
-            sendPacket(pkSpawn, true);
-
-            PlayStatusPacket pkStat = new PlayStatusPacket();
-            pkStat.status = PlayStatusPacket.PLAYER_SPAWN;
-            sendPacket(pkStat, true);
-
-            dataCache.put(CacheKey.AUTHENTICATION_STATE, "email");
-
-            sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_NOTICE, username));
-            sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_EMAIL));
-        } else if (proxy.getAuthMode().equals("cls")) {
-            //CLS LOGIN! 
-            if ((username.length() < 6 + 1 + 1) || (!username.contains("_"))) {
-                sendStartGameAndDisconnect(proxy.getLang().get(Lang.MESSAGE_CLS_NOTICE));
-                return;
-            }
-            String name = username.substring(0, username.length() - 7);
-            String keyCode = username.substring(username.length() - 6);
-            String resp = HTTP.performGetRequest("http://api.dragonet.org/cls/query_token.php?" + String.format("username=%s&keycode=%s", name, keyCode));
-            if (resp == null) {
-                sendStartGameAndDisconnect(proxy.getLang().get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_UNREACHABLE)));
-                proxy.getLogger().severe(proxy.getLang().get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_UNREACHABLE)).replace("§c", "").replace("§0", ""));
-                return;
-            }
-            JsonElement json = null;
-            try{
-                JsonParser jsonParser = new JsonParser();
-                json = jsonParser.parse(resp);
-            }catch(Exception e){
-                sendStartGameAndDisconnect(proxy.getLang().get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_ERROR)));
-                proxy.getLogger().severe(proxy.getLang().get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_ERROR)).replace("§c", "").replace("§0", ""));
-                //Json parse error! 
-                return;
-            }
-            JsonObject obj = json.getAsJsonObject();
-            if(!obj.get("status").getAsString().equals("success")){
-                sendStartGameAndDisconnect(proxy.getLang().get(Lang.MESSAGE_CLS_NOTICE));
-                return;
-            }
-            AuthenticationService authSvc = new AuthenticationService(obj.get("client").getAsString());
-            authSvc.setUsername(obj.get("ign").getAsString());
-            authSvc.setAccessToken(obj.get("token").getAsString());
-            try {
-                authSvc.login();
-            } catch (RequestException ex) {
-                ex.printStackTrace();
-                sendStartGameAndDisconnect(proxy.getLang().get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_ERROR)));
-                return;
-            }
-            username = authSvc.getSelectedProfile().getName();
-            HTTP.performGetRequest("http://api.dragonet.org/cls/update_token.php?" + String.format("username=%s&oldtoken=%s&newtoken=%s", name, obj.get("token").getAsString(), authSvc.getAccessToken()));
-            protocol = new MinecraftProtocol(authSvc.getSelectedProfile(), authSvc.getAccessToken());
-
-            proxy.getLogger().debug("Initially joining [" + proxy.getConfig().getDefault_server() + "]... ");
-            connectToServer(proxy.getConfig().getRemote_servers().get(proxy.getConfig().getDefault_server()));
-        } else {
-            protocol = new MinecraftProtocol(username);
-
-            proxy.getLogger().debug("Initially joining [" + proxy.getConfig().getDefault_server() + "]... ");
-            connectToServer(proxy.getConfig().getRemote_servers().get(proxy.getConfig().getDefault_server()));
-        }
     }
     
     public void connectToServer(RemoteServer server){
@@ -304,57 +293,66 @@ public class UpstreamSession {
             ((PEDownstreamSession)downstream).connect((PocketServer) server);
         }
     }
-
+    
     public void sendStartGameAndDisconnect(String reason) {
-        StartGamePacket pkStartGame = new StartGamePacket();
-        pkStartGame.dimension = (byte) 1; //Login error so player in nether (Red screen)
-        pkStartGame.generator = 1;
-        pkStartGame.y = 72.0f;
-        sendPacket(pkStartGame, true);
-
-        PlayStatusPacket pkStat = new PlayStatusPacket();
-        pkStat.status = PlayStatusPacket.PLAYER_SPAWN;
-        sendPacket(pkStat, true);
+        //Login error so player in nether (Red screen)
+    	//TODO: Fix the "spawn in the nether for error" trick
 
         sendChat(reason);
         disconnect(reason);
     }
 
-    public void sendChat(String chat) {
-        if (chat.contains("\n")) {
-            String[] lines = chat.split("\n");
-            for (String line : lines) {
-                sendChat(line);
-            }
+
+
+    public void authenticateCLSMode(){
+        //CLS LOGIN! 
+        if ((username.length() < 6 + 1 + 1) || (!username.contains("_"))) {
+        	// Disconnect the player if their username can't possibly be a valid cls mode name
+            sendStartGameAndDisconnect(proxy.getLang().get(Lang.MESSAGE_CLS_NOTICE));
             return;
         }
-        TextPacket pk = new TextPacket();
-        pk.type = TextPacket.TYPE_CHAT;
-        pk.source = "";
-        pk.message = chat;
-        sendPacket(pk, true);
-    }
+        String name = username.substring(0, username.length() - 7);
+        String keyCode = username.substring(username.length() - 6);
+        String resp = HTTP.performGetRequest("http://api.dragonet.org/cls/query_token.php?" + String.format("username=%s&keycode=%s", name, keyCode));
+        if (resp == null) {
+            sendStartGameAndDisconnect(proxy.getLang().get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_UNREACHABLE)));
+            proxy.getLogger().severe(proxy.getLang().get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_UNREACHABLE)).replace("§c", "").replace("§0", ""));
+            return;
+        }
+        JsonElement json = null;
+        try{
+            JsonParser jsonParser = new JsonParser();
+            json = jsonParser.parse(resp);
+        }catch(Exception e){
+            sendStartGameAndDisconnect(proxy.getLang().get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_ERROR)));
+            proxy.getLogger().severe(proxy.getLang().get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_ERROR)).replace("§c", "").replace("§0", ""));
+            //Json parse error! 
+            return;
+        }
+        JsonObject obj = json.getAsJsonObject();
+        if(!obj.get("status").getAsString().equals("success")){
+            sendStartGameAndDisconnect(proxy.getLang().get(Lang.MESSAGE_CLS_NOTICE));
+            return;
+        }
+        AuthenticationService authSvc = new AuthenticationService(obj.get("client").getAsString());
+        authSvc.setUsername(obj.get("ign").getAsString());
+        authSvc.setAccessToken(obj.get("token").getAsString());
+        try {
+            authSvc.login();
+        } catch (RequestException ex) {
+            ex.printStackTrace();
+            sendStartGameAndDisconnect(proxy.getLang().get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_ERROR)));
+            return;
+        }
+        username = authSvc.getSelectedProfile().getName();
+        HTTP.performGetRequest("http://api.dragonet.org/cls/update_token.php?" + String.format("username=%s&oldtoken=%s&newtoken=%s", name, obj.get("token").getAsString(), authSvc.getAccessToken()));
+        protocol = new MinecraftProtocol(authSvc.getSelectedProfile(), authSvc.getAccessToken());
 
-    public void sendPopup(String text) {
-        TextPacket pk = new TextPacket();
-        pk.type = TextPacket.TYPE_POPUP;
-        pk.source = "";
-        pk.message = text;
-        sendPacket(pk, true);
+        proxy.getLogger().debug("Initially joining [" + proxy.getConfig().getDefault_server() + "]... ");
+        connectToServer(proxy.getConfig().getRemote_servers().get(proxy.getConfig().getDefault_server()));
     }
-
-    public void sendFakeBlock(int x, int y, int z, int id, int meta) {
-        UpdateBlockPacket pkBlock = new UpdateBlockPacket();
-        pkBlock.flags = UpdateBlockPacket.FLAG_ALL;
-        pkBlock.x = x;
-        pkBlock.y = (byte) (y & 0xFF);
-        pkBlock.z = z;
-        pkBlock.blockId = (byte) (id & 0xFF);
-        pkBlock.blockData = (byte) (meta & 0xFF);
-        sendPacket(pkBlock, true);
-    }
-
-    public void authenticate(String password) {
+    
+    public void authenticateOnlineMode(String password) {
         proxy.getGeneralThreadPool().execute(() -> {
             try {
                 protocol = new MinecraftProtocol((String) dataCache.get(CacheKey.AUTHENTICATION_EMAIL), password, false);
@@ -382,7 +380,70 @@ public class UpstreamSession {
         });
     }
     
-    public void onConnected() {
-        connecting = false;
+    private void minimalClientHandshake(){
+        sendPacket(new ResourcePacksInfoPacket(), true); // Required; Causes the client to switch to the "locating server" screen
+        
+        StartGamePacket startGamePacket = new StartGamePacket(); // Required; Makes the client switch to the "generating world" screen
+        startGamePacket.entityUniqueId = 0;
+        startGamePacket.entityRuntimeId = 0;
+        startGamePacket.x = (float) 0.0;
+        startGamePacket.y = (float) 0.0;
+        startGamePacket.z = (float) 0.0;
+        startGamePacket.seed = -1;
+        startGamePacket.dimension = (byte) (0 & 0xff);
+        startGamePacket.gamemode = 1 & 0x01;
+        startGamePacket.difficulty = 1;
+        startGamePacket.spawnX = (int) 0.0;
+        startGamePacket.spawnY = (int) 128;
+        startGamePacket.spawnZ = (int) 0.0;
+        startGamePacket.hasAchievementsDisabled = true;
+        startGamePacket.dayCycleStopTime = -1;
+        startGamePacket.eduMode = false;
+        startGamePacket.rainLevel = 0;
+        startGamePacket.lightningLevel = 0;
+        startGamePacket.commandsEnabled = true;
+        startGamePacket.levelId = "";
+        startGamePacket.worldName = ""; // Must not be null or a NullPointerException will occur
+        startGamePacket.generator = 1; //0 old, 1 infinite, 2 flat
+        sendPacket(startGamePacket, true);
+
+/*        SetTimePacket setTimePacket = new SetTimePacket();
+        setTimePacket.time = 1000;
+        setTimePacket.started = false;
+        sendPacket(setTimePacket, true);*/
+        
+/*        ContainerSetContentPacket containerSetContentPacket = new ContainerSetContentPacket();
+        containerSetContentPacket.windowid = ContainerSetContentPacket.SPECIAL_CREATIVE;
+        containerSetContentPacket.slots = Item.getCreativeItems().stream().toArray(Item[]::new);
+        sendPacket(containerSetContentPacket, true);*/
+        
+/*        SetCommandsEnabledPacket pk = new SetCommandsEnabledPacket();
+        pk.enabled = true;
+        sendPacket(pk, true);*/
+                
+/*        AdventureSettingsPacket pkAdventureSettings = new AdventureSettingsPacket();
+        pkAdventureSettings.allowFlight = true;
+        pkAdventureSettings.isFlying = true;
+        pkAdventureSettings.flags = 4;
+        sendPacket(pkAdventureSettings, true);*/
+        
+/*        SetEntityDataPacket pkEntityData = new SetEntityDataPacket();
+        pkEntityData.eid = 0;
+        pkEntityData.metadata = new EntityMetadata();
+        sendPacket(pkEntityData, true);*/
+        
+/*        RespawnPacket pkResp = new RespawnPacket();
+        pkResp.y = 72F;
+        sendPacket(pkResp, false);*/
+
+/*        SetSpawnPositionPacket pkSpawn = new SetSpawnPositionPacket();
+        pkSpawn.x = 0;
+        pkSpawn.y = 72;
+        pkSpawn.z = 0;
+        sendPacket(pkSpawn, true);*/
+
+        PlayStatusPacket pkStat = new PlayStatusPacket(); //Required; Spawns the client in the world and closes the loading screen
+        pkStat.status = PlayStatusPacket.PLAYER_SPAWN;
+        sendPacket(pkStat, true);
     }
 }
