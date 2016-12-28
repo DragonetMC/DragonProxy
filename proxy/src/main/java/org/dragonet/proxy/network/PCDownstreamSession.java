@@ -23,7 +23,9 @@ import org.spacehq.mc.protocol.packet.ingame.client.ClientChatPacket;
 import org.spacehq.packetlib.Client;
 import org.spacehq.packetlib.event.session.ConnectedEvent;
 import org.spacehq.packetlib.event.session.DisconnectedEvent;
+import org.spacehq.packetlib.event.session.DisconnectingEvent;
 import org.spacehq.packetlib.event.session.PacketReceivedEvent;
+import org.spacehq.packetlib.event.session.PacketSentEvent;
 import org.spacehq.packetlib.event.session.SessionAdapter;
 import org.spacehq.packetlib.packet.Packet;
 import org.spacehq.packetlib.tcp.TcpSessionFactory;
@@ -94,6 +96,9 @@ public class PCDownstreamSession implements DownstreamSession<Packet> {
 
             @Override
             public void disconnected(DisconnectedEvent event) {
+            	System.out.println("Disconnected Client " + event.getSession().getHost() + ":" + event.getSession().getPort() + " for reason " + event.getReason());
+            	event.getCause().printStackTrace();
+            	Thread.dumpStack();
                 upstream.disconnect(proxy.getLang().get(event.getReason()));
             }
 
@@ -124,6 +129,18 @@ public class PCDownstreamSession implements DownstreamSession<Packet> {
                     e.printStackTrace();
                     throw e;
                 }
+            }
+            
+            @Override
+            public void packetSent(PacketSentEvent event) {
+            	System.out.println("PC Sending Packet: " + event.getPacket().toString());
+            }
+            
+            @Override
+            public void disconnecting(DisconnectingEvent event) {
+            	System.out.println("Disconnecting Client " + event.getSession().getHost() + ":" + event.getSession().getPort() + " for reason " + event.getReason());
+            	event.getCause().printStackTrace();
+            	Thread.dumpStack();
             }
         });
         remoteClient.getSession().connect();

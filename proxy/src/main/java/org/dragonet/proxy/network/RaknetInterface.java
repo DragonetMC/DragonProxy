@@ -121,13 +121,10 @@ public class RaknetInterface implements ServerInstance {
         
         //Debug
 
-        System.out.println("Sending [" + packet.getClass().getSimpleName() + "] after 2 seconds... ");
-        if(packet.getClass().getSimpleName().contains("Chunk")){
-        	System.out.print("");
-        }
-        try{
-            //Thread.sleep(2000L);
-        }catch(Exception e){}
+/*        try{
+            Thread.sleep(2000L);
+        }catch(Exception e){}*/
+        System.out.println("Sending [" + packet.getClass().getSimpleName() + "] ");
 
         
         boolean overridedImmediate = immediate || false; /*packet.isShouldSendImmidate();*/

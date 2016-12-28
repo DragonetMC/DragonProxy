@@ -35,7 +35,11 @@ public class PEUseItemPacketTranslator implements PEPacketTranslator<UseItemPack
             return new Packet[]{pk};
         }
         ItemStack pcItem = ItemBlockTranslator.translateToPC(packet.item);
-        ClientPlayerPlaceBlockPacket pk = new ClientPlayerPlaceBlockPacket(new Position(packet.x, packet.y, packet.z), MagicValues.key(Face.class, packet.face), pcItem, 0.5f, 0.5f, 0.5f);
+        Face magic = MagicValues.key(Face.class, packet.face);
+        if(magic == null){
+        	magic = Face.TOP;
+        }
+        ClientPlayerPlaceBlockPacket pk = new ClientPlayerPlaceBlockPacket(new Position(packet.x, packet.y, packet.z), magic, pcItem, 0.5f, 0.5f, 0.5f);
         return new Packet[]{pk};
     }
 

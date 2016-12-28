@@ -122,12 +122,14 @@ public class PEDownstreamSession implements DownstreamSession<DataPacket>, Clien
         connected = true;
         
         LoginPacket pkLogin = new LoginPacket();
-        pkLogin.clientId = client.getId();
-        pkLogin.clientUUID = UUID.nameUUIDFromBytes(("DragonProxyPlayer:" + upstream.getUsername()).getBytes());
+        pkLogin.clientId = serverId; //client.getId();
+        pkLogin.clientUUID = UUID.randomUUID(); //UUID.nameUUIDFromBytes(("DragonProxyPlayer:" + upstream.getUsername()).getBytes());
         pkLogin.protocol = Versioning.MINECRAFT_PE_PROTOCOL;
         pkLogin.serverAddress = "0.0.0.0:0";
         pkLogin.username = upstream.getUsername();
         pkLogin.skin = new Skin(DefaultSkin.getDefaultSkinBase64Encoded());
+        pkLogin.gameEdition = 0;
+        pkLogin.identityPublicKey = "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEeix7KXIXKfSSQDPkLok8byiOEZ0gO6rT6Fe/Y077G8by2YidRTGMCAlpVq4oFrfiac6PnLBqBkcUezI0lbp/LnAL+xPLiYueR5pT6236StWRwC4CnZGPWg7QRdBAX9p3";
         
         proxy.getLogger().debug("Remote pocket server downstream established!");
         
@@ -144,13 +146,16 @@ public class PEDownstreamSession implements DownstreamSession<DataPacket>, Clien
     @Override
     public void handleEncapsulated(EncapsulatedPacket packet, int flags) {
         byte[] buffer = Arrays.copyOfRange(packet.buffer, 1, packet.buffer.length);
-        DataPacket pk = Protocol.decode(buffer);
+        DataPacket[] pk = Protocol.decode(buffer);
 
         proxy.getLogger().debug("GOT PACKET = " + pk.getClass().getSimpleName());
         
         if(StartGamePacket.class.isAssignableFrom(pk.getClass())){
             // Translate
-            StartGamePacket start = (StartGamePacket) pk;
+            StartGamePacket start = (StartGamePacket) pk[0];
+            if(start.worldName == null){
+            	start.worldName = "";
+            }
             upstream.getDataCache().put(ENTITY_ID_KEY, (long) start.entityRuntimeId);
             
             SetSpawnPositionPacket spawn = new SetSpawnPositionPacket();
@@ -172,7 +177,7 @@ public class PEDownstreamSession implements DownstreamSession<DataPacket>, Clien
             upstream.sendPacket(pkMovePlayer, true);
             return;
         }
-        upstream.sendPacket(pk);
+        upstream.sendPacket(pk[0]);
     }
 
     @Override

@@ -63,6 +63,7 @@ public class PCSpawnPositionPacketTranslator implements PCPacketTranslator<Serve
         ret.x = packet.getPosition().getX();
         ret.y = packet.getPosition().getY();
         ret.z = packet.getPosition().getZ();
+        ret.worldName = "";
 
         AdventureSettingsPacket adv = new AdventureSettingsPacket();
         int settings = 0x1 | 0x20 | 0x40;

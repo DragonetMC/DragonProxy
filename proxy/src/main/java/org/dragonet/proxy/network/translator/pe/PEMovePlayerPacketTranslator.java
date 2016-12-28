@@ -28,7 +28,7 @@ public class PEMovePlayerPacketTranslator implements PEPacketTranslator<MovePlay
         CachedEntity cliEntity = session.getEntityCache().getClientEntity();
         cliEntity.x = packet.x;
         cliEntity.y = packet.y;
-        cliEntity.z = packet.z;
+        cliEntity.z = packet.z;        
         return new Packet[]{pk};
     }
 
