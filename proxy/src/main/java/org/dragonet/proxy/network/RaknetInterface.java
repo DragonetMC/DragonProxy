@@ -52,7 +52,7 @@ public class RaknetInterface implements ServerInstance {
 
     public void setBroadcastName() {
         String name = "MCPE;";
-        name += proxy.getConfig().getMotd() + ";";
+        name += proxy.getMotd() + ";";
         name += Versioning.MINECRAFT_PE_PROTOCOL + ";";
         name += Versioning.MINECRAFT_PE_VERSION + ";";
         name += sessions.getOnlineCount() + ";" + proxy.getConfig().getMax_players();

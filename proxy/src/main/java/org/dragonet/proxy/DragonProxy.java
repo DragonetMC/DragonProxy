@@ -192,6 +192,10 @@ public class DragonProxy {
         logger.info(lang.get(Lang.INIT_DONE));
     }
 
+    public String getMotd(){
+    	return motd;
+    }
+    
     public void onTick() {
         network.onTick();
         sessionRegister.onTick();
