@@ -47,7 +47,7 @@ public class Logger {
     }
 
     public void info(String message) {
-        log("INFO", message);
+        log(MCColor.RESET, "INFO", message);
     }
 
     public void warning(String message) {
