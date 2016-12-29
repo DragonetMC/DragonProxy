@@ -26,7 +26,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
-import org.dragonet.raknet.protocol.packet.*;
+
+import org.dragonet.raknet.protocol.packet.UNCONNECTED_PING;
+import org.dragonet.raknet.protocol.packet.UNCONNECTED_PONG;
 
 /**
  * Represents a JRakLib Client.

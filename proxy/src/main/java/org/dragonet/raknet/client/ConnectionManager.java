@@ -19,8 +19,6 @@
  */
 package org.dragonet.raknet.client;
 
-import org.dragonet.raknet.protocol.*;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
@@ -30,8 +28,36 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
+
 import org.dragonet.raknet.RakNet;
-import org.dragonet.raknet.protocol.packet.*;
+import org.dragonet.raknet.protocol.EncapsulatedPacket;
+import org.dragonet.raknet.protocol.Packet;
+import org.dragonet.raknet.protocol.packet.ACK;
+import org.dragonet.raknet.protocol.packet.ADVERTISE_SYSTEM;
+import org.dragonet.raknet.protocol.packet.DATA_PACKET_0;
+import org.dragonet.raknet.protocol.packet.DATA_PACKET_1;
+import org.dragonet.raknet.protocol.packet.DATA_PACKET_2;
+import org.dragonet.raknet.protocol.packet.DATA_PACKET_3;
+import org.dragonet.raknet.protocol.packet.DATA_PACKET_4;
+import org.dragonet.raknet.protocol.packet.DATA_PACKET_5;
+import org.dragonet.raknet.protocol.packet.DATA_PACKET_6;
+import org.dragonet.raknet.protocol.packet.DATA_PACKET_7;
+import org.dragonet.raknet.protocol.packet.DATA_PACKET_8;
+import org.dragonet.raknet.protocol.packet.DATA_PACKET_9;
+import org.dragonet.raknet.protocol.packet.DATA_PACKET_A;
+import org.dragonet.raknet.protocol.packet.DATA_PACKET_B;
+import org.dragonet.raknet.protocol.packet.DATA_PACKET_C;
+import org.dragonet.raknet.protocol.packet.DATA_PACKET_D;
+import org.dragonet.raknet.protocol.packet.DATA_PACKET_E;
+import org.dragonet.raknet.protocol.packet.DATA_PACKET_F;
+import org.dragonet.raknet.protocol.packet.NACK;
+import org.dragonet.raknet.protocol.packet.OPEN_CONNECTION_REPLY_1;
+import org.dragonet.raknet.protocol.packet.OPEN_CONNECTION_REPLY_2;
+import org.dragonet.raknet.protocol.packet.OPEN_CONNECTION_REQUEST_1;
+import org.dragonet.raknet.protocol.packet.OPEN_CONNECTION_REQUEST_2;
+import org.dragonet.raknet.protocol.packet.UNCONNECTED_PING;
+import org.dragonet.raknet.protocol.packet.UNCONNECTED_PING_OPEN_CONNECTIONS;
+import org.dragonet.raknet.protocol.packet.UNCONNECTED_PONG;
 
 /**
  * Manager for handling a connection. The manager handles the internal ticking, and networking.

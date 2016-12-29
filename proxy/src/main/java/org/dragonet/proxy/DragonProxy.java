@@ -16,24 +16,24 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.dragonet.proxy.network.SessionRegister;
-import org.dragonet.proxy.network.RaknetInterface;
+import lombok.Getter;
+
+import org.dragonet.proxy.commands.CommandRegister;
+import org.dragonet.proxy.commands.ConsoleCommandReader;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.RemoteServer;
 import org.dragonet.proxy.configuration.ServerConfig;
-import org.dragonet.proxy.utilities.*;
-import org.dragonet.proxy.commands.CommandRegister;
-import org.dragonet.proxy.commands.ConsoleCommandReader;
+import org.dragonet.proxy.network.RaknetInterface;
+import org.dragonet.proxy.network.SessionRegister;
+import org.dragonet.proxy.utilities.Logger;
+import org.dragonet.proxy.utilities.MCColor;
+import org.dragonet.proxy.utilities.Versioning;
 import org.mcstats.Metrics;
-
-import lombok.Getter;
-
 import org.yaml.snakeyaml.Yaml;
 
 public class DragonProxy {

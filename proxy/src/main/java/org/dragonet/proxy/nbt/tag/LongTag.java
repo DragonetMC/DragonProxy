@@ -1,9 +1,9 @@
 package org.dragonet.proxy.nbt.tag;
 
+import java.io.IOException;
+
 import org.dragonet.proxy.nbt.stream.NBTInputStream;
 import org.dragonet.proxy.nbt.stream.NBTOutputStream;
-
-import java.io.IOException;
 
 public class LongTag extends NumberTag<Long> {
     public long data;

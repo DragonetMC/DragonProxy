@@ -1,9 +1,9 @@
 package org.dragonet.raknet.protocol;
 
-import org.dragonet.proxy.utilities.Binary;
-
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+
+import org.dragonet.proxy.utilities.Binary;
 
 /**
  * author: MagicDroidX Nukkit Project

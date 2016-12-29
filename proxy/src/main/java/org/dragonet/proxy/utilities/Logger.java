@@ -12,10 +12,10 @@
  */
 package org.dragonet.proxy.utilities;
 
-import org.dragonet.proxy.DragonProxy;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import org.dragonet.proxy.DragonProxy;
 
 public class Logger {
 

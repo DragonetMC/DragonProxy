@@ -1,8 +1,6 @@
 package org.dragonet.proxy.protocol;
 
 import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.raknet.protocol.packet.CLIENT_CONNECT_DataPacket;
 import cn.nukkit.raknet.protocol.packet.CLIENT_HANDSHAKE_DataPacket;
 
 public class PEClientHandshakePacket extends DataPacket {

@@ -16,8 +16,8 @@ import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.commands.Command;
+import org.dragonet.proxy.network.UpstreamSession;
 
 import cn.nukkit.network.protocol.FullChunkDataPacket;
 

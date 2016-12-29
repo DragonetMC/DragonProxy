@@ -1,9 +1,9 @@
 package org.dragonet.raknet.protocol;
 
+import java.util.TreeMap;
+
 import org.dragonet.proxy.utilities.Binary;
 import org.dragonet.proxy.utilities.BinaryStream;
-
-import java.util.TreeMap;
 
 /**
  * author: MagicDroidX Nukkit Project

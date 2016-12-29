@@ -19,22 +19,30 @@
  */
 package org.dragonet.raknet.client;
 
-import org.dragonet.raknet.protocol.*;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.dragonet.raknet.RakNet;
-import org.dragonet.raknet.protocol.packet.CLIENT_HANDSHAKE_DataPacket;
+import org.dragonet.raknet.protocol.DataPacket;
+import org.dragonet.raknet.protocol.EncapsulatedPacket;
+import org.dragonet.raknet.protocol.Packet;
 import org.dragonet.raknet.protocol.packet.ACK;
 import org.dragonet.raknet.protocol.packet.CLIENT_CONNECT_DataPacket;
 import org.dragonet.raknet.protocol.packet.CLIENT_DISCONNECT_DataPacket;
-import org.dragonet.raknet.protocol.packet.NACK;
+import org.dragonet.raknet.protocol.packet.CLIENT_HANDSHAKE_DataPacket;
 import org.dragonet.raknet.protocol.packet.DATA_PACKET_0;
 import org.dragonet.raknet.protocol.packet.DATA_PACKET_4;
+import org.dragonet.raknet.protocol.packet.NACK;
 import org.dragonet.raknet.protocol.packet.OPEN_CONNECTION_REPLY_1;
 import org.dragonet.raknet.protocol.packet.OPEN_CONNECTION_REPLY_2;
 import org.dragonet.raknet.protocol.packet.OPEN_CONNECTION_REQUEST_2;

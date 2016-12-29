@@ -23,7 +23,6 @@ import org.dragonet.proxy.PocketServer;
 import org.dragonet.proxy.protocol.Protocol;
 import org.dragonet.proxy.utilities.Binary;
 import org.dragonet.proxy.utilities.DefaultSkin;
-import org.dragonet.proxy.utilities.MCPESkin;
 import org.dragonet.proxy.utilities.Versioning;
 import org.dragonet.raknet.RakNet;
 import org.dragonet.raknet.client.ClientHandler;

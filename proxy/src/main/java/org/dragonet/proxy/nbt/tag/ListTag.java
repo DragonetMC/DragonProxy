@@ -1,13 +1,13 @@
 package org.dragonet.proxy.nbt.tag;
 
-import org.dragonet.proxy.nbt.stream.NBTInputStream;
-import org.dragonet.proxy.nbt.stream.NBTOutputStream;
-
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import org.dragonet.proxy.nbt.stream.NBTInputStream;
+import org.dragonet.proxy.nbt.stream.NBTOutputStream;
 
 public class ListTag<T extends Tag> extends Tag {
 

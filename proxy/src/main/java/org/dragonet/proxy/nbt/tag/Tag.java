@@ -1,10 +1,10 @@
 package org.dragonet.proxy.nbt.tag;
 
-import org.dragonet.proxy.nbt.stream.NBTInputStream;
-import org.dragonet.proxy.nbt.stream.NBTOutputStream;
-
 import java.io.IOException;
 import java.io.PrintStream;
+
+import org.dragonet.proxy.nbt.stream.NBTInputStream;
+import org.dragonet.proxy.nbt.stream.NBTOutputStream;
 
 public abstract class Tag {
     public static final byte TAG_End = 0;

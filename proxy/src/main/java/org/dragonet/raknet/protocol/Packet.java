@@ -1,10 +1,10 @@
 package org.dragonet.raknet.protocol;
 
-import org.dragonet.proxy.utilities.Binary;
-
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+
+import org.dragonet.proxy.utilities.Binary;
 
 /**
  * author: MagicDroidX Nukkit Project

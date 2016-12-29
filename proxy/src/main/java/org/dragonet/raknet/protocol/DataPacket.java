@@ -1,8 +1,8 @@
 package org.dragonet.raknet.protocol;
 
-import org.dragonet.proxy.utilities.Binary;
-
 import java.util.ArrayList;
+
+import org.dragonet.proxy.utilities.Binary;
 
 /**
  * author: MagicDroidX Nukkit Project

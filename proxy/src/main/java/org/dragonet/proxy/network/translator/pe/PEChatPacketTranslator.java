@@ -12,11 +12,8 @@
  */
 package org.dragonet.proxy.network.translator.pe;
 
-import org.dragonet.proxy.configuration.Lang;
-import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
-import org.dragonet.proxy.utilities.PatternChecker;
 import org.spacehq.mc.protocol.packet.ingame.client.ClientChatPacket;
 import org.spacehq.packetlib.packet.Packet;
 

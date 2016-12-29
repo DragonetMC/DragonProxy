@@ -15,10 +15,10 @@ package org.dragonet.proxy.configuration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.dragonet.configuration.serialization.ConfigurationSerializable;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import org.dragonet.configuration.serialization.ConfigurationSerializable;
 
 public abstract class RemoteServer implements ConfigurationSerializable {
     @Getter

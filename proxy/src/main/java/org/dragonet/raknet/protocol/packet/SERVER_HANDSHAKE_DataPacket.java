@@ -1,8 +1,8 @@
 package org.dragonet.raknet.protocol.packet;
 
-import org.dragonet.raknet.protocol.Packet;
-
 import java.net.InetSocketAddress;
+
+import org.dragonet.raknet.protocol.Packet;
 
 /**
  * author: MagicDroidX Nukkit Project

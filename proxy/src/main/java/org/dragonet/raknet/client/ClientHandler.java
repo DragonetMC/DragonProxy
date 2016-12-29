@@ -19,12 +19,11 @@
  */
 package org.dragonet.raknet.client;
 
-import org.dragonet.raknet.protocol.EncapsulatedPacket;
-
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+
 import org.dragonet.raknet.RakNet;
+import org.dragonet.raknet.protocol.EncapsulatedPacket;
 
 /**
  * A handler class for handling the client.

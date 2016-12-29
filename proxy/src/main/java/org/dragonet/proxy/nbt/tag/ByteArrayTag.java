@@ -1,10 +1,10 @@
 package org.dragonet.proxy.nbt.tag;
 
-import org.dragonet.proxy.nbt.stream.NBTInputStream;
-import org.dragonet.proxy.nbt.stream.NBTOutputStream;
-
 import java.io.IOException;
 import java.util.Arrays;
+
+import org.dragonet.proxy.nbt.stream.NBTInputStream;
+import org.dragonet.proxy.nbt.stream.NBTOutputStream;
 import org.dragonet.proxy.utilities.Binary;
 
 public class ByteArrayTag extends Tag {

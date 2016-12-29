@@ -13,6 +13,7 @@
 package org.dragonet.proxy.network.translator;
 
 import java.util.List;
+
 import org.spacehq.mc.protocol.data.message.ChatColor;
 import org.spacehq.mc.protocol.data.message.ChatFormat;
 import org.spacehq.mc.protocol.data.message.Message;

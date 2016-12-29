@@ -1,10 +1,10 @@
 package org.dragonet.raknet.server;
 
+import java.nio.charset.StandardCharsets;
+
+import org.dragonet.proxy.utilities.Binary;
 import org.dragonet.raknet.RakNet;
 import org.dragonet.raknet.protocol.EncapsulatedPacket;
-import org.dragonet.proxy.utilities.Binary;
-
-import java.nio.charset.StandardCharsets;
 
 /**
  * author: MagicDroidX Nukkit Project

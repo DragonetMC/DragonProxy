@@ -1,11 +1,14 @@
 package org.dragonet.proxy.nbt;
 
-import org.dragonet.proxy.nbt.stream.NBTInputStream;
-import org.dragonet.proxy.nbt.stream.NBTOutputStream;
-import org.dragonet.proxy.nbt.tag.CompoundTag;
-import org.dragonet.proxy.nbt.tag.Tag;
-
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -14,6 +17,11 @@ import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
+import org.dragonet.proxy.nbt.stream.NBTInputStream;
+import org.dragonet.proxy.nbt.stream.NBTOutputStream;
+import org.dragonet.proxy.nbt.tag.CompoundTag;
+import org.dragonet.proxy.nbt.tag.Tag;
 
 public class PENBT {
     /**
