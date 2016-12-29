@@ -16,10 +16,10 @@ import org.dragonet.proxy.network.InventoryTranslatorRegister;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
-import org.spacehq.mc.protocol.data.game.ItemStack;
-import org.spacehq.mc.protocol.data.game.values.window.ClickItemParam;
-import org.spacehq.mc.protocol.data.game.values.window.WindowAction;
-import org.spacehq.mc.protocol.packet.ingame.client.player.ClientChangeHeldItemPacket;
+import org.spacehq.mc.protocol.data.game.entity.metadata.ItemStack;
+import org.spacehq.mc.protocol.data.game.window.ClickItemParam;
+import org.spacehq.mc.protocol.data.game.window.WindowAction;
+import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerChangeHeldItemPacket;
 import org.spacehq.mc.protocol.packet.ingame.client.window.ClientWindowActionPacket;
 import org.spacehq.packetlib.packet.Packet;
 
@@ -38,7 +38,7 @@ public class PEPlayerEquipmentPacketTranslator implements PEPacketTranslator<Mob
         }
         if (InventoryTranslatorRegister.HOTBAR_CONSTANTS[packet.selectedSlot] == packet.slot) {
             //Just switched selected slot index, no swapping
-            ClientChangeHeldItemPacket pk = new ClientChangeHeldItemPacket(packet.selectedSlot);
+            ClientPlayerChangeHeldItemPacket pk = new ClientPlayerChangeHeldItemPacket(packet.selectedSlot);
             return new Packet[]{pk};
         }
         CachedWindow playerInv = session.getWindowCache().getPlayerInventory();

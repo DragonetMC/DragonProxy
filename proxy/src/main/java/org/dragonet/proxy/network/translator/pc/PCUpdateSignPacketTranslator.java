@@ -18,26 +18,26 @@ import java.nio.ByteOrder;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.MessageTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.packet.ingame.server.world.ServerUpdateSignPacket;
+import org.spacehq.mc.protocol.packet.ingame.server.world.ServerUpdateTileEntityPacket;
 
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.BlockEntityDataPacket;
 import cn.nukkit.network.protocol.DataPacket;
 
-public class PCUpdateSignPacketTranslator implements PCPacketTranslator<ServerUpdateSignPacket> {
+public class PCUpdateSignPacketTranslator implements PCPacketTranslator<ServerUpdateTileEntityPacket> {
 
     @Override
-    public DataPacket[] translate(UpstreamSession session, ServerUpdateSignPacket packet) {
+    public DataPacket[] translate(UpstreamSession session, ServerUpdateTileEntityPacket packet) {
         CompoundTag root = new CompoundTag();
         root.putString("id", "Sign");
         root.putInt("x", packet.getPosition().getX());
         root.putInt("y", packet.getPosition().getY());
         root.putInt("z", packet.getPosition().getZ());
-        root.putString("Text1", MessageTranslator.translate(packet.getLines()[0]));
-        root.putString("Text2", MessageTranslator.translate(packet.getLines()[1]));
-        root.putString("Text3", MessageTranslator.translate(packet.getLines()[2]));
-        root.putString("Text4", MessageTranslator.translate(packet.getLines()[3]));
+        root.putString("Text1", MessageTranslator.translate(packet.getNBT().get("Text1")));
+        root.putString("Text2", MessageTranslator.translate(packet.getNBT().get("Text2")));
+        root.putString("Text3", MessageTranslator.translate(packet.getNBT().get("Text3")));
+        root.putString("Text4", MessageTranslator.translate(packet.getNBT().get("Text4")));
         
         
         BlockEntityDataPacket pkBlockData = new BlockEntityDataPacket();

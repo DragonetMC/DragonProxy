@@ -5,7 +5,7 @@ import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.dragonet.proxy.utilities.DefaultSkin;
-import org.spacehq.mc.protocol.data.game.EntityMetadata;
+import org.spacehq.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
 
 import cn.nukkit.entity.data.Skin;

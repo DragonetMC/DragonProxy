@@ -15,7 +15,8 @@ package org.dragonet.inventory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.spacehq.mc.protocol.data.game.ItemStack;
+
+import org.spacehq.mc.protocol.data.game.entity.metadata.ItemStack;
 import org.spacehq.opennbt.tag.builtin.CompoundTag;
 
 public class ItemList {

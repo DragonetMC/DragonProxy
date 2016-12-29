@@ -26,8 +26,8 @@ public class PCBlockChangePacketTranslator implements PCPacketTranslator<ServerB
     public DataPacket[] translate(UpstreamSession session, ServerBlockChangePacket packet) {
         UpdateBlockPacket pk = new UpdateBlockPacket();
         pk.flags = UpdateBlockPacket.FLAG_ALL;
-        pk.blockId = (byte) (ItemBlockTranslator.translateToPE(packet.getRecord().getId()) & 0xFF);
-        pk.blockData = (byte) (packet.getRecord().getData() & 0xFF);
+        pk.blockId = (byte) (ItemBlockTranslator.translateToPE(packet.getRecord().getBlock().getId()) & 0xFF);
+        pk.blockData = (byte) (packet.getRecord().getBlock().getData() & 0xFF);
         pk.x = packet.getRecord().getPosition().getX();
         pk.y = (byte) (packet.getRecord().getPosition().getY() & 0xFF);
         pk.z = packet.getRecord().getPosition().getZ();

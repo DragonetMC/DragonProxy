@@ -14,16 +14,16 @@ package org.dragonet.proxy.network.translator.pc;
 
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.packet.ingame.server.entity.player.ServerUpdateHealthPacket;
+import org.spacehq.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
 
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.RespawnPacket;
 import cn.nukkit.network.protocol.SetHealthPacket;
 
-public class PCUpdateHealthPacketTranslator implements PCPacketTranslator<ServerUpdateHealthPacket> {
+public class PCUpdateHealthPacketTranslator implements PCPacketTranslator<ServerPlayerHealthPacket> {
 
     @Override
-    public DataPacket[] translate(UpstreamSession session, ServerUpdateHealthPacket packet) {
+    public DataPacket[] translate(UpstreamSession session, ServerPlayerHealthPacket packet) {
     	// TODO: Support food and saturation
         SetHealthPacket h = new SetHealthPacket();
         h.health = (int) packet.getHealth();

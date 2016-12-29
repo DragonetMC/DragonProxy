@@ -32,8 +32,8 @@ public class PCMultiBlockChangePacketTranslator implements PCPacketTranslator<Se
             packets[i].x = packet.getRecords()[i].getPosition().getX();
             packets[i].y = (byte) (packet.getRecords()[i].getPosition().getY() & 0xFF);
             packets[i].z = packet.getRecords()[i].getPosition().getZ();
-            packets[i].blockId = (byte) (ItemBlockTranslator.translateToPE(packet.getRecords()[i].getId()) & 0xFF);
-            packets[i].blockData = (byte) (packet.getRecords()[i].getData() & 0xFF);
+            packets[i].blockId = (byte) (ItemBlockTranslator.translateToPE(packet.getRecords()[i].getBlock().getId()) & 0xFF);
+            packets[i].blockData = (byte) (packet.getRecords()[i].getBlock().getData() & 0xFF);
         }
         return packets;
     }
