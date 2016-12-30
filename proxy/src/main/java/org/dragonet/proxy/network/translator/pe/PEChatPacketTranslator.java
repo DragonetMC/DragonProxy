@@ -23,6 +23,7 @@ public class PEChatPacketTranslator implements PEPacketTranslator<TextPacket> {
 
     @Override
     public Packet[] translate(UpstreamSession session, TextPacket packet) {
+    	// What is packet.parameters for?
         ClientChatPacket pk = new ClientChatPacket(packet.message);
         return new Packet[]{pk};
     }

@@ -13,6 +13,7 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.translator.MessageTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerChatPacket;
 
@@ -27,10 +28,10 @@ public class PCChatPacketTranslator implements PCPacketTranslator<ServerChatPack
         /*
          * Reset the chat message so we can parse the JSON again (if needed)
          */
-        ret.source = "";
-        //ret.message = MessageTranslator.translate(packet.getMessage());
-        ret.message = packet.getMessage().getText();
-        switch (packet.getType()) {
+        ret.source = session.getUsername();
+        ret.message = MessageTranslator.translate(packet.getMessage());
+        //ret.message = packet.getMessage().getText();
+/*        switch (packet.getType()) {
         case CHAT:
             ret.type = TextPacket.TYPE_CHAT;
             break;
@@ -41,9 +42,9 @@ public class PCChatPacketTranslator implements PCPacketTranslator<ServerChatPack
             ret.type = TextPacket.TYPE_SYSTEM;
             break;
         default:
-            ret.type = TextPacket.TYPE_CHAT;
+            ret.type = TextPacket.TYPE_SYSTEM;
             break;
-        }
+        }*/
         
         ret.type = TextPacket.TYPE_SYSTEM;
         return new DataPacket[]{ret};
