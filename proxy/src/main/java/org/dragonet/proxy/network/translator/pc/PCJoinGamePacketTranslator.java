@@ -15,12 +15,17 @@ package org.dragonet.proxy.network.translator.pc;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.data.game.entity.player.GameMode;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 
-import cn.nukkit.network.protocol.AdventureSettingsPacket;
+import cn.nukkit.entity.data.EntityMetadata;
+import cn.nukkit.network.protocol.ContainerSetContentPacket;
 import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.SetPlayerGameTypePacket;
+import cn.nukkit.network.protocol.PlayStatusPacket;
+import cn.nukkit.network.protocol.RespawnPacket;
+import cn.nukkit.network.protocol.SetEntityDataPacket;
+import cn.nukkit.network.protocol.SetSpawnPositionPacket;
+import cn.nukkit.network.protocol.SetTimePacket;
+import cn.nukkit.network.protocol.StartGamePacket;
 
 public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoinGamePacket> {
 
@@ -29,21 +34,54 @@ public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoin
         //This packet is not fully useable, we cache it for now. 
         session.getDataCache().put(CacheKey.PLAYER_EID, packet.getEntityId());  //Stores the real entity ID
 
-        if (session.getProxy().getAuthMode().equals("online")) {
-            //Online mode already sent packets
-            
-            SetPlayerGameTypePacket pkSetGameMode = new SetPlayerGameTypePacket();
-            pkSetGameMode.gamemode = (packet.getGameMode() == GameMode.CREATIVE ? 1 : 0);
-            
-            AdventureSettingsPacket adv = new AdventureSettingsPacket();
-            int settings = 0x1 | 0x20 | 0x40;
-            adv.flags = settings;
-            
-            return new DataPacket[]{pkSetGameMode, adv};
-        }
-
+/*        SetPlayerGameTypePacket pkSetGameMode = new SetPlayerGameTypePacket();
+        pkSetGameMode.gamemode = packet.getGameMode().ordinal();*/
+        
         session.getDataCache().put(CacheKey.PACKET_JOIN_GAME_PACKET, packet);
-        return null;
+        
+        //packet.getHardcore(); Unsupported by Minecraft PE as of 1.0.0
+        //packet.getMaxPlayers(); Unsupported by Minecraft PE as of 1.0.0
+        //packet.getReducedDebugInfo(); Unsupported by Minecraft PE as of 1.0.0
+        
+        StartGamePacket startGamePacket = new StartGamePacket(); // Required; Makes the client switch to the "generating world" screen
+        startGamePacket.entityUniqueId = 0;
+        startGamePacket.entityRuntimeId = packet.getEntityId();
+        startGamePacket.x = (float) 0.0;
+        startGamePacket.y = (float) 0.0;
+        startGamePacket.z = (float) 0.0;
+        startGamePacket.seed = -1;
+        startGamePacket.dimension = (byte) packet.getDimension();
+        startGamePacket.gamemode = packet.getGameMode().ordinal();
+        startGamePacket.difficulty = packet.getDifficulty().ordinal();
+        startGamePacket.spawnX = (int) 0.0;
+        startGamePacket.spawnY = (int) 128;
+        startGamePacket.spawnZ = (int) 0.0;
+        startGamePacket.hasAchievementsDisabled = true;
+        startGamePacket.dayCycleStopTime = -1;
+        startGamePacket.eduMode = false;
+        startGamePacket.rainLevel = 0;
+        startGamePacket.lightningLevel = 0;
+        startGamePacket.commandsEnabled = true;
+        startGamePacket.levelId = "";
+        startGamePacket.worldName = ""; // Must not be null or a NullPointerException will occur
+        startGamePacket.generator = packet.getWorldType().ordinal(); //0 old, 1 infinite, 2 flat
+        
+/*        SetEntityDataPacket pkEntityData = new SetEntityDataPacket();
+        pkEntityData.eid = 0;
+        pkEntityData.metadata = new EntityMetadata();
+        
+        RespawnPacket pkResp = new RespawnPacket();
+        pkResp.y = 72F;
+
+        SetSpawnPositionPacket pkSpawn = new SetSpawnPositionPacket();
+        pkSpawn.x = 0;
+        pkSpawn.y = 72;
+        pkSpawn.z = 0;*/
+        
+        PlayStatusPacket pkStat = new PlayStatusPacket(); //Required; Spawns the client in the world and closes the loading screen
+        pkStat.status = PlayStatusPacket.PLAYER_SPAWN;
+        
+        return new DataPacket[]{ startGamePacket, /*pkEntityData, pkResp, pkSpawn,*/ pkStat };
     }
 
 }

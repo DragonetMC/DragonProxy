@@ -13,7 +13,6 @@
 package org.dragonet.proxy.network;
 
 import java.util.Arrays;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 import lombok.Getter;
@@ -22,27 +21,24 @@ import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.PocketServer;
 import org.dragonet.proxy.protocol.Protocol;
 import org.dragonet.proxy.utilities.Binary;
-import org.dragonet.proxy.utilities.DefaultSkin;
-import org.dragonet.proxy.utilities.Versioning;
 import org.dragonet.raknet.RakNet;
 import org.dragonet.raknet.client.ClientHandler;
 import org.dragonet.raknet.client.ClientInstance;
 import org.dragonet.raknet.client.JRakLibClient;
 import org.dragonet.raknet.protocol.EncapsulatedPacket;
 
-import cn.nukkit.entity.data.Skin;
 import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.LoginPacket;
-import cn.nukkit.network.protocol.MovePlayerPacket;
-import cn.nukkit.network.protocol.SetSpawnPositionPacket;
-import cn.nukkit.network.protocol.StartGamePacket;
 import cn.nukkit.network.protocol.TextPacket;
 
 public class PEDownstreamSession implements DownstreamSession<DataPacket>, ClientInstance {
 
     public final static String ENTITY_ID_KEY = "ENTITYID";
     
+    /**
+     * The PE Server
+     */
     private JRakLibClient client;
     private ClientHandler handler;
 
@@ -50,14 +46,20 @@ public class PEDownstreamSession implements DownstreamSession<DataPacket>, Clien
     private final DragonProxy proxy;
 
     @Getter
+    /**
+     * The PE Client
+     */
     private final UpstreamSession upstream;
 
     private PocketServer serverInfo;
     private boolean connected;
 
-    public PEDownstreamSession(DragonProxy proxy, UpstreamSession upstream) {
+	private LoginPacket loginPacket;
+
+    public PEDownstreamSession(DragonProxy proxy, UpstreamSession upstream, LoginPacket peServerLoginPacket) {
         this.proxy = proxy;
         this.upstream = upstream;
+        this.loginPacket = peServerLoginPacket;
     }
     
     @Override
@@ -79,7 +81,7 @@ public class PEDownstreamSession implements DownstreamSession<DataPacket>, Clien
             upstream.onConnected(); // Clear the flags
             upstream.disconnect("ERROR! ");
         }
-        client = new JRakLibClient(Logger.getLogger(upstream.getRemoteAddress().toString() + "<->" + serverInfo.toString()), addr, port);
+        client = new JRakLibClient(Logger.getLogger(upstream.getRemoteAddress().toString() + "<->" + serverInfo.toString()), addr, port); // PE Server
         handler = new ClientHandler(client, this);
     }
 
@@ -120,7 +122,7 @@ public class PEDownstreamSession implements DownstreamSession<DataPacket>, Clien
     public void connectionOpened(long serverId) {
         connected = true;
         
-        LoginPacket pkLogin = new LoginPacket();
+/*        LoginPacket pkLogin = new LoginPacket();
         pkLogin.clientId = serverId; //client.getId();
         pkLogin.clientUUID = UUID.randomUUID(); //UUID.nameUUIDFromBytes(("DragonProxyPlayer:" + upstream.getUsername()).getBytes());
         pkLogin.protocol = Versioning.MINECRAFT_PE_PROTOCOL;
@@ -129,17 +131,18 @@ public class PEDownstreamSession implements DownstreamSession<DataPacket>, Clien
         pkLogin.skin = new Skin(DefaultSkin.getDefaultSkinBase64Encoded());
         pkLogin.gameEdition = 0;
         pkLogin.identityPublicKey = "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEeix7KXIXKfSSQDPkLok8byiOEZ0gO6rT6Fe/Y077G8by2YidRTGMCAlpVq4oFrfiac6PnLBqBkcUezI0lbp/LnAL+xPLiYueR5pT6236StWRwC4CnZGPWg7QRdBAX9p3";
-        
+        */
         proxy.getLogger().debug("Remote pocket server downstream established!");
         
-        sendPacket(pkLogin, true);
+        sendPacket(loginPacket, true);
+        loginPacket = null;
     }
 
     @Override
     public void connectionClosed(String reason) {
         connected = false;
         upstream.disconnect(reason);
-        proxy.getLogger().debug("Remote pocket server downstream CLOSED!");
+        proxy.getLogger().debug("Remote pocket server downstream CLOSED!\nReason: " + reason);
     }
 
     @Override
@@ -147,9 +150,11 @@ public class PEDownstreamSession implements DownstreamSession<DataPacket>, Clien
         byte[] buffer = Arrays.copyOfRange(packet.buffer, 1, packet.buffer.length);
         DataPacket[] pk = Protocol.decode(buffer);
 
-        proxy.getLogger().debug("GOT PACKET = " + pk.getClass().getSimpleName());
+        for(DataPacket pak : pk){
+        	proxy.getLogger().debug("GOT PACKET = " + pak.getClass().getSimpleName());
+        }
         
-        if(StartGamePacket.class.isAssignableFrom(pk.getClass())){
+/*        if(StartGamePacket.class.isAssignableFrom(pk.getClass())){
             // Translate
             StartGamePacket start = (StartGamePacket) pk[0];
             if(start.worldName == null){
@@ -175,8 +180,8 @@ public class PEDownstreamSession implements DownstreamSession<DataPacket>, Clien
             pkMovePlayer.mode = MovePlayerPacket.MODE_NORMAL;
             upstream.sendPacket(pkMovePlayer, true);
             return;
-        }
-        upstream.sendPacket(pk[0]);
+        }*/
+        upstream.sendAllPackets(pk, false);
     }
 
     @Override

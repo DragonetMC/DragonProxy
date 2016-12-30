@@ -12,29 +12,6 @@
  */
 package org.dragonet.proxy.network;
 
-import cn.nukkit.entity.data.EntityMetadata;
-import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.AdventureSettingsPacket;
-import cn.nukkit.network.protocol.BatchPacket;
-import cn.nukkit.network.protocol.ContainerSetContentPacket;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.LoginPacket;
-import cn.nukkit.network.protocol.PlayStatusPacket;
-import cn.nukkit.network.protocol.ResourcePacksInfoPacket;
-import cn.nukkit.network.protocol.RespawnPacket;
-import cn.nukkit.network.protocol.SetCommandsEnabledPacket;
-import cn.nukkit.network.protocol.SetEntityDataPacket;
-import cn.nukkit.network.protocol.SetSpawnPositionPacket;
-import cn.nukkit.network.protocol.SetTimePacket;
-import cn.nukkit.network.protocol.StartGamePacket;
-import cn.nukkit.network.protocol.TextPacket;
-import cn.nukkit.network.protocol.UpdateBlockPacket;
-import cn.nukkit.network.protocol.RemoveEntityPacket;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,14 +29,40 @@ import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.RemoteServer;
 import org.dragonet.proxy.network.cache.EntityCache;
 import org.dragonet.proxy.network.cache.WindowCache;
+import org.dragonet.proxy.protocol.Protocol;
 import org.dragonet.proxy.utilities.HTTP;
-import org.dragonet.proxy.utilities.MCColor;
+import org.dragonet.proxy.utilities.PatternChecker;
 import org.dragonet.proxy.utilities.Versioning;
 import org.dragonet.raknet.protocol.EncapsulatedPacket;
 import org.spacehq.mc.auth.exception.request.RequestException;
 import org.spacehq.mc.auth.service.AuthenticationService;
 import org.spacehq.mc.protocol.MinecraftProtocol;
-import org.spacehq.mc.protocol.data.game.values.PlayerListEntry;
+import org.spacehq.mc.protocol.data.game.PlayerListEntry;
+
+import cn.nukkit.entity.data.EntityMetadata;
+import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.AdventureSettingsPacket;
+import cn.nukkit.network.protocol.BatchPacket;
+import cn.nukkit.network.protocol.ContainerSetContentPacket;
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.LoginPacket;
+import cn.nukkit.network.protocol.PlayStatusPacket;
+import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.network.protocol.RemoveEntityPacket;
+import cn.nukkit.network.protocol.ResourcePacksInfoPacket;
+import cn.nukkit.network.protocol.RespawnPacket;
+import cn.nukkit.network.protocol.SetCommandsEnabledPacket;
+import cn.nukkit.network.protocol.SetEntityDataPacket;
+import cn.nukkit.network.protocol.SetEntityMotionPacket;
+import cn.nukkit.network.protocol.SetSpawnPositionPacket;
+import cn.nukkit.network.protocol.SetTimePacket;
+import cn.nukkit.network.protocol.StartGamePacket;
+import cn.nukkit.network.protocol.TextPacket;
+import cn.nukkit.network.protocol.UpdateBlockPacket;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * Maintaince the connection between the proxy and Minecraft: Pocket Edition
@@ -83,6 +86,9 @@ public class UpstreamSession {
 
     @Getter
     private String username;
+    
+    @Getter
+    private ConnectionStatus status = ConnectionStatus.UNCONNECTED;
 
     @Getter
     private DownstreamSession downstream;
@@ -101,11 +107,11 @@ public class UpstreamSession {
 
     @Getter
     private final WindowCache windowCache = new WindowCache(this);
-
-    protected boolean connecting;
     
     /* ======================================================================================================= */
     private MinecraftProtocol protocol;
+    
+    private LoginPacket peServerLoginPacket = null;
 
     public UpstreamSession(DragonProxy proxy, String raknetID, InetSocketAddress remoteAddress) {
         this.proxy = proxy;
@@ -113,9 +119,99 @@ public class UpstreamSession {
         this.remoteAddress = remoteAddress;
         packetProcessor = new PEPacketProcessor(this);
         packetProcessorScheule = proxy.getGeneralThreadPool().scheduleAtFixedRate(packetProcessor, 10, 50, TimeUnit.MILLISECONDS);
+        status = ConnectionStatus.AWAITING_CLIENT_LOGIN;
     }
 
+    public void handlePacketBinary(EncapsulatedPacket pk) {
+    	//TODO: Add a timeout system so that if the LoginPacket gets lost the client will be auto disconnected
+    	if(getStatus() == ConnectionStatus.CONNECTED){
+    		packetProcessor.putPacket(pk.buffer);    		
+    	}
+    	
+    	DataPacket[] packets = Protocol.decode(pk.buffer);
+    	
+    	for(DataPacket packet : packets){
+    		System.out.println(packet.getClass().getCanonicalName());
+        	if(getStatus() == ConnectionStatus.UNCONNECTED || getStatus() == ConnectionStatus.AWAITING_CLIENT_LOGIN){
+                if(packet.pid() == ProtocolInfo.LOGIN_PACKET){
+                    try {
+                    	onClientLoginRequest((LoginPacket) packet);
+                    } catch (Exception e){
+                    	e.printStackTrace();
+                    }
+                    return;
+                }
+        	} else if(getStatus() == ConnectionStatus.AWAITING_CLIENT_AUTHENTICATION){
+    	        if(packet.pid() == ProtocolInfo.TEXT_PACKET && getDataCache().get(CacheKey.AUTHENTICATION_STATE) != null){
+    	        	TextPacket pack = (TextPacket) packet;
+    	            if (getDataCache().get(CacheKey.AUTHENTICATION_STATE).equals("email")) {
+    	                if (!PatternChecker.matchEmail(pack.message.trim())) {
+    	                	
+    	                    sendChat(getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
+    	                    disconnect(getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
+    	                    return;
+    	                }
+    	                getDataCache().put(CacheKey.AUTHENTICATION_EMAIL, pack.message.trim());
+    	                getDataCache().put(CacheKey.AUTHENTICATION_STATE, "password");
+    	                sendChat(getProxy().getLang().get(Lang.MESSAGE_ONLINE_PASSWORD));
+    	            } else if (getDataCache().get(CacheKey.AUTHENTICATION_STATE).equals("password")) {
+    	                if (getDataCache().get(CacheKey.AUTHENTICATION_EMAIL) == null || pack.message.equals(" ")) {
+    	                    sendChat(getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
+    	                    disconnect(getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
+    	                    return;
+    	                }
+    	                sendChat(getProxy().getLang().get(Lang.MESSAGE_ONLINE_LOGGIN_IN));
+    	                getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
+    	                authenticateOnlineMode(pack.message); //We NEVER cache password for better security. 
+    	            }
+    	            return;
+    	        }       		
+        	}
+    	}
+    }
     
+    public void onClientLoginRequest(LoginPacket packet) {
+    	status = ConnectionStatus.CONNECTING_CLIENT;
+        if (username != null) {
+            disconnect("Already logged in, this must be an error! ");
+            return;
+        }
+
+        PlayStatusPacket status = new PlayStatusPacket(); // Required; Tells the client that his connection was accepted or denied
+        if (packet.protocol != Versioning.MINECRAFT_PE_PROTOCOL) {
+            status.status = (packet.protocol < Versioning.MINECRAFT_PE_PROTOCOL ? PlayStatusPacket.LOGIN_FAILED_CLIENT : PlayStatusPacket.LOGIN_FAILED_SERVER);
+            sendPacket(status, true);
+            disconnect(proxy.getLang().get(Lang.MESSAGE_UNSUPPORTED_CLIENT));
+            return;
+        }
+
+        this.username = packet.username;
+        this.peServerLoginPacket = packet;
+        proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, username, remoteAddress));
+        
+        switch(proxy.getAuthMode()){
+        case "online":
+        	// We must send enough packets to make chat accessable on the client
+            minimalClientHandshake(false);
+            this.status = ConnectionStatus.AWAITING_CLIENT_AUTHENTICATION;
+            dataCache.put(CacheKey.AUTHENTICATION_STATE, "email");
+
+            sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_NOTICE, username));
+            sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_EMAIL));
+            break;
+        case "cls":
+        	this.status = ConnectionStatus.AWAITING_CLIENT_AUTHENTICATION;
+        	authenticateCLSMode();
+            break;
+        case "offline":
+        	// We translate everything we are sent without regard for what it is
+            protocol = new MinecraftProtocol(username);
+
+            proxy.getLogger().debug("Initially joining [" + proxy.getConfig().getDefault_server() + "]... ");
+            connectToServer(proxy.getConfig().getRemote_servers().get(proxy.getConfig().getDefault_server()));
+            break;
+        }
+    }
     
     public void sendPacket(DataPacket packet) {
         sendPacket(packet, false);
@@ -136,15 +232,16 @@ public class UpstreamSession {
             boolean mustImmediate = immediate;
             if (!mustImmediate) {
                 for (DataPacket packet : packets) {
-                	//sendPacket(packet, mustImmediate);
-                    if (true) {
+                	sendPacket(packet, mustImmediate);
+                	//TODO: Fix batch packet processing
+/*                    if (true) {
                         batch.putByteArray(packet.getBuffer());
                         mustImmediate = true;
                         break;
-                    }
+                    }*/
                 }
             }
-            sendPacket(batch, mustImmediate);
+            //sendPacket(batch, mustImmediate);
         }
     }
 
@@ -181,48 +278,6 @@ public class UpstreamSession {
         pkBlock.blockData = (byte) (meta & 0xFF);
         sendPacket(pkBlock, true);
     }
-
-    
-    
-    public void onLogin(LoginPacket packet) {
-        if (username != null) {
-            disconnect("Already logged in, this must be an error! ");
-            return;
-        }
-
-        PlayStatusPacket status = new PlayStatusPacket(); // Required; Tells the client that his connection was accepted or denied
-        if (packet.protocol != Versioning.MINECRAFT_PE_PROTOCOL) {
-            status.status = PlayStatusPacket.LOGIN_FAILED_CLIENT;
-            sendPacket(status, true);
-            disconnect(proxy.getLang().get(Lang.MESSAGE_UNSUPPORTED_CLIENT));
-            return;
-        }
-        status.status = PlayStatusPacket.LOGIN_SUCCESS;
-        sendPacket(status, true);
-
-        minimalClientHandshake();
-
-        this.username = packet.username;
-        proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, username, remoteAddress));
-        
-        switch(proxy.getAuthMode()){
-        case "online":
-            dataCache.put(CacheKey.AUTHENTICATION_STATE, "email");
-
-            sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_NOTICE, username));
-            sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_EMAIL));
-            break;
-        case "cls":
-        	authenticateCLSMode();
-            break;
-        case "offline":
-            protocol = new MinecraftProtocol(username);
-
-            proxy.getLogger().debug("Initially joining [" + proxy.getConfig().getDefault_server() + "]... ");
-            connectToServer(proxy.getConfig().getRemote_servers().get(proxy.getConfig().getDefault_server()));
-            break;
-        }
-    }
     
     public void onTick() {
         entityCache.onTick();
@@ -245,7 +300,7 @@ public class UpstreamSession {
     }
 
     public void onConnected() {
-        connecting = false;
+        status = ConnectionStatus.CONNECTED;
     }
     
     /**
@@ -253,57 +308,13 @@ public class UpstreamSession {
      * @param reason 
      */
     public void disconnect(String reason) {
-        if(!connecting) {
+        if(status != ConnectionStatus.UNCONNECTED) {
             proxy.getNetwork().closeSession(raknetID, reason);
+            status = ConnectionStatus.UNCONNECTED;
             //RakNet server will call onDisconnect()
         }
     }
     
-    public void handlePacketBinary(EncapsulatedPacket packet) {
-        packetProcessor.putPacket(packet.buffer);
-    }
-    
-    public void connectToServer(RemoteServer server){
-        if(server == null) return;
-        connecting = true;
-        if(downstream != null && downstream.isConnected()){
-            downstream.disconnect();
-            // TODO: Send chat message about server change. 
-            
-            // Remove all loaded entities
-            BatchPacket batch = new BatchPacket();
-            this.entityCache.getEntities().entrySet().forEach((ent) -> {
-                if(ent.getKey() != 0){
-                	RemoveEntityPacket pkRemoveEntity = new RemoveEntityPacket();
-                	pkRemoveEntity.eid = ent.getKey();
-                	sendPacket(pkRemoveEntity, true);
-                    //batch.packets.add(pkRemoveEntity);
-                }
-            });
-            this.entityCache.reset(true);
-            sendPacket(batch, true);
-            return;
-        }
-        if(server.getClass().isAssignableFrom(DesktopServer.class)){
-            downstream = new PCDownstreamSession(proxy, this);
-            ((PCDownstreamSession)downstream).setProtocol(protocol);
-            ((PCDownstreamSession)downstream).connect(server.getRemoteAddr(), server.getRemotePort());
-        }else{
-            downstream = new PEDownstreamSession(proxy, this);
-            ((PEDownstreamSession)downstream).connect((PocketServer) server);
-        }
-    }
-    
-    public void sendStartGameAndDisconnect(String reason) {
-        //Login error so player in nether (Red screen)
-    	//TODO: Fix the "spawn in the nether for error" trick
-
-        sendChat(reason);
-        disconnect(reason);
-    }
-
-
-
     public void authenticateCLSMode(){
         //CLS LOGIN! 
         if ((username.length() < 6 + 1 + 1) || (!username.contains("_"))) {
@@ -380,7 +391,18 @@ public class UpstreamSession {
         });
     }
     
-    private void minimalClientHandshake(){
+    public void sendStartGameAndDisconnect(String reason) {
+        //Login error so player in nether (Red screen)
+    	minimalClientHandshake(true);
+        sendChat(reason);
+        disconnect(reason);
+    }
+    
+    private void minimalClientHandshake(boolean errorMode){
+    	PlayStatusPacket status = new PlayStatusPacket(); // Required; TODO: Find out why
+        status.status = PlayStatusPacket.LOGIN_SUCCESS;
+        sendPacket(status, true);
+        
         sendPacket(new ResourcePacksInfoPacket(), true); // Required; Causes the client to switch to the "locating server" screen
         
         StartGamePacket startGamePacket = new StartGamePacket(); // Required; Makes the client switch to the "generating world" screen
@@ -389,9 +411,9 @@ public class UpstreamSession {
         startGamePacket.x = (float) 0.0;
         startGamePacket.y = (float) 0.0;
         startGamePacket.z = (float) 0.0;
-        startGamePacket.seed = -1;
-        startGamePacket.dimension = (byte) (0 & 0xff);
-        startGamePacket.gamemode = 1 & 0x01;
+        startGamePacket.seed = 242540254;
+        startGamePacket.dimension = (byte) ((errorMode ? 1 : 0) & 0xff);
+        startGamePacket.gamemode = 1;
         startGamePacket.difficulty = 1;
         startGamePacket.spawnX = (int) 0.0;
         startGamePacket.spawnY = (int) 128;
@@ -404,46 +426,78 @@ public class UpstreamSession {
         startGamePacket.commandsEnabled = true;
         startGamePacket.levelId = "";
         startGamePacket.worldName = ""; // Must not be null or a NullPointerException will occur
-        startGamePacket.generator = 1; //0 old, 1 infinite, 2 flat
+        startGamePacket.generator = 0; //0 old, 1 infinite, 2 flat
         sendPacket(startGamePacket, true);
 
 /*        SetTimePacket setTimePacket = new SetTimePacket();
         setTimePacket.time = 1000;
         setTimePacket.started = false;
-        sendPacket(setTimePacket, true);*/
+        sendPacket(setTimePacket, true);
         
-/*        ContainerSetContentPacket containerSetContentPacket = new ContainerSetContentPacket();
+        ContainerSetContentPacket containerSetContentPacket = new ContainerSetContentPacket();
         containerSetContentPacket.windowid = ContainerSetContentPacket.SPECIAL_CREATIVE;
         containerSetContentPacket.slots = Item.getCreativeItems().stream().toArray(Item[]::new);
-        sendPacket(containerSetContentPacket, true);*/
+        sendPacket(containerSetContentPacket, true);
         
-/*        SetCommandsEnabledPacket pk = new SetCommandsEnabledPacket();
+        SetCommandsEnabledPacket pk = new SetCommandsEnabledPacket();
         pk.enabled = true;
-        sendPacket(pk, true);*/
+        sendPacket(pk, true);
                 
-/*        AdventureSettingsPacket pkAdventureSettings = new AdventureSettingsPacket();
+        AdventureSettingsPacket pkAdventureSettings = new AdventureSettingsPacket();
         pkAdventureSettings.allowFlight = true;
         pkAdventureSettings.isFlying = true;
         pkAdventureSettings.flags = 4;
-        sendPacket(pkAdventureSettings, true);*/
+        sendPacket(pkAdventureSettings, true);
         
-/*        SetEntityDataPacket pkEntityData = new SetEntityDataPacket();
+        SetEntityDataPacket pkEntityData = new SetEntityDataPacket();
         pkEntityData.eid = 0;
         pkEntityData.metadata = new EntityMetadata();
-        sendPacket(pkEntityData, true);*/
+        sendPacket(pkEntityData, true);
         
-/*        RespawnPacket pkResp = new RespawnPacket();
+        RespawnPacket pkResp = new RespawnPacket();
         pkResp.y = 72F;
-        sendPacket(pkResp, false);*/
+        sendPacket(pkResp, false);
 
-/*        SetSpawnPositionPacket pkSpawn = new SetSpawnPositionPacket();
+        SetSpawnPositionPacket pkSpawn = new SetSpawnPositionPacket();
         pkSpawn.x = 0;
         pkSpawn.y = 72;
         pkSpawn.z = 0;
         sendPacket(pkSpawn, true);*/
-
+        
         PlayStatusPacket pkStat = new PlayStatusPacket(); //Required; Spawns the client in the world and closes the loading screen
         pkStat.status = PlayStatusPacket.PLAYER_SPAWN;
         sendPacket(pkStat, true);
+    }
+
+    public void connectToServer(RemoteServer server){
+        if(server == null) return;
+        status = ConnectionStatus.CONNECTING_SERVER;
+        if(downstream != null && downstream.isConnected()){
+            downstream.disconnect();
+            // TODO: Send chat message about server change. 
+            
+            // Remove all loaded entities
+            BatchPacket batch = new BatchPacket();
+            this.entityCache.getEntities().entrySet().forEach((ent) -> {
+                if(ent.getKey() != 0){
+                	RemoveEntityPacket pkRemoveEntity = new RemoveEntityPacket();
+                	pkRemoveEntity.eid = ent.getKey();
+                	sendPacket(pkRemoveEntity, true);
+                    //batch.packets.add(pkRemoveEntity);
+                }
+            });
+            this.entityCache.reset(true);
+            sendPacket(batch, true);
+            return;
+        }
+        
+        if(server.getClass().isAssignableFrom(DesktopServer.class)){
+            downstream = new PCDownstreamSession(proxy, this);
+            ((PCDownstreamSession)downstream).setProtocol(protocol);
+            ((PCDownstreamSession)downstream).connect(server.getRemoteAddr(), server.getRemotePort());
+        }else{
+            downstream = new PEDownstreamSession(proxy, this, peServerLoginPacket);
+            ((PEDownstreamSession)downstream).connect((PocketServer) server);
+        }
     }
 }
