@@ -44,8 +44,7 @@ public class DragonProxy {
 	
     public final static boolean IS_RELEASE = false; //DO NOT CHANGE, ONLY ON PRODUCTION
 
-    @Getter
-    private Logger logger;
+    private static Logger logger = null;
 
     private final TickerThread ticker = new TickerThread(this);
 
@@ -83,7 +82,7 @@ public class DragonProxy {
     private boolean isDebug = false;
 
     public void run(String[] args) {
-        logger = new Logger(this);
+        logger = new Logger(this, new File("proxy.log"));
         // Load config.yml 
 
         try {
@@ -192,6 +191,11 @@ public class DragonProxy {
         logger.info(lang.get(Lang.INIT_DONE));
     }
 
+    public static Logger getLogger(){
+    	// TODO: In the future this should never return null
+    	return logger;
+    }
+
     public String getMotd(){
     	return motd;
     }
@@ -220,10 +224,10 @@ public class DragonProxy {
         try{
             Thread.sleep(2000); // Wait for all clients disconnected
         } catch (Exception ex) {
-            System.out.println("Exception while shutting down!");
+        	DragonProxy.getLogger().severe("Exception while shutting down!");
             ex.printStackTrace();
         }
-        System.out.println("Goodbye!");
+        DragonProxy.getLogger().info("Goodbye!");
         System.exit(0);
     }
 }
