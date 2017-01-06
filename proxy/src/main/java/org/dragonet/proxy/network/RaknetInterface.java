@@ -121,13 +121,13 @@ public class RaknetInterface implements ServerInstance {
         
         //Debug
 
-/*        try{
-            Thread.sleep(2000L);
-        }catch(Exception e){}*/
-        System.out.println("Sending [" + packet.getClass().getSimpleName() + "] ");
+       try{
+            //Thread.sleep(2000L);
+        }catch(Exception e){}
+       DragonProxy.getLogger().info("Sending [" + packet.getClass().getSimpleName() + "] ");
 
         
-        boolean overridedImmediate = immediate || false; /*packet.isShouldSendImmidate();*/
+        boolean overridedImmediate = immediate || false;// packet.isShouldSendImmidate();
         packet.encode();
         if (packet.getBuffer().length > 512 && !BatchPacket.class.isAssignableFrom(packet.getClass())) {
             BatchPacket pkBatch = new BatchPacket();

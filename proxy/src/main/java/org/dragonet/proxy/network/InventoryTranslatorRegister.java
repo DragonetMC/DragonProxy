@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.dragonet.inventory.PEInventorySlot;
 import org.dragonet.inventory.PEWindowConstantID;
+import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.InventoryTranslator;
 import org.dragonet.proxy.network.translator.inv.ChestWindowTranslator;
@@ -128,7 +129,7 @@ public final class InventoryTranslatorRegister {
             return;
         }
         CachedWindow win = session.getWindowCache().get(openedId);
-        System.out.println("WIN=" + win.slots.length + ", REQ_SLOT=" + packet.getSlot());
+        DragonProxy.getLogger().info("WIN=" + win.slots.length + ", REQ_SLOT=" + packet.getSlot());
         if (win.size <= packet.getSlot()) {
             session.getDownstream().send(new ClientCloseWindowPacket(packet.getWindowId()));
             return;

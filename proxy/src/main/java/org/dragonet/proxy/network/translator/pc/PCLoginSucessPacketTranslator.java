@@ -1,5 +1,6 @@
 package org.dragonet.proxy.network.translator.pc;
 
+import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.login.server.LoginSuccessPacket;
@@ -12,7 +13,7 @@ public class PCLoginSucessPacketTranslator implements PCPacketTranslator<LoginSu
 
 	@Override
 	public DataPacket[] translate(UpstreamSession session, LoginSuccessPacket packet) {
-		System.out.println("Recieved LoginSuccessPacket from remote server for player: " + packet.getProfile());
+		DragonProxy.getLogger().info("Recieved LoginSuccessPacket from remote server for player: " + packet.getProfile());
 		PlayStatusPacket pkPlayStatus = new PlayStatusPacket();
 		pkPlayStatus.status = PlayStatusPacket.LOGIN_SUCCESS;
 

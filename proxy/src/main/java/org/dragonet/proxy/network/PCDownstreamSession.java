@@ -96,7 +96,7 @@ public class PCDownstreamSession implements DownstreamSession<Packet> {
 
             @Override
             public void disconnected(DisconnectedEvent event) {
-            	System.out.println("Disconnected Client " + event.getSession().getHost() + ":" + event.getSession().getPort() + " for reason " + event.getReason());
+            	DragonProxy.getLogger().info("Disconnected Client " + event.getSession().getHost() + ":" + event.getSession().getPort() + " for reason " + event.getReason());
             	event.getCause().printStackTrace();
             	Thread.dumpStack();
                 upstream.disconnect(proxy.getLang().get(event.getReason()));
@@ -104,20 +104,10 @@ public class PCDownstreamSession implements DownstreamSession<Packet> {
 
             @Override
             public void packetReceived(PacketReceivedEvent event) {
-                /*
-                if (!event.getPacket().getClass().getSimpleName().toLowerCase().contains("block")
-                        && !event.getPacket().getClass().getSimpleName().toLowerCase().contains("entity")
-                        && !event.getPacket().getClass().getSimpleName().toLowerCase().contains("time")) {
-                    System.out.println(event.getPacket().getClass().getSimpleName() + " > " + event.getPacket().toString());
-                }
-                */
                 //Handle the packet
                 try {
                     DataPacket[] packets = PacketTranslatorRegister.translateToPE(upstream, event.getPacket());
-                    if (packets == null) {
-                        return;
-                    }
-                    if (packets.length <= 0) {
+                    if (packets == null || packets.length <= 0) {
                         return;
                     }
                     if (packets.length == 1) {
@@ -133,17 +123,22 @@ public class PCDownstreamSession implements DownstreamSession<Packet> {
             
             @Override
             public void packetSent(PacketSentEvent event) {
-            	System.out.println("PC Sending Packet: " + event.getPacket().toString());
+            	DragonProxy.getLogger().info("PC Sending Packet: " + event.getPacket().toString());
             }
             
             @Override
             public void disconnecting(DisconnectingEvent event) {
-            	System.out.println("Disconnecting Client " + event.getSession().getHost() + ":" + event.getSession().getPort() + " for reason " + event.getReason());
+            	DragonProxy.getLogger().info("Disconnecting Client " + event.getSession().getHost() + ":" + event.getSession().getPort() + " for reason " + event.getReason());
             	event.getCause().printStackTrace();
             	Thread.dumpStack();
             }
         });
-        remoteClient.getSession().connect();
+        
+        try {
+        	remoteClient.getSession().connect();
+        } catch (Exception e){
+        	e.printStackTrace();
+        }
     }
 
     @Override

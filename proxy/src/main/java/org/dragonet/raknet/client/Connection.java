@@ -32,6 +32,7 @@ import java.util.Random;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.dragonet.proxy.DragonProxy;
 import org.dragonet.raknet.RakNet;
 import org.dragonet.raknet.protocol.DataPacket;
 import org.dragonet.raknet.protocol.EncapsulatedPacket;
@@ -228,7 +229,7 @@ public class Connection {
     }
 
     private void sendPacket(Packet pk) throws IOException {
-        System.out.println("[DEBUG] Sending to remote " + pk.getClass().getSimpleName() + " (@Connection.java:223)");
+    	DragonProxy.getLogger().debug("[DEBUG] Sending to remote " + pk.getClass().getSimpleName() + " (@Connection.java:223)");
         manager.sendPacket(pk, manager.getClient().getServerIP(), manager.getClient().getServerPort());
     }
 
@@ -368,10 +369,10 @@ public class Connection {
 
     private void handleEncapsulatedPacket(EncapsulatedPacket packet) throws IOException {
         if(packet == null){
-            System.out.println("[ERROR] NULL ENCAPSULATED PACKET! ");
+        	DragonProxy.getLogger().warning("[ERROR] NULL ENCAPSULATED PACKET! ");
             return;
         }
-        System.out.println("Recieved encapulated packet INDEX=" + packet.messageIndex);
+        DragonProxy.getLogger().info("Recieved encapulated packet INDEX=" + packet.messageIndex);
         if(packet.messageIndex == null || packet.messageIndex == -1){
             handleEncapsulatedPacketRoute(packet);
         } else {
@@ -487,7 +488,7 @@ public class Connection {
     }
 
     public void handlePacket(Packet packet) throws IOException{
-        System.out.println("[DEBUG] Recieved " + packet.getClass().getSimpleName() + " (@ Connection.java:484)");
+    	DragonProxy.getLogger().debug("[DEBUG] Recieved " + packet.getClass().getSimpleName() + " (@ Connection.java:484)");
         isActive = true;
         lastUpdate = Instant.now().toEpochMilli();
         if(state == STATE_CONNECTED || state == STATE_CONNECTING_3){

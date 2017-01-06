@@ -76,7 +76,7 @@ public class PEDownstreamSession implements DownstreamSession<DataPacket>, Clien
 
     @Override
     public void connect(String addr, int port) {
-        System.out.println("[" + upstream.getUsername() + "] Connecting to remote pocket server at [" + String.format("%s:%s", addr, port) + "] ");
+    	DragonProxy.getLogger().info("[" + upstream.getUsername() + "] Connecting to remote pocket server at [" + String.format("%s:%s", addr, port) + "] ");
         if (client != null) {
             upstream.onConnected(); // Clear the flags
             upstream.disconnect("ERROR! ");
@@ -135,6 +135,7 @@ public class PEDownstreamSession implements DownstreamSession<DataPacket>, Clien
         proxy.getLogger().debug("Remote pocket server downstream established!");
         
         sendPacket(loginPacket, true);
+        //sendPacket(pkLogin, true);
         loginPacket = null;
     }
 
@@ -197,7 +198,7 @@ public class PEDownstreamSession implements DownstreamSession<DataPacket>, Clien
             return;
         }
         
-        System.out.println("SENDING " + packet.getClass().getSimpleName());
+        DragonProxy.getLogger().info("SENDING " + packet.getClass().getSimpleName());
         
         boolean overridedImmediate = immediate; /*|| false; /*packet.isShouldSendImmidate();*/
         packet.encode();

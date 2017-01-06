@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
+import org.dragonet.proxy.DragonProxy;
 import org.dragonet.raknet.RakNet;
 import org.dragonet.raknet.protocol.EncapsulatedPacket;
 import org.dragonet.raknet.protocol.Packet;
@@ -103,9 +104,9 @@ public class ConnectionManager {
     }
 
     private boolean connect(int payloadSize, int packets) throws IOException {
-        System.out.println("[DEBUG] Client connecting, PLOAD=" + payloadSize + ", TRIES=" + packets);
+    	DragonProxy.getLogger().debug("[DEBUG] Client connecting, PLOAD=" + payloadSize + ", TRIES=" + packets);
         for(int i = 0; i < packets; i++){
-            System.out.println("[DEBUG] Trying to connect, TRY=" + i + "... ");
+        	DragonProxy.getLogger().debug("[DEBUG] Trying to connect, TRY=" + i + "... ");
             OPEN_CONNECTION_REQUEST_1 request1 = new OPEN_CONNECTION_REQUEST_1();
             request1.protocol = RakNet.PROTOCOL;
             request1.mtuSize = (short) payloadSize;
