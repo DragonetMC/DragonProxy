@@ -39,25 +39,30 @@ import org.spacehq.mc.auth.service.AuthenticationService;
 import org.spacehq.mc.protocol.MinecraftProtocol;
 import org.spacehq.mc.protocol.data.game.PlayerListEntry;
 
+import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.AdventureSettingsPacket;
 import cn.nukkit.network.protocol.BatchPacket;
+import cn.nukkit.network.protocol.ChunkRadiusUpdatedPacket;
 import cn.nukkit.network.protocol.ContainerSetContentPacket;
+import cn.nukkit.network.protocol.CraftingDataPacket;
 import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.FullChunkDataPacket;
 import cn.nukkit.network.protocol.LoginPacket;
+import cn.nukkit.network.protocol.MovePlayerPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
 import cn.nukkit.network.protocol.ResourcePacksInfoPacket;
 import cn.nukkit.network.protocol.RespawnPacket;
-import cn.nukkit.network.protocol.SetCommandsEnabledPacket;
+import cn.nukkit.network.protocol.SetDifficultyPacket;
 import cn.nukkit.network.protocol.SetEntityDataPacket;
-import cn.nukkit.network.protocol.SetEntityMotionPacket;
 import cn.nukkit.network.protocol.SetSpawnPositionPacket;
 import cn.nukkit.network.protocol.SetTimePacket;
 import cn.nukkit.network.protocol.StartGamePacket;
 import cn.nukkit.network.protocol.TextPacket;
+import cn.nukkit.network.protocol.UpdateAttributesPacket;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
 
 import com.google.gson.JsonElement;
@@ -131,7 +136,7 @@ public class UpstreamSession {
     	DataPacket[] packets = Protocol.decode(pk.buffer);
     	
     	for(DataPacket packet : packets){
-    		System.out.println(packet.getClass().getCanonicalName());
+    		DragonProxy.getLogger().info(packet.getClass().getCanonicalName());
         	if(getStatus() == ConnectionStatus.UNCONNECTED || getStatus() == ConnectionStatus.AWAITING_CLIENT_LOGIN){
                 if(packet.pid() == ProtocolInfo.LOGIN_PACKET){
                     try {
@@ -205,8 +210,9 @@ public class UpstreamSession {
             break;
         case "offline":
         	// We translate everything we are sent without regard for what it is
+        	minimalClientHandshake(false);
+        	
             protocol = new MinecraftProtocol(username);
-
             proxy.getLogger().debug("Initially joining [" + proxy.getConfig().getDefault_server() + "]... ");
             connectToServer(proxy.getConfig().getRemote_servers().get(proxy.getConfig().getDefault_server()));
             break;
@@ -403,20 +409,20 @@ public class UpstreamSession {
         status.status = PlayStatusPacket.LOGIN_SUCCESS;
         sendPacket(status, true);
         
-        sendPacket(new ResourcePacksInfoPacket(), true); // Required; Causes the client to switch to the "locating server" screen
+        sendPacket(new ResourcePacksInfoPacket(), true);  // Causes the client to switch to the "locating server" screen
         
         StartGamePacket startGamePacket = new StartGamePacket(); // Required; Makes the client switch to the "generating world" screen
-        startGamePacket.entityUniqueId = 0;
-        startGamePacket.entityRuntimeId = 0;
+        startGamePacket.entityUniqueId = 52;
+        startGamePacket.entityRuntimeId = 52;
         startGamePacket.x = (float) 0.0;
-        startGamePacket.y = (float) 0.0;
+        startGamePacket.y = (float) 72F;
         startGamePacket.z = (float) 0.0;
         startGamePacket.seed = 242540254;
         startGamePacket.dimension = (byte) ((errorMode ? 1 : 0) & 0xff);
-        startGamePacket.gamemode = 1;
+        startGamePacket.gamemode = 0;
         startGamePacket.difficulty = 1;
         startGamePacket.spawnX = (int) 0.0;
-        startGamePacket.spawnY = (int) 128;
+        startGamePacket.spawnY = (int) 72;
         startGamePacket.spawnZ = (int) 0.0;
         startGamePacket.hasAchievementsDisabled = true;
         startGamePacket.dayCycleStopTime = -1;
@@ -426,50 +432,154 @@ public class UpstreamSession {
         startGamePacket.commandsEnabled = true;
         startGamePacket.levelId = "";
         startGamePacket.worldName = ""; // Must not be null or a NullPointerException will occur
-        startGamePacket.generator = 0; //0 old, 1 infinite, 2 flat
+        startGamePacket.generator = 1; //0 old, 1 infinite, 2 flat
         sendPacket(startGamePacket, true);
 
-/*        SetTimePacket setTimePacket = new SetTimePacket();
+        SetSpawnPositionPacket pkSpawn = new SetSpawnPositionPacket();
+        pkSpawn.x = 0;
+        pkSpawn.y = 72;
+        pkSpawn.z = 0;
+        sendPacket(pkSpawn, true);
+        
+        MovePlayerPacket pkMovePlayer = new MovePlayerPacket();
+        pkMovePlayer.eid = 52;
+        pkMovePlayer.x = (float) 0;
+        pkMovePlayer.y = (float) 72;
+        pkMovePlayer.z = (float) 0;
+        pkMovePlayer.headYaw = 0.0f;
+        pkMovePlayer.yaw = 0.0f;
+        pkMovePlayer.pitch = 0.0f;
+        pkMovePlayer.onGround = false;
+        pkMovePlayer.mode = MovePlayerPacket.MODE_RESET;
+        sendPacket(pkMovePlayer, true);
+        
+        SetTimePacket setTimePacket = new SetTimePacket();
         setTimePacket.time = 1000;
-        setTimePacket.started = false;
+        setTimePacket.started = true;
         sendPacket(setTimePacket, true);
+        
+        SetDifficultyPacket pkSetDiff = new SetDifficultyPacket();
+        pkSetDiff.difficulty = 1;
+        sendPacket(pkSetDiff, true);
+        
+        AdventureSettingsPacket pkAdventureSettings = new AdventureSettingsPacket();
+        pkAdventureSettings.allowFlight = true;
+        pkAdventureSettings.isFlying = false;
+        pkAdventureSettings.flags = 4;
+        sendPacket(pkAdventureSettings, true);
+        
+        UpdateAttributesPacket pkUpdateAttr = new UpdateAttributesPacket();
+        Attribute.init();
+        pkUpdateAttr.entries = new Attribute[] {
+        		Attribute.getAttribute(Attribute.ABSORPTION),
+        		Attribute.getAttribute(Attribute.SATURATION),
+        		Attribute.getAttribute(Attribute.EXHAUSTION),
+        		Attribute.getAttribute(Attribute.KNOCKBACK_RESISTANCE),
+        		Attribute.getAttribute(Attribute.MAX_HEALTH),
+        		Attribute.getAttribute(Attribute.MOVEMENT_SPEED),
+        		Attribute.getAttribute(Attribute.FOLLOW_RANGE),
+        		Attribute.getAttribute(Attribute.MAX_HUNGER),
+        		Attribute.getAttribute(Attribute.ATTACK_DAMAGE),
+        		Attribute.getAttribute(Attribute.EXPERIENCE_LEVEL),
+        		Attribute.getAttribute(Attribute.EXPERIENCE)
+        };
+        //sendPacket(pkUpdateAttr, true);
+        
+        CraftingDataPacket pkCraftData = new CraftingDataPacket();
+        pkCraftData.entries = Collections.EMPTY_LIST;
+        sendPacket(pkCraftData, true);
+        
+        SetEntityDataPacket pkEntityData = new SetEntityDataPacket();
+        pkEntityData.eid = 52;
+        pkEntityData.metadata = new EntityMetadata();
+        sendPacket(pkEntityData, true);
         
         ContainerSetContentPacket containerSetContentPacket = new ContainerSetContentPacket();
         containerSetContentPacket.windowid = ContainerSetContentPacket.SPECIAL_CREATIVE;
         containerSetContentPacket.slots = Item.getCreativeItems().stream().toArray(Item[]::new);
         sendPacket(containerSetContentPacket, true);
         
+        sendFlatChunks(0, 0, 20, true);
+        sendFlatChunks(0, 0, 17, false);
+        
+        ChunkRadiusUpdatedPacket pkChunkRadius = new ChunkRadiusUpdatedPacket();
+        pkChunkRadius.radius = 3;
+        sendPacket(pkChunkRadius, true);
+        
+/*        
+        
         SetCommandsEnabledPacket pk = new SetCommandsEnabledPacket();
         pk.enabled = true;
         sendPacket(pk, true);
-                
-        AdventureSettingsPacket pkAdventureSettings = new AdventureSettingsPacket();
-        pkAdventureSettings.allowFlight = true;
-        pkAdventureSettings.isFlying = true;
-        pkAdventureSettings.flags = 4;
-        sendPacket(pkAdventureSettings, true);
         
-        SetEntityDataPacket pkEntityData = new SetEntityDataPacket();
-        pkEntityData.eid = 0;
-        pkEntityData.metadata = new EntityMetadata();
-        sendPacket(pkEntityData, true);
+*/
         
         RespawnPacket pkResp = new RespawnPacket();
         pkResp.y = 72F;
         sendPacket(pkResp, false);
-
-        SetSpawnPositionPacket pkSpawn = new SetSpawnPositionPacket();
-        pkSpawn.x = 0;
-        pkSpawn.y = 72;
-        pkSpawn.z = 0;
-        sendPacket(pkSpawn, true);*/
         
         PlayStatusPacket pkStat = new PlayStatusPacket(); //Required; Spawns the client in the world and closes the loading screen
         pkStat.status = PlayStatusPacket.PLAYER_SPAWN;
         sendPacket(pkStat, true);
     }
 
-    public void connectToServer(RemoteServer server){
+    private void sendFlatChunks(int playerX, int playerZ, int circleRadius, boolean sendAir) {
+		int blocksX = 1;
+		int blocksZ = 1;
+
+		boolean cx = false; // Centered?
+		// float circleRadius = player.getRenderDistance(); // Circle
+		// Radius
+		int maxBlocksX, maxBlocksZ;
+
+		if (!cx) {
+			maxBlocksX = (int) (Math.ceil((circleRadius - blocksX / 2) / blocksX) * 2 + 1);
+			maxBlocksZ = (int) (Math.ceil((circleRadius - blocksZ / 2) / blocksZ) * 2 + 1);
+		} else {
+			maxBlocksX = (int) (Math.ceil(circleRadius / blocksX) * 2);
+			maxBlocksZ = (int) (Math.ceil(circleRadius / blocksZ) * 2);
+		}
+
+		// TODO: Cache the chunk circle
+		// Calculate the chunk ring
+		//ArrayList<Vector3D> loadChunksList = new ArrayList<>();
+		for (int z = -maxBlocksZ / 2; z <= maxBlocksZ / 2; z++) {
+			for (int x = -maxBlocksX / 2; x <= maxBlocksX / 2; x++) {
+				double distance = Math.sqrt(Math.pow(z * blocksZ, 2) + Math.pow(x * blocksX, 2));
+				boolean shouldSendChunk = (distance < circleRadius);
+				if (shouldSendChunk) {
+					sendPacket(getFlatChunkPacket(x, z, (sendAir ? 0 : 1)), true);
+					//loadChunksList.add(new Vector3D(nx - x, 0, nz - z));
+				}
+			}
+		}
+	}
+
+	private DataPacket getFlatChunkPacket(int chunkX, int chunkZ, int blockId) {
+		FullChunkDataPacket pePacket = new FullChunkDataPacket();
+		
+		cn.nukkit.level.format.mcregion.Chunk chunk = cn.nukkit.level.format.mcregion.Chunk.getEmptyChunk(chunkX, chunkZ);
+		
+		pePacket.chunkX = chunkX;
+		pePacket.chunkZ = chunkZ;
+		
+		for(int yPC = 0; yPC < 128; yPC++){
+			for(int x = 0; x < 16; x++){
+				for(int z = 0; z < 16; z++){
+					chunk.setBlockId(x, yPC, z, blockId);
+					chunk.setBlockData(x, yPC, z, 0);
+					chunk.setBlockLight(x, yPC, z, 15);
+					chunk.setBlockSkyLight(x, yPC, z, 15);
+					chunk.setBiomeId(x, z, 0);
+				}
+			}
+		}
+		
+		pePacket.data = chunk.toFastBinary();
+		return pePacket;
+	}
+
+	public void connectToServer(RemoteServer server){
         if(server == null) return;
         status = ConnectionStatus.CONNECTING_SERVER;
         if(downstream != null && downstream.isConnected()){
