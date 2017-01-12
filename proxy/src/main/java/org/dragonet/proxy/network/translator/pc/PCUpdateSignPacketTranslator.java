@@ -24,6 +24,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.BlockEntityDataPacket;
 import cn.nukkit.network.protocol.DataPacket;
+import org.spacehq.mc.protocol.data.message.Message;
 
 public class PCUpdateSignPacketTranslator implements PCPacketTranslator<ServerUpdateTileEntityPacket> {
 
