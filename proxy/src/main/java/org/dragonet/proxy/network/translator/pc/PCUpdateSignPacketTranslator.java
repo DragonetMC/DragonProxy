@@ -35,12 +35,12 @@ public class PCUpdateSignPacketTranslator implements PCPacketTranslator<ServerUp
         root.putInt("x", packet.getPosition().getX());
         root.putInt("y", packet.getPosition().getY());
         root.putInt("z", packet.getPosition().getZ());
-        root.putString("Text1", MessageTranslator.translate(packet.getNBT().get("Text1")));
-        root.putString("Text2", MessageTranslator.translate(packet.getNBT().get("Text2")));
-        root.putString("Text3", MessageTranslator.translate(packet.getNBT().get("Text3")));
-        root.putString("Text4", MessageTranslator.translate(packet.getNBT().get("Text4")));
-        
-        
+        //root.putString("Text1", MessageTranslator.translate(packet.getNBT().get("Text1")));
+        //root.putString("Text2", MessageTranslator.translate(packet.getNBT().get("Text2")));
+        //root.putString("Text3", MessageTranslator.translate(packet.getNBT().get("Text3")));
+        //root.putString("Text4", MessageTranslator.translate(packet.getNBT().get("Text4")));
+
+
         BlockEntityDataPacket pkBlockData = new BlockEntityDataPacket();
         pkBlockData.x = packet.getPosition().getX();
         pkBlockData.y = packet.getPosition().getY();
@@ -50,7 +50,7 @@ public class PCUpdateSignPacketTranslator implements PCPacketTranslator<ServerUp
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-        
+
         return new DataPacket[]{pkBlockData};
     }
 

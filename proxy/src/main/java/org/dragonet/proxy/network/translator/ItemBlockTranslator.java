@@ -22,6 +22,7 @@ import org.spacehq.mc.protocol.data.game.entity.metadata.ItemStack;
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
+import org.spacehq.mc.protocol.data.message.Message;
 
 public class ItemBlockTranslator {
     
