@@ -17,6 +17,12 @@
 
 	<repositories>
 		<repository>
+			<id>hani</id>
+			<name>hanioka Repository</name>
+			<layout>default</layout>
+			<url>http://jenkins.haniokasai.com/plugin/repository/everything/</url>
+		</repository>
+		<repository>
 			<id>sonatype</id>
 			<name>Sonatype Nexus</name>
 			<layout>default</layout>
@@ -28,12 +34,7 @@
 			<layout>default</layout>
 			<url>https://repo.spacehq.org/content/repositories/snapshots/</url>
 		</repository>
-		<repository>
-			<id>hani</id>
-			<name>hanioka Repository</name>
-			<layout>default</layout>
-        <url>http://jenkins.haniokasai.com/job/NukkitDev/1/maven-repository/</url>
-		</repository>
+
 	</repositories>
 
 	<dependencies>
