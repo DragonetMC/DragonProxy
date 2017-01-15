@@ -23,7 +23,7 @@ import cn.nukkit.network.protocol.TextPacket;
 public class PCChatPacketTranslator implements PCPacketTranslator<ServerChatPacket> {
 
     @Override
-    public DataPacket[] translate(UpstreamSession session, ServerChatPacket packet) {
+    public DataPacket[] translate(UpstreamSession session, ServerChatPacket packet) throws java.lang.IllegalStateException{
         TextPacket ret = new TextPacket();
         /*
          * Reset the chat message so we can parse the JSON again (if needed)
