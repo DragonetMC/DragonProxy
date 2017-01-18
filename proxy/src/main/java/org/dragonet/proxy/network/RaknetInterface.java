@@ -80,7 +80,8 @@ public class RaknetInterface implements ServerInstance {
         if (session == null) {
             return;
         }
-        session.onDisconnect(proxy.getLang().get(Lang.MESSAGE_CLIENT_DISCONNECT)); //It will handle rest of the things. 
+        //session.onDisconnect(proxy.getLang().get(Lang.MESSAGE_CLIENT_DISCONNECT)); //It will handle rest of the things. 
+        session.onDisconnect(reason);
         setBroadcastName();
     }
 
