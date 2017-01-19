@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.dragonet.proxy.entity.meta.type.ByteArrayMeta;
 import org.dragonet.proxy.entity.meta.type.ByteMeta;
 import org.dragonet.proxy.entity.meta.type.ShortMeta;
@@ -72,6 +73,7 @@ public class EntityMetaData {
                 writer.write(entry.getValue().encode());
             }
             writer.writeByte((byte) 0x7F);
+            writer.close();
             return bos.toByteArray();
         } catch (IOException e) {
         }

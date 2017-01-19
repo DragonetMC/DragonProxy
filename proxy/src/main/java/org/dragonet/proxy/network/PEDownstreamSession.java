@@ -13,32 +13,32 @@
 package org.dragonet.proxy.network;
 
 import java.util.Arrays;
-import java.util.UUID;
 import java.util.logging.Logger;
+
 import lombok.Getter;
-import org.dragonet.proxy.protocol.Protocol;
-import org.dragonet.proxy.protocol.packet.BatchPacket;
-import org.dragonet.proxy.protocol.packet.ChatPacket;
-import org.dragonet.proxy.protocol.packet.LoginPacket;
-import org.dragonet.proxy.protocol.packet.MovePlayerPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
-import org.dragonet.proxy.protocol.packet.SetSpawnPositionPacket;
-import org.dragonet.proxy.protocol.packet.StartGamePacket;
+
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.PocketServer;
-import org.dragonet.proxy.utilities.Binary;
-import org.dragonet.proxy.utilities.DefaultSkin;
-import org.dragonet.proxy.utilities.Versioning;
-import org.dragonet.raknet.RakNet;
+import org.dragonet.proxy.protocol.Protocol;
 import org.dragonet.raknet.client.ClientHandler;
 import org.dragonet.raknet.client.ClientInstance;
 import org.dragonet.raknet.client.JRakLibClient;
-import org.dragonet.raknet.protocol.EncapsulatedPacket;
 
-public class PEDownstreamSession implements DownstreamSession<PEPacket>, ClientInstance {
+import cn.nukkit.network.protocol.BatchPacket;
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.LoginPacket;
+import cn.nukkit.network.protocol.TextPacket;
+import cn.nukkit.raknet.RakNet;
+import cn.nukkit.raknet.protocol.EncapsulatedPacket;
+import cn.nukkit.utils.Binary;
+
+public class PEDownstreamSession implements DownstreamSession<DataPacket>, ClientInstance {
 
     public final static String ENTITY_ID_KEY = "ENTITYID";
     
+    /**
+     * The PE Server
+     */
     private JRakLibClient client;
     private ClientHandler handler;
 
@@ -46,14 +46,20 @@ public class PEDownstreamSession implements DownstreamSession<PEPacket>, ClientI
     private final DragonProxy proxy;
 
     @Getter
+    /**
+     * The PE Client
+     */
     private final UpstreamSession upstream;
 
     private PocketServer serverInfo;
     private boolean connected;
 
-    public PEDownstreamSession(DragonProxy proxy, UpstreamSession upstream) {
+	private LoginPacket loginPacket;
+
+    public PEDownstreamSession(DragonProxy proxy, UpstreamSession upstream, LoginPacket peServerLoginPacket) {
         this.proxy = proxy;
         this.upstream = upstream;
+        this.loginPacket = peServerLoginPacket;
     }
     
     @Override
@@ -70,12 +76,12 @@ public class PEDownstreamSession implements DownstreamSession<PEPacket>, ClientI
 
     @Override
     public void connect(String addr, int port) {
-        System.out.println("[" + upstream.getUsername() + "] Connecting to remote pocket server at [" + String.format("%s:%s", addr, port) + "] ");
+    	DragonProxy.getLogger().info("[" + upstream.getUsername() + "] Connecting to remote pocket server at [" + String.format("%s:%s", addr, port) + "] ");
         if (client != null) {
             upstream.onConnected(); // Clear the flags
             upstream.disconnect("ERROR! ");
         }
-        client = new JRakLibClient(Logger.getLogger(upstream.getRemoteAddress().toString() + "<->" + serverInfo.toString()), addr, port);
+        client = new JRakLibClient(Logger.getLogger(upstream.getRemoteAddress().toString() + "<->" + serverInfo.toString()), addr, port); // PE Server
         handler = new ClientHandler(client, this);
     }
 
@@ -85,21 +91,21 @@ public class PEDownstreamSession implements DownstreamSession<PEPacket>, ClientI
     }
 
     @Override
-    public void send(PEPacket packet) {
+    public void send(DataPacket packet) {
         sendPacket(packet, true);
     }
 
     @Override
-    public void send(PEPacket... packets) {
-        for (PEPacket packet : packets) {
+    public void send(DataPacket... packets) {
+        for (DataPacket packet : packets) {
             sendPacket(packet, true);
         }
     }
 
     @Override
     public void sendChat(String chat) {
-        ChatPacket pk = new ChatPacket();
-        pk.type = ChatPacket.TextType.CHAT;
+        TextPacket pk = new TextPacket();
+        pk.type = TextPacket.TYPE_CHAT;
         pk.source = "";
         pk.message = chat;
         send(pk);
@@ -116,37 +122,46 @@ public class PEDownstreamSession implements DownstreamSession<PEPacket>, ClientI
     public void connectionOpened(long serverId) {
         connected = true;
         
-        LoginPacket pkLogin = new LoginPacket();
-        pkLogin.clientID = client.getId();
-        pkLogin.clientUuid = UUID.nameUUIDFromBytes(("DragonProxyPlayer:" + upstream.getUsername()).getBytes());
+/*        LoginPacket pkLogin = new LoginPacket();
+        pkLogin.clientId = serverId; //client.getId();
+        pkLogin.clientUUID = UUID.randomUUID(); //UUID.nameUUIDFromBytes(("DragonProxyPlayer:" + upstream.getUsername()).getBytes());
         pkLogin.protocol = Versioning.MINECRAFT_PE_PROTOCOL;
         pkLogin.serverAddress = "0.0.0.0:0";
         pkLogin.username = upstream.getUsername();
-        pkLogin.skin = DefaultSkin.getDefaultSkin();
-        
+        pkLogin.skin = new Skin(DefaultSkin.getDefaultSkinBase64Encoded());
+        pkLogin.gameEdition = 0;
+        pkLogin.identityPublicKey = "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEeix7KXIXKfSSQDPkLok8byiOEZ0gO6rT6Fe/Y077G8by2YidRTGMCAlpVq4oFrfiac6PnLBqBkcUezI0lbp/LnAL+xPLiYueR5pT6236StWRwC4CnZGPWg7QRdBAX9p3";
+        */
         proxy.getLogger().debug("Remote pocket server downstream established!");
         
-        sendPacket(pkLogin, true);
+        sendPacket(loginPacket, true);
+        //sendPacket(pkLogin, true);
+        loginPacket = null;
     }
 
     @Override
     public void connectionClosed(String reason) {
         connected = false;
         upstream.disconnect(reason);
-        proxy.getLogger().debug("Remote pocket server downstream CLOSED!");
+        proxy.getLogger().debug("Remote pocket server downstream CLOSED!\nReason: " + reason);
     }
 
     @Override
     public void handleEncapsulated(EncapsulatedPacket packet, int flags) {
         byte[] buffer = Arrays.copyOfRange(packet.buffer, 1, packet.buffer.length);
-        PEPacket pk = Protocol.decode(buffer);
+        DataPacket[] pk = Protocol.decode(buffer);
 
-        proxy.getLogger().debug("GOT PACKET = " + pk.getClass().getSimpleName());
+        for(DataPacket pak : pk){
+        	proxy.getLogger().debug("GOT PACKET = " + pak.getClass().getSimpleName());
+        }
         
-        if(StartGamePacket.class.isAssignableFrom(pk.getClass())){
+/*        if(StartGamePacket.class.isAssignableFrom(pk.getClass())){
             // Translate
-            StartGamePacket start = (StartGamePacket) pk;
-            upstream.getDataCache().put(ENTITY_ID_KEY, (long) start.eid);
+            StartGamePacket start = (StartGamePacket) pk[0];
+            if(start.worldName == null){
+            	start.worldName = "";
+            }
+            upstream.getDataCache().put(ENTITY_ID_KEY, (long) start.entityRuntimeId);
             
             SetSpawnPositionPacket spawn = new SetSpawnPositionPacket();
             spawn.x = start.spawnX;
@@ -154,11 +169,20 @@ public class PEDownstreamSession implements DownstreamSession<PEPacket>, ClientI
             spawn.z = start.spawnZ;
             upstream.sendPacket(spawn, true);
             
-            MovePlayerPacket teleport = new MovePlayerPacket(0L, start.x, start.y, start.z, 0.0f, 0.0f, 0.0f, true);
-            upstream.sendPacket(teleport, true);
+            MovePlayerPacket pkMovePlayer = new MovePlayerPacket();
+            pkMovePlayer.eid = 0;
+            pkMovePlayer.x = start.x;
+            pkMovePlayer.y = start.y;
+            pkMovePlayer.z = start.z;
+            pkMovePlayer.headYaw = 0.0f;
+            pkMovePlayer.yaw = 0.0f;
+            pkMovePlayer.pitch = 0.0f;
+            pkMovePlayer.onGround = false;
+            pkMovePlayer.mode = MovePlayerPacket.MODE_NORMAL;
+            upstream.sendPacket(pkMovePlayer, true);
             return;
-        }
-        upstream.sendPacket(pk);
+        }*/
+        upstream.sendAllPackets(pk, false);
     }
 
     @Override
@@ -169,24 +193,24 @@ public class PEDownstreamSession implements DownstreamSession<PEPacket>, ClientI
     public void handleOption(String option, String value) {
     }
 
-    public void sendPacket(PEPacket packet, boolean immediate) {
+    public void sendPacket(DataPacket packet, boolean immediate) {
         if (packet == null) {
             return;
         }
         
-        System.out.println("SENDING " + packet.getClass().getSimpleName());
+        DragonProxy.getLogger().info("SENDING " + packet.getClass().getSimpleName());
         
-        boolean overridedImmediate = immediate || packet.isShouldSendImmidate();
+        boolean overridedImmediate = immediate; /*|| false; /*packet.isShouldSendImmidate();*/
         packet.encode();
-        if (packet.getData().length > 512 && !BatchPacket.class.isAssignableFrom(packet.getClass())) {
+        if (packet.getBuffer().length > 512 && !BatchPacket.class.isAssignableFrom(packet.getClass())) {
             BatchPacket pkBatch = new BatchPacket();
-            pkBatch.packets.add(packet);
+            pkBatch.payload = packet.getBuffer();
             sendPacket(pkBatch, overridedImmediate);
             return;
         }
 
         EncapsulatedPacket encapsulated = new EncapsulatedPacket();
-        encapsulated.buffer = Binary.appendBytes((byte) 0xfe, packet.getData());
+        encapsulated.buffer = Binary.appendBytes((byte) 0xfe, packet.getBuffer());
         encapsulated.needACK = true;
         encapsulated.reliability = (byte) 2;
         encapsulated.messageIndex = 0;

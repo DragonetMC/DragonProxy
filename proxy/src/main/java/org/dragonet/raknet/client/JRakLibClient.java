@@ -26,7 +26,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
-import org.dragonet.raknet.protocol.packet.*;
+
+import cn.nukkit.raknet.protocol.packet.UNCONNECTED_PING;
+import cn.nukkit.raknet.protocol.packet.UNCONNECTED_PONG;
 
 /**
  * Represents a JRakLib Client.
@@ -82,7 +84,7 @@ public class JRakLibClient extends Thread{
             ping.pingID = System.currentTimeMillis() - startTime; //Amount since start.
             ping.encode();
             socket.writePacket(ping.buffer, new InetSocketAddress(serverIP, serverPort));
-
+            socket.close();
             DatagramPacket pkt = socket.readPacketBlocking(delay);
             if(pkt != null && pkt.getData()[0] == UNCONNECTED_PONG.ID){
                 UNCONNECTED_PONG pong = new UNCONNECTED_PONG();

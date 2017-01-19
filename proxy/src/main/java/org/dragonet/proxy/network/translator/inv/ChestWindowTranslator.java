@@ -12,17 +12,23 @@
  */
 package org.dragonet.proxy.network.translator.inv;
 
-import org.dragonet.inventory.InventoryType;
-import org.dragonet.inventory.PEInventorySlot;
-import org.dragonet.proxy.protocol.packet.WindowItemsPacket;
-import org.dragonet.proxy.protocol.packet.WindowOpenPacket;
-import org.dragonet.proxy.protocol.packet.BlockEntityDataPacket;
+import cn.nukkit.inventory.InventoryType;
+import java.io.IOException;
+import java.nio.ByteOrder;
+
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.InventoryTranslator;
-import org.dragonet.proxy.nbt.tag.CompoundTag;
-import org.spacehq.mc.protocol.data.game.Position;
+import org.spacehq.mc.protocol.data.game.entity.metadata.Position;
+
+import cn.nukkit.item.Item;
+import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.BlockEntityDataPacket;
+import cn.nukkit.network.protocol.ContainerOpenPacket;
+import cn.nukkit.network.protocol.ContainerSetContentPacket;
+import org.dragonet.inventory.PEInventorySlot;
 
 public class ChestWindowTranslator implements InventoryTranslator {
 
@@ -37,11 +43,23 @@ public class ChestWindowTranslator implements InventoryTranslator {
             .putInt("x", (int)pos.getX())
             .putInt("y", (int)pos.getY())
             .putInt("z", (int)pos.getZ());
-        session.sendPacket(new BlockEntityDataPacket((int)pos.getX(), (int)pos.getY(), (int)pos.getZ(), tag));
-        WindowOpenPacket pk = new WindowOpenPacket();
-        pk.windowID = (byte)(window.windowId & 0xFF);
-        pk.slots = window.size <= 27 ? (short)(InventoryType.SlotSize.CHEST & 0xFFFF) : (short)(InventoryType.SlotSize.DOUBLE_CHEST & 0xFFFF);
-        pk.type = window.size <= 27 ? InventoryType.PEInventory.CHEST : InventoryType.PEInventory.DOUBLE_CHEST;
+        
+        
+        BlockEntityDataPacket pkBlockData = new BlockEntityDataPacket();
+        pkBlockData.x = pos.getX();
+        pkBlockData.y = pos.getY();
+        pkBlockData.z = pos.getZ();
+        try {
+			pkBlockData.namedTag = NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN, true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        session.sendPacket(pkBlockData);
+        
+        ContainerOpenPacket pk = new ContainerOpenPacket();
+        pk.windowid = (byte)(window.windowId & 0xFF);
+        pk.slots = window.size <= 27 ? (short)(InventoryType.CHEST.getNetworkType() & 0xFFFF) : (short)(InventoryType.DOUBLE_CHEST.getNetworkType() & 0xFFFF);
+        pk.type = (byte) (window.size <= 27 ? InventoryType.CHEST.getNetworkType() : InventoryType.DOUBLE_CHEST.getNetworkType());
         pk.x = pos.getX();
         pk.y = pos.getY();
         pk.z= pos.getZ();
@@ -60,9 +78,9 @@ public class ChestWindowTranslator implements InventoryTranslator {
     }
     
     private void sendContent(UpstreamSession session, CachedWindow win){
-        WindowItemsPacket pk = new WindowItemsPacket();
-        pk.windowID = (byte)(win.windowId & 0xFF);
-        pk.slots = new PEInventorySlot[win.slots.length];
+        ContainerSetContentPacket pk = new ContainerSetContentPacket();
+        pk.windowid = (byte)(win.windowId & 0xFF);
+        pk.slots = new Item[win.slots.length];
         for(int i = 0; i < pk.slots.length; i++){
             pk.slots[i] = PEInventorySlot.fromItemStack(win.slots[i]);
         }

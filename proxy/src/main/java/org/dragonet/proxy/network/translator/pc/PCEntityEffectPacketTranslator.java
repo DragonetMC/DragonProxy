@@ -12,20 +12,20 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.PocketPotionEffect;
-import org.dragonet.proxy.protocol.packet.MobEffectPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.data.game.values.MagicValues;
+import org.spacehq.mc.protocol.data.MagicValues;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityEffectPacket;
+
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.MobEffectPacket;
 
 public class PCEntityEffectPacketTranslator implements PCPacketTranslator<ServerEntityEffectPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerEntityEffectPacket packet) {
+    public DataPacket[] translate(UpstreamSession session, ServerEntityEffectPacket packet) {
         CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
         if (entity == null) {
             return null;
@@ -34,20 +34,20 @@ public class PCEntityEffectPacketTranslator implements PCPacketTranslator<Server
 
         MobEffectPacket eff = new MobEffectPacket();
         eff.eid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
-        eff.effect = PocketPotionEffect.getByID(effectId);
-        if (eff.effect == null) {
+        eff.effectId = effectId;
+        if (eff.effectId == -1) {// Is this the correct way to do this?
             return null; //Not supported
         }
         if (entity.effects.contains(effectId)) {
-            eff.action = MobEffectPacket.EffectAction.MODIFY;
+            eff.eventId = MobEffectPacket.EVENT_MODIFY;
         } else {
-            eff.action = MobEffectPacket.EffectAction.ADD;
+            eff.eventId = MobEffectPacket.EVENT_ADD;
             entity.effects.add(effectId);
         }
-        eff.effect.setAmpilifier(packet.getAmplifier());
-        eff.effect.setDuration(packet.getDuration());
-        eff.effect.setParticles(!packet.getHideParticles());
-        return new PEPacket[]{eff};
+        eff.amplifier = packet.getAmplifier();
+        eff.duration = packet.getDuration();
+        eff.particles = packet.getShowParticles();
+        return new DataPacket[]{eff};
     }
 
 }

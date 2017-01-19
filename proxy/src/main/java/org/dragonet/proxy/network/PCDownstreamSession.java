@@ -14,7 +14,7 @@ package org.dragonet.proxy.network;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.dragonet.proxy.protocol.packet.PEPacket;
+
 import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
@@ -23,10 +23,14 @@ import org.spacehq.mc.protocol.packet.ingame.client.ClientChatPacket;
 import org.spacehq.packetlib.Client;
 import org.spacehq.packetlib.event.session.ConnectedEvent;
 import org.spacehq.packetlib.event.session.DisconnectedEvent;
+import org.spacehq.packetlib.event.session.DisconnectingEvent;
 import org.spacehq.packetlib.event.session.PacketReceivedEvent;
+import org.spacehq.packetlib.event.session.PacketSentEvent;
 import org.spacehq.packetlib.event.session.SessionAdapter;
 import org.spacehq.packetlib.packet.Packet;
 import org.spacehq.packetlib.tcp.TcpSessionFactory;
+
+import cn.nukkit.network.protocol.DataPacket;
 
 /**
  * Maintaince the connection between the proxy and remote Minecraft server.
@@ -92,25 +96,18 @@ public class PCDownstreamSession implements DownstreamSession<Packet> {
 
             @Override
             public void disconnected(DisconnectedEvent event) {
+            	DragonProxy.getLogger().info("Disconnected Client " + event.getSession().getHost() + ":" + event.getSession().getPort() + " for reason " + event.getReason());
+            	event.getCause().printStackTrace();
+            	Thread.dumpStack();
                 upstream.disconnect(proxy.getLang().get(event.getReason()));
             }
 
             @Override
             public void packetReceived(PacketReceivedEvent event) {
-                /*
-                if (!event.getPacket().getClass().getSimpleName().toLowerCase().contains("block")
-                        && !event.getPacket().getClass().getSimpleName().toLowerCase().contains("entity")
-                        && !event.getPacket().getClass().getSimpleName().toLowerCase().contains("time")) {
-                    System.out.println(event.getPacket().getClass().getSimpleName() + " > " + event.getPacket().toString());
-                }
-                */
                 //Handle the packet
                 try {
-                    PEPacket[] packets = PacketTranslatorRegister.translateToPE(upstream, event.getPacket());
-                    if (packets == null) {
-                        return;
-                    }
-                    if (packets.length <= 0) {
+                    DataPacket[] packets = PacketTranslatorRegister.translateToPE(upstream, event.getPacket());
+                    if (packets == null || packets.length <= 0) {
                         return;
                     }
                     if (packets.length == 1) {
@@ -123,8 +120,25 @@ public class PCDownstreamSession implements DownstreamSession<Packet> {
                     throw e;
                 }
             }
+            
+            @Override
+            public void packetSent(PacketSentEvent event) {
+            	DragonProxy.getLogger().info("PC Sending Packet: " + event.getPacket().toString());
+            }
+            
+            @Override
+            public void disconnecting(DisconnectingEvent event) {
+            	DragonProxy.getLogger().info("Disconnecting Client " + event.getSession().getHost() + ":" + event.getSession().getPort() + " for reason " + event.getReason());
+            	event.getCause().printStackTrace();
+            	Thread.dumpStack();
+            }
         });
-        remoteClient.getSession().connect();
+        
+        try {
+        	remoteClient.getSession().connect();
+        } catch (Exception e){
+        	e.printStackTrace();
+        }
     }
 
     @Override

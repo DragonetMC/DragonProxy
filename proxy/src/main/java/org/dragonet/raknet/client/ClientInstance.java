@@ -19,7 +19,7 @@
  */
 package org.dragonet.raknet.client;
 
-import org.dragonet.raknet.protocol.EncapsulatedPacket;
+import cn.nukkit.raknet.protocol.EncapsulatedPacket;
 
 /**
  * An interface for communication with the client implementation

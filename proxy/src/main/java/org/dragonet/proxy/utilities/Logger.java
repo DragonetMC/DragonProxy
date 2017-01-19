@@ -12,10 +12,13 @@
  */
 package org.dragonet.proxy.utilities;
 
-import org.dragonet.proxy.DragonProxy;
-
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import org.dragonet.proxy.DragonProxy;
 
 public class Logger {
 
@@ -26,10 +29,32 @@ public class Logger {
 
     public boolean debug = false;
 
-    public Logger(DragonProxy proxy) {
-        proxy = proxy;
+	private File logFile;
+	FileOutputStream logOut;
+	private static final byte[] NEW_LINE = "\n".getBytes();
+
+    public Logger(DragonProxy proxy, File logFile) {
+        this.proxy = proxy;
         calender = Calendar.getInstance();
         consoleDate = new SimpleDateFormat("HH:mm:ss");
+        if(logFile != null){
+        	try{
+        		if(logFile.isFile()){
+            		if(logFile.exists()){
+            			logFile.delete();
+            		}
+            		logFile.createNewFile();
+            		logOut = new FileOutputStream(logFile);
+            		
+            		// Setting the variable here ensures that it will not be null
+            		// if, and only if everything else goes well
+            		this.logFile = logFile; 
+        		}
+        	} catch (Exception e){
+        		this.logFile = null;
+        		e.printStackTrace();
+        	}
+        }
     }
 
     private void log(String level, String message) {
@@ -43,11 +68,21 @@ public class Logger {
         builder.append(MCColor.toANSI(levelColor + "[" + level + "] "));
         builder.append(MCColor.toANSI(message + MCColor.WHITE + MCColor.RESET));
 
-        System.out.println(builder.toString());
+        String logMessage = builder.toString();
+        System.out.println(logMessage);
+        
+        if(logFile != null){
+        	try {
+        		logOut.write(logMessage.getBytes());
+				logOut.write(NEW_LINE);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+        }
     }
 
     public void info(String message) {
-        log("INFO", message);
+        log(MCColor.RESET, "INFO", message);
     }
 
     public void warning(String message) {

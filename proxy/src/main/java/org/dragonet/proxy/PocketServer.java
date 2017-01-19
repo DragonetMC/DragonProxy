@@ -13,8 +13,8 @@
 package org.dragonet.proxy;
 
 import java.util.Map;
+
 import org.dragonet.proxy.configuration.RemoteServer;
-import static org.dragonet.proxy.configuration.RemoteServer.delicatedDeserialize;
 
 public class PocketServer extends RemoteServer {
 

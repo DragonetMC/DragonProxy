@@ -16,20 +16,24 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.dragonet.proxy.network.SessionRegister;
-import org.dragonet.proxy.network.RaknetInterface;
-import org.dragonet.proxy.configuration.Lang;
-import org.dragonet.proxy.configuration.ServerConfig;
-import org.dragonet.proxy.utilities.*;
+import lombok.Getter;
+
 import org.dragonet.proxy.commands.CommandRegister;
 import org.dragonet.proxy.commands.ConsoleCommandReader;
-
+import org.dragonet.proxy.configuration.Lang;
+import org.dragonet.proxy.configuration.RemoteServer;
+import org.dragonet.proxy.configuration.ServerConfig;
+import org.dragonet.proxy.network.RaknetInterface;
+import org.dragonet.proxy.network.SessionRegister;
+import org.dragonet.proxy.utilities.Logger;
+import org.dragonet.proxy.utilities.MCColor;
+import org.dragonet.proxy.utilities.Versioning;
 import org.mcstats.Metrics;
-import lombok.Getter;
 import org.yaml.snakeyaml.Yaml;
 
 public class DragonProxy {
@@ -40,8 +44,7 @@ public class DragonProxy {
 	
     public final static boolean IS_RELEASE = false; //DO NOT CHANGE, ONLY ON PRODUCTION
 
-    @Getter
-    private Logger logger;
+    private static Logger logger = null;
 
     private final TickerThread ticker = new TickerThread(this);
 
@@ -79,22 +82,39 @@ public class DragonProxy {
     private boolean isDebug = false;
 
     public void run(String[] args) {
-        logger = new Logger(this);
+        logger = new Logger(this, new File("proxy.log"));
+        // Load config.yml 
 
         try {
-            File fileConfig = new File("config.yml");
-            if (!fileConfig.exists()) {
-                //Create default config
-                FileOutputStream fos = new FileOutputStream(fileConfig);
-                InputStream ins = DragonProxy.class.getResourceAsStream("/config.yml");
-                int data = -1;
-                while((data = ins.read()) != -1){
-                    fos.write(data);
-                }
-                ins.close();
-                fos.close();
+        	File fileConfig = new File("config.yml");
+        	
+        	boolean newConfig = false;
+        	if (!fileConfig.exists()) {
+        		newConfig = fileConfig.createNewFile();
+        	}
+        	config = new Yaml().loadAs(new FileInputStream(fileConfig), ServerConfig.class);
+            
+        	if(config == null){
+        		config = new ServerConfig();
+        	}
+        	
+            if(newConfig){
+                Map<String, RemoteServer> servers = new HashMap<>();
+                DesktopServer serv = new DesktopServer();
+                serv.setRemote_addr("127.0.0.1");
+                serv.setRemote_port(25565);
+                servers.put("localhost", serv);
+                config.setRemote_servers(servers);
+                config.setDefault_server("localhost");
+                String str = new Yaml().dump(config);
+				FileOutputStream fos = new FileOutputStream(fileConfig);
+
+				for (byte bytes : str.getBytes()) {
+					fos.write(bytes);
+				}
+				fos.flush();
+				fos.close();
             }
-            config = new Yaml().loadAs(new FileInputStream(fileConfig), ServerConfig.class);
         } catch (IOException ex) {
             logger.severe("Failed to load configuration file! Make sure the file is writable.");
             ex.printStackTrace();
@@ -166,11 +186,20 @@ public class DragonProxy {
         motd = config.getMotd();
         motd = motd.replace("&", "§");
 
-        network.setBroadcastName(motd, -1, -1);
+        network.setBroadcastName();
         ticker.start();
         logger.info(lang.get(Lang.INIT_DONE));
     }
 
+    public static Logger getLogger(){
+    	// TODO: In the future this should never return null
+    	return logger;
+    }
+
+    public String getMotd(){
+    	return motd;
+    }
+    
     public void onTick() {
         network.onTick();
         sessionRegister.onTick();
@@ -195,10 +224,10 @@ public class DragonProxy {
         try{
             Thread.sleep(2000); // Wait for all clients disconnected
         } catch (Exception ex) {
-            System.out.println("Exception while shutting down!");
+        	DragonProxy.getLogger().severe("Exception while shutting down!");
             ex.printStackTrace();
         }
-        System.out.println("Goodbye!");
+        DragonProxy.getLogger().info("Goodbye!");
         System.exit(0);
     }
 }

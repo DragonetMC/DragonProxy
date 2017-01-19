@@ -14,10 +14,12 @@ package org.dragonet.proxy.commands.defaults;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
-import org.dragonet.proxy.protocol.packet.FullChunkPacket;
+
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.commands.Command;
+import org.dragonet.proxy.network.UpstreamSession;
+
+import cn.nukkit.network.protocol.FullChunkDataPacket;
 
 /*
  * Used for testing during development.
@@ -62,10 +64,10 @@ public class TestCommand extends Command {
                 bos.write((byte) 0x4A);
             }
             bos.write(new byte[4]);
-            FullChunkPacket pkChunk = new FullChunkPacket();
+            FullChunkDataPacket pkChunk = new FullChunkDataPacket();
             pkChunk.chunkX = x;
             pkChunk.chunkZ = z;
-            pkChunk.chunkData = bos.toByteArray();
+            pkChunk.data = bos.toByteArray();
             cli.sendPacket(pkChunk, true);
         } catch (Exception e) {
             e.printStackTrace();

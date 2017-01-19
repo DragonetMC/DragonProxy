@@ -49,6 +49,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.zip.GZIPOutputStream;
 
+import org.dragonet.proxy.DragonProxy;
+
 public abstract class Metrics {
 
     /**
@@ -263,7 +265,7 @@ public abstract class Metrics {
                                 nextPost = System.currentTimeMillis() + (PING_INTERVAL * 60 * 1000);
                             } catch (IOException e) {
                                 if (debug) {
-                                    System.out.println("[Metrics] " + e.getMessage());
+                                	DragonProxy.getLogger().debug("[Metrics] " + e.getMessage());
                                 }
                             }
                         }
@@ -293,7 +295,7 @@ public abstract class Metrics {
                 properties.load(new FileInputStream(configurationFile));
             } catch (IOException ex) {
                 if (debug) {
-                    System.out.println("[Metrics] " + ex.getMessage());
+                	DragonProxy.getLogger().debug("[Metrics] " + ex.getMessage());
                 }
                 return true;
             }
@@ -460,7 +462,7 @@ public abstract class Metrics {
         connection.setDoOutput(true);
 
         if (debug) {
-            System.out.println("[Metrics] Prepared request for " + pluginName + " uncompressed=" + uncompressed.length + " compressed=" + compressed.length);
+        	DragonProxy.getLogger().debug("[Metrics] Prepared request for " + pluginName + " uncompressed=" + uncompressed.length + " compressed=" + compressed.length);
         }
 
         // Write the data

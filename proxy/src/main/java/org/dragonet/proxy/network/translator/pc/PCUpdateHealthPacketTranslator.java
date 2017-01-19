@@ -12,18 +12,21 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.protocol.packet.PEPacket;
-import org.dragonet.proxy.protocol.packet.RespawnPacket;
-import org.dragonet.proxy.protocol.packet.SetHealthPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.packet.ingame.server.entity.player.ServerUpdateHealthPacket;
+import org.spacehq.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
 
-public class PCUpdateHealthPacketTranslator implements PCPacketTranslator<ServerUpdateHealthPacket> {
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.RespawnPacket;
+import cn.nukkit.network.protocol.SetHealthPacket;
+
+public class PCUpdateHealthPacketTranslator implements PCPacketTranslator<ServerPlayerHealthPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerUpdateHealthPacket packet) {
-        SetHealthPacket h = new SetHealthPacket((int) packet.getHealth());
+    public DataPacket[] translate(UpstreamSession session, ServerPlayerHealthPacket packet) {
+    	// TODO: Support food and saturation
+        SetHealthPacket h = new SetHealthPacket();
+        h.health = (int) packet.getHealth();
         if (packet.getHealth() > 0 && h.health <= 0) {
             h.health = 1;
         }
@@ -32,9 +35,9 @@ public class PCUpdateHealthPacketTranslator implements PCPacketTranslator<Server
             r.x = 0.0f;
             r.y = 0.0f;
             r.z = 0.0f;
-            return new PEPacket[]{h, r};
+            return new DataPacket[]{h, r};
         }
-        return new PEPacket[]{h};
+        return new DataPacket[]{h};
     }
 
 }

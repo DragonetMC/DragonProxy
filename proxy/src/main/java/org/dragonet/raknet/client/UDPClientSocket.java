@@ -22,7 +22,11 @@ package org.dragonet.raknet.client;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketAddress;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.logging.Logger;
 

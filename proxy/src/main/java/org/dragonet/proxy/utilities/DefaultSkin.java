@@ -12,7 +12,9 @@
  */
 package org.dragonet.proxy.utilities;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class DefaultSkin {
 

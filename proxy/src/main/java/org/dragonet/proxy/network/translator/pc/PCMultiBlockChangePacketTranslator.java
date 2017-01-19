@@ -12,27 +12,28 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.protocol.packet.PEPacket;
-import org.dragonet.proxy.protocol.packet.UpdateBlockPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerMultiBlockChangePacket;
 
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.UpdateBlockPacket;
+
 public class PCMultiBlockChangePacketTranslator implements PCPacketTranslator<ServerMultiBlockChangePacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerMultiBlockChangePacket packet) {
+    public DataPacket[] translate(UpstreamSession session, ServerMultiBlockChangePacket packet) {
         UpdateBlockPacket[] packets = new UpdateBlockPacket[packet.getRecords().length];
-        byte generalFlag = packet.getRecords().length > 64 ? UpdateBlockPacket.FLAG_PRIORITY : UpdateBlockPacket.FLAG_ALL;
+        byte generalFlag = (byte) (packet.getRecords().length > 64 ? UpdateBlockPacket.FLAG_PRIORITY : UpdateBlockPacket.FLAG_ALL);
         for (int i = 0; i < packets.length; i++) {
             packets[i] = new UpdateBlockPacket();
             packets[i].flags = generalFlag;
             packets[i].x = packet.getRecords()[i].getPosition().getX();
             packets[i].y = (byte) (packet.getRecords()[i].getPosition().getY() & 0xFF);
             packets[i].z = packet.getRecords()[i].getPosition().getZ();
-            packets[i].block = (byte) (ItemBlockTranslator.translateToPE(packet.getRecords()[i].getId()) & 0xFF);
-            packets[i].meta = (byte) (packet.getRecords()[i].getData() & 0xFF);
+            packets[i].blockId = (byte) (ItemBlockTranslator.translateToPE(packet.getRecords()[i].getBlock().getId()) & 0xFF);
+            packets[i].blockData = (byte) (packet.getRecords()[i].getBlock().getData() & 0xFF);
         }
         return packets;
     }

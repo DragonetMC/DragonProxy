@@ -12,18 +12,19 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.protocol.packet.PEPacket;
-import org.dragonet.proxy.protocol.packet.RemoveEntityPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerDestroyEntitiesPacket;
+import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityDestroyPacket;
 
-public class PCDestroyEntitiesPacketTranslator implements PCPacketTranslator<ServerDestroyEntitiesPacket> {
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.RemoveEntityPacket;
+
+public class PCDestroyEntitiesPacketTranslator implements PCPacketTranslator<ServerEntityDestroyPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerDestroyEntitiesPacket packet) {
-        PEPacket[] ret = new PEPacket[packet.getEntityIds().length];
+    public DataPacket[] translate(UpstreamSession session, ServerEntityDestroyPacket packet) {
+    	DataPacket[] ret = new DataPacket[packet.getEntityIds().length];
         for (int i = 0; i < ret.length; i++) {
             CachedEntity e = session.getEntityCache().remove(packet.getEntityIds()[i]);
             if (e == null) {

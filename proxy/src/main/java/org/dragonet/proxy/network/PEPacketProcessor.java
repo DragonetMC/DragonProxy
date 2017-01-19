@@ -14,13 +14,13 @@ package org.dragonet.proxy.network;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+
 import lombok.Getter;
+
 import org.dragonet.proxy.protocol.Protocol;
-import org.dragonet.proxy.protocol.packet.BatchPacket;
-import org.dragonet.proxy.protocol.packet.LoginPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
-import org.dragonet.proxy.protocol.packet.PEPacketIDs;
 import org.spacehq.packetlib.packet.Packet;
+
+import cn.nukkit.network.protocol.DataPacket;
 
 public class PEPacketProcessor implements Runnable {
 
@@ -45,48 +45,28 @@ public class PEPacketProcessor implements Runnable {
         while (cnt < MAX_PACKETS_PER_CYCLE && !packets.isEmpty()) {
             cnt++;
             byte[] bin = packets.pop();
-            PEPacket packet = Protocol.decode(bin);
-            if (packet == null) {
+            DataPacket[] packets = Protocol.decode(bin);
+            if (packets == null || packets.length < 1) {
                 continue;
             }
-            handlePacket(packet);
+            
+            for(DataPacket packet : packets){
+            	handlePacket(packet);
+            }
         }
     }
 
-    public void handlePacket(PEPacket packet) {
-        if (packet == null) {
-            return;
-        }
-
-        if (BatchPacket.class.isAssignableFrom(packet.getClass())) {
-            ((BatchPacket) packet).packets.stream().filter((pk) -> !(pk == null)).forEach((pk) -> {
-                handlePacket(pk);
-            });
-            return;
-        }
-        switch (packet.pid()) {
-            case PEPacketIDs.LOGIN_PACKET:
-                client.onLogin((LoginPacket) packet);
-                break;
-            case PEPacketIDs.TEXT_PACKET:  //Login
-                if (client.getDataCache().get(CacheKey.AUTHENTICATION_STATE) != null) {
-                    PacketTranslatorRegister.translateToPC(client, packet);
-                    break;
+    @SuppressWarnings("unchecked")
+	public void handlePacket(DataPacket packet) {
+        if (packet != null) {
+        	if(client.getStatus() == ConnectionStatus.CONNECTED){ 
+    	        Packet[] translated = PacketTranslatorRegister.translateToPC(client, packet);
+                if (translated != null && translated.length > 0 && client.getDownstream() != null && client.getDownstream().isConnected()) {
+                    client.getDownstream().send(translated);
                 }
-            default:
-                if (client.getDownstream() == null) {
-                    break;
-                }
-                if (!client.getDownstream().isConnected()) {
-                    break;
-                }
-                Packet[] translated = PacketTranslatorRegister.translateToPC(client, packet);
-                if (translated == null || translated.length == 0) {
-                    break;
-                }
-                client.getDownstream().send(translated);
-                break;
+        	} else {
+        		System.err.println("Ignoring packet sent to unconnected session");
+        	}
         }
     }
-
 }

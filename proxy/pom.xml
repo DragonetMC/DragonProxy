@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -18,6 +17,12 @@
 
     <repositories>
         <repository>
+            <id>hani</id>
+            <name>hanioka Repository</name>
+            <layout>default</layout>
+            <url>http://jenkins.haniokasai.com/plugin/repository/everything/</url>
+        </repository>
+        <repository>
             <id>sonatype</id>
             <name>Sonatype Nexus</name>
             <layout>default</layout>
@@ -29,6 +34,7 @@
             <layout>default</layout>
             <url>https://repo.spacehq.org/content/repositories/snapshots/</url>
         </repository>
+
     </repositories>
 
     <dependencies>
@@ -40,7 +46,7 @@
         <dependency>
             <groupId>org.spacehq</groupId>
             <artifactId>mcprotocollib</artifactId>
-            <version>1.8.8-SNAPSHOT</version>
+            <version>1.11-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.spacehq</groupId>
@@ -68,12 +74,19 @@
             <artifactId>guava</artifactId>
             <version>19.0</version>
         </dependency>
-        <!--<dependency>
-            <groupId>org.dragonet.proxy</groupId>
-            <artifactId>protocol</artifactId>
-            <version>0.0.6-preR1</version>
-            <scope>compile</scope>
-        </dependency>-->
+        <dependency>
+            <groupId>cn.nukkit</groupId>
+            <artifactId>nukkit</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.8</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--<dependency> <groupId>org.dragonet.proxy</groupId> <artifactId>protocol</artifactId> 
+        <version>0.0.6-preR1</version> <scope>compile</scope> </dependency> -->
     </dependencies>
 
     <build>
@@ -138,6 +151,23 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok-maven-plugin</artifactId>
+                <version>1.16.8.0</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>delombok</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>src/main/java</sourceDirectory>
+                            <addOutputDirectory>false</addOutputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

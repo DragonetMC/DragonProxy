@@ -12,18 +12,21 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.protocol.packet.PEPacket;
-import org.dragonet.proxy.protocol.packet.SetTimePacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerUpdateTimePacket;
 
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.SetTimePacket;
+
 public class PCUpdateTimePacketTranslator implements PCPacketTranslator<ServerUpdateTimePacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerUpdateTimePacket packet) {
-        SetTimePacket pk = new SetTimePacket((int) (packet.getTime()), true);
-        return new PEPacket[]{pk};
+    public DataPacket[] translate(UpstreamSession session, ServerUpdateTimePacket packet) {
+        SetTimePacket pk = new SetTimePacket();
+        pk.time = (int) packet.getTime();
+        pk.started = true;
+        return new DataPacket[]{pk};
     }
 
 }

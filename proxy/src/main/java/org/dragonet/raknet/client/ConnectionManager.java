@@ -19,19 +19,47 @@
  */
 package org.dragonet.raknet.client;
 
-import org.dragonet.raknet.protocol.*;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
-import org.dragonet.raknet.RakNet;
-import org.dragonet.raknet.protocol.packet.*;
+
+import org.dragonet.proxy.DragonProxy;
+import cn.nukkit.raknet.RakNet;
+import cn.nukkit.raknet.protocol.EncapsulatedPacket;
+import cn.nukkit.raknet.protocol.Packet;
+import cn.nukkit.raknet.protocol.packet.ACK;
+import cn.nukkit.raknet.protocol.packet.ADVERTISE_SYSTEM;
+import cn.nukkit.raknet.protocol.packet.DATA_PACKET_0;
+import cn.nukkit.raknet.protocol.packet.DATA_PACKET_1;
+import cn.nukkit.raknet.protocol.packet.DATA_PACKET_2;
+import cn.nukkit.raknet.protocol.packet.DATA_PACKET_3;
+import cn.nukkit.raknet.protocol.packet.DATA_PACKET_4;
+import cn.nukkit.raknet.protocol.packet.DATA_PACKET_5;
+import cn.nukkit.raknet.protocol.packet.DATA_PACKET_6;
+import cn.nukkit.raknet.protocol.packet.DATA_PACKET_7;
+import cn.nukkit.raknet.protocol.packet.DATA_PACKET_8;
+import cn.nukkit.raknet.protocol.packet.DATA_PACKET_9;
+import cn.nukkit.raknet.protocol.packet.DATA_PACKET_A;
+import cn.nukkit.raknet.protocol.packet.DATA_PACKET_B;
+import cn.nukkit.raknet.protocol.packet.DATA_PACKET_C;
+import cn.nukkit.raknet.protocol.packet.DATA_PACKET_D;
+import cn.nukkit.raknet.protocol.packet.DATA_PACKET_E;
+import cn.nukkit.raknet.protocol.packet.DATA_PACKET_F;
+import cn.nukkit.raknet.protocol.packet.NACK;
+import cn.nukkit.raknet.protocol.packet.OPEN_CONNECTION_REPLY_1;
+import cn.nukkit.raknet.protocol.packet.OPEN_CONNECTION_REPLY_2;
+import cn.nukkit.raknet.protocol.packet.OPEN_CONNECTION_REQUEST_1;
+import cn.nukkit.raknet.protocol.packet.OPEN_CONNECTION_REQUEST_2;
+import cn.nukkit.raknet.protocol.packet.UNCONNECTED_PING;
+import cn.nukkit.raknet.protocol.packet.UNCONNECTED_PING_OPEN_CONNECTIONS;
+import cn.nukkit.raknet.protocol.packet.UNCONNECTED_PONG;
 
 /**
  * Manager for handling a connection. The manager handles the internal ticking, and networking.
@@ -77,9 +105,9 @@ public class ConnectionManager {
     }
 
     private boolean connect(int payloadSize, int packets) throws IOException {
-        System.out.println("[DEBUG] Client connecting, PLOAD=" + payloadSize + ", TRIES=" + packets);
+    	DragonProxy.getLogger().debug("[DEBUG] Client connecting, PLOAD=" + payloadSize + ", TRIES=" + packets);
         for(int i = 0; i < packets; i++){
-            System.out.println("[DEBUG] Trying to connect, TRY=" + i + "... ");
+        	DragonProxy.getLogger().debug("[DEBUG] Trying to connect, TRY=" + i + "... ");
             OPEN_CONNECTION_REQUEST_1 request1 = new OPEN_CONNECTION_REQUEST_1();
             request1.protocol = RakNet.PROTOCOL;
             request1.mtuSize = (short) payloadSize;

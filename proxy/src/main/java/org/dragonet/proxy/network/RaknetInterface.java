@@ -14,18 +14,21 @@ package org.dragonet.proxy.network;
 
 import java.net.InetSocketAddress;
 import java.util.Arrays;
+
 import lombok.Getter;
-import org.dragonet.proxy.protocol.packet.BatchPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
+
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
-import org.dragonet.proxy.utilities.Binary;
 import org.dragonet.proxy.utilities.Versioning;
-import org.dragonet.raknet.RakNet;
-import org.dragonet.raknet.protocol.EncapsulatedPacket;
-import org.dragonet.raknet.server.RakNetServer;
-import org.dragonet.raknet.server.ServerHandler;
-import org.dragonet.raknet.server.ServerInstance;
+
+import cn.nukkit.network.protocol.BatchPacket;
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.raknet.RakNet;
+import cn.nukkit.raknet.protocol.EncapsulatedPacket;
+import cn.nukkit.raknet.server.RakNetServer;
+import cn.nukkit.raknet.server.ServerHandler;
+import cn.nukkit.raknet.server.ServerInstance;
+import cn.nukkit.utils.Binary;
 
 public class RaknetInterface implements ServerInstance {
 
@@ -42,23 +45,24 @@ public class RaknetInterface implements ServerInstance {
 
     public RaknetInterface(DragonProxy proxy, String ip, int port) {
         this.proxy = proxy;
-        rakServer = new RakNetServer(port, ip);
+        rakServer = new RakNetServer(null, port, ip);
         handler = new ServerHandler(rakServer, this);
         sessions = this.proxy.getSessionRegister();
     }
 
-    public void setBroadcastName(String serverName, int players, int maxPlayers) {
+    public void setBroadcastName() {
         String name = "MCPE;";
-        name += serverName + ";";
+        name += proxy.getMotd() + ";";
         name += Versioning.MINECRAFT_PE_PROTOCOL + ";";
         name += Versioning.MINECRAFT_PE_VERSION + ";";
-        name += players + ";" + maxPlayers;
+        name += sessions.getOnlineCount() + ";" + proxy.getConfig().getMax_players();
         if (handler != null) {
             handler.sendOption("name", name);
         }
     }
 
     public void onTick() {
+    	setBroadcastName();
         while (handler.handlePacket()) {
         }
     }
@@ -67,6 +71,7 @@ public class RaknetInterface implements ServerInstance {
     public void openSession(String identifier, String address, int port, long clientID) {
         UpstreamSession session = new UpstreamSession(proxy, identifier, new InetSocketAddress(address, port));
         sessions.newSession(session);
+        setBroadcastName();
     }
 
     @Override
@@ -75,7 +80,9 @@ public class RaknetInterface implements ServerInstance {
         if (session == null) {
             return;
         }
-        session.onDisconnect(proxy.getLang().get(Lang.MESSAGE_CLIENT_DISCONNECT)); //It will handle rest of the things. 
+        //session.onDisconnect(proxy.getLang().get(Lang.MESSAGE_CLIENT_DISCONNECT)); //It will handle rest of the things. 
+        session.onDisconnect(reason);
+        setBroadcastName();
     }
 
     @Override
@@ -108,30 +115,31 @@ public class RaknetInterface implements ServerInstance {
         handler.closeSession(identifier, reason);
     }
 
-    public void sendPacket(String identifier, PEPacket packet, boolean immediate) {
+    public void sendPacket(String identifier, DataPacket packet, boolean immediate) {
         if (identifier == null || packet == null) {
             return;
         }
         
         //Debug
 
-        System.out.println("Sending [" + packet.getClass().getSimpleName() + "] after 2 seconds... ");
-        try{
-            Thread.sleep(2000L);
+       try{
+            //Thread.sleep(2000L);
         }catch(Exception e){}
+       DragonProxy.getLogger().info("Sending [" + packet.getClass().getSimpleName() + "] ");
 
         
-        boolean overridedImmediate = immediate || packet.isShouldSendImmidate();
+        boolean overridedImmediate = immediate || false;// packet.isShouldSendImmidate();
         packet.encode();
-        if (packet.getData().length > 512 && !BatchPacket.class.isAssignableFrom(packet.getClass())) {
+        if (packet.getBuffer().length > 512 && !BatchPacket.class.isAssignableFrom(packet.getClass())) {
             BatchPacket pkBatch = new BatchPacket();
-            pkBatch.packets.add(packet);
+            pkBatch.payload = packet.get();
             sendPacket(identifier, pkBatch, overridedImmediate);
             return;
         }
 
+
         EncapsulatedPacket encapsulated = new EncapsulatedPacket();
-        encapsulated.buffer = Binary.appendBytes((byte) 0xfe, packet.getData());
+        encapsulated.buffer = Binary.appendBytes((byte) 0xfe, packet.getBuffer());
         encapsulated.needACK = true;
         encapsulated.reliability = (byte) 2;
         encapsulated.messageIndex = 0;
