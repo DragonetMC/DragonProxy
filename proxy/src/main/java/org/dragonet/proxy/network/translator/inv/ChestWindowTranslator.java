@@ -12,11 +12,10 @@
  */
 package org.dragonet.proxy.network.translator.inv;
 
+import cn.nukkit.inventory.InventoryType;
 import java.io.IOException;
 import java.nio.ByteOrder;
 
-import org.dragonet.inventory.InventoryType;
-import org.dragonet.inventory.PEInventorySlot;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedWindow;
@@ -29,6 +28,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.BlockEntityDataPacket;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
 import cn.nukkit.network.protocol.ContainerSetContentPacket;
+import org.dragonet.inventory.PEInventorySlot;
 
 public class ChestWindowTranslator implements InventoryTranslator {
 
@@ -58,8 +58,8 @@ public class ChestWindowTranslator implements InventoryTranslator {
         
         ContainerOpenPacket pk = new ContainerOpenPacket();
         pk.windowid = (byte)(window.windowId & 0xFF);
-        pk.slots = window.size <= 27 ? (short)(InventoryType.SlotSize.CHEST & 0xFFFF) : (short)(InventoryType.SlotSize.DOUBLE_CHEST & 0xFFFF);
-        pk.type = window.size <= 27 ? InventoryType.PEInventory.CHEST : InventoryType.PEInventory.DOUBLE_CHEST;
+        pk.slots = window.size <= 27 ? (short)(InventoryType.CHEST.getNetworkType() & 0xFFFF) : (short)(InventoryType.DOUBLE_CHEST.getNetworkType() & 0xFFFF);
+        pk.type = (byte) (window.size <= 27 ? InventoryType.CHEST.getNetworkType() : InventoryType.DOUBLE_CHEST.getNetworkType());
         pk.x = pos.getX();
         pk.y = pos.getY();
         pk.z= pos.getZ();

@@ -19,16 +19,16 @@ import lombok.Getter;
 
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
-import org.dragonet.proxy.utilities.Binary;
 import org.dragonet.proxy.utilities.Versioning;
-import org.dragonet.raknet.RakNet;
-import org.dragonet.raknet.protocol.EncapsulatedPacket;
-import org.dragonet.raknet.server.RakNetServer;
-import org.dragonet.raknet.server.ServerHandler;
-import org.dragonet.raknet.server.ServerInstance;
 
 import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.raknet.RakNet;
+import cn.nukkit.raknet.protocol.EncapsulatedPacket;
+import cn.nukkit.raknet.server.RakNetServer;
+import cn.nukkit.raknet.server.ServerHandler;
+import cn.nukkit.raknet.server.ServerInstance;
+import cn.nukkit.utils.Binary;
 
 public class RaknetInterface implements ServerInstance {
 
@@ -45,7 +45,7 @@ public class RaknetInterface implements ServerInstance {
 
     public RaknetInterface(DragonProxy proxy, String ip, int port) {
         this.proxy = proxy;
-        rakServer = new RakNetServer(port, ip);
+        rakServer = new RakNetServer(null, port, ip);
         handler = new ServerHandler(rakServer, this);
         sessions = this.proxy.getSessionRegister();
     }

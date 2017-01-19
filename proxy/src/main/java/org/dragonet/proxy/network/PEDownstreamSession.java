@@ -20,17 +20,17 @@ import lombok.Getter;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.PocketServer;
 import org.dragonet.proxy.protocol.Protocol;
-import org.dragonet.proxy.utilities.Binary;
-import org.dragonet.raknet.RakNet;
 import org.dragonet.raknet.client.ClientHandler;
 import org.dragonet.raknet.client.ClientInstance;
 import org.dragonet.raknet.client.JRakLibClient;
-import org.dragonet.raknet.protocol.EncapsulatedPacket;
 
 import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.LoginPacket;
 import cn.nukkit.network.protocol.TextPacket;
+import cn.nukkit.raknet.RakNet;
+import cn.nukkit.raknet.protocol.EncapsulatedPacket;
+import cn.nukkit.utils.Binary;
 
 public class PEDownstreamSession implements DownstreamSession<DataPacket>, ClientInstance {
 

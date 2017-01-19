@@ -12,11 +12,10 @@
  */
 package org.dragonet.proxy.network;
 
+import cn.nukkit.inventory.InventoryType;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dragonet.inventory.PEInventorySlot;
-import org.dragonet.inventory.PEWindowConstantID;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.InventoryTranslator;
@@ -33,6 +32,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.ContainerSetContentPacket;
 import cn.nukkit.network.protocol.DataPacket;
+import org.dragonet.inventory.PEInventorySlot;
 
 public final class InventoryTranslatorRegister {
 
@@ -42,7 +42,7 @@ public final class InventoryTranslatorRegister {
         CachedWindow win = session.getWindowCache().getPlayerInventory();
         //Translate and send
         ContainerSetContentPacket ret = new ContainerSetContentPacket();
-        ret.windowid = PEWindowConstantID.PLAYER_INVENTORY;
+        ret.windowid = InventoryType.PLAYER.getNetworkType();
         ret.slots = new Item[45];
         for (int i = 9; i < win.slots.length; i++) {
             //TODO: Add NBT support

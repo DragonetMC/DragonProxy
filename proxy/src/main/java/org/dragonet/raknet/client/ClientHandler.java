@@ -19,11 +19,12 @@
  */
 package org.dragonet.raknet.client;
 
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.raknet.RakNet;
+import cn.nukkit.raknet.protocol.EncapsulatedPacket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-
-import org.dragonet.raknet.RakNet;
-import org.dragonet.raknet.protocol.EncapsulatedPacket;
+import org.dragonet.proxy.protocol.Protocol;
 
 /**
  * A handler class for handling the client.
@@ -45,7 +46,7 @@ public class ClientHandler {
     }
 
     public void sendEncapsulated(String identifier, EncapsulatedPacket packet, int flags){
-        byte[] buffer = org.dragonet.proxy.utilities.Binary.appendBytes(
+        byte[] buffer = cn.nukkit.utils.Binary.appendBytes(
                 RakNet.PACKET_ENCAPSULATED,
                 new byte[]{(byte) (identifier.length() & 0xff)},
                 identifier.getBytes(StandardCharsets.UTF_8),
@@ -96,7 +97,7 @@ public class ClientHandler {
             int offset = 1;
             if(id == RakNet.PACKET_ENCAPSULATED){
                 int len = packet[offset++];
-                //String identifier = new String(Binary.subbytes(packet, offset, len));
+                String identifier = new String(Binary.subbytes(packet, offset, len));
                 offset += len;
                 byte flags = packet[offset++];
                 byte[] buffer = Binary.subbytes(packet, offset);

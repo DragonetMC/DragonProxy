@@ -33,7 +33,6 @@ import org.dragonet.proxy.protocol.Protocol;
 import org.dragonet.proxy.utilities.HTTP;
 import org.dragonet.proxy.utilities.PatternChecker;
 import org.dragonet.proxy.utilities.Versioning;
-import org.dragonet.raknet.protocol.EncapsulatedPacket;
 import org.spacehq.mc.auth.exception.request.RequestException;
 import org.spacehq.mc.auth.service.AuthenticationService;
 import org.spacehq.mc.protocol.MinecraftProtocol;
@@ -64,6 +63,7 @@ import cn.nukkit.network.protocol.StartGamePacket;
 import cn.nukkit.network.protocol.TextPacket;
 import cn.nukkit.network.protocol.UpdateAttributesPacket;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
+import cn.nukkit.raknet.protocol.EncapsulatedPacket;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

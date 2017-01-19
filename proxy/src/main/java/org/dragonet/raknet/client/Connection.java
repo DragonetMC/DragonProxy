@@ -19,6 +19,25 @@
  */
 package org.dragonet.raknet.client;
 
+import cn.nukkit.raknet.RakNet;
+import cn.nukkit.raknet.protocol.DataPacket;
+import cn.nukkit.raknet.protocol.EncapsulatedPacket;
+import cn.nukkit.raknet.protocol.Packet;
+import cn.nukkit.raknet.protocol.packet.ACK;
+import cn.nukkit.raknet.protocol.packet.CLIENT_CONNECT_DataPacket;
+import cn.nukkit.raknet.protocol.packet.CLIENT_DISCONNECT_DataPacket;
+import cn.nukkit.raknet.protocol.packet.CLIENT_HANDSHAKE_DataPacket;
+import cn.nukkit.raknet.protocol.packet.DATA_PACKET_0;
+import cn.nukkit.raknet.protocol.packet.DATA_PACKET_4;
+import cn.nukkit.raknet.protocol.packet.NACK;
+import cn.nukkit.raknet.protocol.packet.OPEN_CONNECTION_REPLY_1;
+import cn.nukkit.raknet.protocol.packet.OPEN_CONNECTION_REPLY_2;
+import cn.nukkit.raknet.protocol.packet.OPEN_CONNECTION_REQUEST_2;
+import cn.nukkit.raknet.protocol.packet.PING_DataPacket;
+import cn.nukkit.raknet.protocol.packet.PONG_DataPacket;
+import cn.nukkit.raknet.protocol.packet.SERVER_HANDSHAKE_DataPacket;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -33,23 +52,6 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.raknet.RakNet;
-import org.dragonet.raknet.protocol.DataPacket;
-import org.dragonet.raknet.protocol.EncapsulatedPacket;
-import org.dragonet.raknet.protocol.Packet;
-import org.dragonet.raknet.protocol.packet.ACK;
-import org.dragonet.raknet.protocol.packet.CLIENT_CONNECT_DataPacket;
-import org.dragonet.raknet.protocol.packet.CLIENT_DISCONNECT_DataPacket;
-import org.dragonet.raknet.protocol.packet.CLIENT_HANDSHAKE_DataPacket;
-import org.dragonet.raknet.protocol.packet.DATA_PACKET_0;
-import org.dragonet.raknet.protocol.packet.DATA_PACKET_4;
-import org.dragonet.raknet.protocol.packet.NACK;
-import org.dragonet.raknet.protocol.packet.OPEN_CONNECTION_REPLY_1;
-import org.dragonet.raknet.protocol.packet.OPEN_CONNECTION_REPLY_2;
-import org.dragonet.raknet.protocol.packet.OPEN_CONNECTION_REQUEST_2;
-import org.dragonet.raknet.protocol.packet.PING_DataPacket;
-import org.dragonet.raknet.protocol.packet.PONG_DataPacket;
-import org.dragonet.raknet.protocol.packet.SERVER_HANDSHAKE_DataPacket;
 
 /**
  * Represents a Connection to a server.
@@ -369,7 +371,7 @@ public class Connection {
 
     private void handleEncapsulatedPacket(EncapsulatedPacket packet) throws IOException {
         if(packet == null){
-        	DragonProxy.getLogger().warning("[ERROR] NULL ENCAPSULATED PACKET! ");
+            DragonProxy.getLogger().warning("[ERROR] NULL ENCAPSULATED PACKET! ");
             return;
         }
         DragonProxy.getLogger().info("Recieved encapulated packet INDEX=" + packet.messageIndex);
@@ -431,7 +433,7 @@ public class Connection {
                     CLIENT_HANDSHAKE_DataPacket response = new CLIENT_HANDSHAKE_DataPacket();
                     response.address = "0.0.0.0";
                     response.port = 0;
-                    response.systemAddresses = new InetSocketAddress[] {
+                    /*response.systemAddresses = new InetSocketAddress[] {
                             new InetSocketAddress("0.0.0.0", 0),
                             new InetSocketAddress("0.0.0.0", 0),
                             new InetSocketAddress("0.0.0.0", 0),
@@ -442,7 +444,7 @@ public class Connection {
                             new InetSocketAddress("0.0.0.0", manager.getSocket().getSocket().getLocalPort()),
                             new InetSocketAddress("0.0.0.0", 0),
                             new InetSocketAddress("0.0.0.0", manager.getSocket().getSocket().getLocalPort()),
-                    };
+                    };*/
                     response.sendPing = Instant.now().toEpochMilli();
                     response.sendPong = Instant.now().toEpochMilli();
                     response.encode();
