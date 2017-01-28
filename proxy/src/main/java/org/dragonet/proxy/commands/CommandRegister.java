@@ -15,10 +15,13 @@ package org.dragonet.proxy.commands;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.configuration.Lang;
 
-import org.dragonet.proxy.commands.defaults.*;
+import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.commands.defaults.HelpCommand;
+import org.dragonet.proxy.commands.defaults.KillCommand;
+import org.dragonet.proxy.commands.defaults.StopCommand;
+import org.dragonet.proxy.commands.defaults.TestCommand;
+import org.dragonet.proxy.configuration.Lang;
 
 public final class CommandRegister {
 

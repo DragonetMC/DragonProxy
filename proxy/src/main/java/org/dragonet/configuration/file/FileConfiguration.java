@@ -1,10 +1,5 @@
 package org.dragonet.configuration.file;
 
-import com.google.common.io.Files;
-
-import org.apache.commons.lang3.Validate;
-import org.dragonet.configuration.InvalidConfigurationException;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,9 +14,13 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.lang3.Validate;
 import org.dragonet.configuration.Configuration;
+import org.dragonet.configuration.InvalidConfigurationException;
 import org.dragonet.configuration.MemoryConfiguration;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
+
+import com.google.common.io.Files;
 
 /**
  * This is a base class for all File based implementations of {@link

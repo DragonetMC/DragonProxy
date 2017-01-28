@@ -12,11 +12,11 @@
  */
 package org.dragonet.proxy.network.translator;
 
-import org.dragonet.proxy.protocol.packet.PEPacket;
-import org.dragonet.proxy.network.UpstreamSession;
+import net.marfgamer.jraknet.RakNetPacket;
+import org.dragonet.proxy.network.ClientConnection;
 import org.spacehq.packetlib.packet.Packet;
 
-public interface PEPacketTranslator<P extends PEPacket> {
+public interface PEPacketTranslator<P extends RakNetPacket> {
 
     /**
      * Translate a packet from PE version to PC version.
@@ -25,6 +25,6 @@ public interface PEPacketTranslator<P extends PEPacket> {
      * @param packet
      * @return
      */
-    public Packet[] translate(UpstreamSession session, P packet);
+    public Packet[] translate(ClientConnection session, P packet);
 
 }

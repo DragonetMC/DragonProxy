@@ -13,11 +13,27 @@
 package org.dragonet.proxy;
 
 import java.util.Map;
+
 import org.dragonet.proxy.configuration.RemoteServer;
+import org.dragonet.proxy.network.ClientConnection;
+import org.dragonet.proxy.network.adapter.MCPCServerProtocolAdapter;
+import org.dragonet.proxy.network.adapter.ServerProtocolAdapter;
 
 public class DesktopServer extends RemoteServer {
 
+    private MCPCServerProtocolAdapter protocol;
+    
     public static DesktopServer deserialize(Map<String, Object> map) {
         return (DesktopServer) delicatedDeserialize(new DesktopServer(), map);
     }
+
+    @Override
+    public final ServerProtocolAdapter getProtocolAdapter(ClientConnection session) {
+        if(protocol == null){
+            protocol = new MCPCServerProtocolAdapter();
+            protocol.setClient(session);
+        }   
+        return protocol;
+    }
 }
+

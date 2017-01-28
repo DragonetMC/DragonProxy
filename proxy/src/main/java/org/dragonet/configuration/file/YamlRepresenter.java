@@ -6,7 +6,6 @@ import java.util.Map;
 import org.dragonet.configuration.ConfigurationSection;
 import org.dragonet.configuration.serialization.ConfigurationSerializable;
 import org.dragonet.configuration.serialization.ConfigurationSerialization;
-
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.representer.Representer;
 

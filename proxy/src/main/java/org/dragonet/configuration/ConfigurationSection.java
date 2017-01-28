@@ -1,8 +1,8 @@
 package org.dragonet.configuration;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.List;
 
 /**
  * Represents a section of a {@link Configuration}

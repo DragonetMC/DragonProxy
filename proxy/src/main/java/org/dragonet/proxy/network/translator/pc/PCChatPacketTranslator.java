@@ -12,33 +12,41 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.protocol.packet.ChatPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.MessageTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerChatPacket;
 
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.TextPacket;
+
 public class PCChatPacketTranslator implements PCPacketTranslator<ServerChatPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerChatPacket packet) {
-        ChatPacket ret = new ChatPacket();
+    public DataPacket[] translate(ClientConnection session, ServerChatPacket packet) throws java.lang.IllegalStateException{
+        TextPacket ret = new TextPacket();
         /*
          * Reset the chat message so we can parse the JSON again (if needed)
          */
-        ret.source = "";
+        ret.source = session.getUsername();
         ret.message = MessageTranslator.translate(packet.getMessage());
-        switch (packet.getType()) {
+        //ret.message = packet.getMessage().getText();
+/*        switch (packet.getType()) {
         case CHAT:
-            ret.type = ChatPacket.TextType.CHAT;
+            ret.type = TextPacket.TYPE_CHAT;
             break;
         case NOTIFICATION:
-        case SYSTEM:
-        default:
-            ret.type = ChatPacket.TextType.CHAT;
+            ret.type = TextPacket.TYPE_CHAT;
             break;
-        }
-        return new PEPacket[]{ret};
+        case SYSTEM:
+            ret.type = TextPacket.TYPE_SYSTEM;
+            break;
+        default:
+            ret.type = TextPacket.TYPE_SYSTEM;
+            break;
+        }*/
+        
+        ret.type = TextPacket.TYPE_SYSTEM;
+        return new DataPacket[]{ret};
     }
 }

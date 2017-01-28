@@ -13,6 +13,7 @@
 package org.dragonet.proxy.configuration;
 
 import java.util.Map;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -50,7 +51,5 @@ public class ServerConfig {
     
     @Getter @Setter
     private int thread_pool_size;
-	
-	
 
 }

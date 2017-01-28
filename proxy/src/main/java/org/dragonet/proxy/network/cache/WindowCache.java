@@ -17,20 +17,22 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import lombok.Getter;
-import org.dragonet.proxy.network.UpstreamSession;
+
+import org.dragonet.proxy.network.ClientConnection;
 import org.spacehq.packetlib.packet.Packet;
 
 public final class WindowCache {
 
     @Getter
-    private final UpstreamSession upstream;
+    private final ClientConnection upstream;
 
     private final Map<Integer, CachedWindow> windows = Collections.synchronizedMap(new HashMap<Integer, CachedWindow>());
 
     private final Map<Integer, List<Packet>> cachedItems = Collections.synchronizedMap(new HashMap<Integer, List<Packet>>());
 
-    public WindowCache(UpstreamSession upstream) {
+    public WindowCache(ClientConnection upstream) {
         this.upstream = upstream;
 
         CachedWindow inv = new CachedWindow(0, null, 45);
