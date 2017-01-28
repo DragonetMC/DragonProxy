@@ -14,7 +14,7 @@ package org.dragonet.proxy.network.translator.pc;
 
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.network.CacheKey;
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.data.game.entity.player.GameMode;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
@@ -29,7 +29,7 @@ import cn.nukkit.network.protocol.StartGamePacket;
 public class PCSpawnPositionPacketTranslator implements PCPacketTranslator<ServerSpawnPositionPacket> {
 
     @Override
-    public DataPacket[] translate(UpstreamSession session, ServerSpawnPositionPacket packet) {
+    public DataPacket[] translate(ClientConnection session, ServerSpawnPositionPacket packet) {
         if (session.getDataCache().get(CacheKey.PACKET_JOIN_GAME_PACKET) == null) {
             if (session.getProxy().getAuthMode().equals("online")) {
                 session.sendChat(session.getProxy().getLang().get(Lang.MESSAGE_TELEPORT_TO_SPAWN));

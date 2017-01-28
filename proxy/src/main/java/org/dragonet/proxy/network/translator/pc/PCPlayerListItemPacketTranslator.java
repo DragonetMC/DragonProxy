@@ -12,7 +12,7 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.data.game.PlayerListEntry;
 import org.spacehq.mc.protocol.data.game.PlayerListEntryAction;
@@ -23,7 +23,7 @@ import cn.nukkit.network.protocol.DataPacket;
 public class PCPlayerListItemPacketTranslator implements PCPacketTranslator<ServerPlayerListEntryPacket> {
 
     @Override
-    public DataPacket[] translate(UpstreamSession session, ServerPlayerListEntryPacket packet) {
+    public DataPacket[] translate(ClientConnection session, ServerPlayerListEntryPacket packet) {
         if(packet.getAction() == PlayerListEntryAction.ADD_PLAYER){
             PlayerListEntry[] entries = packet.getEntries();
             for (PlayerListEntry entrie : entries) {

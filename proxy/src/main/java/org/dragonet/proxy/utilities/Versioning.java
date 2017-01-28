@@ -14,8 +14,6 @@ package org.dragonet.proxy.utilities;
 
 import org.spacehq.mc.protocol.MinecraftConstants;
 
-import cn.nukkit.network.protocol.ProtocolInfo;
-
 public class Versioning {
 
     public final static int VERSION_INT = 00601; // 0.0.6.01 (You can't have preR1 in an int!)
@@ -27,6 +25,6 @@ public class Versioning {
     // This is STRICT to MCPE binary's definition, DO NOT CHANGE
     public final static String MINECRAFT_PE_VERSION = "1.0.0";
     
-    public final static int MINECRAFT_PE_PROTOCOL = ProtocolInfo.CURRENT_PROTOCOL;
+    public final static int MINECRAFT_PE_PROTOCOL = 100;
 
 }

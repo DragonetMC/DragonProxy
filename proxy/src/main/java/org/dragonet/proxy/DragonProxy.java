@@ -28,20 +28,25 @@ import org.dragonet.proxy.commands.ConsoleCommandReader;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.RemoteServer;
 import org.dragonet.proxy.configuration.ServerConfig;
-import org.dragonet.proxy.network.RaknetInterface;
-import org.dragonet.proxy.network.SessionRegister;
+import org.dragonet.proxy.network.adapter.ClientProtocolAdapter;
+import org.dragonet.proxy.network.adapter.MCPCClientProtocolAdapter;
+import org.dragonet.proxy.network.adapter.MCPEClientProtocolAdapter;
 import org.dragonet.proxy.utilities.Logger;
 import org.dragonet.proxy.utilities.MCColor;
 import org.dragonet.proxy.utilities.Versioning;
 import org.mcstats.Metrics;
 import org.yaml.snakeyaml.Yaml;
 
+//TODO: DragonProxy should not manage Raknet anymore. Move to ProtocolAdapter
 public class DragonProxy {
 
+    @Getter
+    private static DragonProxy self = new DragonProxy();
+
     public static void main(String[] args) {
-        new DragonProxy().run(args);
+        self.run(args);
     }
-	
+
     public final static boolean IS_RELEASE = false; //DO NOT CHANGE, ONLY ON PRODUCTION
 
     private static Logger logger = null;
@@ -55,10 +60,7 @@ public class DragonProxy {
     private Lang lang;
 
     @Getter
-    private SessionRegister sessionRegister;
-
-    @Getter
-    private RaknetInterface network;
+    private NetworkConnectionManager network;
 
     @Getter
     private boolean shuttingDown;
@@ -76,8 +78,6 @@ public class DragonProxy {
 
     private Metrics metrics;
 
-    private String motd;
-
     @Getter
     private boolean isDebug = false;
 
@@ -86,19 +86,19 @@ public class DragonProxy {
         // Load config.yml 
 
         try {
-        	File fileConfig = new File("config.yml");
-        	
-        	boolean newConfig = false;
-        	if (!fileConfig.exists()) {
-        		newConfig = fileConfig.createNewFile();
-        	}
-        	config = new Yaml().loadAs(new FileInputStream(fileConfig), ServerConfig.class);
-            
-        	if(config == null){
-        		config = new ServerConfig();
-        	}
-        	
-            if(newConfig){
+            File fileConfig = new File("config.yml");
+
+            boolean newConfig = false;
+            if (!fileConfig.exists()) {
+                newConfig = fileConfig.createNewFile();
+            }
+            config = new Yaml().loadAs(new FileInputStream(fileConfig), ServerConfig.class);
+
+            if (config == null) {
+                config = new ServerConfig();
+            }
+
+            if (newConfig) {
                 Map<String, RemoteServer> servers = new HashMap<>();
                 DesktopServer serv = new DesktopServer();
                 serv.setRemote_addr("127.0.0.1");
@@ -107,13 +107,13 @@ public class DragonProxy {
                 config.setRemote_servers(servers);
                 config.setDefault_server("localhost");
                 String str = new Yaml().dump(config);
-				FileOutputStream fos = new FileOutputStream(fileConfig);
+                FileOutputStream fos = new FileOutputStream(fileConfig);
 
-				for (byte bytes : str.getBytes()) {
-					fos.write(bytes);
-				}
-				fos.flush();
-				fos.close();
+                for (byte bytes : str.getBytes()) {
+                    fos.write(bytes);
+                }
+                fos.flush();
+                fos.close();
             }
         } catch (IOException ex) {
             logger.severe("Failed to load configuration file! Make sure the file is writable.");
@@ -125,23 +125,22 @@ public class DragonProxy {
         console = new ConsoleCommandReader(this);
         console.startConsole();
 
-    	// Should we save console log? Set it in config file
-       /* if(config.isLog_console()){
+        // Should we save console log? Set it in config file
+        /* if(config.isLog_console()){
             console.startFile("console.log");
             logger.info("Saving console output enabled");
         } else {
             logger.info("Saving console output disabled");
         } */
-
         // Put at the top instead
-        if(!IS_RELEASE) {
+        if (!IS_RELEASE) {
             logger.warning(MCColor.YELLOW + "This is a development build. It may contain bugs. Do not use on production.\n");
         }
 
         // Check for startup arguments
         checkArguments(args);
-		
-	    // Load language file
+
+        // Load language file
         try {
             lang = new Lang(config.getLang());
         } catch (IOException ex) {
@@ -149,19 +148,30 @@ public class DragonProxy {
             ex.printStackTrace();
             return;
         }
-	    // Load some more stuff
+        // Load some more stuff
         logger.info(lang.get(Lang.INIT_LOADING, Versioning.RELEASE_VERSION));
         logger.info(lang.get(Lang.INIT_MC_PC_SUPPORT, Versioning.MINECRAFT_PC_VERSION));
         logger.info(lang.get(Lang.INIT_MC_PE_SUPPORT, Versioning.MINECRAFT_PE_VERSION));
         authMode = config.getMode().toLowerCase();
-        if(!authMode.equals("cls") && !authMode.equals("online") && !authMode.equals("offline")){
+        if (!authMode.equals("cls") && !authMode.equals("online") && !authMode.equals("offline")) {
             logger.severe("Invalid login 'mode' option detected, must be cls/online/offline. You set it to '" + authMode + "'! ");
             return;
         }
-		
-	    // Init session and command stuff
-        sessionRegister = new SessionRegister(this);
+
+        // Init command stuff
         commandRegister = new CommandRegister(this);
+
+        // Create thread pool
+        logger.info(lang.get(Lang.INIT_CREATING_THREAD_POOL, config.getThread_pool_size()));
+        generalThreadPool = Executors.newScheduledThreadPool(config.getThread_pool_size());
+
+        // Bind
+        boolean usePC = false;
+        ClientProtocolAdapter adapter = (usePC ? new MCPCClientProtocolAdapter() : new MCPEClientProtocolAdapter());
+        network = new NetworkConnectionManager(this, adapter);
+
+        // MOTD
+        network.setMotd(config.getMotd().replace("&", "§"));
 
         // Start metrics
         try {
@@ -172,42 +182,28 @@ public class DragonProxy {
             logger.warning("Failed to start metrics: " + ex);
         }
 
-        // Create thread pool
-        logger.info(lang.get(Lang.INIT_CREATING_THREAD_POOL, config.getThread_pool_size()));
-        generalThreadPool = Executors.newScheduledThreadPool(config.getThread_pool_size());
-
-        // Bind
         logger.info(lang.get(Lang.INIT_BINDING, config.getUdp_bind_ip(), config.getUdp_bind_port()));
-        network = new RaknetInterface(this,
-                config.getUdp_bind_ip(), //IP
-                config.getUdp_bind_port()); //Port
 
-        // MOTD
-        motd = config.getMotd();
-        motd = motd.replace("&", "§");
-
-        network.setBroadcastName();
         ticker.start();
         logger.info(lang.get(Lang.INIT_DONE));
     }
 
-    public static Logger getLogger(){
-    	// TODO: In the future this should never return null
-    	return logger;
+    public static Logger getLogger() {
+        // TODO: In the future this should never return null
+        return logger;
     }
 
-    public String getMotd(){
-    	return motd;
+    public String getMotd() {
+        return network.getMotd();
     }
-    
+
     public void onTick() {
         network.onTick();
-        sessionRegister.onTick();
     }
 
-    public void checkArguments(String[] args){
-        for(String arg : args){
-            if(arg.toLowerCase().contains("--debug")){
+    public void checkArguments(String[] args) {
+        for (String arg : args) {
+            if (arg.toLowerCase().contains("--debug")) {
                 isDebug = true;
                 getLogger().debug = true;
                 logger.info(MCColor.DARK_AQUA + "Proxy is running in debug mode.");
@@ -220,11 +216,11 @@ public class DragonProxy {
 
         isDebug = false;
         this.shuttingDown = true;
-        network.shutdown();
-        try{
+        //network.shutdown();
+        try {
             Thread.sleep(2000); // Wait for all clients disconnected
         } catch (Exception ex) {
-        	DragonProxy.getLogger().severe("Exception while shutting down!");
+            DragonProxy.getLogger().severe("Exception while shutting down!");
             ex.printStackTrace();
         }
         DragonProxy.getLogger().info("Goodbye!");

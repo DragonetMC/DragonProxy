@@ -1,6 +1,6 @@
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
@@ -16,7 +16,7 @@ import cn.nukkit.network.protocol.PlayerListPacket;
 public class PCSpawnPlayerPacketTranslator implements PCPacketTranslator<ServerSpawnPlayerPacket> {
 
     @Override
-    public DataPacket[] translate(UpstreamSession session, ServerSpawnPlayerPacket packet) {
+    public DataPacket[] translate(ClientConnection session, ServerSpawnPlayerPacket packet) {
     	try {
     		CachedEntity entity = session.getEntityCache().newPlayer(packet);
 

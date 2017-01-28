@@ -13,7 +13,7 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import org.dragonet.proxy.network.CacheKey;
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 
@@ -30,7 +30,7 @@ import cn.nukkit.network.protocol.StartGamePacket;
 public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoinGamePacket> {
 
     @Override
-    public DataPacket[] translate(UpstreamSession session, ServerJoinGamePacket packet) {
+    public DataPacket[] translate(ClientConnection session, ServerJoinGamePacket packet) {
         //This packet is not fully useable, we cache it for now. 
         session.getDataCache().put(CacheKey.PLAYER_EID, packet.getEntityId());  //Stores the real entity ID
 

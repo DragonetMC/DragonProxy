@@ -3,7 +3,7 @@ package org.dragonet.proxy.network.translator.pc;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.data.game.chunk.Chunk;
@@ -15,7 +15,7 @@ import cn.nukkit.network.protocol.FullChunkDataPacket;
 public class PCChunkDataTranslator implements PCPacketTranslator<ServerChunkDataPacket> {
 	
 
-	public DataPacket[] translate2(UpstreamSession session, ServerChunkDataPacket packet) {
+	public DataPacket[] translate2(ClientConnection session, ServerChunkDataPacket packet) {
 		ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
 		DataOutputStream dos1 = new DataOutputStream(bos1);
 
@@ -152,7 +152,7 @@ public class PCChunkDataTranslator implements PCPacketTranslator<ServerChunkData
     }
 
 	@Override
-	public DataPacket[] translate(UpstreamSession session, ServerChunkDataPacket packet) {
+	public DataPacket[] translate(ClientConnection session, ServerChunkDataPacket packet) {
 		FullChunkDataPacket pePacket = new FullChunkDataPacket();
 		
 		try {

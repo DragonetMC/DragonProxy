@@ -48,7 +48,10 @@ public class ServerMetrics extends Metrics {
 
     @Override
     public int getPlayersOnline() {
-        return proxy.getSessionRegister().getOnlineCount();
+        return proxy
+                .getNetwork()
+                .getSessionRegister()
+                .getOnlineCount();
     }
 
     @Override

@@ -13,7 +13,7 @@
 package org.dragonet.proxy.network.translator.pe;
 
 import org.dragonet.proxy.network.InventoryTranslatorRegister;
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import org.spacehq.mc.protocol.data.game.entity.metadata.ItemStack;
@@ -28,7 +28,7 @@ import cn.nukkit.network.protocol.MobEquipmentPacket;
 public class PEPlayerEquipmentPacketTranslator implements PEPacketTranslator<MobEquipmentPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, MobEquipmentPacket packet) {
+    public Packet[] translate(ClientConnection session, MobEquipmentPacket packet) {
         if (packet.selectedSlot > 8) {
             return null;
         }

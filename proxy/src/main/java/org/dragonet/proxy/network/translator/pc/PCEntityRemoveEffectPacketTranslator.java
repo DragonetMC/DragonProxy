@@ -13,7 +13,7 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import org.dragonet.proxy.network.CacheKey;
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.data.MagicValues;
@@ -25,7 +25,7 @@ import cn.nukkit.network.protocol.MobEffectPacket;
 public class PCEntityRemoveEffectPacketTranslator implements PCPacketTranslator<ServerEntityRemoveEffectPacket> {
 
     @Override
-    public DataPacket[] translate(UpstreamSession session, ServerEntityRemoveEffectPacket packet) {
+    public DataPacket[] translate(ClientConnection session, ServerEntityRemoveEffectPacket packet) {
         CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
         if (entity == null) {
             return null;

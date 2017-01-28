@@ -12,7 +12,7 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerMultiBlockChangePacket;
@@ -23,7 +23,7 @@ import cn.nukkit.network.protocol.UpdateBlockPacket;
 public class PCMultiBlockChangePacketTranslator implements PCPacketTranslator<ServerMultiBlockChangePacket> {
 
     @Override
-    public DataPacket[] translate(UpstreamSession session, ServerMultiBlockChangePacket packet) {
+    public DataPacket[] translate(ClientConnection session, ServerMultiBlockChangePacket packet) {
         UpdateBlockPacket[] packets = new UpdateBlockPacket[packet.getRecords().length];
         byte generalFlag = (byte) (packet.getRecords().length > 64 ? UpdateBlockPacket.FLAG_PRIORITY : UpdateBlockPacket.FLAG_ALL);
         for (int i = 0; i < packets.length; i++) {

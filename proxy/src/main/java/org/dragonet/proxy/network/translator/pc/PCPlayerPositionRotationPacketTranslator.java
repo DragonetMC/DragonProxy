@@ -12,7 +12,7 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
@@ -23,7 +23,7 @@ import cn.nukkit.network.protocol.MovePlayerPacket;
 public class PCPlayerPositionRotationPacketTranslator implements PCPacketTranslator<ServerPlayerPositionRotationPacket> {
 
     @Override
-    public DataPacket[] translate(UpstreamSession session, ServerPlayerPositionRotationPacket packet) {
+    public DataPacket[] translate(ClientConnection session, ServerPlayerPositionRotationPacket packet) {
         MovePlayerPacket pkMovePlayer = new MovePlayerPacket();
         pkMovePlayer.eid = 0;
         pkMovePlayer.x = (float) packet.getX();

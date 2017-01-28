@@ -99,7 +99,8 @@ public class PEInventorySlot {
     }
 
     public static Item fromItemStack(ItemStack item) {
-        return ItemBlockTranslator.translateToPE(item);
+        //return ItemBlockTranslator.translateToPE(item);
+        return null;
     }
 
     @Override

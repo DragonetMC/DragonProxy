@@ -12,7 +12,7 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.MessageTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerChatPacket;
@@ -23,7 +23,7 @@ import cn.nukkit.network.protocol.TextPacket;
 public class PCChatPacketTranslator implements PCPacketTranslator<ServerChatPacket> {
 
     @Override
-    public DataPacket[] translate(UpstreamSession session, ServerChatPacket packet) throws java.lang.IllegalStateException{
+    public DataPacket[] translate(ClientConnection session, ServerChatPacket packet) throws java.lang.IllegalStateException{
         TextPacket ret = new TextPacket();
         /*
          * Reset the chat message so we can parse the JSON again (if needed)

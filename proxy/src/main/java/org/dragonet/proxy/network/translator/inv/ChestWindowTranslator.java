@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 
 import org.dragonet.proxy.network.CacheKey;
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.InventoryTranslator;
 import org.spacehq.mc.protocol.data.game.entity.metadata.Position;
@@ -33,7 +33,7 @@ import org.dragonet.inventory.PEInventorySlot;
 public class ChestWindowTranslator implements InventoryTranslator {
 
     @Override
-    public boolean open(UpstreamSession session, CachedWindow window) {
+    public boolean open(ClientConnection session, CachedWindow window) {
         Position pos = new Position((int)session.getEntityCache().getClientEntity().x, (int)session.getEntityCache().getClientEntity().y - 4, (int)session.getEntityCache().getClientEntity().z);
         session.getDataCache().put(CacheKey.WINDOW_OPENED_ID, window.windowId);
         session.getDataCache().put(CacheKey.WINDOW_BLOCK_POSITION, pos);
@@ -68,16 +68,16 @@ public class ChestWindowTranslator implements InventoryTranslator {
     }
 
     @Override
-    public void updateContent(UpstreamSession session, CachedWindow window) {
+    public void updateContent(ClientConnection session, CachedWindow window) {
         sendContent(session, window);
     }
 
     @Override
-    public void updateSlot(UpstreamSession session, CachedWindow window, int slotIndex) {
+    public void updateSlot(ClientConnection session, CachedWindow window, int slotIndex) {
         sendContent(session, window);//TOO LAZY LOL
     }
     
-    private void sendContent(UpstreamSession session, CachedWindow win){
+    private void sendContent(ClientConnection session, CachedWindow win){
         ContainerSetContentPacket pk = new ContainerSetContentPacket();
         pk.windowid = (byte)(win.windowId & 0xFF);
         pk.slots = new Item[win.slots.length];

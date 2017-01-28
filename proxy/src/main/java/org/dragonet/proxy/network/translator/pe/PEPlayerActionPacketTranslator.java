@@ -13,7 +13,7 @@
 package org.dragonet.proxy.network.translator.pe;
 
 import org.dragonet.proxy.network.CacheKey;
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import org.spacehq.mc.protocol.data.MagicValues;
 import org.spacehq.mc.protocol.data.game.ClientRequest;
@@ -31,7 +31,7 @@ import cn.nukkit.network.protocol.PlayerActionPacket;
 public class PEPlayerActionPacketTranslator implements PEPacketTranslator<PlayerActionPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, PlayerActionPacket packet) {
+    public Packet[] translate(ClientConnection session, PlayerActionPacket packet) {
         if (packet.action == PlayerActionPacket.ACTION_RESPAWN) {
             return new Packet[]{new ClientRequestPacket(ClientRequest.RESPAWN)};
         }

@@ -15,7 +15,7 @@ package org.dragonet.proxy.network.translator.pc;
 import java.io.IOException;
 import java.nio.ByteOrder;
 
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.MessageTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerUpdateTileEntityPacket;
@@ -29,7 +29,7 @@ import org.spacehq.mc.protocol.data.message.Message;
 public class PCUpdateSignPacketTranslator implements PCPacketTranslator<ServerUpdateTileEntityPacket> {
 
     @Override
-    public DataPacket[] translate(UpstreamSession session, ServerUpdateTileEntityPacket packet) {
+    public DataPacket[] translate(ClientConnection session, ServerUpdateTileEntityPacket packet) {
         CompoundTag root = new CompoundTag();
         root.putString("id", "Sign");
         root.putInt("x", packet.getPosition().getX());

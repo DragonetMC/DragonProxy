@@ -12,7 +12,7 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.data.game.entity.player.GameMode;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
@@ -24,7 +24,7 @@ import cn.nukkit.network.protocol.SetPlayerGameTypePacket;
 public class PCNotifyClientPacketTranslator implements PCPacketTranslator<ServerNotifyClientPacket> {
 
     @Override
-    public DataPacket[] translate(UpstreamSession session, ServerNotifyClientPacket packet) {
+    public DataPacket[] translate(ClientConnection session, ServerNotifyClientPacket packet) {
         switch (packet.getNotification()) {
         case CHANGE_GAMEMODE:
             GameMode gm = (GameMode) packet.getValue();

@@ -94,6 +94,6 @@ public class Logger {
     }
 
     public void debug(String message) {
-        if(debug) log(MCColor.GRAY, "DEBUG", message);
+        if(debug) log(MCColor.DARK_GRAY, "DEBUG", message);
     }
 }

@@ -14,7 +14,7 @@ package org.dragonet.proxy.network.translator.pc;
 
 import java.lang.reflect.Field;
 
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.data.game.world.sound.CustomSound;
 import org.spacehq.mc.protocol.data.game.world.sound.Sound;
@@ -26,7 +26,7 @@ import cn.nukkit.network.protocol.LevelEventPacket;
 public class PCPlaySoundPacketTranslator implements PCPacketTranslator<ServerPlaySoundPacket> {
 
     @Override
-    public DataPacket[] translate(UpstreamSession session, ServerPlaySoundPacket packet) {
+    public DataPacket[] translate(ClientConnection session, ServerPlaySoundPacket packet) {
         try {
             String soundName = null;
 

@@ -10,21 +10,17 @@
  *
  * @author The Dragonet Team
  */
-package org.dragonet.proxy.network;
+package org.dragonet.proxy.network.adapter;
+import org.dragonet.proxy.network.ClientConnection;
 
-public interface DownstreamSession<PACKET> {
+/**
+ * @author robotman3000
+ */
+public interface ServerProtocolAdapter<T> extends ProtocolAdapter<T> {
     
-    public void connect(String addr, int port);
+    public void connectToRemoteServer(String address, int port);
     
-    public boolean isConnected();
+    public void setClient(ClientConnection session);
     
-    public void onTick();
-
-    public void send(PACKET packet);
-
-    public void send(PACKET... packets);
-    
-    public void sendChat(String chat);
-    
-    public void disconnect();
+    public void sendPacket(T packet);
 }

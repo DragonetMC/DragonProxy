@@ -1,6 +1,5 @@
 package org.dragonet.proxy.utilities;
 
-import cn.nukkit.utils.BinaryStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

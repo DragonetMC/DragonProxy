@@ -12,7 +12,7 @@
  */
 package org.dragonet.proxy.network.translator.pe;
 
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import org.spacehq.mc.protocol.data.MagicValues;
@@ -29,7 +29,7 @@ import cn.nukkit.network.protocol.UseItemPacket;
 public class PEUseItemPacketTranslator implements PEPacketTranslator<UseItemPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, UseItemPacket packet) {
+    public Packet[] translate(ClientConnection session, UseItemPacket packet) {
         if (packet.face == 0xFF) {
             //Left click AIR
             ClientPlayerSwingArmPacket pk = new ClientPlayerSwingArmPacket(Hand.MAIN_HAND);

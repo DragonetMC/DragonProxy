@@ -12,7 +12,7 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
@@ -24,7 +24,7 @@ import cn.nukkit.network.protocol.DataPacket;
 public class PCSpawnMobPacketTranslator implements PCPacketTranslator<ServerSpawnMobPacket> {
 
     @Override
-    public DataPacket[] translate(UpstreamSession session, ServerSpawnMobPacket packet) {
+    public DataPacket[] translate(ClientConnection session, ServerSpawnMobPacket packet) {
         try {
             CachedEntity e = session.getEntityCache().newEntity(packet);
             if (e == null) {

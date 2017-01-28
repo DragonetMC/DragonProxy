@@ -38,7 +38,7 @@ public final class InventoryTranslatorRegister {
 
     public final static int[] HOTBAR_CONSTANTS = new int[]{36, 37, 38, 39, 40, 41, 42, 43, 44};
 
-    public static DataPacket[] sendPlayerInventory(UpstreamSession session) {
+    public static DataPacket[] sendPlayerInventory(ClientConnection session) {
         CachedWindow win = session.getWindowCache().getPlayerInventory();
         //Translate and send
         ContainerSetContentPacket ret = new ContainerSetContentPacket();
@@ -66,7 +66,7 @@ public final class InventoryTranslatorRegister {
         TRANSLATORS.put(WindowType.CHEST, new ChestWindowTranslator());
     }
 
-    public static void closeOpened(UpstreamSession session, boolean byServer) {
+    public static void closeOpened(ClientConnection session, boolean byServer) {
         if (session.getDataCache().containsKey(CacheKey.WINDOW_OPENED_ID)) {
             //There is already a window opened
             int id = (int) session.getDataCache().remove(CacheKey.WINDOW_OPENED_ID);
@@ -90,7 +90,7 @@ public final class InventoryTranslatorRegister {
         }
     }
 
-    public static void open(UpstreamSession session, ServerOpenWindowPacket win) {
+    public static void open(ClientConnection session, ServerOpenWindowPacket win) {
         closeOpened(session, true);
         if (TRANSLATORS.containsKey(win.getType())) {
             CachedWindow cached = new CachedWindow(win.getWindowId(), win.getType(), 36 + win.getSlots());
@@ -113,7 +113,7 @@ public final class InventoryTranslatorRegister {
         }
     }
 
-    public static void updateSlot(UpstreamSession session, ServerSetSlotPacket packet) {
+    public static void updateSlot(ClientConnection session, ServerSetSlotPacket packet) {
         if (packet.getWindowId() == 0) {
             return;   //We don't process player inventory updates here. 
         }
@@ -143,7 +143,7 @@ public final class InventoryTranslatorRegister {
         t.updateSlot(session, win, packet.getSlot());
     }
 
-    public static void updateContent(UpstreamSession session, ServerWindowItemsPacket packet) {
+    public static void updateContent(ClientConnection session, ServerWindowItemsPacket packet) {
         if (packet.getWindowId() == 0) {
             return;   //We don't process player inventory updates here. 
         }

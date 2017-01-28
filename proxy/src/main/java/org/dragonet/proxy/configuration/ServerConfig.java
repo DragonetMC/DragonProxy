@@ -51,7 +51,5 @@ public class ServerConfig {
     
     @Getter @Setter
     private int thread_pool_size;
-	
-	
 
 }

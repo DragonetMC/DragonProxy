@@ -10,77 +10,111 @@
  *
  * @author The Dragonet Team
  */
-package org.dragonet.proxy.network;
+package org.dragonet.proxy.network.adapter;
 
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
-
-import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.configuration.Lang;
+import org.dragonet.proxy.api.network.DragonPacket;
+import org.dragonet.proxy.network.ClientConnection;
+import org.dragonet.proxy.network.PacketTranslatorRegister;
+import org.spacehq.mc.auth.data.GameProfile;
+import org.spacehq.mc.protocol.ClientListener;
+import org.spacehq.mc.protocol.MinecraftConstants;
+//import org.dragonet.proxy.network.PacketTranslatorRegister;
 import org.spacehq.mc.protocol.MinecraftProtocol;
-import org.spacehq.mc.protocol.packet.ingame.client.ClientChatPacket;
 import org.spacehq.packetlib.Client;
 import org.spacehq.packetlib.event.session.ConnectedEvent;
 import org.spacehq.packetlib.event.session.DisconnectedEvent;
 import org.spacehq.packetlib.event.session.DisconnectingEvent;
 import org.spacehq.packetlib.event.session.PacketReceivedEvent;
 import org.spacehq.packetlib.event.session.PacketSentEvent;
-import org.spacehq.packetlib.event.session.SessionAdapter;
 import org.spacehq.packetlib.packet.Packet;
 import org.spacehq.packetlib.tcp.TcpSessionFactory;
 
-import cn.nukkit.network.protocol.DataPacket;
-
 /**
- * Maintaince the connection between the proxy and remote Minecraft server.
+ *
+ * @author robotman3000
  */
-public class PCDownstreamSession implements DownstreamSession<Packet> {
+public class MCPCServerProtocolAdapter extends ClientListener implements ServerProtocolAdapter<Packet> {
 
-    @Getter
-    private final DragonProxy proxy;
-
-    @Getter
-    private final UpstreamSession upstream;
-
-    @Getter
-    private DesktopServer serverInfo;
-    
-    private Client remoteClient;
-    
     @Getter
     @Setter
     private MinecraftProtocol protocol;
 
-    public PCDownstreamSession(DragonProxy proxy, UpstreamSession upstream) {
-        this.proxy = proxy;
-        this.upstream = upstream;
+    private Client client;
+    private ClientConnection upstream;
+
+    public MCPCServerProtocolAdapter() {
     }
 
     @Override
-    public boolean isConnected() {
-        return remoteClient != null && remoteClient.getSession().isConnected();
+    public void connectToRemoteServer(String address, int port) {
+        DragonProxy.getLogger().info("Connecting to remote pc server at: " + address + ":" + port);
+        client = new Client(address, port, protocol, new TcpSessionFactory());
+        client.getSession().addListener(this);
+        client.getSession().connect(true);
     }
 
     @Override
-    public void send(Packet... packets) {
-        for (Packet p : packets) {
-            send(p);
+    public void setClient(ClientConnection session) {
+        this.upstream = session;
+    }
+
+    @Override
+    public void sendPacket(Packet packet) {
+        System.out.println("Server Sending Packet: " + packet.getClass().getCanonicalName());
+        client.getSession().send(packet);
+    }
+
+    @Override
+    public void handlePacket(Packet packet, UUID identifier) {
+        System.out.println("Server Handling Packet: " + packet.getClass().getCanonicalName());
+        Object[] packets = {packet};
+        if (upstream.getUpstreamProtocol().getSupportedPacketType() != getSupportedPacketType()) {
+            packets = PacketTranslatorRegister.translateToPE(upstream, packet);
+        }
+
+        for (Object pack : packets) {
+            upstream.getUpstreamProtocol().sendPacket(pack, identifier);
         }
     }
 
     @Override
-    public void send(Packet packet) {
-        remoteClient.getSession().send(packet);
+    public void connected(ConnectedEvent event) {
+        DragonProxy.getLogger().info("Connected to remote server " + event.getSession().getHost());
     }
 
-    public void connect(DesktopServer serverInfo){
-        this.serverInfo = serverInfo;
-        connect(serverInfo.getRemoteAddr(), serverInfo.getRemotePort());
-    }
-    
     @Override
-    public void connect(String addr, int port) {
+    public void disconnected(DisconnectedEvent event) {
+        DragonProxy.getLogger().info("Disconected " + event.getSession().getLocalAddress() + " from remote server " + event.getSession().getHost() + " for " + event.getReason());
+        event.getCause().printStackTrace();
+    }
+
+    @Override
+    public void disconnecting(DisconnectingEvent event) {
+        DragonProxy.getLogger().info("Disconecting " + event.getSession().getLocalAddress() + " from remote server " + event.getSession().getHost() + " for " + event.getReason());
+        event.getCause().printStackTrace();
+    }
+
+    @Override
+    public void packetReceived(PacketReceivedEvent event) {
+        DragonProxy.getLogger().info("Received packet from server: " + event.getPacket().getClass().getCanonicalName());
+        handlePacket(event.getPacket(), ((GameProfile) event.getSession().getFlag(MinecraftConstants.PROFILE_KEY)).getId());
+    }
+
+    @Override
+    public void packetSent(PacketSentEvent event) {
+        DragonProxy.getLogger().info("Sent packet to server: " + event.getPacket().getClass().getCanonicalName());
+    }
+
+    @Override
+    public Class<Packet> getSupportedPacketType() {
+        return Packet.class;
+    }
+
+    /*public void connect(String addr, int port) {
         if (this.protocol == null) {
             upstream.onConnected(); // Clear the flags
             upstream.disconnect("ERROR! ");
@@ -139,22 +173,5 @@ public class PCDownstreamSession implements DownstreamSession<Packet> {
         } catch (Exception e){
         	e.printStackTrace();
         }
-    }
-
-    @Override
-    public void onTick() {
-    }
-
-    @Override
-    public void disconnect() {
-        if (remoteClient != null && remoteClient.getSession().isConnected()) {
-            remoteClient.getSession().disconnect("Disconnect");
-        }
-    }
-    
-    @Override
-    public void sendChat(String chat) {
-        remoteClient.getSession().send(new ClientChatPacket(chat));
-    }
-
+    }*/
 }

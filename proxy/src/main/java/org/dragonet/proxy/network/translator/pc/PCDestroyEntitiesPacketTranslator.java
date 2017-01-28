@@ -12,7 +12,7 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityDestroyPacket;
@@ -23,7 +23,7 @@ import cn.nukkit.network.protocol.RemoveEntityPacket;
 public class PCDestroyEntitiesPacketTranslator implements PCPacketTranslator<ServerEntityDestroyPacket> {
 
     @Override
-    public DataPacket[] translate(UpstreamSession session, ServerEntityDestroyPacket packet) {
+    public DataPacket[] translate(ClientConnection session, ServerEntityDestroyPacket packet) {
     	DataPacket[] ret = new DataPacket[packet.getEntityIds().length];
         for (int i = 0; i < ret.length; i++) {
             CachedEntity e = session.getEntityCache().remove(packet.getEntityIds()[i]);

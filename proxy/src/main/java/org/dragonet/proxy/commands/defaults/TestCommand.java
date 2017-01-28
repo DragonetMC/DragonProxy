@@ -17,9 +17,7 @@ import java.util.Arrays;
 
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.commands.Command;
-import org.dragonet.proxy.network.UpstreamSession;
-
-import cn.nukkit.network.protocol.FullChunkDataPacket;
+import org.dragonet.proxy.network.ClientConnection;
 
 /*
  * Used for testing during development.
@@ -33,13 +31,13 @@ public class TestCommand extends Command {
 
     @Override
     public void execute(DragonProxy proxy, String[] args) {
-        UpstreamSession cli = proxy.getSessionRegister().getAll().values().toArray(new UpstreamSession[0])[0];
+        /*ClientConnection cli = proxy.getSessionRegister().getAll().values().toArray(new ClientConnection[0])[0];
 
         proxy.getLogger().info("Intializing...");
-        sendFarChunk(cli, 150, 999);
+        sendFarChunk(cli, 150, 999);*/
     }
 
-    private void sendFarChunk(UpstreamSession cli, int x, int z) {
+    private void sendFarChunk(ClientConnection cli, int x, int z) {
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             byte[] yPreset = new byte[128];
@@ -64,11 +62,11 @@ public class TestCommand extends Command {
                 bos.write((byte) 0x4A);
             }
             bos.write(new byte[4]);
-            FullChunkDataPacket pkChunk = new FullChunkDataPacket();
+            /*FullChunkDataPacket pkChunk = new FullChunkDataPacket();
             pkChunk.chunkX = x;
             pkChunk.chunkZ = z;
             pkChunk.data = bos.toByteArray();
-            cli.sendPacket(pkChunk, true);
+            //cli.sendPacket(pkChunk, true);*/
         } catch (Exception e) {
             e.printStackTrace();
         }
