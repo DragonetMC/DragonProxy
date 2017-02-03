@@ -1,0 +1,19 @@
+# =================================
+#| DragonProxy Configuration File  |
+#|    Sponsered by BytePowered     |
+# =================================
+
+# Permissions which player will have if they have no group assigned
+default_permission: 
+  - 'server'
+
+# Group definitions with their permissions. 
+groups:
+  - admin:
+      - 'server'
+      - 'stop'
+
+# Users
+# WARNING: You must change some_random_guy to your username if you are using offline mode! 
+users:
+  some_random_guy: 'admin'
