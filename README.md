@@ -1,7 +1,6 @@
 ![Logo](http://dragonet.org/assets/img/Dragonet.png)
-# DragonProxy is being worked on in the mcpe1.0 branch [![Build Status](https://drone.io/github.com/DragonetMC/DragonProxy/status.png)](https://drone.io/github.com/DragonetMC/DragonProxy/latest)
 
-A proxy for **Minecraft: Pocket Edition** connecting to **Minecraft PC/Mac** servers.
+A proxy for **Minecraft - Pocket Edition** connecting to **Minecraft PC/Mac** servers.
 
 Video by **[@MrPowerGamerBR](https://github.com/MrPowerGamerBR)** (On an older version): https://www.youtube.com/watch?v=oRSKQMzZYDE
 
