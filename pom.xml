@@ -22,6 +22,7 @@
     <modules>
         <!--<module>protocol</module>-->
         <module>proxy</module>
+        <module>JRakNet</module>
     </modules>
     <build>
 	<defaultGoal>clean install</defaultGoal>
