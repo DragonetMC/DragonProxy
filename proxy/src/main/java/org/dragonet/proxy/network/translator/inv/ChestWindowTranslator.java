@@ -12,7 +12,6 @@
  */
 package org.dragonet.proxy.network.translator.inv;
 
-import cn.nukkit.inventory.InventoryType;
 import java.io.IOException;
 import java.nio.ByteOrder;
 
@@ -22,19 +21,13 @@ import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.InventoryTranslator;
 import org.spacehq.mc.protocol.data.game.entity.metadata.Position;
 
-import cn.nukkit.item.Item;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.BlockEntityDataPacket;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
-import cn.nukkit.network.protocol.ContainerSetContentPacket;
 import org.dragonet.inventory.PEInventorySlot;
 
 public class ChestWindowTranslator implements InventoryTranslator {
 
     @Override
     public boolean open(ClientConnection session, CachedWindow window) {
-        Position pos = new Position((int)session.getEntityCache().getClientEntity().x, (int)session.getEntityCache().getClientEntity().y - 4, (int)session.getEntityCache().getClientEntity().z);
+        /*Position pos = new Position((int)session.getEntityCache().getClientEntity().x, (int)session.getEntityCache().getClientEntity().y - 4, (int)session.getEntityCache().getClientEntity().z);
         session.getDataCache().put(CacheKey.WINDOW_OPENED_ID, window.windowId);
         session.getDataCache().put(CacheKey.WINDOW_BLOCK_POSITION, pos);
         session.sendFakeBlock(pos.getX(), pos.getY(), pos.getZ(), 54, 0);
@@ -63,7 +56,7 @@ public class ChestWindowTranslator implements InventoryTranslator {
         pk.x = pos.getX();
         pk.y = pos.getY();
         pk.z= pos.getZ();
-        session.sendPacket(pk);
+        session.sendPacket(pk);*/
         return true;
     }
 
@@ -78,12 +71,12 @@ public class ChestWindowTranslator implements InventoryTranslator {
     }
     
     private void sendContent(ClientConnection session, CachedWindow win){
-        ContainerSetContentPacket pk = new ContainerSetContentPacket();
+        /*ContainerSetContentPacket pk = new ContainerSetContentPacket();
         pk.windowid = (byte)(win.windowId & 0xFF);
         pk.slots = new Item[win.slots.length];
         for(int i = 0; i < pk.slots.length; i++){
             pk.slots[i] = PEInventorySlot.fromItemStack(win.slots[i]);
-        }
-        session.sendPacket(pk, true);
+        }*/
+        //session.sendPacket(pk, true);
     }
 }

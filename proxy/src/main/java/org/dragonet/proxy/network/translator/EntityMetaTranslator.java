@@ -16,9 +16,8 @@ import org.dragonet.proxy.entity.EntityType;
 import org.dragonet.proxy.entity.meta.EntityMetaData;
 import org.dragonet.proxy.entity.meta.type.ByteMeta;
 import org.dragonet.proxy.entity.meta.type.ShortMeta;
+import org.spacehq.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import org.spacehq.mc.protocol.data.game.entity.metadata.MetadataType;
-
-import cn.nukkit.entity.data.EntityMetadata;
 
 public final class EntityMetaTranslator {
 
@@ -26,7 +25,7 @@ public final class EntityMetaTranslator {
         /*
          * Following format was fetched from http://wiki.vg/Entities#Entity_meta_Format
          */
-        EntityMetadata peMeta = new EntityMetadata();// createDefault();
+        /*EntityMetadata peMeta = new EntityMetadata();// createDefault();
         for (org.spacehq.mc.protocol.data.game.entity.metadata.EntityMetadata m : pcMeta) {
             if (m == null) {
                 continue;
@@ -89,6 +88,7 @@ public final class EntityMetaTranslator {
                     break;
             }
         }
-        return peMeta;
+        return peMeta;*/
+        return null;
     }
 }

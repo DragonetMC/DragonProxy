@@ -12,7 +12,6 @@
  */
 package org.dragonet.proxy.network;
 
-import cn.nukkit.inventory.InventoryType;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,19 +26,14 @@ import org.spacehq.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacke
 import org.spacehq.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
 import org.spacehq.packetlib.packet.Packet;
-
-import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.ContainerClosePacket;
-import cn.nukkit.network.protocol.ContainerSetContentPacket;
-import cn.nukkit.network.protocol.DataPacket;
 import org.dragonet.inventory.PEInventorySlot;
 
 public final class InventoryTranslatorRegister {
 
     public final static int[] HOTBAR_CONSTANTS = new int[]{36, 37, 38, 39, 40, 41, 42, 43, 44};
 
-    public static DataPacket[] sendPlayerInventory(ClientConnection session) {
-        CachedWindow win = session.getWindowCache().getPlayerInventory();
+    public static Object[] sendPlayerInventory(ClientConnection session) {
+        /*CachedWindow win = session.getWindowCache().getPlayerInventory();
         //Translate and send
         ContainerSetContentPacket ret = new ContainerSetContentPacket();
         ret.windowid = InventoryType.PLAYER.getNetworkType();
@@ -56,7 +50,8 @@ public final class InventoryTranslatorRegister {
         ret.hotbar = HOTBAR_CONSTANTS;
 
         //TODO: Add armor support
-        return new DataPacket[]{ret};
+        return new DataPacket[]{ret};*/
+        return null;
     }
 
     // PC Type => PE Translator
@@ -67,7 +62,7 @@ public final class InventoryTranslatorRegister {
     }
 
     public static void closeOpened(ClientConnection session, boolean byServer) {
-        if (session.getDataCache().containsKey(CacheKey.WINDOW_OPENED_ID)) {
+        /*if (session.getDataCache().containsKey(CacheKey.WINDOW_OPENED_ID)) {
             //There is already a window opened
             int id = (int) session.getDataCache().remove(CacheKey.WINDOW_OPENED_ID);
             if (!byServer) {
@@ -87,11 +82,11 @@ public final class InventoryTranslatorRegister {
                 pkClose.windowid = (byte) (id & 0xFF);
                 session.sendPacket(pkClose, true);
             }
-        }
+        }*/
     }
 
     public static void open(ClientConnection session, ServerOpenWindowPacket win) {
-        closeOpened(session, true);
+        /*closeOpened(session, true);
         if (TRANSLATORS.containsKey(win.getType())) {
             CachedWindow cached = new CachedWindow(win.getWindowId(), win.getType(), 36 + win.getSlots());
             session.getWindowCache().cacheWindow(cached);
@@ -110,11 +105,11 @@ public final class InventoryTranslatorRegister {
         } else {
             //Not supported
             session.getDownstream().send(new ClientCloseWindowPacket(win.getWindowId()));
-        }
+        }*/
     }
 
     public static void updateSlot(ClientConnection session, ServerSetSlotPacket packet) {
-        if (packet.getWindowId() == 0) {
+        /*if (packet.getWindowId() == 0) {
             return;   //We don't process player inventory updates here. 
         }
         if (!session.getDataCache().containsKey(CacheKey.WINDOW_OPENED_ID) || !session.getWindowCache().hasWindow(packet.getWindowId())) {
@@ -140,11 +135,11 @@ public final class InventoryTranslatorRegister {
             return;
         }
         win.slots[packet.getSlot()] = packet.getItem(); //Update here
-        t.updateSlot(session, win, packet.getSlot());
+        t.updateSlot(session, win, packet.getSlot());*/
     }
 
     public static void updateContent(ClientConnection session, ServerWindowItemsPacket packet) {
-        if (packet.getWindowId() == 0) {
+        /*if (packet.getWindowId() == 0) {
             return;   //We don't process player inventory updates here. 
         }
         if (!session.getDataCache().containsKey(CacheKey.WINDOW_OPENED_ID) || !session.getWindowCache().hasWindow(packet.getWindowId())) {
@@ -165,6 +160,6 @@ public final class InventoryTranslatorRegister {
             return;
         }
         win.slots = packet.getItems();
-        t.updateContent(session, win);
+        t.updateContent(session, win);*/
     }
 }

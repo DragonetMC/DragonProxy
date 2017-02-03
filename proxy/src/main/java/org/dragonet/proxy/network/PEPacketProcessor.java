@@ -52,7 +52,7 @@ public class PEPacketProcessor implements Runnable {
     }
 
     @SuppressWarnings("unchecked")
-    public void handlePacket(DataPacket packet) {
+    public void handlePacket(Object packet) {
         if (packet != null) {
             if (client.getStatus() == ConnectionStatus.CONNECTED) {
                 //Packet[] translated = PacketTranslatorRegister.translateToPC(client, packet);

@@ -20,8 +20,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-import org.dragonet.proxy.utilities.VarInt;
-
 public class PEBinaryReader implements Closeable {
 
     protected InputStream is;
@@ -59,7 +57,8 @@ public class PEBinaryReader implements Closeable {
         public short port;
     }
     public int readVarInt() throws IOException {
-        return VarInt.decodeZigZag32(readUnsignedVarInt());
+        //return VarInt.decodeZigZag32(readUnsignedVarInt());
+        return 0;
     }
 
     public int readUnsignedVarInt() throws IOException {
@@ -67,7 +66,8 @@ public class PEBinaryReader implements Closeable {
     }
 
     public long readVarLong() throws IOException {
-        return VarInt.decodeZigZag64(readUnsignedVarLong()).longValue();
+        //return VarInt.decodeZigZag64(readUnsignedVarLong()).longValue();
+        return 0;
     }
 
     public BigInteger readUnsignedVarLong() throws IOException {

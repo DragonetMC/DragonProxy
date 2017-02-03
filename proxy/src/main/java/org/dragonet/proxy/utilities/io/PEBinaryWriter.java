@@ -23,8 +23,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-import org.dragonet.proxy.utilities.VarInt;
-
 public class PEBinaryWriter implements Flushable, Closeable {
 
     private static final BigInteger UNSIGNED_LONG_MAX_VALUE = new BigInteger("FFFFFFFFFFFFFFFF", 16);
@@ -61,7 +59,7 @@ public class PEBinaryWriter implements Flushable, Closeable {
     }
 
     public void writeVarInt(int value) throws IOException {
-        writeUnsignedVarInt(VarInt.encodeZigZag32(value));
+        //writeUnsignedVarInt(VarInt.encodeZigZag32(value));
     }
 
     public void writeUnsignedVarInt(long value) throws IOException {
@@ -69,7 +67,7 @@ public class PEBinaryWriter implements Flushable, Closeable {
     }
 
     public void writeVarLong(long value) throws IOException {
-        writeUnsignedVarLong(VarInt.encodeZigZag64(value));
+        //writeUnsignedVarLong(VarInt.encodeZigZag64(value));
     }
 
     public void writeUnsignedVarLong(BigInteger value) throws IOException {

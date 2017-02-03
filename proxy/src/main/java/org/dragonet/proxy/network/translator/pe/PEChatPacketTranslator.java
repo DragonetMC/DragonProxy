@@ -16,13 +16,12 @@ import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.client.ClientChatPacket;
 import org.spacehq.packetlib.packet.Packet;
+import sul.protocol.pocket100.play.Text.Chat;
 
-import cn.nukkit.network.protocol.TextPacket;
-
-public class PEChatPacketTranslator implements PEPacketTranslator<TextPacket> {
+public class PEChatPacketTranslator implements PEPacketTranslator<Chat> {
 
     @Override
-    public Packet[] translate(ClientConnection session, TextPacket packet) {
+    public Packet[] translate(ClientConnection session, Chat packet) {
     	// What is packet.parameters for?
         ClientChatPacket pk = new ClientChatPacket(packet.message);
         return new Packet[]{pk};

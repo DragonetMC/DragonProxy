@@ -20,7 +20,7 @@ import java.util.Map;
 import org.dragonet.proxy.entity.meta.type.ByteArrayMeta;
 import org.dragonet.proxy.entity.meta.type.ByteMeta;
 import org.dragonet.proxy.entity.meta.type.ShortMeta;
-import org.dragonet.proxy.utilities.io.PEBinaryWriter;
+//import org.dragonet.proxy.utilities.io.PEBinaryWriter;
 
 public class EntityMetaData {
 
@@ -65,7 +65,7 @@ public class EntityMetaData {
     }
 
     public byte[] encode() {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        /*ByteArrayOutputStream bos = new ByteArrayOutputStream();
         PEBinaryWriter writer = new PEBinaryWriter(bos);
         try {
             for (Map.Entry<Integer, EntityMetaDataObject> entry : this.map.entrySet()) {
@@ -76,7 +76,7 @@ public class EntityMetaData {
             writer.close();
             return bos.toByteArray();
         } catch (IOException e) {
-        }
+        }*/
         return null;
     }
 

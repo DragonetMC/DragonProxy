@@ -19,10 +19,9 @@ import java.util.Set;
 
 import org.spacehq.mc.protocol.data.game.entity.metadata.ItemStack;
 
-import cn.nukkit.item.Item;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.Tag;
 import org.spacehq.mc.protocol.data.message.Message;
+import org.spacehq.opennbt.tag.builtin.CompoundTag;
+import sul.utils.Item;
 
 public class ItemBlockTranslator {
     
@@ -90,16 +89,17 @@ public class ItemBlockTranslator {
     }
     
     public static CompoundTag newTileTag(String id, int x, int y, int z){
-        CompoundTag t = new CompoundTag();
+        /*CompoundTag t = new CompoundTag();
         t.putString("id", id);
         t.putInt("x", x);
         t.putInt("y", y);
         t.putInt("z", z);
-        return t;
+        return t;*/
+        return null;
     }
     
     public static CompoundTag translateNBT(int id, org.spacehq.opennbt.tag.builtin.CompoundTag pcTag){
-        CompoundTag peTag = new CompoundTag();
+        /*CompoundTag peTag = new CompoundTag();
         if(pcTag != null && pcTag.contains("display")) {
 	  Object o = pcTag.get("display").getValue();
 	  if (o instanceof org.spacehq.opennbt.tag.builtin.CompoundTag) {
@@ -122,13 +122,14 @@ public class ItemBlockTranslator {
                 peTag.putCompound("display", new CompoundTag().putString("Name", NAME_OVERRIDES.get(id)));
             }
         }
-        return peTag;
+        return peTag;*/
+        return null;
     }
     
     public static Item translateToPE(ItemStack item){
         if(item == null || item.getId() == 0) return null;
 
-        Item inv = new Item(translateToPE(item.getId()), item.getData(), (item.getAmount() & 0xFF));
+        /*Item inv = new Item(translateToPE(item.getId()), item.getData(), (item.getAmount() & 0xFF));
         CompoundTag d = new CompoundTag();
         d.putShort("id", item.getId());
         d.putShort("amount", item.getAmount());
@@ -139,11 +140,12 @@ public class ItemBlockTranslator {
         d.setName(DRAGONET_COMPOUND);
         inv.setNamedTag(d);
         
-        return inv;
+        return inv;*/
+        return null;
     }
     
     public static ItemStack translateToPC(Item slot){
-        ItemStack item = null;
+       /* ItemStack item = null;
         Tag tag = null;
         if((tag = slot.getNamedTagEntry(DRAGONET_COMPOUND)) != null){
         	if(tag instanceof CompoundTag){
@@ -155,6 +157,7 @@ public class ItemBlockTranslator {
         }else{
             item = new ItemStack(translateToPC((int)slot.getId()), (int)(slot.count & 0xFF), (int)slot.getDamage());
         }
-        return item;
+        return item;*/
+       return null;
     }
 }
