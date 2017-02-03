@@ -13,6 +13,7 @@
 package org.dragonet.proxy.network.adapter;
 
 import java.util.UUID;
+import org.dragonet.proxy.network.ClientConnection;
 
 /**
  * Adapts a protocol to the common protocol used by the proxy
@@ -21,7 +22,7 @@ import java.util.UUID;
  */
 public interface ProtocolAdapter<T> {
 
-    public void handlePacket(T packet, UUID identifier);
+    public void handlePacket(T packet, ClientConnection identifier);
     
     public Class<T> getSupportedPacketType();
 }

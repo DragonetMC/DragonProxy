@@ -63,6 +63,11 @@ public class MCPEServerProtocolAdapter implements ServerProtocolAdapter<RakNetPa
     }
 
     @Override
+    public void disconnectFromRemoteServer(String reason) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
     public void setClient(ClientConnection session) {
         this.upstream = session;
     }
@@ -134,11 +139,11 @@ public class MCPEServerProtocolAdapter implements ServerProtocolAdapter<RakNetPa
 
     @Override
     public void handlePacket(RakNetServerSession session, RakNetPacket packet, int channel) {
-        handlePacket(packet, upstream.getSessionID());
+        handlePacket(packet, upstream);
     }
 
     @Override
-    public void handlePacket(RakNetPacket packet, UUID identifier) {
+    public void handlePacket(RakNetPacket packet, ClientConnection identifier) {
         DragonProxy.getLogger().debug("Server Handling Packet: " + packet.getClass().getCanonicalName());
 
         Object[] packets = {packet};

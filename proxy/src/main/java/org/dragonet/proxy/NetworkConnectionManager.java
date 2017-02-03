@@ -19,7 +19,7 @@ import org.dragonet.proxy.network.adapter.ClientProtocolAdapter;
 
 /**
  *
- * @author enims
+ * @author robotman3000
  */
 public class NetworkConnectionManager {
 

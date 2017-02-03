@@ -27,7 +27,6 @@ import net.marfgamer.jraknet.server.RakNetServerListener;
 import net.marfgamer.jraknet.server.ServerPing;
 import net.marfgamer.jraknet.session.RakNetClientSession;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.api.network.DragonPacket;
 import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.PacketTranslatorRegister;
 import org.dragonet.proxy.utilities.Versioning;
@@ -48,10 +47,9 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
     private MCPEIdentifier identifier;
 
     @Override
-    public void handlePacket(RakNetPacket packet, UUID identifier) {
-        ClientConnection session = getSession(getSessionID(identifier));
+    public void handlePacket(RakNetPacket packet, ClientConnection session) {
         if (session == null) {
-            DragonProxy.getLogger().debug("Session: " + identifier + " was null");
+            DragonProxy.getLogger().debug("Session was null");
             return;
         }
         DragonProxy.getLogger().debug("[PE Clientside] Handling Packet" + session.getSessionID() + ": " + packet.getId());
@@ -106,19 +104,18 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
     public void handlePacket(RakNetClientSession session, RakNetPacket packet, int channel) {
         if (!sessionList.containsKey(session.getGloballyUniqueId())) {
             DragonProxy.getLogger().warning("Session " + session.getAddress() + " didn't exist");
-            sessionList.put(session.getGloballyUniqueId(), DragonProxy.getSelf().getNetwork().getSessionRegister().getNextSessionID());
+            sessionList.put(session.getGloballyUniqueId(), UUID.fromString(String.valueOf(session.getGloballyUniqueId())));
         }
-        handlePacket(packet, getSession(session.getGloballyUniqueId()).getSessionID());
+        handlePacket(packet, getSession(session.getGloballyUniqueId()));
     }
 
     @Override
-    public void sendPacket(RakNetPacket packet, UUID id) {
-        ClientConnection session = DragonProxy.getSelf().getNetwork().getSessionRegister().getSession(id);
+    public void sendPacket(RakNetPacket packet, ClientConnection session) {
         if (session == null) {
             return;
         }
         DragonProxy.getLogger().debug("[PE Clientside] Sending Packet " + session.getSessionID() + ": " + packet.getId());
-        server.sendMessage(getSessionID(id), Reliability.RELIABLE, packet);
+        server.sendMessage(getSessionID(session.getSessionID()), Reliability.RELIABLE, packet);
     }
 
     public Long getSessionID(UUID id) {
@@ -160,7 +157,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
     @Override
     public void onClientConnect(RakNetClientSession session) {
         DragonProxy.getLogger().info("Client Connected: " + session.getAddress());
-        UUID sessionID = DragonProxy.getSelf().getNetwork().getSessionRegister().getNextSessionID();
+        UUID sessionID = UUID.fromString(String.valueOf(session.getGloballyUniqueId()));
         ClientConnection clientSession = new ClientConnection(this, sessionID);
         if (!DragonProxy.getSelf().getNetwork().getSessionRegister().acceptConnection(clientSession)) {
             server.removeSession(session);
@@ -213,9 +210,9 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
     }
 
     @Override
-    public void clientDisconectRequest(UUID id, String reason) {
+    public void clientDisconectRequest(ClientConnection id, String reason) {
         DragonProxy.getLogger().info("Proxy has commanded " + id + " to disconnect for the reason " + reason);
-        Long sessionID = getSessionID(id);
+        Long sessionID = getSessionID(id.getSessionID());
         if (sessionID != null) {
             server.removeSession(server.getSession(sessionID));
         } else {
@@ -242,7 +239,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
 
             server = new RakNetServer(DragonProxy.getSelf().getConfig().getUdp_bind_port(),
                     DragonProxy.getSelf().getConfig().getMax_players(),
-                    1500,
+                    1464,
                     identifier);
             server.setListener(this);
             server.startThreaded();

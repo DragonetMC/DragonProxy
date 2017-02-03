@@ -166,7 +166,8 @@ public class DragonProxy {
         generalThreadPool = Executors.newScheduledThreadPool(config.getThread_pool_size());
 
         // Bind
-        boolean usePC = false;
+        //TODO: Put this into the config file
+        boolean usePC = true;
         ClientProtocolAdapter adapter = (usePC ? new MCPCClientProtocolAdapter() : new MCPEClientProtocolAdapter());
         network = new NetworkConnectionManager(this, adapter);
 

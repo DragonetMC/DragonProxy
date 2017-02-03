@@ -16,7 +16,7 @@ import net.marfgamer.jraknet.RakNetPacket;
 import org.dragonet.proxy.network.ClientConnection;
 import org.spacehq.packetlib.packet.Packet;
 
-public interface PEPacketTranslator<P extends RakNetPacket> {
+public interface PEPacketTranslator<P extends sul.utils.Packet> {
 
     /**
      * Translate a packet from PE version to PC version.

@@ -20,6 +20,8 @@ public interface ServerProtocolAdapter<T> extends ProtocolAdapter<T> {
     
     public void connectToRemoteServer(String address, int port);
     
+    public void disconnectFromRemoteServer(String reason);
+    
     public void setClient(ClientConnection session);
     
     public void sendPacket(T packet);

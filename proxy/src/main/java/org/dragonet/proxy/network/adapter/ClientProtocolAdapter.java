@@ -13,14 +13,15 @@
 package org.dragonet.proxy.network.adapter;
 
 import java.util.UUID;
+import org.dragonet.proxy.network.ClientConnection;
 
 /** 
  * @author robotman3000
  */
 public interface ClientProtocolAdapter<T> extends ProtocolAdapter<T> {
-    public void sendPacket(T packet, UUID id);
+    public void sendPacket(T packet, ClientConnection id);
 
-    public void clientDisconectRequest(UUID id, String reason);
+    public void clientDisconectRequest(ClientConnection id, String reason);
 
     public void onTick();
 }

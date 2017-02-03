@@ -16,7 +16,6 @@ import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.api.network.DragonPacket;
 import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.PacketTranslatorRegister;
 import org.spacehq.mc.auth.data.GameProfile;
@@ -24,6 +23,8 @@ import org.spacehq.mc.protocol.ClientListener;
 import org.spacehq.mc.protocol.MinecraftConstants;
 //import org.dragonet.proxy.network.PacketTranslatorRegister;
 import org.spacehq.mc.protocol.MinecraftProtocol;
+import org.spacehq.mc.protocol.data.SubProtocol;
+import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import org.spacehq.packetlib.Client;
 import org.spacehq.packetlib.event.session.ConnectedEvent;
 import org.spacehq.packetlib.event.session.DisconnectedEvent;
@@ -52,6 +53,10 @@ public class MCPCServerProtocolAdapter extends ClientListener implements ServerP
     @Override
     public void connectToRemoteServer(String address, int port) {
         DragonProxy.getLogger().info("Connecting to remote pc server at: " + address + ":" + port);
+
+        // TODO: Handle authentication
+        protocol = new MinecraftProtocol("robotman3002");
+
         client = new Client(address, port, protocol, new TcpSessionFactory());
         client.getSession().addListener(this);
         client.getSession().connect(true);
@@ -69,8 +74,14 @@ public class MCPCServerProtocolAdapter extends ClientListener implements ServerP
     }
 
     @Override
-    public void handlePacket(Packet packet, UUID identifier) {
+    public void handlePacket(Packet packet, ClientConnection identifier) {
         System.out.println("Server Handling Packet: " + packet.getClass().getCanonicalName());
+
+        if (packet.getClass().getCanonicalName().contains("KeepAlive")) {
+            DragonProxy.getLogger().debug("Server Ignoring KeepAlive");
+            return;
+        }
+
         Object[] packets = {packet};
         if (upstream.getUpstreamProtocol().getSupportedPacketType() != getSupportedPacketType()) {
             packets = PacketTranslatorRegister.translateToPE(upstream, packet);
@@ -79,6 +90,11 @@ public class MCPCServerProtocolAdapter extends ClientListener implements ServerP
         for (Object pack : packets) {
             upstream.getUpstreamProtocol().sendPacket(pack, identifier);
         }
+    }
+
+    @Override
+    public void disconnectFromRemoteServer(String reason) {
+        client.getSession().disconnect(reason);
     }
 
     @Override
@@ -101,7 +117,9 @@ public class MCPCServerProtocolAdapter extends ClientListener implements ServerP
     @Override
     public void packetReceived(PacketReceivedEvent event) {
         DragonProxy.getLogger().info("Received packet from server: " + event.getPacket().getClass().getCanonicalName());
-        handlePacket(event.getPacket(), ((GameProfile) event.getSession().getFlag(MinecraftConstants.PROFILE_KEY)).getId());
+        if (((MinecraftProtocol) event.getSession().getPacketProtocol()).getSubProtocol() == SubProtocol.GAME || event.getClass().isAssignableFrom(ServerJoinGamePacket.class)) {
+            handlePacket(event.getPacket(), DragonProxy.getSelf().getNetwork().getSessionRegister().getSession(upstream.getSessionID()));
+        }
     }
 
     @Override

@@ -63,8 +63,4 @@ public class SessionRegister {
         }
         return false;
     }
-
-    public UUID getNextSessionID() {
-        return UUID.randomUUID();
-    }
 }

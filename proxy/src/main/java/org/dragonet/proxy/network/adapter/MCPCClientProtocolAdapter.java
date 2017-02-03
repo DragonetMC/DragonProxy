@@ -20,6 +20,7 @@ import org.spacehq.mc.auth.data.GameProfile;
 import org.spacehq.mc.protocol.MinecraftConstants;
 import org.spacehq.mc.protocol.MinecraftProtocol;
 import org.spacehq.mc.protocol.ServerLoginHandler;
+import org.spacehq.mc.protocol.data.SubProtocol;
 import org.spacehq.mc.protocol.data.message.TextMessage;
 import org.spacehq.mc.protocol.data.status.PlayerInfo;
 import org.spacehq.mc.protocol.data.status.ServerStatusInfo;
@@ -68,9 +69,10 @@ public class MCPCClientProtocolAdapter extends SessionAdapter implements ClientP
     }
 
     @Override
-    public void sendPacket(Packet packet, UUID id) {
+    public void sendPacket(Packet packet, ClientConnection id) {
+        
         for (Session sess : server.getSessions()) {
-            if (((GameProfile) sess.getFlag(MinecraftConstants.PROFILE_KEY)).getId().equals(id)) {
+            if (((GameProfile) sess.getFlag(MinecraftConstants.PROFILE_KEY)).getId().equals(id.getSessionID())) {
                 DragonProxy.getLogger().debug("Sending Packet To Client: " + packet.getClass().getCanonicalName());
                 sess.send(packet);
             }
@@ -78,7 +80,7 @@ public class MCPCClientProtocolAdapter extends SessionAdapter implements ClientP
     }
 
     @Override
-    public void clientDisconectRequest(UUID id, String reason) {
+    public void clientDisconectRequest(ClientConnection id, String reason) {
         //TODO: Lazy
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -88,9 +90,14 @@ public class MCPCClientProtocolAdapter extends SessionAdapter implements ClientP
     }
 
     @Override
-    public void handlePacket(Packet packet, UUID identifier) {
-        DragonProxy.getLogger().debug("Handling Packet From Client " + identifier + ": " + packet.getClass().getCanonicalName());
-        ClientConnection session = DragonProxy.getSelf().getNetwork().getSessionRegister().getSession(identifier);
+    public void handlePacket(Packet packet, ClientConnection session) {
+        DragonProxy.getLogger().debug("Handling Packet From Client " + session.getSessionID() + ": " + packet.getClass().getCanonicalName());
+        
+        if(packet.getClass().getCanonicalName().contains("KeepAlive")){
+            DragonProxy.getLogger().debug("Client Ignoring KeepAlive"); 
+            return;
+        }
+        
         Object[] packets = {packet};
         if (session.getDownstreamProtocol().getSupportedPacketType() != getSupportedPacketType()) {
             packets = PacketTranslatorRegister.translateToPE(session, packet);
@@ -116,10 +123,12 @@ public class MCPCClientProtocolAdapter extends SessionAdapter implements ClientP
     @Override
     public void loggedIn(Session sn) {
         DragonProxy.getLogger().info("Client " + ((GameProfile) sn.getFlag(MinecraftConstants.PROFILE_KEY)).getName() + " has logged in with id " + ((GameProfile) sn.getFlag(MinecraftConstants.PROFILE_KEY)).getId());
-        UUID sessionID = DragonProxy.getSelf().getNetwork().getSessionRegister().getNextSessionID();
+        UUID sessionID = ((GameProfile) sn.getFlag(MinecraftConstants.PROFILE_KEY)).getId();
         ClientConnection clientSession = new ClientConnection(this, sessionID);
+        clientSession.setUsername(((GameProfile) sn.getFlag(MinecraftConstants.PROFILE_KEY)).getName());
         if (!DragonProxy.getSelf().getNetwork().getSessionRegister().acceptConnection(clientSession)) {
-
+            DragonProxy.getLogger().info("SessionRegister refused connection from " + clientSession.getSessionID());
+            sn.disconnect("DragonProxy has refused your connection");
         } else {
             clientSession.onConnected();
             clientSession.connectToServer(DragonProxy.getSelf().getConfig().getRemote_servers().get(DragonProxy.getSelf().getConfig().getDefault_server()));
@@ -144,6 +153,10 @@ public class MCPCClientProtocolAdapter extends SessionAdapter implements ClientP
     public void disconnected(DisconnectedEvent event) {
         DragonProxy.getLogger().info("Disconected client " + event.getSession().getLocalAddress() + " for " + event.getReason());
         event.getCause().printStackTrace();
+        ClientConnection client = DragonProxy.getSelf().getNetwork().getSessionRegister().getSession(((GameProfile) event.getSession().getFlag(MinecraftConstants.PROFILE_KEY)).getId());
+        if(client != null){
+            client.getDownstreamProtocol().disconnectFromRemoteServer(event.getReason());
+        }
     }
 
     @Override
@@ -154,13 +167,27 @@ public class MCPCClientProtocolAdapter extends SessionAdapter implements ClientP
 
     @Override
     public void packetReceived(PacketReceivedEvent event) {
-        DragonProxy.getLogger().info("Received packet from client: " + event.getPacket().getClass().getCanonicalName());
-        handlePacket(event.getPacket(), ((GameProfile) event.getSession().getFlag(MinecraftConstants.PROFILE_KEY)).getId());
+        DragonProxy.getLogger().debug("Received packet from client: " + event.getPacket().getClass().getCanonicalName());
+
+        Session sess = event.getSession();
+
+        if (((MinecraftProtocol) sess.getPacketProtocol()).getSubProtocol() == SubProtocol.GAME) {
+            GameProfile profile = sess.getFlag(MinecraftConstants.PROFILE_KEY);
+            UUID id = profile.getId();
+            
+            ClientConnection conn = DragonProxy.getSelf().getNetwork().getSessionRegister().getSession(id);
+            if (conn != null){
+                handlePacket(event.getPacket(), conn);
+            } else {
+                DragonProxy.getLogger().warning("ID: " + id + " had no session registered");
+                sess.disconnect("Error! Session not registered");
+            }
+        }
     }
 
     @Override
     public void packetSent(PacketSentEvent event) {
-        DragonProxy.getLogger().info("Sent packet to client: " + event.getPacket().getClass().getCanonicalName());
+        DragonProxy.getLogger().debug("Sent packet to client: " + event.getPacket().getClass().getCanonicalName());
     }
 
     @Override
