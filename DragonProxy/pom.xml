@@ -91,6 +91,12 @@
         </dependency>
         <!--<dependency> <groupId>org.dragonet.proxy</groupId> <artifactId>protocol</artifactId> 
         <version>0.0.6-preR1</version> <scope>compile</scope> </dependency> -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.4</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>

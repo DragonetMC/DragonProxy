@@ -167,7 +167,7 @@ public class DragonProxy {
 
         // Bind
         //TODO: Put this into the config file
-        boolean usePC = true;
+        boolean usePC = false;
         ClientProtocolAdapter adapter = (usePC ? new MCPCClientProtocolAdapter() : new MCPEClientProtocolAdapter());
         network = new NetworkConnectionManager(this, adapter);
 
