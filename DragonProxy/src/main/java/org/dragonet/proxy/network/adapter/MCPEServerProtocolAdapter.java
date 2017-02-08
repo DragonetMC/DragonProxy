@@ -12,12 +12,21 @@
  */
 package org.dragonet.proxy.network.adapter;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.Getter;
+import net.marfgamer.jraknet.RakNet;
 import net.marfgamer.jraknet.RakNetException;
 import net.marfgamer.jraknet.RakNetPacket;
 import net.marfgamer.jraknet.client.RakNetClient;
@@ -31,6 +40,8 @@ import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.ConnectionStatus;
 import org.dragonet.proxy.network.PacketTranslatorRegister;
+import org.dragonet.proxy.utilities.LoginPacketPayload;
+import sul.protocol.pocket100.play.Login;
 
 /**
  * @author robotman3000
@@ -47,17 +58,18 @@ public class MCPEServerProtocolAdapter implements ServerProtocolAdapter<RakNetPa
      * The PE Client
      */
     private ClientConnection upstream;
-    private List<RakNetPacket> queuedPackets = new ArrayList<>();
+    private ArrayDeque<RakNetPacket> queuedPackets = new ArrayDeque<>();
+    private final String sender = "[PE Serverside] ";
 
     public MCPEServerProtocolAdapter() {
         client = new RakNetClient();
-        client.setListener(this);
     }
 
     @Override
     public void connectToRemoteServer(String address, int port) {
-        DragonProxy.getLogger().info("[" + upstream.getUsername() + "] Connecting to remote pocket server at [" + String.format("%s:%s", address, port) + "] ");
+        DragonProxy.getLogger().info(sender + "[" + upstream.getUsername() + "] Connecting to remote pocket server at [" + String.format("%s:%s", address, port) + "] ");
         try {
+            client.setListener(this);
             client.connectThreaded(address, port);
         } catch (UnknownHostException ex) {
             ex.printStackTrace();
@@ -79,32 +91,55 @@ public class MCPEServerProtocolAdapter implements ServerProtocolAdapter<RakNetPa
 
     @Override
     public void sendPacket(RakNetPacket packet) {
-        DragonProxy.getLogger().debug("[PE Serverside] Sending Packet: " + upstream.getSessionID() + ": " + Integer.toHexString(packet.buffer().getByte(1)));
         if (client.isConnected()) {
-            client.sendMessage(Reliability.RELIABLE, packet);
+            DragonProxy.getLogger().debug(sender + "Sending Packet: " + upstream.getSessionID() + ": " + Integer.toHexString(packet.getId()));
+            client.sendMessage(Reliability.UNRELIABLE, packet);
         } else {
-            System.out.println("Queuing packet");
+            DragonProxy.getLogger().debug(sender + "Queuing packet: " + upstream.getSessionID() + ": " + Integer.toHexString(packet.getId()));
             queuedPackets.add(packet);
         }
     }
 
     @Override
     public void onAcknowledge(RakNetServerSession session, Record record, Reliability reliability, int channel, RakNetPacket packet) {
+        DragonProxy.getLogger().debug(sender + "Recieved ACK for packet " + packet.getId());
     }
 
     @Override
     public void onConnect(RakNetServerSession session) {
-        DragonProxy.getLogger().info("Remote pocket server downstream established!");
-        
-        for (RakNetPacket pk : queuedPackets) {
-            System.out.println("Handling queued packet: " + pk.getId());
-            sendPacket(pk);
+        DragonProxy.getLogger().info(sender + "Remote pocket server downstream established!");
+
+        while (!queuedPackets.isEmpty()) {
+            RakNetPacket packet = queuedPackets.pop();
+            DragonProxy.getLogger().debug(sender + "Handling queued packet: " + packet.getId());
+            //session.sendMessage(Reliability.RELIABLE, pk);
+            if (packet.buffer().getByte(1) == Login.ID) {
+                try {
+                    Login pk = Login.fromBuffer(Arrays.copyOfRange(packet.array(), 1, packet.array().length));
+                    LoginPacketPayload data = LoginPacketPayload.decode(pk.body);
+                    System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(data));
+                    //sendPacket(new RakNetPacket(prep(new Login(pk.protocol, pk.edition, pk.body).encode())));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            sendPacket(packet);
         }
+    }
+
+    private byte[] prep(byte[] buff) {
+        byte[] buff2 = new byte[buff.length + 1];
+        int index = 0;
+        buff2[index++] = (byte) 0xFE;
+        for (byte b : buff) {
+            buff2[index++] = b;
+        }
+        return buff2;
     }
 
     @Override
     public void onDisconnect(RakNetServerSession session, String reason) {
-        DragonProxy.getLogger().info("Remote pocket server downstream CLOSED!\nReason: " + reason);
+        DragonProxy.getLogger().info(sender + "Remote pocket server downstream CLOSED!\nReason: " + reason);
     }
 
     @Override
@@ -121,12 +156,13 @@ public class MCPEServerProtocolAdapter implements ServerProtocolAdapter<RakNetPa
 
     @Override
     public void onHandlerException(InetSocketAddress address, Throwable throwable) {
-        DragonProxy.getLogger().severe("An unhandled exception has occured with the server session: " + address);
+        DragonProxy.getLogger().severe(sender + "An unhandled exception has occured with the server session: " + address);
         throwable.printStackTrace();
     }
 
     @Override
     public void onNotAcknowledge(RakNetServerSession session, Record record, Reliability reliability, int channel, RakNetPacket packet) {
+        DragonProxy.getLogger().debug(sender + "Did not recieve ACK for packet " + packet.getId());
     }
 
     @Override
@@ -143,23 +179,24 @@ public class MCPEServerProtocolAdapter implements ServerProtocolAdapter<RakNetPa
 
     @Override
     public void onThreadException(Throwable throwable) {
-        DragonProxy.getLogger().severe("An unhandled thread exception has with the server occured");
+        DragonProxy.getLogger().severe(sender + "An unhandled thread exception has with the server occured");
         throwable.printStackTrace();
     }
 
     @Override
     public void onWarning(Warning warning) {
-        DragonProxy.getLogger().warning("Proxy Warn: " + warning.getMessage());
+        DragonProxy.getLogger().warning(sender + "Proxy Warn: " + warning.getMessage());
     }
 
     @Override
     public void handlePacket(RakNetServerSession session, RakNetPacket packet, int channel) {
+        DragonProxy.getLogger().debug(sender + "Handling Packet from Channel: " + channel + ": " + Integer.toHexString(packet.buffer().getByte(1)));
         handlePacket(packet, upstream);
     }
 
     @Override
     public void handlePacket(RakNetPacket packet, ClientConnection session) {
-        DragonProxy.getLogger().debug("[PE Serverside] Handling Packet: " + session.getSessionID() + ": " + Integer.toHexString(packet.buffer().getByte(1)));
+        DragonProxy.getLogger().debug(sender + "Handling Packet: " + session.getSessionID() + ": " + Integer.toHexString(packet.buffer().getByte(1)));
 
         Object[] packets = {new RakNetPacket(packet.buffer())};
         if (upstream.getUpstreamProtocol().getSupportedPacketType() != getSupportedPacketType()) {

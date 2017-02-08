@@ -35,40 +35,41 @@ public class LoginPacketPayload {
 
     @Getter
     private String username;
-    
+
     @Getter
     private UUID clientUUID;
-    
+
     @Getter
     private long clientId;
-    
+
     @Getter
     private String serverAddress;
-    
+
     @Getter
     private Skin skin;
-    
+
     @Getter
     private String identityPublicKey;
 
-    public LoginPacketPayload(Login payload){
-        
+    private LoginPacketPayload() {
+    }
+
+    public static LoginPacketPayload decode(byte[] body) {
+        LoginPacketPayload data = new LoginPacketPayload();
         byte[] str;
         try {
-            Buffer buff = new Buffer();
-            buff._buffer = payload.body;
-            
-            str = Zlib.inflate(buff.readBytes(buff.readVaruint()));
+            str = Zlib.inflate(body);
         } catch (Exception e) {
             e.printStackTrace();
-            return;
+            return null;
         }
         Buffer buffer = new Buffer();
         buffer._buffer = str;
-        decodeChainData(buffer);
-        decodeSkinData(buffer);
+        data.decodeChainData(buffer);
+        data.decodeSkinData(buffer);
+        return data;
     }
-    
+
     private void decodeChainData(Buffer buffer) {
         Map<String, List<String>> map = new Gson().fromJson(new String(buffer.readBytes(buffer.readLittleEndianInt()), StandardCharsets.UTF_8),
                 new TypeToken<Map<String, List<String>>>() {
@@ -120,5 +121,10 @@ public class LoginPacketPayload {
             return null;
         }
         return new Gson().fromJson(new String(Base64.getDecoder().decode(base[1]), StandardCharsets.UTF_8), JsonObject.class);
+    }
+
+    private static byte[] encode(LoginPacketPayload loginData) {
+        //TODO: Finish this later
+        return new byte[0];
     }
 }
