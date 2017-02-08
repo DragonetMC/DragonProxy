@@ -10,7 +10,7 @@
 
     <groupId>org.dragonet.proxy</groupId>
     <artifactId>DragonProxy-parent</artifactId>
-    <version>0.0.6-preR1</version>
+    <version>0.0.7</version>
     <packaging>pom</packaging>
 
     <properties>
