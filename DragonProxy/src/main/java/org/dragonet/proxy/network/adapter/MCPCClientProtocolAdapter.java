@@ -53,6 +53,7 @@ public class MCPCClientProtocolAdapter extends SessionAdapter implements ClientP
     private Server server;
 
     public MCPCClientProtocolAdapter() {
+        DragonProxy.getLogger().info("Starting up the Minecraft PC ClientProtocolAdapter");
         server = new Server(DragonProxy.getSelf().getConfig().getUdp_bind_ip(), DragonProxy.getSelf().getConfig().getUdp_bind_port(), MinecraftProtocol.class, new TcpSessionFactory());
         //server.setGlobalFlag(MinecraftConstants.AUTH_PROXY_KEY, );
         server.setGlobalFlag(MinecraftConstants.VERIFY_USERS_KEY, (DragonProxy.getSelf().getConfig().getMode().equalsIgnoreCase("online")));

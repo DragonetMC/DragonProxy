@@ -70,6 +70,10 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
     private MCPEIdentifier identifier;
     private final String sender = "[PE Clientside] ";
 
+    public MCPEClientProtocolAdapter() {
+        DragonProxy.getLogger().info("Starting up the Minecraft PE ClientProtocolAdapter");
+    }
+    
     @Override
     public void handlePacket(RakNetPacket packet, ClientConnection session) {
         if (session == null) {

@@ -91,14 +91,17 @@ public class DragonProxy {
             boolean newConfig = false;
             if (!fileConfig.exists()) {
                 newConfig = fileConfig.createNewFile();
+                getLogger().info("Generating blank config file");
             }
             config = new Yaml().loadAs(new FileInputStream(fileConfig), ServerConfig.class);
 
             if (config == null) {
                 config = new ServerConfig();
+                getLogger().warning("Config file was null. Continuing by using default values");
             }
 
             if (newConfig) {
+                getLogger().info("Writing default values to blank config file");
                 Map<String, RemoteServer> servers = new HashMap<>();
                 DesktopServer serv = new DesktopServer();
                 serv.setRemote_addr("127.0.0.1");
@@ -106,6 +109,7 @@ public class DragonProxy {
                 servers.put("localhost", serv);
                 config.setRemote_servers(servers);
                 config.setDefault_server("localhost");
+                config.setAcceptPCClients(false);
                 String str = new Yaml().dump(config);
                 FileOutputStream fos = new FileOutputStream(fileConfig);
 
@@ -166,9 +170,7 @@ public class DragonProxy {
         generalThreadPool = Executors.newScheduledThreadPool(config.getThread_pool_size());
 
         // Bind
-        //TODO: Put this into the config file
-        boolean usePC = false;
-        ClientProtocolAdapter adapter = (usePC ? new MCPCClientProtocolAdapter() : new MCPEClientProtocolAdapter());
+        ClientProtocolAdapter adapter = (getConfig().isAcceptPCClients() ? new MCPCClientProtocolAdapter() : new MCPEClientProtocolAdapter());
         network = new NetworkConnectionManager(this, adapter);
 
         // MOTD
