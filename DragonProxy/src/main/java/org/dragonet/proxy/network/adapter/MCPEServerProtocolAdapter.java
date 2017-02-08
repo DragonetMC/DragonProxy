@@ -125,6 +125,13 @@ public class MCPEServerProtocolAdapter implements ServerProtocolAdapter<RakNetPa
             }
             sendPacket(packet);
         }
+        /*System.out.println("Sleeping to prevent disconnect...");
+        try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+        System.out.println("Done!");*/
     }
 
     private byte[] prep(byte[] buff) {
