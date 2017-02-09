@@ -17,13 +17,14 @@ import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityVelocityPacket;
 
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.SetEntityMotionPacket;
+import net.marfgamer.jraknet.RakNetPacket;
+import sul.protocol.pocket100.play.SetEntityMotion;
+import sul.utils.Tuples;
 
 public class PCEntityVelocityPacketTranslator implements PCPacketTranslator<ServerEntityVelocityPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerEntityVelocityPacket packet) {
+    public RakNetPacket[] translate(ClientConnection session, ServerEntityVelocityPacket packet) {
         CachedEntity e = session.getEntityCache().get(packet.getEntityId());
         if (e == null) {
             return null;
@@ -32,12 +33,11 @@ public class PCEntityVelocityPacketTranslator implements PCPacketTranslator<Serv
         e.motionY = packet.getMotionY();
         e.motionZ = packet.getMotionZ();
 
-        SetEntityMotionPacket pk = new SetEntityMotionPacket();
-        pk.eid = packet.getEntityId();
-        pk.motionX = (float) packet.getMotionX();
-        pk.motionY = (float) packet.getMotionY();
-        pk.motionZ = (float) packet.getMotionZ();
-        return new DataPacket[]{pk};
+        SetEntityMotion pk = new SetEntityMotion();
+        pk.entityId = packet.getEntityId();
+        pk.motion = new Tuples.FloatXYZ((float) packet.getMotionX(), (float) packet.getMotionY(), (float) packet.getMotionZ());
+        
+        return new RakNetPacket[]{new RakNetPacket(pk.encode())};
     }
 
 }
