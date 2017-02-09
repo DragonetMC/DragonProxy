@@ -287,7 +287,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
         PlayStatus status = new PlayStatus(); // Required; Tells the client that his connection was accepted or denied
         if (packet.protocol != Versioning.MINECRAFT_PE_PROTOCOL) {
             status.status = (packet.protocol < Versioning.MINECRAFT_PE_PROTOCOL ? PlayStatus.OUTDATED_CLIENT : PlayStatus.OUTDATED_SERVER);
-            sendPacket(new RakNetPacket(prep(status.encode())), session);
+            sendPacket(PacketTranslatorRegister.preparePacketForSending(packet), session);
             clientDisconectRequest(session, DragonProxy.getSelf().getLang().get(Lang.MESSAGE_UNSUPPORTED_CLIENT));
             return;
         }
