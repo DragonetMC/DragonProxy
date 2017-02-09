@@ -28,6 +28,8 @@ import org.dragonet.proxy.network.translator.pc.PCChatPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCDestroyEntitiesPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCEntityEffectPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCEntityHeadLookPacketTranslator;
+import org.dragonet.proxy.network.translator.pc.PCEntityMetadataPacketTranslator;
+import org.dragonet.proxy.network.translator.pc.PCEntityPositionPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.client.*;
 import org.spacehq.mc.protocol.packet.ingame.client.player.*;
 import org.spacehq.mc.protocol.packet.ingame.client.window.*;
@@ -103,7 +105,7 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerEntityHeadLookPacket.class, new PCEntityHeadLookPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityMetadataPacket.class, new PCEntityMetadataPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityMovementPacket.class, new IgnorePacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerEntityPositionPacket.class, new IgnorePacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerEntityPositionPacket.class, new PCEntityPositionPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityPositionRotationPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityPropertiesPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityRemoveEffectPacket.class, new IgnorePacketTranslator());
