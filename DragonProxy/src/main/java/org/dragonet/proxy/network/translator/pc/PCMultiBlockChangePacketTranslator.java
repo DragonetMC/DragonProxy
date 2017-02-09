@@ -17,25 +17,24 @@ import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerMultiBlockChangePacket;
 
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.UpdateBlockPacket;
+import net.marfgamer.jraknet.RakNetPacket;
+import sul.protocol.pocket100.play.UpdateBlock;
+import sul.protocol.pocket100.types.BlockPosition;
 
 public class PCMultiBlockChangePacketTranslator implements PCPacketTranslator<ServerMultiBlockChangePacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerMultiBlockChangePacket packet) {
-        UpdateBlockPacket[] packets = new UpdateBlockPacket[packet.getRecords().length];
-        byte generalFlag = (byte) (packet.getRecords().length > 64 ? UpdateBlockPacket.FLAG_PRIORITY : UpdateBlockPacket.FLAG_ALL);
+    public RakNetPacket[] translate(ClientConnection session, ServerMultiBlockChangePacket packet) {
+        UpdateBlock[] packets = new UpdateBlock[packet.getRecords().length];
         for (int i = 0; i < packets.length; i++) {
-            packets[i] = new UpdateBlockPacket();
-            packets[i].flags = generalFlag;
-            packets[i].x = packet.getRecords()[i].getPosition().getX();
-            packets[i].y = (byte) (packet.getRecords()[i].getPosition().getY() & 0xFF);
-            packets[i].z = packet.getRecords()[i].getPosition().getZ();
-            packets[i].blockId = (byte) (ItemBlockTranslator.translateToPE(packet.getRecords()[i].getBlock().getId()) & 0xFF);
-            packets[i].blockData = (byte) (packet.getRecords()[i].getBlock().getData() & 0xFF);
+            packets[i] = new UpdateBlock();
+            /*packets[i].flags = generalFlag;
+            packets[i].blockData = (byte) (packet.getRecords()[i].getBlock().getData() & 0xFF);*/
+            //TODO: flagsAndMeta is one field, figure it out
+            packets[i].position = new BlockPosition(packet.getRecords()[i].getPosition().getX(), packet.getRecords()[i].getPosition().getY() & 0xFF, packet.getRecords()[i].getPosition().getZ());
+            packets[i].block = ItemBlockTranslator.translateToPE(packet.getRecords()[i].getBlock().getId()) & 0xFF;
         }
-        return packets;
+        return fromSulPackets(packets);
     }
 
 }

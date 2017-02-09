@@ -35,6 +35,7 @@ import org.dragonet.proxy.network.translator.pc.PCEntityRemoveEffectPacketTransl
 import org.dragonet.proxy.network.translator.pc.PCEntityVelocityPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCJoinGamePacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCLoginSucessPacketTranslator;
+import org.dragonet.proxy.network.translator.pc.PCMultiBlockChangePacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.client.*;
 import org.spacehq.mc.protocol.packet.ingame.client.player.*;
 import org.spacehq.mc.protocol.packet.ingame.client.window.*;
@@ -125,7 +126,7 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerKeepAlivePacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(LoginSuccessPacket.class, new PCLoginSucessPacketTranslator()); //Don't know why this wasn't here, adding
         PC_TO_PE_TRANSLATOR.put(ServerMapDataPacket.class, new IgnorePacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerMultiBlockChangePacket.class, new IgnorePacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerMultiBlockChangePacket.class, new PCMultiBlockChangePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerNotifyClientPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerOpenTileEntityEditorPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerOpenWindowPacket.class, new IgnorePacketTranslator());
