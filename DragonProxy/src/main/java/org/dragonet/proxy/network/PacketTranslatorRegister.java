@@ -24,6 +24,7 @@ import org.dragonet.proxy.network.translator.IgnorePacketTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCBlockChangePacketTranslator;
+import org.dragonet.proxy.network.translator.pc.PCChatPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.client.*;
 import org.spacehq.mc.protocol.packet.ingame.client.player.*;
 import org.spacehq.mc.protocol.packet.ingame.client.window.*;
@@ -82,7 +83,7 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerBlockChangePacket.class, new PCBlockChangePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerBlockValuePacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerBossBarPacket.class, new IgnorePacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerChatPacket.class, new IgnorePacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerChatPacket.class, new PCChatPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerChunkDataPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerCloseWindowPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerCombatPacket.class, new IgnorePacketTranslator());

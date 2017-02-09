@@ -13,40 +13,38 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import org.dragonet.proxy.network.ClientConnection;
-import org.dragonet.proxy.network.translator.MessageTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerChatPacket;
 
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.TextPacket;
+import net.marfgamer.jraknet.RakNetPacket;
+import sul.protocol.pocket100.play.Text;
+import sul.utils.Packet;
 
 public class PCChatPacketTranslator implements PCPacketTranslator<ServerChatPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerChatPacket packet) throws java.lang.IllegalStateException{
-        TextPacket ret = new TextPacket();
-        /*
-         * Reset the chat message so we can parse the JSON again (if needed)
-         */
-        ret.source = session.getUsername();
-        ret.message = MessageTranslator.translate(packet.getMessage());
-        //ret.message = packet.getMessage().getText();
-/*        switch (packet.getType()) {
+    public RakNetPacket[] translate(ClientConnection session, ServerChatPacket packet) throws java.lang.IllegalStateException{
+        Packet ret;
+        
+        switch (packet.getType()) {
         case CHAT:
-            ret.type = TextPacket.TYPE_CHAT;
+            Text.Raw pk1 = new Text().new Raw(packet.getMessage().getFullText());
+            ret = pk1;
             break;
         case NOTIFICATION:
-            ret.type = TextPacket.TYPE_CHAT;
+        	Text.Raw pk2 = new Text().new Raw(packet.getMessage().getFullText());
+            ret = pk2;
             break;
         case SYSTEM:
-            ret.type = TextPacket.TYPE_SYSTEM;
+        	Text.System pk3 = new Text().new System(packet.getMessage().getFullText());
+            ret = pk3;
             break;
         default:
-            ret.type = TextPacket.TYPE_SYSTEM;
+        	Text.Raw pk4 = new Text().new Raw(packet.getMessage().getFullText());
+            ret = pk4;
             break;
-        }*/
+        }
         
-        ret.type = TextPacket.TYPE_SYSTEM;
-        return new DataPacket[]{ret};
+        return new RakNetPacket[]{new RakNetPacket(ret.encode())};
     }
 }
