@@ -13,17 +13,18 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import org.dragonet.proxy.network.InventoryTranslatorRegister;
+import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
 
-import cn.nukkit.network.protocol.DataPacket;
+import net.marfgamer.jraknet.RakNetPacket;
 
 public class PCOpenWindowPacketTranslator implements PCPacketTranslator<ServerOpenWindowPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerOpenWindowPacket packet) {
-        session.getProxy().getGeneralThreadPool().execute(() -> {
+    public RakNetPacket[] translate(ClientConnection session, ServerOpenWindowPacket packet) {
+        DragonProxy.getSelf().getGeneralThreadPool().execute(() -> {
             InventoryTranslatorRegister.open(session, packet);
         });
         return null;
