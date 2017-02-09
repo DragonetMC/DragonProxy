@@ -12,6 +12,9 @@
  */
 package org.dragonet.proxy.network;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +28,8 @@ import lombok.Setter;
 import org.dragonet.proxy.network.adapter.ClientProtocolAdapter;
 import org.dragonet.proxy.network.adapter.ServerProtocolAdapter;
 import org.dragonet.proxy.network.cache.EntityCache;
+import org.dragonet.proxy.network.cache.WindowCache;
+import org.spacehq.mc.protocol.data.game.PlayerListEntry;
 
 /**
  * Maintaince the connection between the proxy and Minecraft: Pocket Edition
@@ -52,8 +57,21 @@ public class ClientConnection {
     private ClientProtocolAdapter upstreamProtocol;
     private UUID sessionID;
     
-    @Getter
-    private EntityCache entityCache;
+    /* ======================================================================================================= 
+     * |                                 Caches for Protocol Compatibility                                   | 
+    /* ======================================================================================================= */ 
+    
+    @Getter 
+    private final Map<String, Object> dataCache = Collections.synchronizedMap(new HashMap<String, Object>()); 
+ 
+    @Getter 
+    private final Map<UUID, PlayerListEntry> playerInfoCache = Collections.synchronizedMap(new HashMap<UUID, PlayerListEntry>()); 
+ 
+    @Getter 
+    private final EntityCache entityCache = new EntityCache(this); 
+ 
+    @Getter 
+    private final WindowCache windowCache = new WindowCache(this); 
 
     public ClientConnection(ClientProtocolAdapter upstream, UUID sessionID) {
         this.upstreamProtocol = upstream;
@@ -61,7 +79,6 @@ public class ClientConnection {
         //packetProcessor = new PEPacketProcessor(this);
         //packetProcessorScheule = DragonProxy.getSelf().getGeneralThreadPool().scheduleAtFixedRate(packetProcessor, 10, 50, TimeUnit.MILLISECONDS);
         status = ConnectionStatus.AWAITING_CLIENT_LOGIN;
-        this.entityCache = new EntityCache(this);
     }
 
     public void onTick() {
