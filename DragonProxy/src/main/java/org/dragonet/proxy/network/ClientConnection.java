@@ -24,6 +24,7 @@ import org.dragonet.proxy.configuration.RemoteServer;
 import lombok.Setter;
 import org.dragonet.proxy.network.adapter.ClientProtocolAdapter;
 import org.dragonet.proxy.network.adapter.ServerProtocolAdapter;
+import org.dragonet.proxy.network.cache.EntityCache;
 
 /**
  * Maintaince the connection between the proxy and Minecraft: Pocket Edition
@@ -50,6 +51,9 @@ public class ClientConnection {
     @Getter
     private ClientProtocolAdapter upstreamProtocol;
     private UUID sessionID;
+    
+    @Getter
+    private EntityCache entityCache;
 
     public ClientConnection(ClientProtocolAdapter upstream, UUID sessionID) {
         this.upstreamProtocol = upstream;
@@ -57,6 +61,7 @@ public class ClientConnection {
         //packetProcessor = new PEPacketProcessor(this);
         //packetProcessorScheule = DragonProxy.getSelf().getGeneralThreadPool().scheduleAtFixedRate(packetProcessor, 10, 50, TimeUnit.MILLISECONDS);
         status = ConnectionStatus.AWAITING_CLIENT_LOGIN;
+        this.entityCache = new EntityCache(this);
     }
 
     public void onTick() {

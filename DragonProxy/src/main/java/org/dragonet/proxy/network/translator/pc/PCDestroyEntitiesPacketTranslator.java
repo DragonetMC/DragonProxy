@@ -17,21 +17,23 @@ import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityDestroyPacket;
 
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.RemoveEntityPacket;
+import net.marfgamer.jraknet.RakNetPacket;
+import sul.protocol.pocket100.play.RemoveEntity;
 
 public class PCDestroyEntitiesPacketTranslator implements PCPacketTranslator<ServerEntityDestroyPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerEntityDestroyPacket packet) {
-    	DataPacket[] ret = new DataPacket[packet.getEntityIds().length];
+    public RakNetPacket[] translate(ClientConnection session, ServerEntityDestroyPacket packet) {
+    	RakNetPacket[] ret = new RakNetPacket[packet.getEntityIds().length];
         for (int i = 0; i < ret.length; i++) {
             CachedEntity e = session.getEntityCache().remove(packet.getEntityIds()[i]);
             if (e == null) {
                 continue;
             }
-            ret[i] = new RemoveEntityPacket();
-            ((RemoveEntityPacket) ret[i]).eid = e.eid;
+            RemoveEntity re = new RemoveEntity();
+            re.entityId = e.eid;
+            
+            ret[i] = new RakNetPacket(re.encode());
         }
         return ret;
     }
