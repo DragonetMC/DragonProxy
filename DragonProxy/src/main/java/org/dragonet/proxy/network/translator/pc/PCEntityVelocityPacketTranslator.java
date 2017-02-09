@@ -37,7 +37,7 @@ public class PCEntityVelocityPacketTranslator implements PCPacketTranslator<Serv
         pk.entityId = packet.getEntityId();
         pk.motion = new Tuples.FloatXYZ((float) packet.getMotionX(), (float) packet.getMotionY(), (float) packet.getMotionZ());
         
-        return new RakNetPacket[]{new RakNetPacket(pk.encode())};
+        return fromSulPackets(pk);
     }
 
 }

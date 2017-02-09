@@ -18,7 +18,6 @@ import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.data.game.entity.player.GameMode;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 
-import cn.nukkit.network.protocol.SetSpawnPositionPacket;
 import net.marfgamer.jraknet.RakNetPacket;
 import sul.metadata.Pocket100;
 import sul.protocol.pocket100.play.PlayStatus;
@@ -80,13 +79,7 @@ public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoin
         PlayStatus pkStat = new PlayStatus();
         pkStat.status = PlayStatus.SPAWNED;
         
-        return new RakNetPacket[]{ 
-        		new RakNetPacket(startGamePacket.encode()),
-        		new RakNetPacket(pkEntityData.encode()),
-        		new RakNetPacket(pkResp.encode()),
-        		new RakNetPacket(pkSpawn.encode()),
-        		new RakNetPacket(pkStat.encode())
-        		};
+        return fromSulPackets(startGamePacket, pkEntityData, pkResp, pkSpawn, pkStat);
     }
 
 }

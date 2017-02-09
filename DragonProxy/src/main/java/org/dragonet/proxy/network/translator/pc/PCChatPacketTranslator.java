@@ -45,6 +45,6 @@ public class PCChatPacketTranslator implements PCPacketTranslator<ServerChatPack
             break;
         }
         
-        return new RakNetPacket[]{new RakNetPacket(ret.encode())};
+        return fromSulPackets(ret);
     }
 }

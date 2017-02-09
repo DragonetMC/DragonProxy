@@ -39,7 +39,7 @@ public class PCEntityPositionRotationPacketTranslator implements PCPacketTransla
         pk.pitch = (byte) e.pitch;
         pk.position = new Tuples.FloatXYZ((float) e.x, (float) (e.player ? e.y + 1.62f : e.y), (float) e.z);
         
-        return new RakNetPacket[]{new RakNetPacket(pk.encode())};
+        return fromSulPackets(pk);
     }
 
 }

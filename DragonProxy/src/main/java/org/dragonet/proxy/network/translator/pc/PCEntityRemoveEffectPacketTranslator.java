@@ -37,7 +37,8 @@ public class PCEntityRemoveEffectPacketTranslator implements PCPacketTranslator<
         MobEffect eff = new MobEffect();
         eff.entityId = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
         eff.eventId = MobEffect.REMOVE;
-        return new RakNetPacket[]{new RakNetPacket(eff.encode())};
+        
+        return fromSulPackets(eff);
     }
 
 }

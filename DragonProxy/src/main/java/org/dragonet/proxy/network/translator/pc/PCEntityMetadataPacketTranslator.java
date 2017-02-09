@@ -43,7 +43,7 @@ public class PCEntityMetadataPacketTranslator implements PCPacketTranslator<Serv
             pk.item = new Slot(item.id, item.meta, new byte[0]);
             pk.position = new Tuples.FloatXYZ((float) entity.x, (float) entity.y, (float) entity.z);
             pk.motion = new Tuples.FloatXYZ((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
-            return new RakNetPacket[]{new RakNetPacket(pk.encode())};
+            return fromSulPackets(pk);
         }
         return null;
     }

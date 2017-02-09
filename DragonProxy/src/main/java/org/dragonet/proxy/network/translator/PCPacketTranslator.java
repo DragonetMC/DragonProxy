@@ -26,5 +26,12 @@ public interface PCPacketTranslator<P extends Packet> {
      * @return
      */
     public RakNetPacket[] translate(ClientConnection session, P packet);
-
+    
+    public default RakNetPacket[] fromSulPackets(sul.utils.Packet... packets)	{
+    	RakNetPacket[] ret = new RakNetPacket[packets.length];
+    	for (int i = 0; i < packets.length; i++)	{
+    		ret[i] = new RakNetPacket(packets[i].encode());
+    	}
+    	return ret;
+    }
 }

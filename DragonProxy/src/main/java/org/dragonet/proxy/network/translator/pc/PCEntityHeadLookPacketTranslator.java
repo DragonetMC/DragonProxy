@@ -23,7 +23,7 @@ public class PCEntityHeadLookPacketTranslator implements PCPacketTranslator<Serv
 		me.yaw = (byte) entity.yaw;
 		me.headYaw = (byte) packet.getHeadYaw();
 		
-		return new RakNetPacket[]{new RakNetPacket(me.encode())};
+		return fromSulPackets(me);
 	}
 
 }

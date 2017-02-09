@@ -31,8 +31,7 @@ public class PCBlockChangePacketTranslator implements PCPacketTranslator<ServerB
         //TODO: pk.blockData = (byte) (packet.getRecord().getBlock().getData() & 0xFF);
         pk.position = new BlockPosition(packet.getRecord().getPosition().getX(), (byte) (packet.getRecord().getPosition().getY() & 0xFF), packet.getRecord().getPosition().getZ());
         
-        RakNetPacket pck = new RakNetPacket(pk.encode());
-        return new RakNetPacket[]{pck};
+        return fromSulPackets(pk);
     }
 
 }

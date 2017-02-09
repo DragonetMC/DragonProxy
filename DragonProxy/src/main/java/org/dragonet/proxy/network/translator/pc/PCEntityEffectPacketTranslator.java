@@ -46,7 +46,8 @@ public class PCEntityEffectPacketTranslator implements PCPacketTranslator<Server
         eff.amplifier = packet.getAmplifier();
         eff.duration = packet.getDuration();
         eff.particles = packet.getShowParticles();
-        return new RakNetPacket[]{new RakNetPacket(eff.encode())};
+        
+        return fromSulPackets(eff);
     }
 
 }
