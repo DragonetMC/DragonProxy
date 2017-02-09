@@ -39,6 +39,7 @@ import org.dragonet.proxy.network.translator.pc.PCMultiBlockChangePacketTranslat
 import org.dragonet.proxy.network.translator.pc.PCNotifyClientPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCOpenWindowPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCPlayerListItemPacketTranslator;
+import org.dragonet.proxy.network.translator.pc.PCPlayerPositionRotationPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.client.*;
 import org.spacehq.mc.protocol.packet.ingame.client.player.*;
 import org.spacehq.mc.protocol.packet.ingame.client.window.*;
@@ -140,7 +141,7 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerPlayerHealthPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayerListDataPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayerListEntryPacket.class, new PCPlayerListItemPacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerPlayerPositionRotationPacket.class, new IgnorePacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerPlayerPositionRotationPacket.class, new PCPlayerPositionRotationPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayerSetExperiencePacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayerUseBedPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlaySoundPacket.class, new IgnorePacketTranslator());
