@@ -413,16 +413,6 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
         sendChat(reason);
         disconnect(reason);
     }*/
-    
-    private byte[] prep(byte[] buff) {
-        byte[] buff2 = new byte[buff.length + 1];
-        int index = 0;
-        buff2[index++] = (byte) 0xFE;
-        for (byte b : buff) {
-            buff2[index++] = b;
-        }
-        return buff2;
-    }
 
     private void minimalClientHandshake(boolean errorMode, ClientConnection session) {
         PlayStatus status = new PlayStatus(); // Required; TODO: Find out why

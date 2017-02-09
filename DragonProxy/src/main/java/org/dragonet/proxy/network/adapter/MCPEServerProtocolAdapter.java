@@ -127,16 +127,6 @@ public class MCPEServerProtocolAdapter implements ServerProtocolAdapter<RakNetPa
         }
     }
 
-    private byte[] prep(byte[] buff) {
-        byte[] buff2 = new byte[buff.length + 1];
-        int index = 0;
-        buff2[index++] = (byte) 0xFE;
-        for (byte b : buff) {
-            buff2[index++] = b;
-        }
-        return buff2;
-    }
-
     @Override
     public void onDisconnect(RakNetServerSession session, String reason) {
         DragonProxy.getLogger().info(sender + "Remote pocket server downstream CLOSED!\nReason: " + reason);

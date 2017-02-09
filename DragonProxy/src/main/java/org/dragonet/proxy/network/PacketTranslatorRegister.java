@@ -278,7 +278,7 @@ public final class PacketTranslatorRegister {
             return new Packet[0];
         }
 
-        Class<? extends sul.utils.Packet> clazz = pePacketIDMap.get((byte)(packet.getId() & 0xFF));
+        Class<? extends sul.utils.Packet> clazz = pePacketIDMap.get((byte) (packet.getId() & 0xFF));
         if (clazz == null) {
             DragonProxy.getLogger().warning("[PE to PC] No ID to packet mapping found for : " + (packet.getId() & 0xFF));
             return new Packet[0];
@@ -300,8 +300,26 @@ public final class PacketTranslatorRegister {
         }
     }
 
+    public static RakNetPacket[] preparePacketsForSending(sul.utils.Packet... packets){
+        RakNetPacket[] pk = new RakNetPacket[packets.length];
+        for(int index = 0; index < packets.length; index++){
+            pk[index] = preparePacketForSending(packets[index]);
+        }
+        return pk;
+    }
+    
     public static RakNetPacket preparePacketForSending(sul.utils.Packet packet) {
-        return new RakNetPacket(packet.encode());
+        return new RakNetPacket(prep(packet.encode()));
+    }
+
+    private static byte[] prep(byte[] buff) {
+        byte[] buff2 = new byte[buff.length + 1];
+        int index = 0;
+        buff2[index++] = (byte) 0xFE;
+        for (byte b : buff) {
+            buff2[index++] = b;
+        }
+        return buff2;
     }
 
 }
