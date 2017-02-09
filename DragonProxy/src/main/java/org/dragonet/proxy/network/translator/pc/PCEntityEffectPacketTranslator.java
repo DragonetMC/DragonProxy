@@ -32,7 +32,7 @@ public class PCEntityEffectPacketTranslator implements PCPacketTranslator<Server
         int effectId = MagicValues.value(Integer.class, packet.getEffect());
 
         MobEffect eff = new MobEffect();
-        //TODO: eff.entityId = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
+        eff.entityId = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
         eff.effect = effectId;
         if (eff.effect == -1) {// Is this the correct way to do this?
             return null; //Not supported

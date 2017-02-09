@@ -17,7 +17,7 @@ public class PCEntityHeadLookPacketTranslator implements PCPacketTranslator<Serv
 		CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
 		MoveEntity me = new MoveEntity();
 		
-		//TODO: me.entityId = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
+		me.entityId = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
 		me.position = new Tuples.FloatXYZ((float) entity.x, (float) entity.y, (float) entity.z);
 		me.pitch = (byte) entity.pitch;
 		me.yaw = (byte) entity.yaw;
