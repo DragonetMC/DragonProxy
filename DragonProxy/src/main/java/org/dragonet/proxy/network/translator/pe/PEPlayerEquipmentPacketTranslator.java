@@ -23,45 +23,45 @@ import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerChangeHel
 import org.spacehq.mc.protocol.packet.ingame.client.window.ClientWindowActionPacket;
 import org.spacehq.packetlib.packet.Packet;
 
-import cn.nukkit.network.protocol.MobEquipmentPacket;
+import sul.protocol.pocket100.play.MobEquipment;
 
-public class PEPlayerEquipmentPacketTranslator implements PEPacketTranslator<MobEquipmentPacket> {
+public class PEPlayerEquipmentPacketTranslator implements PEPacketTranslator<MobEquipment> {
 
     @Override
-    public Packet[] translate(ClientConnection session, MobEquipmentPacket packet) {
-        if (packet.selectedSlot > 8) {
-            return null;
+    public Packet[] translate(ClientConnection session, MobEquipment packet) {
+        if (packet.inventorySlot > 8) {
+            return new Packet[0];
         }
-        if(packet.slot == 0x28 || packet.slot == 0 || packet.slot == 255){
+        if(packet.hotbarSlot == 0x28 || packet.hotbarSlot == 0 || packet.hotbarSlot == 255){
             //That thing changed to air
             //TODO
         }
-        if (InventoryTranslatorRegister.HOTBAR_CONSTANTS[packet.selectedSlot] == packet.slot) {
+        if (InventoryTranslatorRegister.HOTBAR_CONSTANTS[packet.inventorySlot] == packet.hotbarSlot) {
             //Just switched selected slot index, no swapping
-            ClientPlayerChangeHeldItemPacket pk = new ClientPlayerChangeHeldItemPacket(packet.selectedSlot);
+            ClientPlayerChangeHeldItemPacket pk = new ClientPlayerChangeHeldItemPacket(packet.inventorySlot);
             return new Packet[]{pk};
         }
         CachedWindow playerInv = session.getWindowCache().getPlayerInventory();
-        ItemStack tmp = playerInv.slots[36 + packet.selectedSlot];
+        ItemStack tmp = playerInv.slots[36 + packet.inventorySlot];
         boolean hotbarSlotWasEmpty = tmp == null || tmp.getId() == 0;
-        boolean invSlotWasEmpty = playerInv.slots[packet.slot] == null || playerInv.slots[packet.slot].getId() == 0;
-        playerInv.slots[36 + packet.selectedSlot] = playerInv.slots[packet.slot];
-        playerInv.slots[packet.slot] = tmp;
+        boolean invSlotWasEmpty = playerInv.slots[packet.hotbarSlot] == null || playerInv.slots[packet.hotbarSlot].getId() == 0;
+        playerInv.slots[36 + packet.inventorySlot] = playerInv.slots[packet.hotbarSlot];
+        playerInv.slots[packet.hotbarSlot] = tmp;
         session.sendAllPackets(InventoryTranslatorRegister.sendPlayerInventory(session), true);
 
         //Now the tricky part
         if(!invSlotWasEmpty){
-            ClientWindowActionPacket act1 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), packet.slot, playerInv.slots[36 + packet.selectedSlot], WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
-            ClientWindowActionPacket act2 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), 36 + packet.selectedSlot, tmp, WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
+            ClientWindowActionPacket act1 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), packet.hotbarSlot, playerInv.slots[36 + packet.inventorySlot], WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
+            ClientWindowActionPacket act2 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), 36 + packet.inventorySlot, tmp, WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
             if(!hotbarSlotWasEmpty){
                 //We have another piece now
-                ClientWindowActionPacket act3 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), packet.slot, null, WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
+                ClientWindowActionPacket act3 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), packet.hotbarSlot, null, WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
                 return new Packet[]{act1, act2, act3};
             }
             return new Packet[]{act1, act2};
         }else{
-            ClientWindowActionPacket act1 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), 36 + packet.selectedSlot, playerInv.slots[36 + packet.selectedSlot], WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
-            ClientWindowActionPacket act2 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), packet.slot, null, WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
+            ClientWindowActionPacket act1 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), 36 + packet.inventorySlot, playerInv.slots[36 + packet.inventorySlot], WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
+            ClientWindowActionPacket act2 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), packet.hotbarSlot, null, WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
             return new Packet[]{act1, act2};
         }
     }

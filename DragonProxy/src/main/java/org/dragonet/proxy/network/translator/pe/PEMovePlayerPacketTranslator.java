@@ -18,17 +18,17 @@ import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
 import org.spacehq.packetlib.packet.Packet;
 
-import cn.nukkit.network.protocol.MovePlayerPacket;
+import sul.protocol.pocket100.play.MovePlayer;
 
-public class PEMovePlayerPacketTranslator implements PEPacketTranslator<MovePlayerPacket> {
+public class PEMovePlayerPacketTranslator implements PEPacketTranslator<MovePlayer> {
     
     @Override
-    public Packet[] translate(ClientConnection session, MovePlayerPacket packet) {
-        ClientPlayerPositionRotationPacket pk = new ClientPlayerPositionRotationPacket(!packet.onGround, packet.x, packet.y, packet.z, packet.yaw, packet.pitch);
+    public Packet[] translate(ClientConnection session, MovePlayer packet) {
+        ClientPlayerPositionRotationPacket pk = new ClientPlayerPositionRotationPacket(!packet.onGround, packet.position.x, packet.position.y, packet.position.z, packet.yaw, packet.pitch);
         CachedEntity cliEntity = session.getEntityCache().getClientEntity();
-        cliEntity.x = packet.x;
-        cliEntity.y = packet.y;
-        cliEntity.z = packet.z;        
+        cliEntity.x = packet.position.x;
+        cliEntity.y = packet.position.y;
+        cliEntity.z = packet.position.z;        
         return new Packet[]{pk};
     }
 

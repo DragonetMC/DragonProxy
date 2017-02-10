@@ -111,4 +111,13 @@ public class ClientConnection {
 	public void sendChat(String msg)	{
     	upstreamProtocol.sendPacket(new RakNetPacket(new Text().new Raw(msg).encode()), this);
     }
+    
+    @SuppressWarnings("unchecked")
+	public void sendAllPackets(Object[] pks, boolean idkSoIgnoreIt)	{
+    	for (Object obj : pks)	{
+    		if (obj instanceof RakNetPacket)	{
+    			upstreamProtocol.sendPacket((RakNetPacket) obj, this);
+    		}
+    	}
+    }
 }

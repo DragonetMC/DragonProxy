@@ -52,6 +52,13 @@ import org.dragonet.proxy.network.translator.pc.PCUpdateSignPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCUpdateTimePacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCWindowItemsTranslator;
 import org.dragonet.proxy.network.translator.pe.PEInteractPacketTranslator;
+import org.dragonet.proxy.network.translator.pe.PEMovePlayerPacketTranslator;
+import org.dragonet.proxy.network.translator.pe.PEPlayerActionPacketTranslator;
+import org.dragonet.proxy.network.translator.pe.PEPlayerEquipmentPacketTranslator;
+import org.dragonet.proxy.network.translator.pe.PERequestChunkRadiusPacketTranslator;
+import org.dragonet.proxy.network.translator.pe.PERespawnPacketTranslator;
+import org.dragonet.proxy.network.translator.pe.PEUseItemPacketTranslator;
+import org.dragonet.proxy.network.translator.pe.PEWindowClosePacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.client.*;
 import org.spacehq.mc.protocol.packet.ingame.client.player.*;
 import org.spacehq.mc.protocol.packet.ingame.client.window.*;
@@ -210,7 +217,7 @@ public final class PacketTranslatorRegister {
         PE_TO_PC_TRANSLATOR.put(ClientboundMapItemData.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(ClientMagic.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(CommandStep.class, new IgnorePacketTranslator());
-        PE_TO_PC_TRANSLATOR.put(ContainerClose.class, new IgnorePacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(ContainerClose.class, new PEWindowClosePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(ContainerOpen.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(ContainerSetContent.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(ContainerSetData.class, new IgnorePacketTranslator());
@@ -232,10 +239,10 @@ public final class PacketTranslatorRegister {
         PE_TO_PC_TRANSLATOR.put(MapInfoRequest.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(MobArmorEquipment.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(MobEffect.class, new IgnorePacketTranslator());
-        PE_TO_PC_TRANSLATOR.put(MobEquipment.class, new IgnorePacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(MobEquipment.class, new PEPlayerEquipmentPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(MoveEntity.class, new IgnorePacketTranslator());
-        PE_TO_PC_TRANSLATOR.put(MovePlayer.class, new IgnorePacketTranslator());
-        PE_TO_PC_TRANSLATOR.put(PlayerAction.class, new IgnorePacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(MovePlayer.class, new PEMovePlayerPacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(PlayerAction.class, new PEPlayerActionPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(PlayerFall.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(PlayerInput.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(PlayerList.class, new IgnorePacketTranslator());
@@ -243,10 +250,10 @@ public final class PacketTranslatorRegister {
         PE_TO_PC_TRANSLATOR.put(RemoveBlock.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(RemoveEntity.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(ReplaceSelectedItem.class, new IgnorePacketTranslator());
-        PE_TO_PC_TRANSLATOR.put(RequestChunkRadius.class, new IgnorePacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(RequestChunkRadius.class, new PERequestChunkRadiusPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(ResourcePackClientResponse.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(ResourcePacksInfo.class, new IgnorePacketTranslator());
-        PE_TO_PC_TRANSLATOR.put(Respawn.class, new IgnorePacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(Respawn.class, new PERespawnPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(RiderJump.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(ServerHandshake.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(SetCheatsEnabled.class, new IgnorePacketTranslator());
@@ -266,7 +273,7 @@ public final class PacketTranslatorRegister {
         PE_TO_PC_TRANSLATOR.put(Text.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(UpdateAttributes.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(UpdateBlock.class, new IgnorePacketTranslator());
-        PE_TO_PC_TRANSLATOR.put(UseItem.class, new IgnorePacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(UseItem.class, new PEUseItemPacketTranslator());
     }
 
     static {
