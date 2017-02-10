@@ -13,24 +13,23 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import org.dragonet.proxy.network.ClientConnection;
-import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.data.game.entity.type.object.ObjectType;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnObjectPacket;
 
-import cn.nukkit.network.protocol.DataPacket;
+import net.marfgamer.jraknet.RakNetPacket;
 
 public class PCSpawnObjectPacketTranslator implements PCPacketTranslator<ServerSpawnObjectPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerSpawnObjectPacket packet) {
+    public RakNetPacket[] translate(ClientConnection session, ServerSpawnObjectPacket packet) {
         if(packet.getType() == ObjectType.ITEM){
             //Currently only handles item data
-            CachedEntity futureEntity = session.getEntityCache().newObject(packet);
+            session.getEntityCache().newObject(packet);
             //This crap needs entity meta to be completed so we have to wait. 
-            return null;
+            return new RakNetPacket[0];
         }
-        return null;
+        return new RakNetPacket[0];
     }
 
 }
