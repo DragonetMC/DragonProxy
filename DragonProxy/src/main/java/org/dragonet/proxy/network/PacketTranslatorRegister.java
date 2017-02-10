@@ -46,6 +46,8 @@ import org.dragonet.proxy.network.translator.pc.PCSetSlotPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCSpawnMobPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCSpawnObjectPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCSpawnPlayerPacketTranslator;
+import org.dragonet.proxy.network.translator.pc.PCSpawnPositionPacketTranslator;
+import org.dragonet.proxy.network.translator.pc.PCUpdateHealthPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.client.*;
 import org.spacehq.mc.protocol.packet.ingame.client.player.*;
 import org.spacehq.mc.protocol.packet.ingame.client.window.*;
@@ -144,7 +146,7 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerPlayEffectPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayerAbilitiesPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayerChangeHeldItemPacket.class, new IgnorePacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerPlayerHealthPacket.class, new IgnorePacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerPlayerHealthPacket.class, new PCUpdateHealthPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayerListDataPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayerListEntryPacket.class, new PCPlayerListItemPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayerPositionRotationPacket.class, new PCPlayerPositionRotationPacketTranslator());
@@ -165,7 +167,7 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerSpawnPaintingPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerSpawnParticlePacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerSpawnPlayerPacket.class, new PCSpawnPlayerPacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerSpawnPositionPacket.class, new IgnorePacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerSpawnPositionPacket.class, new PCSpawnPositionPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerStatisticsPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerSwitchCameraPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerTabCompletePacket.class, new IgnorePacketTranslator());

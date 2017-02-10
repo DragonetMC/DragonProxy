@@ -25,6 +25,9 @@ import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.RemoteServer;
 import lombok.Setter;
+import net.marfgamer.jraknet.RakNetPacket;
+import sul.protocol.pocket100.play.Text;
+
 import org.dragonet.proxy.network.adapter.ClientProtocolAdapter;
 import org.dragonet.proxy.network.adapter.ServerProtocolAdapter;
 import org.dragonet.proxy.network.cache.EntityCache;
@@ -102,5 +105,10 @@ public class ClientConnection {
 
     public UUID getSessionID() {
         return sessionID;
+    }
+    
+    @SuppressWarnings("unchecked")
+	public void sendChat(String msg)	{
+    	upstreamProtocol.sendPacket(new RakNetPacket(new Text().new Raw(msg).encode()), this);
     }
 }
