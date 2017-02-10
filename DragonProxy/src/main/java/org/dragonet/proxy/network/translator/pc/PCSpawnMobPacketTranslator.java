@@ -14,39 +14,40 @@ package org.dragonet.proxy.network.translator.pc;
 
 import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
 
-import cn.nukkit.network.protocol.AddEntityPacket;
-import cn.nukkit.network.protocol.DataPacket;
+import net.marfgamer.jraknet.RakNetPacket;
+import sul.metadata.Pocket100;
+import sul.protocol.pocket100.play.AddEntity;
+import sul.protocol.pocket100.types.Attribute;
+import sul.utils.Tuples;
 
 public class PCSpawnMobPacketTranslator implements PCPacketTranslator<ServerSpawnMobPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerSpawnMobPacket packet) {
+    public RakNetPacket[] translate(ClientConnection session, ServerSpawnMobPacket packet) {
         try {
             CachedEntity e = session.getEntityCache().newEntity(packet);
             if (e == null) {
                 return null;
             }
 
-            AddEntityPacket pk = new AddEntityPacket();
-            pk.entityRuntimeId = e.eid;
+            AddEntity pk = new AddEntity();
+            pk.entityId = e.eid;
+            pk.runtimeId = e.eid;
             pk.type = e.peType.getPeType();
-            pk.x = (float) e.x;
-            pk.y = (float) e.y;
-            pk.z = (float) e.z;
-            pk.speedX = (float) e.motionX;
-            pk.speedY = (float) e.motionY;
-            pk.speedZ = (float) e.motionZ;
-            //TODO: Hack for now. ;P 
-            pk.metadata = EntityMetaTranslator.translateToPE(e.pcMeta, e.peType);
-
-            return new DataPacket[]{pk};
+            pk.position = new Tuples.FloatXYZ((float) e.x, (float) e.y, (float) e.z);
+            pk.motion = new Tuples.FloatXYZ((float) e.motionX, (float) e.motionY, (float) e.motionZ);
+            pk.pitch = e.pitch;
+            pk.yaw = e.yaw;
+            pk.attributes = new Attribute[0];
+            pk.metadata = new Pocket100();
+            
+            return fromSulPackets(pk);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return new RakNetPacket[0];
         }
     }
 
