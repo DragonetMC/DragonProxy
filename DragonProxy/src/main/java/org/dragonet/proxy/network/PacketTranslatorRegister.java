@@ -25,6 +25,7 @@ import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCBlockChangePacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCChatPacketTranslator;
+import org.dragonet.proxy.network.translator.pc.PCChunkDataTranslator;
 import org.dragonet.proxy.network.translator.pc.PCDestroyEntitiesPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCEntityEffectPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCEntityHeadLookPacketTranslator;
@@ -101,7 +102,7 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerBlockValuePacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerBossBarPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerChatPacket.class, new PCChatPacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerChunkDataPacket.class, new IgnorePacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerChunkDataPacket.class, new PCChunkDataTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerCloseWindowPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerCombatPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerConfirmTransactionPacket.class, new IgnorePacketTranslator());
@@ -136,7 +137,6 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerOpenTileEntityEditorPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerOpenWindowPacket.class, new PCOpenWindowPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayBuiltinSoundPacket.class, new PCPlaySoundPacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerPlaySoundPacket.class, new PCPlaySoundPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayEffectPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayerAbilitiesPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayerChangeHeldItemPacket.class, new IgnorePacketTranslator());

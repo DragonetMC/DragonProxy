@@ -27,7 +27,7 @@ public class PCEntityPositionRotationPacketTranslator implements PCPacketTransla
     public RakNetPacket[] translate(ClientConnection session, ServerEntityPositionRotationPacket packet) {
         CachedEntity e = session.getEntityCache().get(packet.getEntityId());
         if (e == null) {
-            return null;
+            return new RakNetPacket[0];
         }
 
         e.relativeMove(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ(), packet.getYaw(), packet.getPitch());

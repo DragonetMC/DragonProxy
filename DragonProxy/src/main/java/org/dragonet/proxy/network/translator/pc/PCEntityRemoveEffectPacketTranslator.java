@@ -28,11 +28,11 @@ public class PCEntityRemoveEffectPacketTranslator implements PCPacketTranslator<
     public RakNetPacket[] translate(ClientConnection session, ServerEntityRemoveEffectPacket packet) {
         CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
         if (entity == null) {
-            return null;
+            return new RakNetPacket[0];
         }
         int effectId = MagicValues.value(Integer.class, packet.getEffect());
         if (!entity.effects.contains(effectId)) {
-            return null;
+            return new RakNetPacket[0];
         }
         MobEffect eff = new MobEffect();
         eff.entityId = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();

@@ -9,13 +9,14 @@ import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.data.game.chunk.Chunk;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
 
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.FullChunkDataPacket;
+import net.marfgamer.jraknet.RakNetPacket;
+import sul.protocol.pocket100.play.FullChunkData;
+import sul.utils.Tuples;
 
 public class PCChunkDataTranslator implements PCPacketTranslator<ServerChunkDataPacket> {
 	
-
-	public DataPacket[] translate2(ClientConnection session, ServerChunkDataPacket packet) {
+	@Override
+	public RakNetPacket[] translate(ClientConnection session, ServerChunkDataPacket packet) {
 		ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
 		DataOutputStream dos1 = new DataOutputStream(bos1);
 
@@ -32,10 +33,9 @@ public class PCChunkDataTranslator implements PCPacketTranslator<ServerChunkData
 			//bos2.reset();
 			//bosTiles.reset();
 
-			FullChunkDataPacket pePacket = new FullChunkDataPacket();
-		
-			pePacket.chunkX = packet.getColumn().getX();
-			pePacket.chunkZ = packet.getColumn().getZ();
+			FullChunkData pePacket = new FullChunkData();
+			
+			pePacket.position = new Tuples.IntXZ(packet.getColumn().getX(), packet.getColumn().getZ());
 			//pePacket.order = FullChunkDataPacket.ChunkOrder.COLUMNS;
 			
 			Chunk[] pcChunks = packet.getColumn().getChunks();
@@ -142,16 +142,17 @@ public class PCChunkDataTranslator implements PCPacketTranslator<ServerChunkData
 
 			//dos1.write(bosTiles.toByteArray());
 			
+			pePacket.tiles = new byte[0];
             pePacket.data = bos1.toByteArray();
-            session.sendPacket(pePacket, true);
+            return fromSulPackets(pePacket);
         } catch (Exception e) {
         	System.err.println("Error while processing ChunkData packet");
         	e.printStackTrace();
         }
-		return new DataPacket[0];
+		return new RakNetPacket[0];
     }
 
-	@Override
+	/*@Override
 	public DataPacket[] translate(ClientConnection session, ServerChunkDataPacket packet) {
 		FullChunkDataPacket pePacket = new FullChunkDataPacket();
 		
@@ -221,7 +222,7 @@ public class PCChunkDataTranslator implements PCPacketTranslator<ServerChunkData
 				dos1.writeByte((byte) 0x85);
 				dos1.writeByte((byte) 0xB2);
 				dos1.writeByte((byte) 0x4A);
-			}*/
+			}
 			dos1.write(chunk.getBiomeIdArray());
 			
 			//bos2.reset();
@@ -237,6 +238,6 @@ public class PCChunkDataTranslator implements PCPacketTranslator<ServerChunkData
 		}
 		
 		return new DataPacket[] { pePacket };
-	}
+	}*/
 }
 

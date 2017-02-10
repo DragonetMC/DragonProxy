@@ -51,7 +51,7 @@ public class PCNotifyClientPacketTranslator implements PCPacketTranslator<Server
 			System.err.println("Error while handling NotifyClientPacket; Unhandled notification type: " + packet.getNotification());
 			break;
         }
-        return null;
+        return new RakNetPacket[0];
     }
 
 }

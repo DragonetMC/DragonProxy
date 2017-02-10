@@ -27,7 +27,7 @@ public class PCOpenWindowPacketTranslator implements PCPacketTranslator<ServerOp
         DragonProxy.getSelf().getGeneralThreadPool().execute(() -> {
             InventoryTranslatorRegister.open(session, packet);
         });
-        return null;
+        return new RakNetPacket[0];
     }
 
 }

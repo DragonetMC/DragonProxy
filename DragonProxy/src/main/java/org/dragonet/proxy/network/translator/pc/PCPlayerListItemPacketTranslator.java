@@ -35,7 +35,7 @@ public class PCPlayerListItemPacketTranslator implements PCPacketTranslator<Serv
                 session.getPlayerInfoCache().remove(entrie.getProfile().getId());
             }
         }
-        return null;
+        return new RakNetPacket[0];
     }
 
 }

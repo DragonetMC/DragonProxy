@@ -32,7 +32,7 @@ public class PCEntityMetadataPacketTranslator implements PCPacketTranslator<Serv
     public RakNetPacket[] translate(ClientConnection session, ServerEntityMetadataPacket packet) {
         CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
         if (entity == null) {
-            return null;
+            return new RakNetPacket[0];
         }
         if (!entity.spawned && entity.objType == ObjectType.ITEM) {
             entity.spawned = true;  //Spawned
@@ -45,7 +45,7 @@ public class PCEntityMetadataPacketTranslator implements PCPacketTranslator<Serv
             pk.motion = new Tuples.FloatXYZ((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
             return fromSulPackets(pk);
         }
-        return null;
+        return new RakNetPacket[0];
     }
 
 }

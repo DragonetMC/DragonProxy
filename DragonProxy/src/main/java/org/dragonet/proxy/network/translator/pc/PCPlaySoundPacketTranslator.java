@@ -45,7 +45,7 @@ public class PCPlaySoundPacketTranslator implements PCPacketTranslator<ServerPla
                 soundName = ((CustomSound) packet.getSound()).getName();
             }
             if (soundName == null) {
-                return null;
+                return new RakNetPacket[0];
             }
             short ev = 0;
             for (Field f : LevelEvent.class.getDeclaredFields()) {
@@ -54,7 +54,7 @@ public class PCPlaySoundPacketTranslator implements PCPacketTranslator<ServerPla
                 }
             }
             if (ev == 0) {
-                return null;
+                return new RakNetPacket[0];
             }
             LevelEvent pkSound = new LevelEvent();
             pkSound.eventId = (short) ev;
@@ -63,7 +63,7 @@ public class PCPlaySoundPacketTranslator implements PCPacketTranslator<ServerPla
             return fromSulPackets(pkSound);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return new RakNetPacket[0];
         }
     }
 

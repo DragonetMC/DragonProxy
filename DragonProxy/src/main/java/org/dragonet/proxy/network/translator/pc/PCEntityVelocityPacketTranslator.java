@@ -27,7 +27,7 @@ public class PCEntityVelocityPacketTranslator implements PCPacketTranslator<Serv
     public RakNetPacket[] translate(ClientConnection session, ServerEntityVelocityPacket packet) {
         CachedEntity e = session.getEntityCache().get(packet.getEntityId());
         if (e == null) {
-            return null;
+            return new RakNetPacket[0];
         }
         e.motionX = packet.getMotionX();
         e.motionY = packet.getMotionY();
