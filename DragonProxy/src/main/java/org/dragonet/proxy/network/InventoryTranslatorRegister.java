@@ -26,6 +26,13 @@ import org.spacehq.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacke
 import org.spacehq.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
 import org.spacehq.packetlib.packet.Packet;
+
+import cn.nukkit.inventory.InventoryType;
+import net.marfgamer.jraknet.RakNetPacket;
+import sul.protocol.pocket100.play.ContainerSetContent;
+import sul.protocol.pocket100.types.Slot;
+import sul.utils.Item;
+
 import org.dragonet.inventory.PEInventorySlot;
 
 public final class InventoryTranslatorRegister {
@@ -33,15 +40,16 @@ public final class InventoryTranslatorRegister {
     public final static int[] HOTBAR_CONSTANTS = new int[]{36, 37, 38, 39, 40, 41, 42, 43, 44};
 
     public static Object[] sendPlayerInventory(ClientConnection session) {
-        /*CachedWindow win = session.getWindowCache().getPlayerInventory();
+        CachedWindow win = session.getWindowCache().getPlayerInventory();
         //Translate and send
-        ContainerSetContentPacket ret = new ContainerSetContentPacket();
-        ret.windowid = InventoryType.PLAYER.getNetworkType();
-        ret.slots = new Item[45];
+        ContainerSetContent ret = new ContainerSetContent();
+        ret.window = (byte) InventoryType.PLAYER.getNetworkType();
+        ret.slots = new Slot[45];
         for (int i = 9; i < win.slots.length; i++) {
             //TODO: Add NBT support
             if (win.slots[i] != null) {
-                ret.slots[i - 9] = PEInventorySlot.fromItemStack(win.slots[i]);
+            	Item item = PEInventorySlot.fromItemStack(win.slots[i]);
+                ret.slots[i - 9] = new Slot(item.id, item.meta, new byte[0]);
             }
         }
         for (int i = 36; i < 45; i++) {
@@ -50,8 +58,7 @@ public final class InventoryTranslatorRegister {
         ret.hotbar = HOTBAR_CONSTANTS;
 
         //TODO: Add armor support
-        return new DataPacket[]{ret};*/
-        return null;
+        return new RakNetPacket[]{new RakNetPacket(ret.encode())};
     }
 
     // PC Type => PE Translator
