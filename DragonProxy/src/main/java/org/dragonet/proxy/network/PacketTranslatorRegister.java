@@ -51,6 +51,7 @@ import org.dragonet.proxy.network.translator.pc.PCUpdateHealthPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCUpdateSignPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCUpdateTimePacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCWindowItemsTranslator;
+import org.dragonet.proxy.network.translator.pe.PEInteractPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.client.*;
 import org.spacehq.mc.protocol.packet.ingame.client.player.*;
 import org.spacehq.mc.protocol.packet.ingame.client.window.*;
@@ -222,7 +223,7 @@ public final class PacketTranslatorRegister {
         PE_TO_PC_TRANSLATOR.put(Explode.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(FullChunkData.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(HurtArmor.class, new IgnorePacketTranslator());
-        PE_TO_PC_TRANSLATOR.put(Interact.class, new IgnorePacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(Interact.class, new PEInteractPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(InventoryAction.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(ItemFrameDropItem.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(LevelEvent.class, new IgnorePacketTranslator());

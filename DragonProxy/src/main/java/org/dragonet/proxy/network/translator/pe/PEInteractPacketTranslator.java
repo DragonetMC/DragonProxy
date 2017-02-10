@@ -18,12 +18,12 @@ import org.spacehq.mc.protocol.data.game.entity.player.InteractAction;
 import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerInteractEntityPacket;
 import org.spacehq.packetlib.packet.Packet;
 
-import cn.nukkit.network.protocol.InteractPacket;
+import sul.protocol.pocket100.play.Interact;
 
-public class PEInteractPacketTranslator implements PEPacketTranslator<InteractPacket> {
+public class PEInteractPacketTranslator implements PEPacketTranslator<Interact> {
 
     @Override
-    public Packet[] translate(ClientConnection session, InteractPacket packet) {
+    public Packet[] translate(ClientConnection session, Interact packet) {
         ClientPlayerInteractEntityPacket pk = new ClientPlayerInteractEntityPacket((int) (packet.target & 0xFFFFFFFF), InteractAction.ATTACK);
         return new Packet[]{pk};
     }
