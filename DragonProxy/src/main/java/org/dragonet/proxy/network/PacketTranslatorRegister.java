@@ -49,6 +49,7 @@ import org.dragonet.proxy.network.translator.pc.PCSpawnPlayerPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCSpawnPositionPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCUpdateHealthPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCUpdateSignPacketTranslator;
+import org.dragonet.proxy.network.translator.pc.PCUpdateTimePacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.client.*;
 import org.spacehq.mc.protocol.packet.ingame.client.player.*;
 import org.spacehq.mc.protocol.packet.ingame.client.window.*;
@@ -177,7 +178,7 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerUnloadChunkPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerUpdateScorePacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerUpdateTileEntityPacket.class, new PCUpdateSignPacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerUpdateTimePacket.class, new IgnorePacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerUpdateTimePacket.class, new PCUpdateTimePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerVehicleMovePacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerWindowItemsPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerWindowPropertyPacket.class, new IgnorePacketTranslator());
