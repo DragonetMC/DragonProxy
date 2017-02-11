@@ -146,6 +146,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
     @Override
     public void sendPacket(RakNetPacket packet, ClientConnection session) {
         if (session == null) {
+            DragonProxy.getLogger().warning(sender + "sendPacket aborting because session is null");
             return;
         }
         DragonProxy.getLogger().debug(sender + "Sending Packet: " + session.getSessionID() + ": " + Integer.toHexString(packet.buffer().getByte(1)));
@@ -415,6 +416,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
     }*/
 
     private void minimalClientHandshake(boolean errorMode, ClientConnection session) {
+        DragonProxy.getLogger().debug(sender + "Performing a minimal handshake with the client " + session.getUsername() + ":" + session.getSessionID());
         PlayStatus status = new PlayStatus(); // Required; TODO: Find out why
         status.status = PlayStatus.OK;
         sendPacket(PacketTranslatorRegister.preparePacketForSending(status), session);

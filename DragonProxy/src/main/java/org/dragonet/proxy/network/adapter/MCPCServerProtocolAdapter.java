@@ -47,13 +47,15 @@ public class MCPCServerProtocolAdapter extends ClientListener implements ServerP
 
     private Client client;
     private ClientConnection upstream;
+    
+    private final String sender = "[PC Serverside] ";
 
     public MCPCServerProtocolAdapter() {
     }
 
     @Override
     public void connectToRemoteServer(String address, int port) {
-        DragonProxy.getLogger().info("Connecting to remote pc server at: " + address + ":" + port);
+        DragonProxy.getLogger().info(sender + "Connecting to remote pc server at: " + address + ":" + port);
 
         // TODO: Handle authentication
         protocol = new MinecraftProtocol("robotman3002");
@@ -70,16 +72,16 @@ public class MCPCServerProtocolAdapter extends ClientListener implements ServerP
 
     @Override
     public void sendPacket(Packet packet) {
-        System.out.println("Server Sending Packet: " + packet.getClass().getCanonicalName());
+        DragonProxy.getLogger().debug(sender + "Server Sending Packet: " + packet.getClass().getCanonicalName());
         client.getSession().send(packet);
     }
 
     @Override
     public void handlePacket(Packet packet, ClientConnection identifier) {
-        System.out.println("Server Handling Packet: " + packet.getClass().getCanonicalName());
+        DragonProxy.getLogger().debug(sender + "Server Handling Packet: " + packet.getClass().getCanonicalName());
 
         if (packet.getClass().getCanonicalName().contains("KeepAlive")) {
-            DragonProxy.getLogger().debug("Server Ignoring KeepAlive");
+            DragonProxy.getLogger().debug(sender + "Server Ignoring KeepAlive");
             return;
         }
 
@@ -100,24 +102,24 @@ public class MCPCServerProtocolAdapter extends ClientListener implements ServerP
 
     @Override
     public void connected(ConnectedEvent event) {
-        DragonProxy.getLogger().info("Connected to remote server " + event.getSession().getHost());
+        DragonProxy.getLogger().info(sender + "Connected to remote server " + event.getSession().getHost());
     }
 
     @Override
     public void disconnected(DisconnectedEvent event) {
-        DragonProxy.getLogger().info("Disconected " + event.getSession().getLocalAddress() + " from remote server " + event.getSession().getHost() + " for " + event.getReason());
+        DragonProxy.getLogger().info(sender + "Disconected " + event.getSession().getLocalAddress() + " from remote server " + event.getSession().getHost() + " for " + event.getReason());
         event.getCause().printStackTrace();
     }
 
     @Override
     public void disconnecting(DisconnectingEvent event) {
-        DragonProxy.getLogger().info("Disconecting " + event.getSession().getLocalAddress() + " from remote server " + event.getSession().getHost() + " for " + event.getReason());
+        DragonProxy.getLogger().info(sender + "Disconecting " + event.getSession().getLocalAddress() + " from remote server " + event.getSession().getHost() + " for " + event.getReason());
         event.getCause().printStackTrace();
     }
 
     @Override
     public void packetReceived(PacketReceivedEvent event) {
-        DragonProxy.getLogger().info("Received packet from server: " + event.getPacket().getClass().getCanonicalName());
+        DragonProxy.getLogger().info(sender + "Received packet from server: " + event.getPacket().getClass().getCanonicalName());
         if (((MinecraftProtocol) event.getSession().getPacketProtocol()).getSubProtocol() == SubProtocol.GAME || event.getClass().isAssignableFrom(ServerJoinGamePacket.class) || event.getPacket() instanceof LoginSuccessPacket) {
             handlePacket(event.getPacket(), DragonProxy.getSelf().getNetwork().getSessionRegister().getSession(upstream.getSessionID()));
         }
@@ -125,7 +127,7 @@ public class MCPCServerProtocolAdapter extends ClientListener implements ServerP
 
     @Override
     public void packetSent(PacketSentEvent event) {
-        DragonProxy.getLogger().info("Sent packet to server: " + event.getPacket().getClass().getCanonicalName());
+        DragonProxy.getLogger().info(sender + "Sent packet to server: " + event.getPacket().getClass().getCanonicalName());
     }
 
     @Override
