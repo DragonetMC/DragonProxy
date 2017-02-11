@@ -25,6 +25,7 @@ import org.spacehq.mc.protocol.MinecraftConstants;
 import org.spacehq.mc.protocol.MinecraftProtocol;
 import org.spacehq.mc.protocol.data.SubProtocol;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
+import org.spacehq.mc.protocol.packet.login.server.LoginSuccessPacket;
 import org.spacehq.packetlib.Client;
 import org.spacehq.packetlib.event.session.ConnectedEvent;
 import org.spacehq.packetlib.event.session.DisconnectedEvent;
@@ -117,7 +118,7 @@ public class MCPCServerProtocolAdapter extends ClientListener implements ServerP
     @Override
     public void packetReceived(PacketReceivedEvent event) {
         DragonProxy.getLogger().info("Received packet from server: " + event.getPacket().getClass().getCanonicalName());
-        if (((MinecraftProtocol) event.getSession().getPacketProtocol()).getSubProtocol() == SubProtocol.GAME || event.getClass().isAssignableFrom(ServerJoinGamePacket.class)) {
+        if (((MinecraftProtocol) event.getSession().getPacketProtocol()).getSubProtocol() == SubProtocol.GAME || event.getClass().isAssignableFrom(ServerJoinGamePacket.class) || event.getPacket() instanceof LoginSuccessPacket) {
             handlePacket(event.getPacket(), DragonProxy.getSelf().getNetwork().getSessionRegister().getSession(upstream.getSessionID()));
         }
     }
