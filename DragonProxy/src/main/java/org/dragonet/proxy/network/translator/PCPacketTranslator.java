@@ -37,7 +37,7 @@ public interface PCPacketTranslator<P extends Packet> {
     			ret[i] = new RakNetPacket(((cn.nukkit.network.protocol.DataPacket) packets[i]).getByteArray());
     		} else {
     			System.err.println("Non-packet object passed to org.dragonet.proxy.network.translator.PCPacketTranslator.fromSulPackets(), aborting");
-    			System.exit(1);
+    			//System.exit(1);
     		}
     	}
     	return ret;

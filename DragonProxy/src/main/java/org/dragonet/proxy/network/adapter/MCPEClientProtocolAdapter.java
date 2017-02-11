@@ -119,7 +119,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
             }
         }*/
 
-        //if (session.getStatus() == ConnectionStatus.CONNECTED) {
+        if (session.getStatus() == ConnectionStatus.CONNECTED) {
             Object[] packets = {new RakNetPacket(packet.buffer())};
             if (session.getDownstreamProtocol().getSupportedPacketType() != getSupportedPacketType()) {
                 packets = PacketTranslatorRegister.translateToPC(session, packet);
@@ -128,9 +128,9 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
             for (Object pack : packets) {
                 session.getDownstreamProtocol().sendPacket(pack);
             }
-        //} else {
-        //    DragonProxy.getLogger().warning(sender + "Ignoring packet from unconnected client " + session.getSessionID());
-        //}
+        } else {
+            DragonProxy.getLogger().warning(sender + "Ignoring packet from unconnected client " + session.getSessionID());
+        }
     }
 
     @Override
@@ -287,7 +287,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
         PlayStatus status = new PlayStatus(); // Required; Tells the client that his connection was accepted or denied
         if (packet.protocol != Versioning.MINECRAFT_PE_PROTOCOL) {
             status.status = (packet.protocol < Versioning.MINECRAFT_PE_PROTOCOL ? PlayStatus.OUTDATED_CLIENT : PlayStatus.OUTDATED_SERVER);
-            sendPacket(PacketTranslatorRegister.preparePacketForSending(packet), session);
+            sendPacket(PacketTranslatorRegister.preparePacketForSending(status), session);
             clientDisconectRequest(session, DragonProxy.getSelf().getLang().get(Lang.MESSAGE_UNSUPPORTED_CLIENT));
             return;
         }
@@ -314,7 +314,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
                 break;*/
             case "offline":
                 // We translate everything we are sent without regard for what it is
-                //minimalClientHandshake(false, session);
+                minimalClientHandshake(false, session);
 
                 DragonProxy.getLogger().debug(sender + "Initially joining [" + DragonProxy.getSelf().getConfig().getDefault_server() + "]... ");
                 session.connectToServer(DragonProxy.getSelf().getConfig().getRemote_servers().get(DragonProxy.getSelf().getConfig().getDefault_server()));
@@ -417,7 +417,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
     private void minimalClientHandshake(boolean errorMode, ClientConnection session) {
         PlayStatus status = new PlayStatus(); // Required; TODO: Find out why
         status.status = PlayStatus.OK;
-        //sendPacket(new RakNetPacket(prep(status.encode())), session);
+        sendPacket(PacketTranslatorRegister.preparePacketForSending(status), session);
         //sendPacket(status, session.getSessionID());
 
         //sendPacket(new RakNetPacket(prep(new ResourcePacksInfo(false, new sul.protocol.pocket100.types.Pack[0], new sul.protocol.pocket100.types.Pack[0]).encode())), session);
@@ -448,7 +448,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
         startGamePacket.generator = 1; //0 old, 1 infinite, 2 flat
         startGamePacket.position = new Tuples.FloatXYZ();
         startGamePacket.spawnPosition = new Tuples.IntXYZ();
-        //sendPacket(new RakNetPacket(prep(startGamePacket.encode())), session);
+        sendPacket(PacketTranslatorRegister.preparePacketForSending(startGamePacket), session);
 
         SetSpawnPosition pkSpawn = new SetSpawnPosition();
         pkSpawn.position = new BlockPosition();
@@ -526,9 +526,9 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
         pkResp.position = new Tuples.FloatXYZ();
         sendPacket(new RakNetPacket(pkResp.encode()), session);
          */
-        /*PlayStatus pkStat = new PlayStatus(); //Required; Spawns the client in the world and closes the loading screen
+        PlayStatus pkStat = new PlayStatus(); //Required; Spawns the client in the world and closes the loading screen
         pkStat.status = PlayStatus.SPAWNED;
-        sendPacket(new RakNetPacket(prep(pkStat.encode())), session);*/
+        sendPacket(PacketTranslatorRegister.preparePacketForSending(pkStat), session);
     }
 
     /*private void sendFlatChunks(int playerX, int playerZ, int circleRadius, boolean sendAir, ClientConnection session) {
