@@ -30,16 +30,21 @@ public class PCUpdateSignPacketTranslator implements PCPacketTranslator<ServerUp
     @Override
     public RakNetPacket[] translate(ClientConnection session, ServerUpdateTileEntityPacket packet) {
         CompoundTag root = new CompoundTag();
-        root.putString("id", "Sign");
-        root.putInt("x", packet.getPosition().getX());
-        root.putInt("y", packet.getPosition().getY());
-        root.putInt("z", packet.getPosition().getZ());
+        try {
         root.putString("Text1", packet.getNBT().get("Text1").toString());
         root.putString("Text2", packet.getNBT().get("Text2").toString());
         root.putString("Text3", packet.getNBT().get("Text3").toString());
         root.putString("Text4", packet.getNBT().get("Text4").toString());
-
-
+        } catch (NullPointerException e)	{
+        	//TE is not a sign, abort
+        	return new RakNetPacket[0];
+        }
+        
+        root.putString("id", "Sign");
+        root.putInt("x", packet.getPosition().getX());
+        root.putInt("y", packet.getPosition().getY());
+        root.putInt("z", packet.getPosition().getZ());
+        
         BlockEntityData pkBlockData = new BlockEntityData();
         pkBlockData.position = new BlockPosition(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
         try {

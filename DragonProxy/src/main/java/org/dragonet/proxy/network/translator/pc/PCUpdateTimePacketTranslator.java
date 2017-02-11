@@ -16,16 +16,16 @@ import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerUpdateTimePacket;
 
+import cn.nukkit.network.protocol.SetTimePacket;
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.protocol.pocket100.play.SetTime;
 
 public class PCUpdateTimePacketTranslator implements PCPacketTranslator<ServerUpdateTimePacket> {
 
     @Override
     public RakNetPacket[] translate(ClientConnection session, ServerUpdateTimePacket packet) {
-        SetTime pk = new SetTime();
+        SetTimePacket pk = new SetTimePacket();
         pk.time = (int) packet.getTime();
-        pk.daylightCycle = true;
+        pk.started = true;
         
         return fromSulPackets(pk);
     }

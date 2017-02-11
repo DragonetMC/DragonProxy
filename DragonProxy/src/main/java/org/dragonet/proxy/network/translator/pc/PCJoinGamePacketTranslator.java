@@ -18,6 +18,7 @@ import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.data.game.entity.player.GameMode;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 
+import cn.nukkit.network.protocol.StartGamePacket;
 import net.marfgamer.jraknet.RakNetPacket;
 import sul.metadata.Pocket100;
 import sul.protocol.pocket100.play.PlayStatus;
@@ -44,27 +45,28 @@ public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoin
         //packet.getMaxPlayers(); Unsupported by Minecraft PE as of 1.0.0
         //packet.getReducedDebugInfo(); Unsupported by Minecraft PE as of 1.0.0
         
-        StartGame startGamePacket = new StartGame(); // Required; Makes the client switch to the "generating world" screen
-        startGamePacket.entityId = 0;
-        startGamePacket.runtimeId = packet.getEntityId();
-        startGamePacket.position = new Tuples.FloatXYZ(0.0f, 0.0f, 0.0f);
-        startGamePacket.yaw = 0.0f;
-        startGamePacket.pitch = 0.0f;
+        StartGamePacket startGamePacket = new StartGamePacket(); // Required; Makes the client switch to the "generating world" screen
+        startGamePacket.entityUniqueId = 0;
+        startGamePacket.entityRuntimeId = packet.getEntityId();
+        startGamePacket.x = 0.0f;
+        startGamePacket.y = 0.0f;
+        startGamePacket.z = 0.0f;
         startGamePacket.seed = -1;
         startGamePacket.dimension = (byte) packet.getDimension();
         startGamePacket.generator = packet.getWorldType().ordinal(); //0 old, 1 infinite, 2 flat
-        startGamePacket.worldGamemode = packet.getGameMode().ordinal();
+        startGamePacket.gamemode = packet.getGameMode().ordinal();
         startGamePacket.difficulty = packet.getDifficulty().ordinal();
-        startGamePacket.spawnPosition = new Tuples.IntXYZ(0, 256, 0);
-        startGamePacket.loadedInCreative = packet.getGameMode().ordinal() == GameMode.CREATIVE.ordinal() ? true : false;
-        startGamePacket.time = 0;
-        startGamePacket.edition = (byte) 0;
+        startGamePacket.spawnX = 0;
+        startGamePacket.spawnY = 256;
+        startGamePacket.spawnZ = 0;
+        startGamePacket.dayCycleStopTime = -1;
+        startGamePacket.eduMode = false;
         startGamePacket.rainLevel = 0.0f;
-        startGamePacket.lightingLevel = 0.0f;
-        startGamePacket.cheatsEnabled = true;
-        startGamePacket.textureRequired = false;
-        startGamePacket.levelId = "";
-        startGamePacket.worldName = ""; // Must not be null or a NullPointerException will occur
+        startGamePacket.lightningLevel = 0.0f;
+        startGamePacket.commandsEnabled = true;
+        startGamePacket.isTexturePacksRequired = false;
+        startGamePacket.levelId = "d29ybGQ="; //"world" in base64
+        startGamePacket.worldName = "world"; // Must not be null or a NullPointerException will occur
         
         SetEntityData pkEntityData = new SetEntityData();
         pkEntityData.entityId = 0;

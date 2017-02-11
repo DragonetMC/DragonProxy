@@ -18,8 +18,9 @@ import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.data.MagicValues;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityEffectPacket;
+
+import cn.nukkit.network.protocol.MobEffectPacket;
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.protocol.pocket100.play.MobEffect;
 
 public class PCEntityEffectPacketTranslator implements PCPacketTranslator<ServerEntityEffectPacket> {
 
@@ -27,20 +28,20 @@ public class PCEntityEffectPacketTranslator implements PCPacketTranslator<Server
     public RakNetPacket[] translate(ClientConnection session, ServerEntityEffectPacket packet) {
         CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
         if (entity == null) {
-            return null;
+            return new RakNetPacket[0];
         }
         int effectId = MagicValues.value(Integer.class, packet.getEffect());
 
-        MobEffect eff = new MobEffect();
-        eff.entityId = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
-        eff.effect = effectId;
-        if (eff.effect == -1) {// Is this the correct way to do this?
-            return null; //Not supported
+        MobEffectPacket eff = new MobEffectPacket();
+        eff.eid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
+        eff.effectId = effectId;
+        if (eff.effectId == -1) {// Is this the correct way to do this?
+            return new RakNetPacket[0]; //Not supported
         }
         if (entity.effects.contains(effectId)) {
-            eff.eventId = MobEffect.MODIFY;
+            eff.eventId = MobEffectPacket.EVENT_MODIFY;
         } else {
-            eff.eventId = MobEffect.ADD;
+            eff.eventId = MobEffectPacket.EVENT_ADD;
             entity.effects.add(effectId);
         }
         eff.amplifier = packet.getAmplifier();

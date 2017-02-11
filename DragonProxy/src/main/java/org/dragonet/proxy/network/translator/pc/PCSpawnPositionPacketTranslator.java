@@ -21,11 +21,11 @@ import org.spacehq.mc.protocol.data.game.entity.player.GameMode;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerSpawnPositionPacket;
 
+import cn.nukkit.network.protocol.StartGamePacket;
 import net.marfgamer.jraknet.RakNetPacket;
 import sul.protocol.pocket100.play.AdventureSettings;
 import sul.protocol.pocket100.play.MovePlayer;
 import sul.protocol.pocket100.play.PlayStatus;
-import sul.protocol.pocket100.play.StartGame;
 import sul.utils.Tuples;
 
 public class PCSpawnPositionPacketTranslator implements PCPacketTranslator<ServerSpawnPositionPacket> {
@@ -51,14 +51,23 @@ public class PCSpawnPositionPacketTranslator implements PCPacketTranslator<Serve
             return null;
         }
         ServerJoinGamePacket restored = (ServerJoinGamePacket) session.getDataCache().remove(CacheKey.PACKET_JOIN_GAME_PACKET);
-        StartGame ret = new StartGame();
-        ret.runtimeId = 0; //Use EID 0 for eaisier management
+        StartGamePacket ret = new StartGamePacket();
+        ret.entityUniqueId = 0; //Use EID 0 for eaisier management
+        ret.entityRuntimeId = 0;
+        ret.x = packet.getPosition().getX();
+        ret.y = packet.getPosition().getY();
+        ret.z = packet.getPosition().getZ();
         ret.dimension = (byte) (restored.getDimension() & 0xFF);
         ret.seed = 0;
         ret.generator = 1;
-        ret.worldGamemode = restored.getGameMode() == GameMode.CREATIVE ? 1 : 0;
-        ret.spawnPosition = new Tuples.IntXYZ(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
-        ret.position = new Tuples.FloatXYZ(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
+        ret.gamemode = restored.getGameMode() == GameMode.CREATIVE ? 1 : 0;
+        ret.spawnX = packet.getPosition().getX();
+        ret.spawnY = packet.getPosition().getY();
+        ret.spawnZ = packet.getPosition().getZ();
+        ret.dayCycleStopTime = -1;
+        ret.rainLevel = 0.0f;
+        ret.lightningLevel = 0.0f;
+        ret.commandsEnabled = false;
         ret.worldName = "";
 
         AdventureSettings adv = new AdventureSettings();

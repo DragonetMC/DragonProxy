@@ -43,6 +43,7 @@ public class PCSpawnMobPacketTranslator implements PCPacketTranslator<ServerSpaw
             pk.yaw = e.yaw;
             pk.attributes = new Attribute[0];
             pk.metadata = new Pocket100();
+            pk.links = new long[0];
             
             return fromSulPackets(pk);
         } catch (Exception e) {

@@ -17,9 +17,8 @@ import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityPositionPacket;
 
+import cn.nukkit.network.protocol.MoveEntityPacket;
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.protocol.pocket100.play.MoveEntity;
-import sul.utils.Tuples;
 
 public class PCEntityPositionPacketTranslator implements PCPacketTranslator<ServerEntityPositionPacket> {
 
@@ -32,12 +31,14 @@ public class PCEntityPositionPacketTranslator implements PCPacketTranslator<Serv
 
         e.relativeMove(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ());
 
-        MoveEntity pk = new MoveEntity();
-        pk.entityId = e.eid;
+        MoveEntityPacket pk = new MoveEntityPacket();
+        pk.eid = e.eid;
         pk.yaw = (byte) e.yaw;
         pk.headYaw = (byte) e.yaw;
         pk.pitch = (byte) e.pitch;
-        pk.position = new Tuples.FloatXYZ((float) e.x, (float) (e.player ? e.y + 1.62f : e.y), (float) e.z);
+        pk.x = (float) e.x;  
+        pk.y = (float) (e.player ? e.y + 1.62f : e.y);
+        pk.z = (float) e.z;
         
         return fromSulPackets(pk);
     }

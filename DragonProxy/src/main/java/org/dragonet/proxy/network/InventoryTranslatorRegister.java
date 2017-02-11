@@ -48,12 +48,22 @@ public final class InventoryTranslatorRegister {
         for (int i = 9; i < win.slots.length; i++) {
             //TODO: Add NBT support
             if (win.slots[i] != null) {
-            	Item item = PEInventorySlot.fromItemStack(win.slots[i]);
-                ret.slots[i - 9] = new Slot(item.id, item.meta, new byte[0]);
+            	try {
+            		Item item = PEInventorySlot.fromItemStack(win.slots[i]);
+                	ret.slots[i - 9] = new Slot(item.id, item.meta, new byte[0]);
+            	} catch (NullPointerException e)	{
+            		ret.slots[i - 9] = new Slot(0, 0, new byte[0]);
+            	}
             }
         }
         for (int i = 36; i < 45; i++) {
             ret.slots[i] = ret.slots[i - 9];    //Duplicate
+        }
+        
+        for (int i = 0; i < 45; i++)	{
+        	if (ret.slots[i] == null)	{
+        		ret.slots[i] = new Slot(0, 0, new byte[0]);
+        	}
         }
         ret.hotbar = HOTBAR_CONSTANTS;
 
