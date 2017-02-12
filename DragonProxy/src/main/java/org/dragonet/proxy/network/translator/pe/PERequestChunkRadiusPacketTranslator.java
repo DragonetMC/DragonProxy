@@ -5,8 +5,8 @@ import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import org.spacehq.packetlib.packet.Packet;
 
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.protocol.pocket100.play.ChunkRadiusUpdated;
-import sul.protocol.pocket100.play.RequestChunkRadius;
+import sul.protocol.pocket101.play.ChunkRadiusUpdated;
+import sul.protocol.pocket101.play.RequestChunkRadius;
 
 public class PERequestChunkRadiusPacketTranslator implements PEPacketTranslator<RequestChunkRadius> {
 

@@ -6,9 +6,9 @@ import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.login.server.LoginSuccessPacket;
 
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.protocol.pocket100.play.PlayStatus;
-import sul.protocol.pocket100.play.ResourcePacksInfo;
-import sul.protocol.pocket100.types.Pack;
+import sul.protocol.pocket101.play.PlayStatus;
+import sul.protocol.pocket101.play.ResourcePacksInfo;
+import sul.protocol.pocket101.types.Pack;
 
 public class PCLoginSucessPacketTranslator implements PCPacketTranslator<LoginSuccessPacket> {
 

@@ -18,7 +18,7 @@ import org.spacehq.mc.protocol.data.game.entity.player.InteractAction;
 import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerInteractEntityPacket;
 import org.spacehq.packetlib.packet.Packet;
 
-import sul.protocol.pocket100.play.Interact;
+import sul.protocol.pocket101.play.Interact;
 
 public class PEInteractPacketTranslator implements PEPacketTranslator<Interact> {
 

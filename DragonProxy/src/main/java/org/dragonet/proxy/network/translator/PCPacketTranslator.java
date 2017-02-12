@@ -14,6 +14,7 @@ package org.dragonet.proxy.network.translator;
 
 import net.marfgamer.jraknet.RakNetPacket;
 import org.dragonet.proxy.network.ClientConnection;
+import org.dragonet.proxy.network.PacketTranslatorRegister;
 import org.spacehq.packetlib.packet.Packet;
 
 public interface PCPacketTranslator<P extends Packet> {
@@ -31,7 +32,7 @@ public interface PCPacketTranslator<P extends Packet> {
     	RakNetPacket[] ret = new RakNetPacket[packets.length];
     	for (int i = 0; i < packets.length; i++)	{
     		if (packets[i] instanceof sul.utils.Packet)	{
-    			ret[i] = new RakNetPacket(((sul.utils.Packet) packets[i]).encode());
+    			ret[i] = PacketTranslatorRegister.preparePacketForSending((sul.utils.Packet) packets[i]);
     		} else if (packets[i] instanceof cn.nukkit.network.protocol.DataPacket)	{
     			((cn.nukkit.network.protocol.DataPacket) packets[i]).encode();
     			ret[i] = new RakNetPacket(((cn.nukkit.network.protocol.DataPacket) packets[i]).getByteArray());

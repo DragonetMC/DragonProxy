@@ -23,7 +23,7 @@ import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerChangeHel
 import org.spacehq.mc.protocol.packet.ingame.client.window.ClientWindowActionPacket;
 import org.spacehq.packetlib.packet.Packet;
 
-import sul.protocol.pocket100.play.MobEquipment;
+import sul.protocol.pocket101.play.MobEquipment;
 
 public class PEPlayerEquipmentPacketTranslator implements PEPacketTranslator<MobEquipment> {
 

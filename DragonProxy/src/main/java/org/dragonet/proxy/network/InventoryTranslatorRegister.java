@@ -29,8 +29,8 @@ import org.spacehq.packetlib.packet.Packet;
 
 import cn.nukkit.inventory.InventoryType;
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.protocol.pocket100.play.ContainerSetContent;
-import sul.protocol.pocket100.types.Slot;
+import sul.protocol.pocket101.play.ContainerSetContent;
+import sul.protocol.pocket101.types.Slot;
 import sul.utils.Item;
 
 import org.dragonet.inventory.PEInventorySlot;

@@ -10,7 +10,7 @@ import org.spacehq.mc.protocol.data.game.chunk.Chunk;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
 
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.protocol.pocket100.play.FullChunkData;
+import sul.protocol.pocket101.play.FullChunkData;
 import sul.utils.Tuples;
 
 public class PCChunkDataTranslator implements PCPacketTranslator<ServerChunkDataPacket> {

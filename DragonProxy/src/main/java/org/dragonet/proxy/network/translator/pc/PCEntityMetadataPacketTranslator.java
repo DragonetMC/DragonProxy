@@ -21,8 +21,8 @@ import org.spacehq.mc.protocol.data.game.entity.type.object.ObjectType;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityMetadataPacket;
 
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.protocol.pocket100.play.AddItemEntity;
-import sul.protocol.pocket100.types.Slot;
+import sul.protocol.pocket101.play.AddItemEntity;
+import sul.protocol.pocket101.types.Slot;
 import sul.utils.Item;
 import sul.utils.Tuples;
 

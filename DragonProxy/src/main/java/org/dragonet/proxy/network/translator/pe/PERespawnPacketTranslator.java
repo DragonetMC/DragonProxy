@@ -6,7 +6,7 @@ import org.spacehq.mc.protocol.data.game.ClientRequest;
 import org.spacehq.mc.protocol.packet.ingame.client.ClientRequestPacket;
 import org.spacehq.packetlib.packet.Packet;
 
-import sul.protocol.pocket100.play.Respawn;
+import sul.protocol.pocket101.play.Respawn;
 
 public class PERespawnPacketTranslator implements PEPacketTranslator<Respawn> {
 

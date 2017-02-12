@@ -18,7 +18,7 @@ import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
 import org.spacehq.packetlib.packet.Packet;
 
-import sul.protocol.pocket100.play.MovePlayer;
+import sul.protocol.pocket101.play.MovePlayer;
 
 public class PEMovePlayerPacketTranslator implements PEPacketTranslator<MovePlayer> {
     

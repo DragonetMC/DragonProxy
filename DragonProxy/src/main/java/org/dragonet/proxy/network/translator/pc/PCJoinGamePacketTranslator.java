@@ -20,13 +20,13 @@ import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 
 import cn.nukkit.network.protocol.StartGamePacket;
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.metadata.Pocket100;
-import sul.protocol.pocket100.play.PlayStatus;
-import sul.protocol.pocket100.play.Respawn;
-import sul.protocol.pocket100.play.SetEntityData;
-import sul.protocol.pocket100.play.SetSpawnPosition;
-import sul.protocol.pocket100.play.StartGame;
-import sul.protocol.pocket100.types.BlockPosition;
+import sul.metadata.Pocket101;
+import sul.protocol.pocket101.play.PlayStatus;
+import sul.protocol.pocket101.play.Respawn;
+import sul.protocol.pocket101.play.SetEntityData;
+import sul.protocol.pocket101.play.SetSpawnPosition;
+import sul.protocol.pocket101.play.StartGame;
+import sul.protocol.pocket101.types.BlockPosition;
 import sul.utils.Tuples;
 
 public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoinGamePacket> {
@@ -68,9 +68,9 @@ public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoin
         startGamePacket.levelId = "d29ybGQ="; //"world" in base64
         startGamePacket.worldName = "world"; // Must not be null or a NullPointerException will occur
         
-        SetEntityData pkEntityData = new SetEntityData();
+        /*SetEntityData pkEntityData = new SetEntityData();
         pkEntityData.entityId = 0;
-        pkEntityData.metadata = new Pocket100();
+        pkEntityData.metadata = new Pocket101();*/
         
         Respawn pkResp = new Respawn();
         pkResp.position = new Tuples.FloatXYZ(0.0f, 72f, 0.0f);
@@ -81,7 +81,7 @@ public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoin
         PlayStatus pkStat = new PlayStatus();
         pkStat.status = PlayStatus.SPAWNED;
         
-        return fromSulPackets(startGamePacket, pkEntityData, pkResp, pkSpawn, pkStat);
+        return fromSulPackets(startGamePacket, /*pkEntityData,*/ pkResp, pkSpawn, pkStat);
     }
 
 }

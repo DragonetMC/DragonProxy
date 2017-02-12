@@ -26,7 +26,7 @@ import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.RemoteServer;
 import lombok.Setter;
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.protocol.pocket100.play.Text;
+import sul.protocol.pocket101.play.Text;
 
 import org.dragonet.proxy.network.adapter.ClientProtocolAdapter;
 import org.dragonet.proxy.network.adapter.ServerProtocolAdapter;

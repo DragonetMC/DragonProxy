@@ -20,7 +20,7 @@ import org.spacehq.mc.protocol.data.MagicValues;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityRemoveEffectPacket;
 
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.protocol.pocket100.play.MobEffect;
+import sul.protocol.pocket101.play.MobEffect;
 
 public class PCEntityRemoveEffectPacketTranslator implements PCPacketTranslator<ServerEntityRemoveEffectPacket> {
 

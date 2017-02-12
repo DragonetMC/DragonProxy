@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.Getter;
-import sul.protocol.pocket100.play.Login;
-import sul.protocol.pocket100.types.Skin;
+import sul.protocol.pocket101.play.Login;
+import sul.protocol.pocket101.types.Skin;
 import sul.utils.Buffer;
 
 /**

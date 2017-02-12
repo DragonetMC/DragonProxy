@@ -18,7 +18,7 @@ import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.protocol.pocket100.play.MovePlayer;
+import sul.protocol.pocket101.play.MovePlayer;
 import sul.utils.Tuples;
 
 public class PCPlayerPositionRotationPacketTranslator implements PCPacketTranslator<ServerPlayerPositionRotationPacket> {

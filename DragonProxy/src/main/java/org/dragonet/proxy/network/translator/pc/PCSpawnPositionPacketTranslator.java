@@ -23,9 +23,9 @@ import org.spacehq.mc.protocol.packet.ingame.server.world.ServerSpawnPositionPac
 
 import cn.nukkit.network.protocol.StartGamePacket;
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.protocol.pocket100.play.AdventureSettings;
-import sul.protocol.pocket100.play.MovePlayer;
-import sul.protocol.pocket100.play.PlayStatus;
+import sul.protocol.pocket101.play.AdventureSettings;
+import sul.protocol.pocket101.play.MovePlayer;
+import sul.protocol.pocket101.play.PlayStatus;
 import sul.utils.Tuples;
 
 public class PCSpawnPositionPacketTranslator implements PCPacketTranslator<ServerSpawnPositionPacket> {

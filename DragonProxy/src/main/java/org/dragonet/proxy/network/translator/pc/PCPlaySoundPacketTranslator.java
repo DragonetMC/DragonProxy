@@ -21,7 +21,7 @@ import org.spacehq.mc.protocol.data.game.world.sound.Sound;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerPlaySoundPacket;
 
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.protocol.pocket100.play.LevelEvent;
+import sul.protocol.pocket101.play.LevelEvent;
 import sul.utils.Tuples;
 
 public class PCPlaySoundPacketTranslator implements PCPacketTranslator<ServerPlaySoundPacket> {

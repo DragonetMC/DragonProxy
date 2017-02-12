@@ -22,8 +22,8 @@ import org.spacehq.mc.protocol.packet.ingame.server.world.ServerUpdateTileEntity
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.protocol.pocket100.play.BlockEntityData;
-import sul.protocol.pocket100.types.BlockPosition;
+import sul.protocol.pocket101.play.BlockEntityData;
+import sul.protocol.pocket101.types.BlockPosition;
 
 public class PCUpdateSignPacketTranslator implements PCPacketTranslator<ServerUpdateTileEntityPacket> {
 

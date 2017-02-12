@@ -22,7 +22,7 @@ import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerPlaceBloc
 import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerSwingArmPacket;
 import org.spacehq.packetlib.packet.Packet;
 
-import sul.protocol.pocket100.play.UseItem;
+import sul.protocol.pocket101.play.UseItem;
 
 public class PEUseItemPacketTranslator implements PEPacketTranslator<UseItem> {
 

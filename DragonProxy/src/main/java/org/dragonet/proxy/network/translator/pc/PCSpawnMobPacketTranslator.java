@@ -18,9 +18,9 @@ import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
 
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.metadata.Pocket100;
-import sul.protocol.pocket100.play.AddEntity;
-import sul.protocol.pocket100.types.Attribute;
+import sul.metadata.Pocket101;
+import sul.protocol.pocket101.play.AddEntity;
+import sul.protocol.pocket101.types.Attribute;
 import sul.utils.Tuples;
 
 public class PCSpawnMobPacketTranslator implements PCPacketTranslator<ServerSpawnMobPacket> {
@@ -42,7 +42,7 @@ public class PCSpawnMobPacketTranslator implements PCPacketTranslator<ServerSpaw
             pk.pitch = e.pitch;
             pk.yaw = e.yaw;
             pk.attributes = new Attribute[0];
-            pk.metadata = new Pocket100();
+            pk.metadata = new Pocket101();
             pk.links = new long[0];
             
             return fromSulPackets(pk);

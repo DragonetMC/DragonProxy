@@ -18,7 +18,7 @@ import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityVelocityPacket;
 
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.protocol.pocket100.play.SetEntityMotion;
+import sul.protocol.pocket101.play.SetEntityMotion;
 import sul.utils.Tuples;
 
 public class PCEntityVelocityPacketTranslator implements PCPacketTranslator<ServerEntityVelocityPacket> {

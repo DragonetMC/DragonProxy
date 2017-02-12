@@ -17,8 +17,8 @@ import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
 
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.protocol.pocket100.play.Respawn;
-import sul.protocol.pocket100.play.SetHealth;
+import sul.protocol.pocket101.play.Respawn;
+import sul.protocol.pocket101.play.SetHealth;
 import sul.utils.Tuples;
 
 public class PCUpdateHealthPacketTranslator implements PCPacketTranslator<ServerPlayerHealthPacket> {

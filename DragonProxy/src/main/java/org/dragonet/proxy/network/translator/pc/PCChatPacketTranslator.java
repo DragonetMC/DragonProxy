@@ -17,7 +17,7 @@ import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerChatPacket;
 
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.protocol.pocket100.play.Text;
+import sul.protocol.pocket101.play.Text;
 import sul.utils.Packet;
 
 public class PCChatPacketTranslator implements PCPacketTranslator<ServerChatPacket> {

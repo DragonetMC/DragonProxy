@@ -17,8 +17,8 @@ import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.data.game.entity.player.GameMode;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.protocol.pocket100.play.LevelEvent;
-import sul.protocol.pocket100.play.SetPlayerGametype;
+import sul.protocol.pocket101.play.LevelEvent;
+import sul.protocol.pocket101.play.SetPlayerGametype;
 import sul.utils.Tuples;
 
 public class PCNotifyClientPacketTranslator implements PCPacketTranslator<ServerNotifyClientPacket> {

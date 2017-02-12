@@ -18,7 +18,7 @@ import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import org.spacehq.packetlib.packet.Packet;
 
-import sul.protocol.pocket100.play.ContainerClose;
+import sul.protocol.pocket101.play.ContainerClose;
 
 public class PEWindowClosePacketTranslator implements PEPacketTranslator<ContainerClose> {
 

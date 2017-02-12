@@ -12,9 +12,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.AddPlayerPacket;
 import cn.nukkit.network.protocol.PlayerListPacket;
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.metadata.Pocket100;
-import sul.protocol.pocket100.play.AddPlayer;
-import sul.protocol.pocket100.types.Slot;
+import sul.metadata.Pocket101;
+import sul.protocol.pocket101.play.AddPlayer;
+import sul.protocol.pocket101.types.Slot;
 import sul.utils.Tuples;
 
 public class PCSpawnPlayerPacketTranslator implements PCPacketTranslator<ServerSpawnPlayerPacket> {

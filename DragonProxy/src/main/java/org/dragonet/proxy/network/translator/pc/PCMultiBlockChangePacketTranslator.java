@@ -18,8 +18,8 @@ import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerMultiBlockChangePacket;
 
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.protocol.pocket100.play.UpdateBlock;
-import sul.protocol.pocket100.types.BlockPosition;
+import sul.protocol.pocket101.play.UpdateBlock;
+import sul.protocol.pocket101.types.BlockPosition;
 
 public class PCMultiBlockChangePacketTranslator implements PCPacketTranslator<ServerMultiBlockChangePacket> {
 

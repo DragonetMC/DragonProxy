@@ -51,6 +51,7 @@ import org.dragonet.proxy.network.translator.pc.PCUpdateHealthPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCUpdateSignPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCUpdateTimePacketTranslator;
 import org.dragonet.proxy.network.translator.pc.PCWindowItemsTranslator;
+import org.dragonet.proxy.network.translator.pe.PEChatPacketTranslator;
 import org.dragonet.proxy.network.translator.pe.PEInteractPacketTranslator;
 import org.dragonet.proxy.network.translator.pe.PEMovePlayerPacketTranslator;
 import org.dragonet.proxy.network.translator.pe.PEPlayerActionPacketTranslator;
@@ -72,13 +73,13 @@ import org.spacehq.mc.protocol.packet.ingame.server.window.*;
 import org.spacehq.mc.protocol.packet.ingame.server.world.*;
 import org.spacehq.mc.protocol.packet.login.server.LoginSuccessPacket;
 import org.spacehq.packetlib.packet.Packet;
-import sul.protocol.pocket100.play.*;
+import sul.protocol.pocket101.play.*;
+import sul.protocol.pocket101.play.Text.Chat;
 
 public final class PacketTranslatorRegister {
 
     private final static Map<Class<? extends Packet>, PCPacketTranslator> PC_TO_PE_TRANSLATOR = new HashMap<>();
     private final static Map<Class<? extends sul.utils.Packet>, PEPacketTranslator> PE_TO_PC_TRANSLATOR = new HashMap<>();
-    private final static Map<Byte, Class<? extends sul.utils.Packet>> pePacketIDMap = new HashMap<>();
 
     /**
      * PC to PE
@@ -115,13 +116,13 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ClientVehicleMovePacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ClientWindowActionPacket.class, new IgnorePacketTranslator());
         
-        PC_TO_PE_TRANSLATOR.put(ServerBlockBreakAnimPacket.class, new IgnorePacketTranslator());
+        /*PC_TO_PE_TRANSLATOR.put(ServerBlockBreakAnimPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerBlockChangePacket.class, new PCBlockChangePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerBlockValuePacket.class, new IgnorePacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerBossBarPacket.class, new IgnorePacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerBossBarPacket.class, new IgnorePacketTranslator());*/
         PC_TO_PE_TRANSLATOR.put(ServerChatPacket.class, new PCChatPacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerChunkDataPacket.class, new PCChunkDataTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerCloseWindowPacket.class, new IgnorePacketTranslator());
+        //PC_TO_PE_TRANSLATOR.put(ServerChunkDataPacket.class, new PCChunkDataTranslator());
+        /*PC_TO_PE_TRANSLATOR.put(ServerCloseWindowPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerCombatPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerConfirmTransactionPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerDifficultyPacket.class, new IgnorePacketTranslator());
@@ -145,11 +146,11 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerEntityStatusPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityTeleportPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityVelocityPacket.class, new PCEntityVelocityPacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerExplosionPacket.class, new IgnorePacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerExplosionPacket.class, new IgnorePacketTranslator());*/
         PC_TO_PE_TRANSLATOR.put(ServerJoinGamePacket.class, new PCJoinGamePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerKeepAlivePacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(LoginSuccessPacket.class, new PCLoginSucessPacketTranslator()); //Don't know why this wasn't here, adding
-        PC_TO_PE_TRANSLATOR.put(ServerMapDataPacket.class, new IgnorePacketTranslator());
+        /*PC_TO_PE_TRANSLATOR.put(ServerMapDataPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerMultiBlockChangePacket.class, new PCMultiBlockChangePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerNotifyClientPacket.class, new PCNotifyClientPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerOpenTileEntityEditorPacket.class, new IgnorePacketTranslator());
@@ -192,7 +193,7 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerVehicleMovePacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerWindowItemsPacket.class, new PCWindowItemsTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerWindowPropertyPacket.class, new IgnorePacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerWorldBorderPacket.class, new IgnorePacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerWorldBorderPacket.class, new IgnorePacketTranslator());*/
     }
 
     /**
@@ -271,26 +272,10 @@ public final class PacketTranslatorRegister {
         PE_TO_PC_TRANSLATOR.put(StartGame.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(TakeItemEntity.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(TelemetryEvent.class, new IgnorePacketTranslator());
-        PE_TO_PC_TRANSLATOR.put(Text.class, new IgnorePacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(Chat.class, new PEChatPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(UpdateAttributes.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(UpdateBlock.class, new IgnorePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(UseItem.class, new PEUseItemPacketTranslator());
-    }
-
-    static {
-        for (Class<? extends sul.utils.Packet> clazz : PE_TO_PC_TRANSLATOR.keySet()) {
-            try {
-                Field field = clazz.getDeclaredField("ID");
-                byte val = 0;
-                Byte ID = (Byte) field.get(val);
-                if (ID != null) {
-                    pePacketIDMap.put(ID, clazz);
-                }
-            } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
-                ex.printStackTrace();
-            }
-        }
-
     }
 
     public static RakNetPacket[] translateToPE(ClientConnection session, Packet packet) {
@@ -304,7 +289,7 @@ public final class PacketTranslatorRegister {
             return new RakNetPacket[0];
         }
         try {
-            DragonProxy.getLogger().info(">>> " + packet.getClass().getName());
+            DragonProxy.getLogger().info("[PC to PE] >>> " + packet.getClass().getName());
             return target.translate(session, packet);
         } catch (Exception e) {
             e.printStackTrace();
@@ -317,7 +302,11 @@ public final class PacketTranslatorRegister {
             return new Packet[0];
         }
 
-        Class<? extends sul.utils.Packet> clazz = pePacketIDMap.get((byte) (packet.getId() & 0xFF));
+        if(packet.getId() == Batch.ID){
+            DragonProxy.getLogger().warning("[PE to PC] [Translator] Not decoding BatchPacket");
+        }
+        
+        Class<? extends sul.utils.Packet> clazz = sul.protocol.pocket101.Packets.PLAY.get((packet.getId() & 0xFF));
         if (clazz == null) {
             DragonProxy.getLogger().warning("[PE to PC] No ID to packet mapping found for : " + (packet.getId() & 0xFF));
             return new Packet[0];
@@ -330,7 +319,7 @@ public final class PacketTranslatorRegister {
         }
 
         try {
-            DragonProxy.getLogger().info("<<< " + packet.getClass().getName());
+            DragonProxy.getLogger().info("[PE to PC] <<< " + packet.getClass().getName());
             sul.utils.Packet pack = clazz.getConstructor().newInstance();
             return target.translate(session, pack);
         } catch (Exception e) {
@@ -348,6 +337,7 @@ public final class PacketTranslatorRegister {
     }
     
     public static RakNetPacket preparePacketForSending(sul.utils.Packet packet) {
+        DragonProxy.getLogger().debug("[Translator] Preping PE packet: " + packet.getClass().getCanonicalName());
         return new RakNetPacket(prep(packet.encode()));
     }
 
