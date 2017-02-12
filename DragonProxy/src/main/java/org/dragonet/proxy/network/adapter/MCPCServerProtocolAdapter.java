@@ -119,7 +119,7 @@ public class MCPCServerProtocolAdapter extends ClientListener implements ServerP
 
     @Override
     public void packetReceived(PacketReceivedEvent event) {
-        DragonProxy.getLogger().info(sender + "Received packet from server: " + event.getPacket().getClass().getCanonicalName());
+        DragonProxy.getLogger().debug(sender + "Received packet from server: " + event.getPacket().getClass().getCanonicalName());
         if (((MinecraftProtocol) event.getSession().getPacketProtocol()).getSubProtocol() == SubProtocol.GAME || event.getClass().isAssignableFrom(ServerJoinGamePacket.class) || event.getPacket() instanceof LoginSuccessPacket) {
             handlePacket(event.getPacket(), DragonProxy.getSelf().getNetwork().getSessionRegister().getSession(upstream.getSessionID()));
         }
@@ -127,7 +127,7 @@ public class MCPCServerProtocolAdapter extends ClientListener implements ServerP
 
     @Override
     public void packetSent(PacketSentEvent event) {
-        DragonProxy.getLogger().info(sender + "Sent packet to server: " + event.getPacket().getClass().getCanonicalName());
+        DragonProxy.getLogger().debug(sender + "Sent packet to server: " + event.getPacket().getClass().getCanonicalName());
     }
 
     @Override
