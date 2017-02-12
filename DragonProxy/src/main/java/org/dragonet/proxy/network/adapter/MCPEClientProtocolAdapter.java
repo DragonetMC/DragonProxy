@@ -418,9 +418,8 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
         PlayStatus status = new PlayStatus(); // Required; TODO: Find out why
         status.status = PlayStatus.OK;
         sendPacket(PacketTranslatorRegister.preparePacketForSending(status), session);
-        //sendPacket(status, session.getSessionID());
-
-        //sendPacket(new RakNetPacket(prep(new ResourcePacksInfo(false, new sul.protocol.pocket100.types.Pack[0], new sul.protocol.pocket100.types.Pack[0]).encode())), session);
+        
+        sendPacket(PacketTranslatorRegister.preparePacketForSending(new ResourcePacksInfo(false, new sul.protocol.pocket100.types.Pack[0], new sul.protocol.pocket100.types.Pack[0])), session);
         //sendPacket(new ResourcePacksInfo(), session.getSessionID());  // Causes the client to switch to the "locating server" screen
 
         StartGame startGamePacket = new StartGame(); // Required; Makes the client switch to the "generating world" screen

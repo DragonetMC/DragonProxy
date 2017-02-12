@@ -15,18 +15,18 @@ package org.dragonet.proxy.network.translator.pc;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.data.game.entity.player.GameMode;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 
 import cn.nukkit.network.protocol.StartGamePacket;
 import net.marfgamer.jraknet.RakNetPacket;
 import sul.metadata.Pocket100;
 import sul.protocol.pocket100.play.PlayStatus;
+import sul.protocol.pocket100.play.ResourcePacksInfo;
 import sul.protocol.pocket100.play.Respawn;
 import sul.protocol.pocket100.play.SetEntityData;
 import sul.protocol.pocket100.play.SetSpawnPosition;
-import sul.protocol.pocket100.play.StartGame;
 import sul.protocol.pocket100.types.BlockPosition;
+import sul.protocol.pocket100.types.Pack;
 import sul.utils.Tuples;
 
 public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoinGamePacket> {
@@ -35,15 +35,16 @@ public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoin
     public RakNetPacket[] translate(ClientConnection session, ServerJoinGamePacket packet) {
         //This packet is not fully useable, we cache it for now. 
         session.getDataCache().put(CacheKey.PLAYER_EID, packet.getEntityId());  //Stores the real entity ID
-
-/*        SetPlayerGameTypePacket pkSetGameMode = new SetPlayerGameTypePacket();
-        pkSetGameMode.gamemode = packet.getGameMode().ordinal();*/
         
         session.getDataCache().put(CacheKey.PACKET_JOIN_GAME_PACKET, packet);
         
-        //packet.getHardcore(); Unsupported by Minecraft PE as of 1.0.0
-        //packet.getMaxPlayers(); Unsupported by Minecraft PE as of 1.0.0
-        //packet.getReducedDebugInfo(); Unsupported by Minecraft PE as of 1.0.0
+        /*PlayStatus ok = new PlayStatus();
+        ok.status = PlayStatus.OK;
+        
+        ResourcePacksInfo rpi = new ResourcePacksInfo();
+		rpi.mustAccept = false;
+		rpi.behaviourPacks = new Pack[0];
+		rpi.resourcePacks = new Pack[0];
         
         StartGamePacket startGamePacket = new StartGamePacket(); // Required; Makes the client switch to the "generating world" screen
         startGamePacket.entityUniqueId = 0;
@@ -66,7 +67,7 @@ public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoin
         startGamePacket.commandsEnabled = true;
         startGamePacket.isTexturePacksRequired = false;
         startGamePacket.levelId = "d29ybGQ="; //"world" in base64
-        startGamePacket.worldName = "world"; // Must not be null or a NullPointerException will occur
+        startGamePacket.worldName = "world"; // Must not be null or a NullPointerException will occur*/
         
         SetEntityData pkEntityData = new SetEntityData();
         pkEntityData.entityId = 0;
@@ -81,7 +82,7 @@ public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoin
         PlayStatus pkStat = new PlayStatus();
         pkStat.status = PlayStatus.SPAWNED;
         
-        return fromSulPackets(startGamePacket, pkEntityData, pkResp, pkSpawn, pkStat);
+        return fromSulPackets(/*, pkEntityData, pkResp, pkSpawn*/);
     }
 
 }
