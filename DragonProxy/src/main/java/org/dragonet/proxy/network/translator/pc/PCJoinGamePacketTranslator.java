@@ -12,13 +12,13 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
+import java.util.Base64;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.data.game.entity.player.GameMode;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 
-import cn.nukkit.network.protocol.StartGamePacket;
 import net.marfgamer.jraknet.RakNetPacket;
 import sul.metadata.Pocket101;
 import sul.protocol.pocket101.play.PlayStatus;
@@ -45,43 +45,46 @@ public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoin
         //packet.getMaxPlayers(); Unsupported by Minecraft PE as of 1.0.0
         //packet.getReducedDebugInfo(); Unsupported by Minecraft PE as of 1.0.0
         
-        StartGamePacket startGamePacket = new StartGamePacket(); // Required; Makes the client switch to the "generating world" screen
-        startGamePacket.entityUniqueId = 0;
-        startGamePacket.entityRuntimeId = packet.getEntityId();
-        startGamePacket.x = 0.0f;
-        startGamePacket.y = 0.0f;
-        startGamePacket.z = 0.0f;
-        startGamePacket.seed = -1;
-        startGamePacket.dimension = (byte) packet.getDimension();
-        startGamePacket.generator = packet.getWorldType().ordinal(); //0 old, 1 infinite, 2 flat
-        startGamePacket.gamemode = packet.getGameMode().ordinal();
-        startGamePacket.difficulty = packet.getDifficulty().ordinal();
-        startGamePacket.spawnX = 0;
-        startGamePacket.spawnY = 256;
-        startGamePacket.spawnZ = 0;
-        startGamePacket.dayCycleStopTime = -1;
-        startGamePacket.eduMode = false;
-        startGamePacket.rainLevel = 0.0f;
-        startGamePacket.lightningLevel = 0.0f;
-        startGamePacket.commandsEnabled = true;
-        startGamePacket.isTexturePacksRequired = false;
-        startGamePacket.levelId = "d29ybGQ="; //"world" in base64
+        StartGame startGamePacket = new StartGame(); // Required; Makes the client switch to the "generating world" screen
+        startGamePacket.entityId = 1;
+        startGamePacket.runtimeId = 1;
+        //startGamePacket.entityRuntimeId = 52;
+        //startGamePacket.x = (float) 0.0;
+        //startGamePacket.y = (float) 72F;
+        //startGamePacket.z = (float) 0.0;
+        //startGamePacket.seed = (int)41568156263L;
+        startGamePacket.dimension = (byte) 1 & 0xFF;
+        startGamePacket.worldGamemode = 1;
+        startGamePacket.difficulty = 1;
+        //startGamePacket.spawnX = (int) 0.0;
+        //startGamePacket.spawnY = (int) 72;
+        //startGamePacket.spawnZ = (int) 0.0;
+        //startGamePacket.hasAchievementsDisabled = true;
+        //startGamePacket.dayCycleStopTime = -1;
+        //startGamePacket.eduMode = false;
+        startGamePacket.rainLevel = 0;
+        //startGamePacket.lightningLevel = 0;
+        //startGamePacket.commandsEnabled = true;
+        startGamePacket.levelId = Base64.getEncoder().encodeToString("world".getBytes());
         startGamePacket.worldName = "world"; // Must not be null or a NullPointerException will occur
+        startGamePacket.generator = 1; //0 old, 1 infinite, 2 flat
+        startGamePacket.position = new Tuples.FloatXYZ();
+        startGamePacket.spawnPosition = new Tuples.IntXYZ();
         
         /*SetEntityData pkEntityData = new SetEntityData();
         pkEntityData.entityId = 0;
         pkEntityData.metadata = new Pocket101();*/
         
-        Respawn pkResp = new Respawn();
-        pkResp.position = new Tuples.FloatXYZ(0.0f, 72f, 0.0f);
+        //Respawn pkResp = new Respawn();
+        //pkResp.position = new Tuples.FloatXYZ(0.0f, 72f, 0.0f);
 
-        SetSpawnPosition pkSpawn = new SetSpawnPosition();
-        pkSpawn.position = new BlockPosition(0, 72, 0); //why 72? keeping it there because it was already there, but seriously. why.
+        //SetSpawnPosition pkSpawn = new SetSpawnPosition();
+        //pkSpawn.position = new BlockPosition(0, 72, 0); //why 72? keeping it there because it was already there, but seriously. why.
         
         PlayStatus pkStat = new PlayStatus();
         pkStat.status = PlayStatus.SPAWNED;
         
-        return fromSulPackets(startGamePacket, /*pkEntityData,*/ pkResp, pkSpawn, pkStat);
+        return fromSulPackets(startGamePacket, /*pkEntityData, pkResp, pkSpawn,*/ pkStat);
     }
 
 }
