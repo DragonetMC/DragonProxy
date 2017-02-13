@@ -15,15 +15,12 @@ public class PCLoginSucessPacketTranslator implements PCPacketTranslator<LoginSu
 	@Override
 	public RakNetPacket[] translate(ClientConnection session, LoginSuccessPacket packet) {
 		DragonProxy.getLogger().info("Recieved LoginSuccessPacket from remote server for player: " + packet.getProfile());
-		PlayStatus pkPlayStatus = new PlayStatus();
-		pkPlayStatus.status = PlayStatus.OK;
+		//PlayStatus pkPlayStatus = new PlayStatus();
+		//pkPlayStatus.status = PlayStatus.OK;
 		
-		ResourcePacksInfo rpi = new ResourcePacksInfo();
-		rpi.mustAccept = false;
-		rpi.behaviourPacks = new Pack[0];
-		rpi.resourcePacks = new Pack[0];
+		//return fromSulPackets(pkPlayStatus);
 		
-		return fromSulPackets(pkPlayStatus, rpi);
+		return new RakNetPacket[0];
 	}
 
 }
