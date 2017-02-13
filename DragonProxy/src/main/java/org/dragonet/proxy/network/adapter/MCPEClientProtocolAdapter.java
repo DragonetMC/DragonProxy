@@ -137,7 +137,8 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
         } else {
             DragonProxy.getLogger().warning(sender + "Ignoring packet from unconnected client " + session.getSessionID());
         }
-
+    }
+        
     @Override
     public void handlePacket(RakNetClientSession session, RakNetPacket packet, int channel) {
         if (!sessionList.containsKey(session.getGloballyUniqueId())) {

@@ -19,14 +19,15 @@ import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 
 import net.marfgamer.jraknet.RakNetPacket;
-import sul.metadata.Pocket100;
-import sul.protocol.pocket100.play.PlayStatus;
-import sul.protocol.pocket100.play.ResourcePacksInfo;
-import sul.protocol.pocket100.play.Respawn;
-import sul.protocol.pocket100.play.SetEntityData;
-import sul.protocol.pocket100.play.SetSpawnPosition;
-import sul.protocol.pocket100.types.BlockPosition;
-import sul.protocol.pocket100.types.Pack;
+import sul.metadata.Pocket101;
+import sul.protocol.pocket101.play.PlayStatus;
+import sul.protocol.pocket101.play.ResourcePacksInfo;
+import sul.protocol.pocket101.play.Respawn;
+import sul.protocol.pocket101.play.SetEntityData;
+import sul.protocol.pocket101.play.SetSpawnPosition;
+import sul.protocol.pocket101.play.StartGame;
+import sul.protocol.pocket101.types.BlockPosition;
+import sul.protocol.pocket101.types.Pack;
 import sul.utils.Tuples;
 
 public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoinGamePacket> {
@@ -37,14 +38,7 @@ public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoin
         session.getDataCache().put(CacheKey.PLAYER_EID, packet.getEntityId());  //Stores the real entity ID
         
         session.getDataCache().put(CacheKey.PACKET_JOIN_GAME_PACKET, packet);
-        
-        /*PlayStatus ok = new PlayStatus();
-        ok.status = PlayStatus.OK;
-        
-        ResourcePacksInfo rpi = new ResourcePacksInfo();
-		rpi.mustAccept = false;
-		rpi.behaviourPacks = new Pack[0];
-		rpi.resourcePacks = new Pack[0];
+
         
         StartGame startGamePacket = new StartGame(); // Required; Makes the client switch to the "generating world" screen
         startGamePacket.entityId = 1;
