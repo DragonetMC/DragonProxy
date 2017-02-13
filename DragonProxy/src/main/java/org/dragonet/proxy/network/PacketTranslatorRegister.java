@@ -85,7 +85,7 @@ public final class PacketTranslatorRegister {
      * PC to PE
      */
     static {
-        PC_TO_PE_TRANSLATOR.put(ClientChatPacket.class, new IgnorePacketTranslator());
+        /*PC_TO_PE_TRANSLATOR.put(ClientChatPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ClientCloseWindowPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ClientConfirmTransactionPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ClientCreativeInventoryActionPacket.class, new IgnorePacketTranslator());
@@ -114,14 +114,14 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ClientTeleportConfirmPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ClientUpdateSignPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ClientVehicleMovePacket.class, new IgnorePacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ClientWindowActionPacket.class, new IgnorePacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ClientWindowActionPacket.class, new IgnorePacketTranslator());*/
         
         /*PC_TO_PE_TRANSLATOR.put(ServerBlockBreakAnimPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerBlockChangePacket.class, new PCBlockChangePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerBlockValuePacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerBossBarPacket.class, new IgnorePacketTranslator());*/
         PC_TO_PE_TRANSLATOR.put(ServerChatPacket.class, new PCChatPacketTranslator());
-        //PC_TO_PE_TRANSLATOR.put(ServerChunkDataPacket.class, new PCChunkDataTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerChunkDataPacket.class, new PCChunkDataTranslator());
         /*PC_TO_PE_TRANSLATOR.put(ServerCloseWindowPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerCombatPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerConfirmTransactionPacket.class, new IgnorePacketTranslator());
@@ -187,10 +187,10 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerTeamPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerTitlePacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerUnloadChunkPacket.class, new IgnorePacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerUpdateScorePacket.class, new IgnorePacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerUpdateTileEntityPacket.class, new PCUpdateSignPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerUpdateScorePacket.class, new IgnorePacketTranslator());*/
+        //PC_TO_PE_TRANSLATOR.put(ServerUpdateTileEntityPacket.class, new PCUpdateSignPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerUpdateTimePacket.class, new PCUpdateTimePacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerVehicleMovePacket.class, new IgnorePacketTranslator());
+        /*PC_TO_PE_TRANSLATOR.put(ServerVehicleMovePacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerWindowItemsPacket.class, new PCWindowItemsTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerWindowPropertyPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerWorldBorderPacket.class, new IgnorePacketTranslator());*/
@@ -338,7 +338,15 @@ public final class PacketTranslatorRegister {
     
     public static RakNetPacket preparePacketForSending(sul.utils.Packet packet) {
         DragonProxy.getLogger().debug("[Translator] Preping PE packet: " + packet.getClass().getCanonicalName());
-        return new RakNetPacket(prep(packet.encode()));
+        
+        byte[] buff = packet.encode();
+        
+        if(buff.length > 512){
+            DragonProxy.getLogger().debug("[Translator] Batching packet: " + packet.getClass().getCanonicalName());
+            Batch batch = new Batch(buff);
+            buff = batch.encode();
+        }
+        return new RakNetPacket(prep(buff));
     }
 
     private static byte[] prep(byte[] buff) {
