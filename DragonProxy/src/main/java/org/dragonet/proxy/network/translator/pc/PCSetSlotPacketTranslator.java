@@ -18,26 +18,26 @@ import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
 
-import cn.nukkit.network.protocol.DataPacket;
+import net.marfgamer.jraknet.RakNetPacket;
 
 public class PCSetSlotPacketTranslator implements PCPacketTranslator<ServerSetSlotPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerSetSlotPacket packet) {
+    public RakNetPacket[] translate(ClientConnection session, ServerSetSlotPacket packet) {
         if (!session.getWindowCache().hasWindow(packet.getWindowId())) {
             //Cache this
             session.getWindowCache().newCachedPacket(packet.getWindowId(), packet);
-            return null;
+            return new RakNetPacket[0];
         }
         CachedWindow win = session.getWindowCache().get(packet.getWindowId());
         if (win.pcType == null && packet.getWindowId() != 0) return null;
         if (packet.getWindowId() == 0) {
             if(packet.getSlot() >= win.slots.length) return null;
             win.slots[packet.getSlot()] = packet.getItem();
-            return InventoryTranslatorRegister.sendPlayerInventory(session); //Too lazy lol
+            return (RakNetPacket[]) InventoryTranslatorRegister.sendPlayerInventory(session); //Too lazy lol
         }
         InventoryTranslatorRegister.updateSlot(session, packet);
-        return null;
+        return new RakNetPacket[0];
     }
 
 }

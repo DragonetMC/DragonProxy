@@ -18,12 +18,12 @@ import org.spacehq.mc.protocol.data.game.PlayerListEntry;
 import org.spacehq.mc.protocol.data.game.PlayerListEntryAction;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerPlayerListEntryPacket;
 
-import cn.nukkit.network.protocol.DataPacket;
+import net.marfgamer.jraknet.RakNetPacket;
 
 public class PCPlayerListItemPacketTranslator implements PCPacketTranslator<ServerPlayerListEntryPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerPlayerListEntryPacket packet) {
+    public RakNetPacket[] translate(ClientConnection session, ServerPlayerListEntryPacket packet) {
         if(packet.getAction() == PlayerListEntryAction.ADD_PLAYER){
             PlayerListEntry[] entries = packet.getEntries();
             for (PlayerListEntry entrie : entries) {
@@ -35,7 +35,7 @@ public class PCPlayerListItemPacketTranslator implements PCPacketTranslator<Serv
                 session.getPlayerInfoCache().remove(entrie.getProfile().getId());
             }
         }
-        return null;
+        return new RakNetPacket[0];
     }
 
 }

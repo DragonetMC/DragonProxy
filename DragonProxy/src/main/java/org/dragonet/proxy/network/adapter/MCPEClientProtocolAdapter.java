@@ -12,6 +12,9 @@
  */
 package org.dragonet.proxy.network.adapter;
 
+import cn.nukkit.level.format.anvil.ChunkSection;
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.FullChunkDataPacket;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -43,14 +46,17 @@ import org.dragonet.proxy.network.ConnectionStatus;
 import org.dragonet.proxy.network.PacketTranslatorRegister;
 import org.dragonet.proxy.utilities.LoginPacketPayload;
 import org.dragonet.proxy.utilities.Versioning;
-import sul.protocol.pocket100.play.ChunkRadiusUpdated;
-import sul.protocol.pocket100.play.Login;
-import sul.protocol.pocket100.play.PlayStatus;
-import sul.protocol.pocket100.play.ResourcePacksInfo;
-import sul.protocol.pocket100.play.Respawn;
-import sul.protocol.pocket100.play.SetSpawnPosition;
-import sul.protocol.pocket100.play.StartGame;
-import sul.protocol.pocket100.types.BlockPosition;
+import sul.protocol.pocket101.play.ChunkRadiusUpdated;
+import sul.protocol.pocket101.play.FullChunkData;
+import sul.protocol.pocket101.play.Login;
+import sul.protocol.pocket101.play.PlayStatus;
+import sul.protocol.pocket101.play.ResourcePacksInfo;
+import sul.protocol.pocket101.play.Respawn;
+import sul.protocol.pocket101.play.SetSpawnPosition;
+import sul.protocol.pocket101.play.SetTime;
+import sul.protocol.pocket101.play.StartGame;
+import sul.protocol.pocket101.types.BlockPosition;
+import sul.utils.Buffer;
 import sul.utils.Tuples;
 
 /**
@@ -73,7 +79,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
     public MCPEClientProtocolAdapter() {
         DragonProxy.getLogger().info("Starting up the Minecraft PE ClientProtocolAdapter");
     }
-    
+
     @Override
     public void handlePacket(RakNetPacket packet, ClientConnection session) {
         if (session == null) {
@@ -119,7 +125,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
             }
         }*/
 
-        //if (session.getStatus() == ConnectionStatus.CONNECTED) {
+        if (session.getStatus() == ConnectionStatus.CONNECTED) {
             Object[] packets = {new RakNetPacket(packet.buffer())};
             if (session.getDownstreamProtocol().getSupportedPacketType() != getSupportedPacketType()) {
                 packets = PacketTranslatorRegister.translateToPC(session, packet);
@@ -128,11 +134,11 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
             for (Object pack : packets) {
                 session.getDownstreamProtocol().sendPacket(pack);
             }
-        //} else {
-        //    DragonProxy.getLogger().warning(sender + "Ignoring packet from unconnected client " + session.getSessionID());
-        //}
+        } else {
+            DragonProxy.getLogger().warning(sender + "Ignoring packet from unconnected client " + session.getSessionID());
+        }
     }
-
+        
     @Override
     public void handlePacket(RakNetClientSession session, RakNetPacket packet, int channel) {
         if (!sessionList.containsKey(session.getGloballyUniqueId())) {
@@ -146,10 +152,12 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
     @Override
     public void sendPacket(RakNetPacket packet, ClientConnection session) {
         if (session == null) {
+            DragonProxy.getLogger().warning(sender + "sendPacket aborting because session is null");
             return;
         }
+
         DragonProxy.getLogger().debug(sender + "Sending Packet: " + session.getSessionID() + ": " + Integer.toHexString(packet.buffer().getByte(1)));
-        packet.encode();
+        // packet.encode();
         server.sendMessage(getSessionID(session.getSessionID()), Reliability.UNRELIABLE, packet);
     }
 
@@ -287,11 +295,11 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
         PlayStatus status = new PlayStatus(); // Required; Tells the client that his connection was accepted or denied
         if (packet.protocol != Versioning.MINECRAFT_PE_PROTOCOL) {
             status.status = (packet.protocol < Versioning.MINECRAFT_PE_PROTOCOL ? PlayStatus.OUTDATED_CLIENT : PlayStatus.OUTDATED_SERVER);
-            sendPacket(PacketTranslatorRegister.preparePacketForSending(packet), session);
+            sendPacket(PacketTranslatorRegister.preparePacketForSending(status), session);
             clientDisconectRequest(session, DragonProxy.getSelf().getLang().get(Lang.MESSAGE_UNSUPPORTED_CLIENT));
             return;
         }
-        
+
         LoginPacketPayload data = LoginPacketPayload.decode(packet.body);
         session.setUsername(data.getUsername());
 
@@ -415,13 +423,13 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
     }*/
 
     private void minimalClientHandshake(boolean errorMode, ClientConnection session) {
+        DragonProxy.getLogger().debug(sender + "Performing a minimal handshake with the client " + session.getUsername() + ":" + session.getSessionID());
         PlayStatus status = new PlayStatus(); // Required; TODO: Find out why
         status.status = PlayStatus.OK;
-        //sendPacket(new RakNetPacket(prep(status.encode())), session);
-        //sendPacket(status, session.getSessionID());
+        sendPacket(PacketTranslatorRegister.preparePacketForSending(status), session);
 
-        //sendPacket(new RakNetPacket(prep(new ResourcePacksInfo(false, new sul.protocol.pocket100.types.Pack[0], new sul.protocol.pocket100.types.Pack[0]).encode())), session);
-        //sendPacket(new ResourcePacksInfo(), session.getSessionID());  // Causes the client to switch to the "locating server" screen
+        // Required; Causes the client to switch to the "locating server" screen
+        sendPacket(PacketTranslatorRegister.preparePacketForSending(new ResourcePacksInfo(false, new sul.protocol.pocket101.types.Pack[0], new sul.protocol.pocket101.types.Pack[0])), session);
 
         StartGame startGamePacket = new StartGame(); // Required; Makes the client switch to the "generating world" screen
         startGamePacket.entityId = 1;
@@ -448,10 +456,10 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
         startGamePacket.generator = 1; //0 old, 1 infinite, 2 flat
         startGamePacket.position = new Tuples.FloatXYZ();
         startGamePacket.spawnPosition = new Tuples.IntXYZ();
-        //sendPacket(new RakNetPacket(prep(startGamePacket.encode())), session);
+        sendPacket(PacketTranslatorRegister.preparePacketForSending(startGamePacket), session);
 
-        SetSpawnPosition pkSpawn = new SetSpawnPosition();
-        pkSpawn.position = new BlockPosition();
+        //SetSpawnPosition pkSpawn = new SetSpawnPosition();
+        //pkSpawn.position = new BlockPosition();
         //sendPacket(new RakNetPacket(prep(pkSpawn.encode())), session);
 
         /*MovePlayer pkMovePlayer = new MovePlayer();
@@ -514,7 +522,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
 
         //sendFlatChunks(0, 0, 10, false, session);
         //sendFlatChunks(0, 0, 17, false, session);*/
- /*ChunkRadiusUpdated pkChunkRadius = new ChunkRadiusUpdated();
+        /*ChunkRadiusUpdated pkChunkRadius = new ChunkRadiusUpdated();
         pkChunkRadius.radius = 3;
         sendPacket(new RakNetPacket(pkChunkRadius.encode()), session);
 
@@ -522,16 +530,16 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
         pk.enabled = true;
         sendPacket(pk, true);*/
 
- /*Respawn pkResp = new Respawn();
-        pkResp.position = new Tuples.FloatXYZ();
-        sendPacket(new RakNetPacket(pkResp.encode()), session);
-         */
-        /*PlayStatus pkStat = new PlayStatus(); //Required; Spawns the client in the world and closes the loading screen
+        //Respawn pkResp = new Respawn();
+        //pkResp.position = new Tuples.FloatXYZ();
+        //sendPacket(PacketTranslatorRegister.preparePacketForSending(pkResp), session);
+        
+        PlayStatus pkStat = new PlayStatus(); //Required; Spawns the client in the world and closes the loading screen
         pkStat.status = PlayStatus.SPAWNED;
-        sendPacket(new RakNetPacket(prep(pkStat.encode())), session);*/
+        sendPacket(PacketTranslatorRegister.preparePacketForSending(pkStat), session);
     }
 
-    /*private void sendFlatChunks(int playerX, int playerZ, int circleRadius, boolean sendAir, ClientConnection session) {
+    private void sendFlatChunks(int playerX, int playerZ, int circleRadius, boolean sendAir, ClientConnection session) {
         int blocksX = 1;
         int blocksZ = 1;
 
@@ -556,34 +564,43 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
                 double distance = Math.sqrt(Math.pow(z * blocksZ, 2) + Math.pow(x * blocksX, 2));
                 boolean shouldSendChunk = (distance < circleRadius);
                 if (shouldSendChunk) {
-                    sendPacket(getFlatChunkPacket(x, z, (sendAir ? 0 : 1)), session.getSessionID());
+                    sendPacket(PacketTranslatorRegister.preparePacketForSending(getFlatChunkPacket(x, z, (sendAir ? 0 : 1))), session);
                     //loadChunksList.add(new Vector3D(nx - x, 0, nz - z));
                 }
             }
         }
     }
 
-    private DataPacket getFlatChunkPacket(int chunkX, int chunkZ, int blockId) {
-        FullChunkDataPacket pePacket = new FullChunkDataPacket();
-
-        cn.nukkit.level.format.anvil.Chunk chunk = cn.nukkit.level.format.anvil.Chunk.getEmptyChunk(chunkX, chunkZ);
-
-        pePacket.chunkX = chunkX;
-        pePacket.chunkZ = chunkZ;
-
-        for (int yPC = 0; yPC < 128; yPC++) {
-            for (int x = 0; x < 16; x++) {
-                for (int z = 0; z < 16; z++) {
-                    chunk.setBlockId(x, yPC, z, blockId);
-                    chunk.setBlockData(x, yPC, z, 0);
-                    chunk.setBlockLight(x, yPC, z, 15);
-                    chunk.setBlockSkyLight(x, yPC, z, 15);
-                    chunk.setBiomeId(x, z, 0);
-                }
+    private FullChunkData getFlatChunkPacket(int chunkX, int chunkZ, int blockId) {
+        /*cn.nukkit.level.format.anvil.Chunk chunk = cn.nukkit.level.format.anvil.Chunk.getEmptyChunk(chunkX, chunkZ);
+        int y = 1;
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                chunk.setBlock(x, y, z, blockId);
             }
-        }
+        }*/
 
-        pePacket.data = chunk.toFastBinary();
+        int length = 0;
+
+        length += 1; // Section count
+        //length += (chunk.getSections().length * (/*Section Size*/10240)) + (chunk.getSections().length /*Section header*/); // blocks[4096] + data[2048] + skyLight[2048] + blockLight[2048] 
+        length += 256; // Height Map
+        length += 256; // Unknown
+        length += (4 * 256); // Biome ID's
+        length += 4; // Varint for extradata replace with extradata len if sending extradata
+        length += 1; // Block entities; same as varit above
+
+        /* FullChunkData pePacket = new FullChunkData(new Tuples.IntXZ(chunkX, chunkZ), new byte[length], new byte[0]);
+        int index = 0;
+        pePacket.data[index++] = (byte) (chunk.getSections().length);
+        for (int ind = chunk.getSections().length - 1; ind >= 0; ind--) {
+            cn.nukkit.level.format.ChunkSection sec = chunk.getSection(ind);
+            pePacket.data[index++] = 0; // Version Header?
+            for (byte b : sec.getBytes()) {
+                pePacket.data[index++] = b;
+            }
+        }*/
+        FullChunkData pePacket = new FullChunkData(new Tuples.IntXZ(chunkX, chunkZ), new byte[1 + 256 + 256 + (4 * 256) + 1 + 4], new byte[0]);
         return pePacket;
     }
 

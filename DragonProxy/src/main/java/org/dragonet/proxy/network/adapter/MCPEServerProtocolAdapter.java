@@ -41,7 +41,7 @@ import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.ConnectionStatus;
 import org.dragonet.proxy.network.PacketTranslatorRegister;
 import org.dragonet.proxy.utilities.LoginPacketPayload;
-import sul.protocol.pocket100.play.Login;
+import sul.protocol.pocket101.play.Login;
 
 /**
  * @author robotman3000

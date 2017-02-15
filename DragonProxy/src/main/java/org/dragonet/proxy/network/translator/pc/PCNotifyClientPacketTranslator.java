@@ -16,38 +16,42 @@ import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.data.game.entity.player.GameMode;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
-
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.LevelEventPacket;
-import cn.nukkit.network.protocol.SetPlayerGameTypePacket;
+import net.marfgamer.jraknet.RakNetPacket;
+import sul.protocol.pocket101.play.LevelEvent;
+import sul.protocol.pocket101.play.SetPlayerGametype;
+import sul.utils.Tuples;
 
 public class PCNotifyClientPacketTranslator implements PCPacketTranslator<ServerNotifyClientPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerNotifyClientPacket packet) {
+    public RakNetPacket[] translate(ClientConnection session, ServerNotifyClientPacket packet) {
         switch (packet.getNotification()) {
         case CHANGE_GAMEMODE:
             GameMode gm = (GameMode) packet.getValue();
-            SetPlayerGameTypePacket pk = new SetPlayerGameTypePacket();
+            SetPlayerGametype pk = new SetPlayerGametype();
             if (gm == GameMode.CREATIVE) {
-                pk.gamemode = 1;
+                pk.gametype = 1;
             } else {
-                pk.gamemode = 0;
+                pk.gametype = 0;
             }
-            return new DataPacket[]{pk};
+            return fromSulPackets(pk);
         case START_RAIN:
-            LevelEventPacket evtStartRain = new LevelEventPacket();
-            evtStartRain.evid = LevelEventPacket.EVENT_START_RAIN;
-            return new DataPacket[]{evtStartRain};
+            LevelEvent evtStartRain = new LevelEvent();
+            evtStartRain.eventId = LevelEvent.START_RAIN;
+            evtStartRain.position = new Tuples.FloatXYZ(0.0f, 0.0f, 0.0f);
+            evtStartRain.data = 0;
+            return fromSulPackets(evtStartRain);
         case STOP_RAIN:
-            LevelEventPacket evtStopRain = new LevelEventPacket();
-            evtStopRain.evid = LevelEventPacket.EVENT_STOP_RAIN;
-            return new DataPacket[]{evtStopRain};
+            LevelEvent evtStopRain = new LevelEvent();
+            evtStopRain.eventId = LevelEvent.STOP_RAIN;
+            evtStopRain.position = new Tuples.FloatXYZ(0.0f, 0.0f, 0.0f);
+            evtStopRain.data = 0;
+            return fromSulPackets(evtStopRain);
 		default:
 			System.err.println("Error while handling NotifyClientPacket; Unhandled notification type: " + packet.getNotification());
 			break;
         }
-        return null;
+        return new RakNetPacket[0];
     }
 
 }

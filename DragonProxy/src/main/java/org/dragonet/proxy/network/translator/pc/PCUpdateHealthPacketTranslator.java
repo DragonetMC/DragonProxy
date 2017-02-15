@@ -16,28 +16,30 @@ import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
 
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.RespawnPacket;
-import cn.nukkit.network.protocol.SetHealthPacket;
+import net.marfgamer.jraknet.RakNetPacket;
+import sul.protocol.pocket101.play.Respawn;
+import sul.protocol.pocket101.play.SetHealth;
+import sul.utils.Tuples;
 
 public class PCUpdateHealthPacketTranslator implements PCPacketTranslator<ServerPlayerHealthPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerPlayerHealthPacket packet) {
+    public RakNetPacket[] translate(ClientConnection session, ServerPlayerHealthPacket packet) {
     	// TODO: Support food and saturation
-        SetHealthPacket h = new SetHealthPacket();
+        SetHealth h = new SetHealth();
         h.health = (int) packet.getHealth();
         if (packet.getHealth() > 0 && h.health <= 0) {
             h.health = 1;
         }
+        
         if (packet.getHealth() <= 0.0f) {
-            RespawnPacket r = new RespawnPacket();
-            r.x = 0.0f;
-            r.y = 0.0f;
-            r.z = 0.0f;
-            return new DataPacket[]{h, r};
+            Respawn r = new Respawn();
+            r.position = new Tuples.FloatXYZ(0.0f, 0.0f, 0.0f);
+            
+            return fromSulPackets(h, r);
         }
-        return new DataPacket[]{h};
+        
+        return fromSulPackets(h);
     }
 
 }

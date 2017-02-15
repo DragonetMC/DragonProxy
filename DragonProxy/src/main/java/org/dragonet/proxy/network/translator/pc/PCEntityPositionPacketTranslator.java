@@ -17,32 +17,30 @@ import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityPositionPacket;
 
-import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.MoveEntityPacket;
+import net.marfgamer.jraknet.RakNetPacket;
 
 public class PCEntityPositionPacketTranslator implements PCPacketTranslator<ServerEntityPositionPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerEntityPositionPacket packet) {
+    public RakNetPacket[] translate(ClientConnection session, ServerEntityPositionPacket packet) {
         CachedEntity e = session.getEntityCache().get(packet.getEntityId());
         if (e == null) {
-            return null;
+            return new RakNetPacket[0];
         }
 
         e.relativeMove(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ());
 
         MoveEntityPacket pk = new MoveEntityPacket();
         pk.eid = e.eid;
-        pk.yaw = e.yaw;
-        pk.headYaw = e.yaw;
-        pk.pitch = e.pitch;
-        pk.x = (float) e.x;
-        pk.y = (float) e.y;
-        if(e.player){
-            pk.y += 1.62f;
-        }
+        pk.yaw = (byte) e.yaw;
+        pk.headYaw = (byte) e.yaw;
+        pk.pitch = (byte) e.pitch;
+        pk.x = (float) e.x;  
+        pk.y = (float) (e.player ? e.y + 1.62f : e.y);
         pk.z = (float) e.z;
-        return new DataPacket[]{pk};
+        
+        return fromSulPackets(pk);
     }
 
 }

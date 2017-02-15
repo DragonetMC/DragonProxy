@@ -20,13 +20,14 @@ import org.spacehq.mc.protocol.data.game.world.sound.CustomSound;
 import org.spacehq.mc.protocol.data.game.world.sound.Sound;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerPlaySoundPacket;
 
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import net.marfgamer.jraknet.RakNetPacket;
+import sul.protocol.pocket101.play.LevelEvent;
+import sul.utils.Tuples;
 
 public class PCPlaySoundPacketTranslator implements PCPacketTranslator<ServerPlaySoundPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerPlaySoundPacket packet) {
+    public RakNetPacket[] translate(ClientConnection session, ServerPlaySoundPacket packet) {
         try {
             String soundName = null;
 
@@ -44,26 +45,25 @@ public class PCPlaySoundPacketTranslator implements PCPacketTranslator<ServerPla
                 soundName = ((CustomSound) packet.getSound()).getName();
             }
             if (soundName == null) {
-                return null;
+                return new RakNetPacket[0];
             }
             short ev = 0;
-            for (Field f : LevelEventPacket.class.getDeclaredFields()) {
-                if (f.getType().equals(short.class) && f.getName().equalsIgnoreCase("EVENT_SOUND_" + soundName)) {
+            for (Field f : LevelEvent.class.getDeclaredFields()) {
+                if (f.getType().equals(short.class) && f.getName().equalsIgnoreCase(soundName)) {
                     ev = (short) f.get(null);
                 }
             }
             if (ev == 0) {
-                return null;
+                return new RakNetPacket[0];
             }
-            LevelEventPacket pkSound = new LevelEventPacket();
-            pkSound.evid = (short) (LevelEventPacket.EVENT_ADD_PARTICLE_MASK | ev);
-            pkSound.x = (float) packet.getX();
-            pkSound.y = (float) packet.getY();
-            pkSound.z = (float) packet.getZ();
-            return new DataPacket[]{pkSound};
+            LevelEvent pkSound = new LevelEvent();
+            pkSound.eventId = (short) ev;
+            pkSound.position = new Tuples.FloatXYZ((float) packet.getX(), (float) packet.getY(), (float) packet.getZ());
+            
+            return fromSulPackets(pkSound);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return new RakNetPacket[0];
         }
     }
 

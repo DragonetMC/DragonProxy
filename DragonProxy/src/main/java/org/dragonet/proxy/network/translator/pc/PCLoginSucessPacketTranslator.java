@@ -5,20 +5,20 @@ import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.login.server.LoginSuccessPacket;
 
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.PlayStatusPacket;
-import cn.nukkit.network.protocol.ResourcePacksInfoPacket;
+import net.marfgamer.jraknet.RakNetPacket;
+import sul.protocol.pocket101.play.PlayStatus;
+import sul.protocol.pocket101.play.ResourcePacksInfo;
+import sul.protocol.pocket101.types.Pack;
 
 public class PCLoginSucessPacketTranslator implements PCPacketTranslator<LoginSuccessPacket> {
 
-	@Override
-	public DataPacket[] translate(ClientConnection session, LoginSuccessPacket packet) {
-		DragonProxy.getLogger().info("Recieved LoginSuccessPacket from remote server for player: " + packet.getProfile());
-		PlayStatusPacket pkPlayStatus = new PlayStatusPacket();
-		pkPlayStatus.status = PlayStatusPacket.LOGIN_SUCCESS;
+    @Override
+    public RakNetPacket[] translate(ClientConnection session, LoginSuccessPacket packet) {
+        DragonProxy.getLogger().info("Recieved LoginSuccessPacket from remote server for player: " + packet.getProfile());
+        PlayStatus pkPlayStatus = new PlayStatus();
+        pkPlayStatus.status = PlayStatus.OK;
 
-		// ResourcePacksInfoPacket Required; Causes the client to switch to the "locating server" screen
-		return new DataPacket[] {pkPlayStatus, new ResourcePacksInfoPacket()};
-	}
+        return fromSulPackets(pkPlayStatus, new ResourcePacksInfo(false, new sul.protocol.pocket101.types.Pack[0], new sul.protocol.pocket101.types.Pack[0]));
+    }
 
 }

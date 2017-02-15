@@ -19,25 +19,26 @@ import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.data.MagicValues;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityRemoveEffectPacket;
 
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.MobEffectPacket;
+import net.marfgamer.jraknet.RakNetPacket;
+import sul.protocol.pocket101.play.MobEffect;
 
 public class PCEntityRemoveEffectPacketTranslator implements PCPacketTranslator<ServerEntityRemoveEffectPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerEntityRemoveEffectPacket packet) {
+    public RakNetPacket[] translate(ClientConnection session, ServerEntityRemoveEffectPacket packet) {
         CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
         if (entity == null) {
-            return null;
+            return new RakNetPacket[0];
         }
         int effectId = MagicValues.value(Integer.class, packet.getEffect());
         if (!entity.effects.contains(effectId)) {
-            return null;
+            return new RakNetPacket[0];
         }
-        MobEffectPacket eff = new MobEffectPacket();
-        eff.eid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
-        eff.effectId = MobEffectPacket.EVENT_REMOVE;
-        return new DataPacket[]{eff};
+        MobEffect eff = new MobEffect();
+        eff.entityId = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
+        eff.eventId = MobEffect.REMOVE;
+        
+        return fromSulPackets(eff);
     }
 
 }

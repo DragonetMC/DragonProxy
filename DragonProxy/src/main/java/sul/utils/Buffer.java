@@ -7,14 +7,16 @@
  */
 package sul.utils;
 
+import java.util.Arrays;
+
 public class Buffer {
 
 	public byte[] _buffer;
 
 	public int _index;
 
-	public int getIndex() {
-		return this._index;
+	public byte[] getBuffer() {
+		return Arrays.copyOfRange(this._buffer, 0, this._index);
 	}
 
 	public void writeBytes(byte[] a) {
