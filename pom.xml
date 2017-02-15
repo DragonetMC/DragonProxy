@@ -10,7 +10,7 @@
 
     <groupId>org.dragonet.proxy</groupId>
     <artifactId>DragonProxy-parent</artifactId>
-    <version>0.0.6-preR1</version>
+    <version>0.0.7</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -21,7 +21,8 @@
 
     <modules>
         <!--<module>protocol</module>-->
-        <module>proxy</module>
+        <module>DragonProxy</module>
+        <module>JRakNet</module>
     </modules>
     <build>
 	<defaultGoal>clean install</defaultGoal>

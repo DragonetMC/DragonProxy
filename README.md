@@ -14,6 +14,7 @@ Once compiled, run `dragonproxy-*.jar` in `proxy/target` where '*' is the versio
 
 ## Compiling
 See the tutorial in the [wiki](https://github.com/DragonetMC/DragonProxy/wiki).
+Note: Maven won't build the project because every class in DragonProxy/DragonProxy/src/main/java/org/dragonet/proxy/network/translator/pe and DragonProxy/DragonProxy/src/main/java/org/dragonet/proxy/network/translator/pc has compile errors. Just move these folders out of the project to fix the problem until the translators are updated
 
 #### Supported Remote Server Types
 - For PC/Mac Servers: `Bukkit`/`Spigot`/`Glowstone`/`SpongeVanilla`/`BungeeCord`
