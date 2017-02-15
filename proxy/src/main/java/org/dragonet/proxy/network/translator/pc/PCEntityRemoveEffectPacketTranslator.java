@@ -12,20 +12,19 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
+import org.dragonet.proxy.protocol.packet.MobEffectPacket;
+import org.dragonet.proxy.protocol.packet.PEPacket;
 import org.dragonet.proxy.network.CacheKey;
-import org.dragonet.proxy.network.ClientConnection;
+import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.data.MagicValues;
+import org.spacehq.mc.protocol.data.game.values.MagicValues;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityRemoveEffectPacket;
-
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.MobEffectPacket;
 
 public class PCEntityRemoveEffectPacketTranslator implements PCPacketTranslator<ServerEntityRemoveEffectPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerEntityRemoveEffectPacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerEntityRemoveEffectPacket packet) {
         CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
         if (entity == null) {
             return null;
@@ -36,8 +35,8 @@ public class PCEntityRemoveEffectPacketTranslator implements PCPacketTranslator<
         }
         MobEffectPacket eff = new MobEffectPacket();
         eff.eid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
-        eff.effectId = MobEffectPacket.EVENT_REMOVE;
-        return new DataPacket[]{eff};
+        eff.action = MobEffectPacket.EffectAction.REMOVE;
+        return new PEPacket[]{eff};
     }
 
 }

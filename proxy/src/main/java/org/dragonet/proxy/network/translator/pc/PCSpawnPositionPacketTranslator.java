@@ -12,39 +12,29 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
+import org.dragonet.proxy.protocol.packet.LoginStatusPacket;
+import org.dragonet.proxy.protocol.packet.MovePlayerPacket;
+import org.dragonet.proxy.protocol.packet.PEPacket;
+import org.dragonet.proxy.protocol.packet.StartGamePacket;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.network.CacheKey;
-import org.dragonet.proxy.network.ClientConnection;
+import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.data.game.entity.player.GameMode;
+import org.dragonet.proxy.protocol.packet.AdventureSettingsPacket;
+import org.spacehq.mc.protocol.data.game.values.entity.player.GameMode;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerSpawnPositionPacket;
-
-import cn.nukkit.network.protocol.AdventureSettingsPacket;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.MovePlayerPacket;
-import cn.nukkit.network.protocol.PlayStatusPacket;
-import cn.nukkit.network.protocol.StartGamePacket;
 
 public class PCSpawnPositionPacketTranslator implements PCPacketTranslator<ServerSpawnPositionPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerSpawnPositionPacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerSpawnPositionPacket packet) {
         if (session.getDataCache().get(CacheKey.PACKET_JOIN_GAME_PACKET) == null) {
             if (session.getProxy().getAuthMode().equals("online")) {
                 session.sendChat(session.getProxy().getLang().get(Lang.MESSAGE_TELEPORT_TO_SPAWN));
-                
-                MovePlayerPacket pkMovePlayer = new MovePlayerPacket();
-                pkMovePlayer.eid = 0;
-                pkMovePlayer.x = packet.getPosition().getX();
-                pkMovePlayer.y = packet.getPosition().getY();
-                pkMovePlayer.z = packet.getPosition().getZ();
-                pkMovePlayer.headYaw = 0.0f;
-                pkMovePlayer.yaw = 0.0f;
-                pkMovePlayer.pitch = 0.0f;
-                pkMovePlayer.onGround = false;
+                MovePlayerPacket pkMovePlayer = new MovePlayerPacket(0, (float) packet.getPosition().getX(), (float) packet.getPosition().getY(), (float) packet.getPosition().getZ(), 0.0f, 0.0f, 0.0f, false);
                 pkMovePlayer.mode = MovePlayerPacket.MODE_RESET;
-                return new DataPacket[]{pkMovePlayer};
+                return new PEPacket[]{pkMovePlayer};
             } else {
                 session.disconnect(session.getProxy().getLang().get(Lang.MESSAGE_REMOTE_ERROR));
             }
@@ -52,7 +42,7 @@ public class PCSpawnPositionPacketTranslator implements PCPacketTranslator<Serve
         }
         ServerJoinGamePacket restored = (ServerJoinGamePacket) session.getDataCache().remove(CacheKey.PACKET_JOIN_GAME_PACKET);
         StartGamePacket ret = new StartGamePacket();
-        ret.entityRuntimeId = 0; //Use EID 0 for eaisier management
+        ret.eid = 0; //Use EID 0 for eaisier management
         ret.dimension = (byte) (restored.getDimension() & 0xFF);
         ret.seed = 0;
         ret.generator = 1;
@@ -63,15 +53,14 @@ public class PCSpawnPositionPacketTranslator implements PCPacketTranslator<Serve
         ret.x = packet.getPosition().getX();
         ret.y = packet.getPosition().getY();
         ret.z = packet.getPosition().getZ();
-        ret.worldName = "";
 
         AdventureSettingsPacket adv = new AdventureSettingsPacket();
         int settings = 0x1 | 0x20 | 0x40;
         adv.flags = settings;
         
-        PlayStatusPacket stat = new PlayStatusPacket();
-        stat.status = PlayStatusPacket.PLAYER_SPAWN;
-        return new DataPacket[]{ret, adv, stat};
+        LoginStatusPacket stat = new LoginStatusPacket();
+        stat.status = LoginStatusPacket.PLAYER_SPAWN;
+        return new PEPacket[]{ret, adv, stat};
     }
 
 }

@@ -1,28 +1,26 @@
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.network.ClientConnection;
+import org.dragonet.proxy.protocol.packet.AddPlayerPacket;
+import org.dragonet.proxy.protocol.packet.PEPacket;
+import org.dragonet.proxy.protocol.packet.PlayerListPacket;
+import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.dragonet.proxy.utilities.DefaultSkin;
-import org.spacehq.mc.protocol.data.game.entity.metadata.EntityMetadata;
+import org.spacehq.mc.protocol.data.game.EntityMetadata;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
-
-import cn.nukkit.entity.data.Skin;
-import cn.nukkit.network.protocol.AddPlayerPacket;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.PlayerListPacket;
 
 public class PCSpawnPlayerPacketTranslator implements PCPacketTranslator<ServerSpawnPlayerPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerSpawnPlayerPacket packet) {
-    	try {
-    		CachedEntity entity = session.getEntityCache().newPlayer(packet);
+    public PEPacket[] translate(UpstreamSession session, ServerSpawnPlayerPacket packet) {
+        try {
+            CachedEntity entity = session.getEntityCache().newPlayer(packet);
 
             // TODO: Do we need to register the player here ?
             AddPlayerPacket pkAddPlayer = new AddPlayerPacket();
-            pkAddPlayer.entityRuntimeId = entity.eid;
+            pkAddPlayer.eid = entity.eid;
 
             for (EntityMetadata meta : packet.getMetadata()) {
                 if (meta.getId() == 2) {
@@ -51,14 +49,14 @@ public class PCSpawnPlayerPacketTranslator implements PCPacketTranslator<ServerS
             pkAddPlayer.pitch = (packet.getPitch() / 256) * 360;
 
             pkAddPlayer.metadata = EntityMetaTranslator.translateToPE(packet.getMetadata(), null);
-
-            PlayerListPacket lst = new PlayerListPacket();
-            lst.entries = new PlayerListPacket.Entry[] { new PlayerListPacket.Entry(packet.getUUID(), packet.getEntityId(), pkAddPlayer.username, new Skin(DefaultSkin.getDefaultSkinBase64Encoded()))  };
+            
+            PlayerListPacket lst = new PlayerListPacket(new PlayerListPacket.PlayerInfo(packet.getUUID(), packet.getEntityId(), pkAddPlayer.username, DefaultSkin.getDefaultSkinName(), DefaultSkin.getDefaultSkin().getData()));
             //TODO: get the default skin to work.
-            return new DataPacket[]{lst, pkAddPlayer};
+            return new PEPacket[]{lst, pkAddPlayer};
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
+
 }

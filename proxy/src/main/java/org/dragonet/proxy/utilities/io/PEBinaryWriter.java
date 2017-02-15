@@ -12,6 +12,8 @@
  */
 package org.dragonet.proxy.utilities.io;
 
+import org.dragonet.proxy.utilities.VarInt;
+
 import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;
@@ -22,8 +24,6 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
-
-import org.dragonet.proxy.utilities.VarInt;
 
 public class PEBinaryWriter implements Flushable, Closeable {
 

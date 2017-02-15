@@ -12,7 +12,7 @@
  */
 package org.dragonet.proxy.network.translator;
 
-import org.dragonet.proxy.network.ClientConnection;
+import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedWindow;
 
 
@@ -23,14 +23,14 @@ public interface InventoryTranslator {
      * @param window
      * @return Can that window be opened on MCPE?
      */
-    public boolean open(ClientConnection session, CachedWindow window);
+    public boolean open(UpstreamSession session, CachedWindow window);
     
     /**
      * Update a window's content. 
      * @param session
      * @param window
      */
-    public void updateContent(ClientConnection session, CachedWindow window);
+    public void updateContent(UpstreamSession session, CachedWindow window);
     
     /**
      * Update a single slot in a window. 
@@ -38,5 +38,5 @@ public interface InventoryTranslator {
      * @param window
      * @param slotIndex 
      */
-    public void updateSlot(ClientConnection session, CachedWindow window, int slotIndex);
+    public void updateSlot(UpstreamSession session, CachedWindow window, int slotIndex);
 }

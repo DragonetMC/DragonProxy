@@ -12,38 +12,34 @@
  */
 package org.dragonet.proxy.network;
 
-import cn.nukkit.inventory.InventoryType;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.dragonet.proxy.DragonProxy;
+import org.dragonet.inventory.PEInventorySlot;
+import org.dragonet.inventory.PEWindowConstantID;
+import org.dragonet.proxy.protocol.packet.PEPacket;
+import org.dragonet.proxy.protocol.packet.WindowClosePacket;
+import org.dragonet.proxy.protocol.packet.WindowItemsPacket;
 import org.dragonet.proxy.network.cache.CachedWindow;
-import org.dragonet.proxy.network.translator.InventoryTranslator;
 import org.dragonet.proxy.network.translator.inv.ChestWindowTranslator;
-import org.spacehq.mc.protocol.data.game.entity.metadata.Position;
-import org.spacehq.mc.protocol.data.game.window.WindowType;
+import org.dragonet.proxy.network.translator.InventoryTranslator;
+import org.spacehq.mc.protocol.data.game.Position;
+import org.spacehq.mc.protocol.data.game.values.window.WindowType;
 import org.spacehq.mc.protocol.packet.ingame.client.window.ClientCloseWindowPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
 import org.spacehq.packetlib.packet.Packet;
 
-import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.ContainerClosePacket;
-import cn.nukkit.network.protocol.ContainerSetContentPacket;
-import cn.nukkit.network.protocol.DataPacket;
-import org.dragonet.inventory.PEInventorySlot;
-
 public final class InventoryTranslatorRegister {
 
     public final static int[] HOTBAR_CONSTANTS = new int[]{36, 37, 38, 39, 40, 41, 42, 43, 44};
 
-    public static DataPacket[] sendPlayerInventory(ClientConnection session) {
+    public static PEPacket[] sendPlayerInventory(UpstreamSession session) {
         CachedWindow win = session.getWindowCache().getPlayerInventory();
         //Translate and send
-        ContainerSetContentPacket ret = new ContainerSetContentPacket();
-        ret.windowid = InventoryType.PLAYER.getNetworkType();
-        ret.slots = new Item[45];
+        WindowItemsPacket ret = new WindowItemsPacket();
+        ret.windowID = PEWindowConstantID.PLAYER_INVENTORY;
+        ret.slots = new PEInventorySlot[45];
         for (int i = 9; i < win.slots.length; i++) {
             //TODO: Add NBT support
             if (win.slots[i] != null) {
@@ -56,7 +52,7 @@ public final class InventoryTranslatorRegister {
         ret.hotbar = HOTBAR_CONSTANTS;
 
         //TODO: Add armor support
-        return new DataPacket[]{ret};
+        return new PEPacket[]{ret};
     }
 
     // PC Type => PE Translator
@@ -66,7 +62,7 @@ public final class InventoryTranslatorRegister {
         TRANSLATORS.put(WindowType.CHEST, new ChestWindowTranslator());
     }
 
-    public static void closeOpened(ClientConnection session, boolean byServer) {
+    public static void closeOpened(UpstreamSession session, boolean byServer) {
         if (session.getDataCache().containsKey(CacheKey.WINDOW_OPENED_ID)) {
             //There is already a window opened
             int id = (int) session.getDataCache().remove(CacheKey.WINDOW_OPENED_ID);
@@ -83,14 +79,14 @@ public final class InventoryTranslatorRegister {
                         0);
             }
             if (byServer) {
-                ContainerClosePacket pkClose = new ContainerClosePacket();
-                pkClose.windowid = (byte) (id & 0xFF);
+                WindowClosePacket pkClose = new WindowClosePacket();
+                pkClose.windowID = (byte) (id & 0xFF);
                 session.sendPacket(pkClose, true);
             }
         }
     }
 
-    public static void open(ClientConnection session, ServerOpenWindowPacket win) {
+    public static void open(UpstreamSession session, ServerOpenWindowPacket win) {
         closeOpened(session, true);
         if (TRANSLATORS.containsKey(win.getType())) {
             CachedWindow cached = new CachedWindow(win.getWindowId(), win.getType(), 36 + win.getSlots());
@@ -113,7 +109,7 @@ public final class InventoryTranslatorRegister {
         }
     }
 
-    public static void updateSlot(ClientConnection session, ServerSetSlotPacket packet) {
+    public static void updateSlot(UpstreamSession session, ServerSetSlotPacket packet) {
         if (packet.getWindowId() == 0) {
             return;   //We don't process player inventory updates here. 
         }
@@ -129,7 +125,7 @@ public final class InventoryTranslatorRegister {
             return;
         }
         CachedWindow win = session.getWindowCache().get(openedId);
-        DragonProxy.getLogger().info("WIN=" + win.slots.length + ", REQ_SLOT=" + packet.getSlot());
+        System.out.println("WIN=" + win.slots.length + ", REQ_SLOT=" + packet.getSlot());
         if (win.size <= packet.getSlot()) {
             session.getDownstream().send(new ClientCloseWindowPacket(packet.getWindowId()));
             return;
@@ -143,7 +139,7 @@ public final class InventoryTranslatorRegister {
         t.updateSlot(session, win, packet.getSlot());
     }
 
-    public static void updateContent(ClientConnection session, ServerWindowItemsPacket packet) {
+    public static void updateContent(UpstreamSession session, ServerWindowItemsPacket packet) {
         if (packet.getWindowId() == 0) {
             return;   //We don't process player inventory updates here. 
         }

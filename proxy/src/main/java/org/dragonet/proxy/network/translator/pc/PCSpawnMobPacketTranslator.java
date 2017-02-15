@@ -12,19 +12,18 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.network.ClientConnection;
+import org.dragonet.proxy.protocol.packet.AddEntityPacket;
+import org.dragonet.proxy.protocol.packet.PEPacket;
+import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
 
-import cn.nukkit.network.protocol.AddEntityPacket;
-import cn.nukkit.network.protocol.DataPacket;
-
 public class PCSpawnMobPacketTranslator implements PCPacketTranslator<ServerSpawnMobPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerSpawnMobPacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerSpawnMobPacket packet) {
         try {
             CachedEntity e = session.getEntityCache().newEntity(packet);
             if (e == null) {
@@ -32,7 +31,7 @@ public class PCSpawnMobPacketTranslator implements PCPacketTranslator<ServerSpaw
             }
 
             AddEntityPacket pk = new AddEntityPacket();
-            pk.entityRuntimeId = e.eid;
+            pk.eid = e.eid;
             pk.type = e.peType.getPeType();
             pk.x = (float) e.x;
             pk.y = (float) e.y;
@@ -41,9 +40,9 @@ public class PCSpawnMobPacketTranslator implements PCPacketTranslator<ServerSpaw
             pk.speedY = (float) e.motionY;
             pk.speedZ = (float) e.motionZ;
             //TODO: Hack for now. ;P 
-            pk.metadata = EntityMetaTranslator.translateToPE(e.pcMeta, e.peType);
+            pk.meta = EntityMetaTranslator.translateToPE(e.pcMeta, e.peType);
 
-            return new DataPacket[]{pk};
+            return new PEPacket[]{pk};
         } catch (Exception e) {
             e.printStackTrace();
             return null;

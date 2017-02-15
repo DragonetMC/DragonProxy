@@ -18,15 +18,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
-
+import org.dragonet.proxy.nbt.PENBT;
+import org.dragonet.proxy.nbt.tag.CompoundTag;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.utilities.io.PEBinaryReader;
 import org.dragonet.proxy.utilities.io.PEBinaryWriter;
-import org.spacehq.mc.protocol.data.game.entity.metadata.ItemStack;
-
-import cn.nukkit.item.Item;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.spacehq.mc.protocol.data.game.ItemStack;
 
 public class PEInventorySlot {
 
@@ -73,7 +70,7 @@ public class PEInventorySlot {
             return new PEInventorySlot(id, count, meta);
         }
         byte[] nbtData = reader.read(lNbt);
-        CompoundTag nbt = NBTIO.read(new DataInputStream(new ByteArrayInputStream(nbtData)), ByteOrder.LITTLE_ENDIAN);
+        CompoundTag nbt = PENBT.read(new DataInputStream(new ByteArrayInputStream(nbtData)), ByteOrder.LITTLE_ENDIAN);
         return new PEInventorySlot(id, count, meta, nbt);
     }
 
@@ -89,7 +86,7 @@ public class PEInventorySlot {
             writer.writeShort((short) 0);
         } else {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            NBTIO.write(slot.nbt, new DataOutputStream(bos), ByteOrder.LITTLE_ENDIAN);
+            PENBT.write(slot.nbt, new DataOutputStream(bos), ByteOrder.LITTLE_ENDIAN);
             byte[] nbtdata = bos.toByteArray();
             writer.switchEndianness();
             writer.writeShort((short) (nbtdata.length & 0xFFFF));
@@ -98,9 +95,8 @@ public class PEInventorySlot {
         }
     }
 
-    public static Item fromItemStack(ItemStack item) {
-        //return ItemBlockTranslator.translateToPE(item);
-        return null;
+    public static PEInventorySlot fromItemStack(ItemStack item) {
+        return ItemBlockTranslator.translateToPE(item);
     }
 
     @Override

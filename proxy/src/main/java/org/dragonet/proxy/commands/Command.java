@@ -1,8 +1,8 @@
 package org.dragonet.proxy.commands;
 
-import lombok.Getter;
-
 import org.dragonet.proxy.DragonProxy;
+
+import lombok.Getter;
 
 public abstract class Command {
 

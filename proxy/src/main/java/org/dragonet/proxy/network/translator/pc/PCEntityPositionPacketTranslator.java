@@ -12,18 +12,17 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.network.ClientConnection;
+import org.dragonet.proxy.protocol.packet.MoveEntitiesPacket;
+import org.dragonet.proxy.protocol.packet.PEPacket;
+import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityPositionPacket;
 
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.MoveEntityPacket;
-
 public class PCEntityPositionPacketTranslator implements PCPacketTranslator<ServerEntityPositionPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerEntityPositionPacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerEntityPositionPacket packet) {
         CachedEntity e = session.getEntityCache().get(packet.getEntityId());
         if (e == null) {
             return null;
@@ -31,7 +30,7 @@ public class PCEntityPositionPacketTranslator implements PCPacketTranslator<Serv
 
         e.relativeMove(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ());
 
-        MoveEntityPacket pk = new MoveEntityPacket();
+        MoveEntitiesPacket pk = new MoveEntitiesPacket();
         pk.eid = e.eid;
         pk.yaw = e.yaw;
         pk.headYaw = e.yaw;
@@ -42,7 +41,7 @@ public class PCEntityPositionPacketTranslator implements PCPacketTranslator<Serv
             pk.y += 1.62f;
         }
         pk.z = (float) e.z;
-        return new DataPacket[]{pk};
+        return new PEPacket[]{pk};
     }
 
 }

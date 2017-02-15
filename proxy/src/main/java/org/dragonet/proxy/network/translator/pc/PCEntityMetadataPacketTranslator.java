@@ -12,21 +12,20 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.network.ClientConnection;
+import org.dragonet.proxy.protocol.packet.AddItemEntityPacket;
+import org.dragonet.proxy.protocol.packet.PEPacket;
+import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.data.game.entity.metadata.ItemStack;
-import org.spacehq.mc.protocol.data.game.entity.type.object.ObjectType;
+import org.spacehq.mc.protocol.data.game.ItemStack;
+import org.spacehq.mc.protocol.data.game.values.entity.ObjectType;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityMetadataPacket;
-
-import cn.nukkit.network.protocol.AddItemEntityPacket;
-import cn.nukkit.network.protocol.DataPacket;
 
 public class PCEntityMetadataPacketTranslator implements PCPacketTranslator<ServerEntityMetadataPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerEntityMetadataPacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerEntityMetadataPacket packet) {
         CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
         if (entity == null) {
             return null;
@@ -34,7 +33,7 @@ public class PCEntityMetadataPacketTranslator implements PCPacketTranslator<Serv
         if (!entity.spawned && entity.objType == ObjectType.ITEM) {
             entity.spawned = true;  //Spawned
             AddItemEntityPacket pk = new AddItemEntityPacket();
-            pk.entityRuntimeId = packet.getEntityId();
+            pk.eid = packet.getEntityId();
             pk.item = ItemBlockTranslator.translateToPE((ItemStack) packet.getMetadata()[0].getValue());
             pk.x = (float) entity.x;
             pk.y = (float) entity.y;
@@ -42,7 +41,7 @@ public class PCEntityMetadataPacketTranslator implements PCPacketTranslator<Serv
             pk.speedX = (float) entity.motionX;
             pk.speedY = (float) entity.motionY;
             pk.speedZ = (float) entity.motionZ;
-            return new DataPacket[]{pk};
+            return new PEPacket[]{pk};
         }
         return null;
     }

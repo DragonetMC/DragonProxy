@@ -12,17 +12,16 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
+import org.dragonet.proxy.protocol.packet.PEPacket;
 import org.dragonet.proxy.network.InventoryTranslatorRegister;
-import org.dragonet.proxy.network.ClientConnection;
+import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
-
-import cn.nukkit.network.protocol.DataPacket;
 
 public class PCOpenWindowPacketTranslator implements PCPacketTranslator<ServerOpenWindowPacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerOpenWindowPacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerOpenWindowPacket packet) {
         session.getProxy().getGeneralThreadPool().execute(() -> {
             InventoryTranslatorRegister.open(session, packet);
         });

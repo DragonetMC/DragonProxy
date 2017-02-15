@@ -16,55 +16,43 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.UUID;
-import lombok.Getter;
-import lombok.Setter;
-
 import org.dragonet.proxy.DragonProxy;
 
 public class SessionRegister {
 
     private final DragonProxy proxy;
 
-    private final Map<UUID, ClientConnection> clients = Collections.synchronizedMap(new HashMap<UUID, ClientConnection>());
-        
+    private final Map<String, UpstreamSession> clients = Collections.synchronizedMap(new HashMap<String, UpstreamSession>());
+
     public SessionRegister(DragonProxy proxy) {
         this.proxy = proxy;
     }
 
     public void onTick() {
-        Iterator<Map.Entry<UUID, ClientConnection>> iterator = clients.entrySet().iterator();
+        Iterator<Map.Entry<String, UpstreamSession>> iterator = clients.entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<UUID, ClientConnection> ent = iterator.next();
+            Map.Entry<String, UpstreamSession> ent = iterator.next();
             ent.getValue().onTick();
         }
     }
 
-    public void removeSession(ClientConnection session) {
-        clients.remove(session.getSessionID());
+    public void newSession(UpstreamSession session) {
+        clients.put(session.getRaknetID(), session);
     }
 
-    public ClientConnection getSession(UUID identifier) {
+    public void removeSession(UpstreamSession session) {
+        clients.remove(session.getRaknetID());
+    }
+
+    public UpstreamSession getSession(String identifier) {
         return clients.get(identifier);
     }
 
-    public Map<UUID, ClientConnection> getAll() {
+    public Map<String, UpstreamSession> getAll() {
         return Collections.unmodifiableMap(clients);
     }
 
     public int getOnlineCount() {
         return clients.size();
-    }
-    
-    public boolean acceptConnection(ClientConnection session){
-        if(clients.size() < proxy.getConfig().getMax_players()){
-            clients.put(session.getSessionID(), session);
-            return true;
-        }
-        return false;
-    }
-
-    public UUID getNextSessionID() {
-        return UUID.randomUUID();
     }
 }

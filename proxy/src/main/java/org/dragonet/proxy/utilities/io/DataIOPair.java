@@ -14,7 +14,6 @@ package org.dragonet.proxy.utilities.io;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-
 import lombok.Getter;
 
 public class DataIOPair {

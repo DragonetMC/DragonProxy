@@ -12,26 +12,25 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.network.ClientConnection;
+import org.dragonet.proxy.protocol.packet.PEPacket;
+import org.dragonet.proxy.protocol.packet.UpdateBlockPacket;
+import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerBlockChangePacket;
 
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.UpdateBlockPacket;
-
 public class PCBlockChangePacketTranslator implements PCPacketTranslator<ServerBlockChangePacket> {
 
     @Override
-    public DataPacket[] translate(ClientConnection session, ServerBlockChangePacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerBlockChangePacket packet) {
         UpdateBlockPacket pk = new UpdateBlockPacket();
         pk.flags = UpdateBlockPacket.FLAG_ALL;
-        pk.blockId = (byte) (ItemBlockTranslator.translateToPE(packet.getRecord().getBlock().getId()) & 0xFF);
-        pk.blockData = (byte) (packet.getRecord().getBlock().getData() & 0xFF);
+        pk.block = (byte) (ItemBlockTranslator.translateToPE(packet.getRecord().getId()) & 0xFF);
+        pk.meta = (byte) (packet.getRecord().getData() & 0xFF);
         pk.x = packet.getRecord().getPosition().getX();
         pk.y = (byte) (packet.getRecord().getPosition().getY() & 0xFF);
         pk.z = packet.getRecord().getPosition().getZ();
-        return new DataPacket[]{pk};
+        return new PEPacket[]{pk};
     }
 
 }

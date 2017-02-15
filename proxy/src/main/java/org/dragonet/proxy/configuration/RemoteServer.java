@@ -15,12 +15,10 @@ package org.dragonet.proxy.configuration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.dragonet.configuration.serialization.ConfigurationSerializable;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import org.dragonet.configuration.serialization.ConfigurationSerializable;
-import org.dragonet.proxy.network.ClientConnection;
-import org.dragonet.proxy.network.adapter.ServerProtocolAdapter;
 
 public abstract class RemoteServer implements ConfigurationSerializable {
     @Getter
@@ -58,6 +56,4 @@ public abstract class RemoteServer implements ConfigurationSerializable {
         server.remotePort = ((Number) map.get("remote_port")).intValue();
         return server;
     }
-    
-    public abstract ServerProtocolAdapter getProtocolAdapter(ClientConnection session);
 }

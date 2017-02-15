@@ -17,12 +17,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import lombok.Getter;
-
 import org.dragonet.proxy.entity.EntityType;
-import org.dragonet.proxy.network.ClientConnection;
-import org.spacehq.mc.protocol.data.MagicValues;
+import org.dragonet.proxy.network.UpstreamSession;
+import org.spacehq.mc.protocol.data.game.values.MagicValues;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnObjectPacket;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
@@ -30,14 +28,14 @@ import org.spacehq.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlay
 public final class EntityCache {
 
     @Getter
-    private final ClientConnection upstream;
+    private final UpstreamSession upstream;
 
     @Getter
     private final Map<Integer, CachedEntity> entities = Collections.synchronizedMap(new HashMap<Integer, CachedEntity>());
 
     private final List<Integer> playerEntities = Collections.synchronizedList(new ArrayList<Integer>());
 
-    public EntityCache(ClientConnection upstream) {
+    public EntityCache(UpstreamSession upstream) {
         this.upstream = upstream;
         reset(false);
     }

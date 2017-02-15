@@ -1,9 +1,6 @@
 package org.dragonet.configuration;
 
-import static org.dragonet.proxy.utilities.NumberConversions.toDouble;
-import static org.dragonet.proxy.utilities.NumberConversions.toFloat;
-import static org.dragonet.proxy.utilities.NumberConversions.toInt;
-import static org.dragonet.proxy.utilities.NumberConversions.toLong;
+import static org.dragonet.proxy.utilities.NumberConversions.*;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

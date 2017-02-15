@@ -13,10 +13,10 @@
 package org.dragonet.proxy.utilities;
 
 import io.netty.util.CharsetUtil;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 

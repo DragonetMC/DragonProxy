@@ -12,23 +12,22 @@
  */
 package org.dragonet.proxy.network.translator.pe;
 
+import org.dragonet.proxy.protocol.packet.PlayerEquipmentPacket;
 import org.dragonet.proxy.network.InventoryTranslatorRegister;
-import org.dragonet.proxy.network.ClientConnection;
+import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
-import org.spacehq.mc.protocol.data.game.entity.metadata.ItemStack;
-import org.spacehq.mc.protocol.data.game.window.ClickItemParam;
-import org.spacehq.mc.protocol.data.game.window.WindowAction;
-import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerChangeHeldItemPacket;
+import org.spacehq.mc.protocol.data.game.ItemStack;
+import org.spacehq.mc.protocol.data.game.values.window.ClickItemParam;
+import org.spacehq.mc.protocol.data.game.values.window.WindowAction;
+import org.spacehq.mc.protocol.packet.ingame.client.player.ClientChangeHeldItemPacket;
 import org.spacehq.mc.protocol.packet.ingame.client.window.ClientWindowActionPacket;
 import org.spacehq.packetlib.packet.Packet;
 
-import cn.nukkit.network.protocol.MobEquipmentPacket;
-
-public class PEPlayerEquipmentPacketTranslator implements PEPacketTranslator<MobEquipmentPacket> {
+public class PEPlayerEquipmentPacketTranslator implements PEPacketTranslator<PlayerEquipmentPacket> {
 
     @Override
-    public Packet[] translate(ClientConnection session, MobEquipmentPacket packet) {
+    public Packet[] translate(UpstreamSession session, PlayerEquipmentPacket packet) {
         if (packet.selectedSlot > 8) {
             return null;
         }
@@ -38,7 +37,7 @@ public class PEPlayerEquipmentPacketTranslator implements PEPacketTranslator<Mob
         }
         if (InventoryTranslatorRegister.HOTBAR_CONSTANTS[packet.selectedSlot] == packet.slot) {
             //Just switched selected slot index, no swapping
-            ClientPlayerChangeHeldItemPacket pk = new ClientPlayerChangeHeldItemPacket(packet.selectedSlot);
+            ClientChangeHeldItemPacket pk = new ClientChangeHeldItemPacket(packet.selectedSlot);
             return new Packet[]{pk};
         }
         CachedWindow playerInv = session.getWindowCache().getPlayerInventory();
