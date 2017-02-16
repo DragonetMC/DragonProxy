@@ -110,6 +110,8 @@ public class DragonProxy {
                 config.setRemote_servers(servers);
                 config.setDefault_server("localhost");
                 config.setAcceptPCClients(false);
+                config.setMax_players(10);
+                config.setMode("offline");
                 String str = new Yaml().dump(config);
                 FileOutputStream fos = new FileOutputStream(fileConfig);
 
