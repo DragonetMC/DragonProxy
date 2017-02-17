@@ -3,31 +3,26 @@ package org.dragonet.proxy.network.translator.pc;
 import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.dragonet.proxy.utilities.DefaultSkin;
 import org.spacehq.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import org.spacehq.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
-
-import cn.nukkit.entity.data.Skin;
-import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.AddPlayerPacket;
-import cn.nukkit.network.protocol.PlayerListPacket;
-import net.marfgamer.jraknet.RakNetPacket;
-import sul.metadata.Pocket101;
 import sul.protocol.pocket101.play.AddPlayer;
+import sul.protocol.pocket101.play.PlayerList;
+import sul.protocol.pocket101.play.PlayerList.Add;
+
 import sul.protocol.pocket101.types.Slot;
 import sul.utils.Tuples;
 
 public class PCSpawnPlayerPacketTranslator implements PCPacketTranslator<ServerSpawnPlayerPacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerSpawnPlayerPacket packet) {
-    	try {
-    		CachedEntity entity = session.getEntityCache().newPlayer(packet);
+    public sul.utils.Packet[] translate(ClientConnection session, ServerSpawnPlayerPacket packet) {
+        try {
+            CachedEntity entity = session.getEntityCache().newPlayer(packet);
 
             // TODO: Do we need to register the player here ?
-            AddPlayerPacket pkAddPlayer = new AddPlayerPacket();
-            pkAddPlayer.entityRuntimeId = entity.eid;
-            pkAddPlayer.entityUniqueId = entity.eid;
+            AddPlayer pkAddPlayer = new AddPlayer();
+            pkAddPlayer.entityId = entity.eid;
+            pkAddPlayer.runtimeId = entity.eid;
 
             for (EntityMetadata meta : packet.getMetadata()) {
                 if (meta.getId() == 2) {
@@ -35,39 +30,38 @@ public class PCSpawnPlayerPacketTranslator implements PCPacketTranslator<ServerS
                     break;
                 }
             }
-            
+
             if (pkAddPlayer.username == null) {
-                if(session.getPlayerInfoCache().containsKey(packet.getUUID())){
+                if (session.getPlayerInfoCache().containsKey(packet.getUUID())) {
                     pkAddPlayer.username = session.getPlayerInfoCache().get(packet.getUUID()).getProfile().getName();
                 } else {
-                    return new RakNetPacket[0];
+                    return new sul.utils.Packet[0];
                 }
             }
 
             pkAddPlayer.uuid = packet.getUUID();
-            
-            pkAddPlayer.x = (float) packet.getX() / 32;
-            pkAddPlayer.y = (float) packet.getY() / 32 + 1.62f;
-            pkAddPlayer.z = (float) packet.getZ() / 32;
-            pkAddPlayer.speedX = 0.0f;
-            pkAddPlayer.speedY = 0.0f;
-            pkAddPlayer.speedZ = 0.0f;
+
+            pkAddPlayer.position = new Tuples.FloatXYZ((float) packet.getX() / 32, (float) packet.getY() / 32 + 1.62f, (float) packet.getZ() / 32);
+            pkAddPlayer.motion = new Tuples.FloatXYZ();
             pkAddPlayer.yaw = (packet.getYaw() / 256) * 360;
             pkAddPlayer.pitch = (packet.getPitch() / 256) * 360;
-            pkAddPlayer.item = new Item(0, 1);
-            
+            pkAddPlayer.heldItem = new Slot(1, 0, new byte[0]);
+
             pkAddPlayer.encode();
+
+            /*PlayerList obj;
+            obj = new Add();
             
-            PlayerListPacket lst = new PlayerListPacket(); //Using nukkit packets for this because the sul packet makes no sense
-            lst.entries = new PlayerListPacket.Entry[] { new PlayerListPacket.Entry(packet.getUUID(), packet.getEntityId(), pkAddPlayer.username, new Skin(DefaultSkin.getDefaultSkinBase64Encoded()))  };
+            Add lst = new Add();
+            //lst.entries = new PlayerListPacket.Entry[] { new PlayerListPacket.Entry(packet.getUUID(), packet.getEntityId(), pkAddPlayer.username, new Skin(DefaultSkin.getDefaultSkinBase64Encoded()))  };
             //TODO: get the default skin to work.
             //TODO: send the player's skin
-            lst.encode();
-            
-            return new RakNetPacket[]{new RakNetPacket(lst.getByteArray()), new RakNetPacket(pkAddPlayer.getByteArray())};
+            lst.encode();*/
+
+            return new sul.utils.Packet[]{/*lst,*/ pkAddPlayer};
         } catch (Exception e) {
             e.printStackTrace();
-            return new RakNetPacket[0];
+            return new sul.utils.Packet[0];
         }
     }
 }

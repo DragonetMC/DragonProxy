@@ -23,7 +23,7 @@ import net.marfgamer.jraknet.RakNetPacket;
 public class PCPlayerListItemPacketTranslator implements PCPacketTranslator<ServerPlayerListEntryPacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerPlayerListEntryPacket packet) {
+    public sul.utils.Packet[] translate(ClientConnection session, ServerPlayerListEntryPacket packet) {
         if(packet.getAction() == PlayerListEntryAction.ADD_PLAYER){
             PlayerListEntry[] entries = packet.getEntries();
             for (PlayerListEntry entrie : entries) {
@@ -35,7 +35,7 @@ public class PCPlayerListItemPacketTranslator implements PCPacketTranslator<Serv
                 session.getPlayerInfoCache().remove(entrie.getProfile().getId());
             }
         }
-        return new RakNetPacket[0];
+        return new sul.utils.Packet[0];
     }
 
 }

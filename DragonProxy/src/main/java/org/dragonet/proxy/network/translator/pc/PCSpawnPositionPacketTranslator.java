@@ -21,17 +21,19 @@ import org.spacehq.mc.protocol.data.game.entity.player.GameMode;
 import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import org.spacehq.mc.protocol.packet.ingame.server.world.ServerSpawnPositionPacket;
 
-import cn.nukkit.network.protocol.StartGamePacket;
 import net.marfgamer.jraknet.RakNetPacket;
 import sul.protocol.pocket101.play.AdventureSettings;
 import sul.protocol.pocket101.play.MovePlayer;
 import sul.protocol.pocket101.play.PlayStatus;
+import sul.protocol.pocket101.play.StartGame;
 import sul.utils.Tuples;
+import sul.utils.Tuples.FloatXYZ;
+import sul.utils.Tuples.IntXYZ;
 
 public class PCSpawnPositionPacketTranslator implements PCPacketTranslator<ServerSpawnPositionPacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerSpawnPositionPacket packet) {
+    public sul.utils.Packet[] translate(ClientConnection session, ServerSpawnPositionPacket packet) {
         if (session.getDataCache().get(CacheKey.PACKET_JOIN_GAME_PACKET) == null) {
             if (DragonProxy.getSelf().getAuthMode().equals("online")) {
             	session.sendChat(DragonProxy.getSelf().getLang().get(Lang.MESSAGE_TELEPORT_TO_SPAWN));
@@ -44,30 +46,26 @@ public class PCSpawnPositionPacketTranslator implements PCPacketTranslator<Serve
                 pkMovePlayer.pitch = 0.0f;
                 pkMovePlayer.onGround = false;
                 pkMovePlayer.animation = MovePlayer.FULL;
-                return fromSulPackets(pkMovePlayer);
+                return new sul.utils.Packet[] {pkMovePlayer};
             } else {
                 session.getUpstreamProtocol().clientDisconectRequest(session, DragonProxy.getSelf().getLang().get(Lang.MESSAGE_REMOTE_ERROR));
             }
-            return null;
+            return new sul.utils.Packet[0];
         }
         ServerJoinGamePacket restored = (ServerJoinGamePacket) session.getDataCache().remove(CacheKey.PACKET_JOIN_GAME_PACKET);
-        StartGamePacket ret = new StartGamePacket();
-        ret.entityUniqueId = 0; //Use EID 0 for eaisier management
-        ret.entityRuntimeId = 0;
-        ret.x = packet.getPosition().getX();
-        ret.y = packet.getPosition().getY();
-        ret.z = packet.getPosition().getZ();
+        StartGame ret = new StartGame();
+        ret.entityId = 0; //Use EID 0 for eaisier management
+        ret.runtimeId = 0;
+        ret.position = new FloatXYZ(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
         ret.dimension = (byte) (restored.getDimension() & 0xFF);
         ret.seed = 0;
         ret.generator = 1;
-        ret.gamemode = restored.getGameMode() == GameMode.CREATIVE ? 1 : 0;
-        ret.spawnX = packet.getPosition().getX();
-        ret.spawnY = packet.getPosition().getY();
-        ret.spawnZ = packet.getPosition().getZ();
-        ret.dayCycleStopTime = -1;
+        ret.worldGamemode = restored.getGameMode() == GameMode.CREATIVE ? 1 : 0;
+        ret.spawnPosition = new IntXYZ(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
+        ret.time = -1;
         ret.rainLevel = 0.0f;
-        ret.lightningLevel = 0.0f;
-        ret.commandsEnabled = false;
+        ret.lightingLevel = 0.0f;
+        ret.cheatsEnabled = false;
         ret.worldName = "";
 
         AdventureSettings adv = new AdventureSettings();
@@ -77,6 +75,6 @@ public class PCSpawnPositionPacketTranslator implements PCPacketTranslator<Serve
         PlayStatus stat = new PlayStatus();
         stat.status = PlayStatus.SPAWNED;
         
-        return fromSulPackets(ret, adv, stat);
+        return new sul.utils.Packet[] {ret, adv, stat};
     }
 }

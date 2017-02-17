@@ -12,28 +12,18 @@
  */
 package org.dragonet.proxy.network.adapter;
 
-import cn.nukkit.level.format.anvil.ChunkSection;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.FullChunkDataPacket;
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lombok.Getter;
 import net.marfgamer.jraknet.RakNetPacket;
 import net.marfgamer.jraknet.identifier.MCPEIdentifier;
 import net.marfgamer.jraknet.protocol.Reliability;
+import net.marfgamer.jraknet.protocol.message.EncapsulatedPacket;
 import net.marfgamer.jraknet.protocol.message.acknowledge.Record;
 import net.marfgamer.jraknet.server.RakNetServer;
 import net.marfgamer.jraknet.server.RakNetServerListener;
@@ -44,19 +34,15 @@ import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.network.ClientConnection;
 import org.dragonet.proxy.network.ConnectionStatus;
 import org.dragonet.proxy.network.PacketTranslatorRegister;
+import org.dragonet.proxy.network.RakNetUtil;
 import org.dragonet.proxy.utilities.LoginPacketPayload;
 import org.dragonet.proxy.utilities.Versioning;
-import sul.protocol.pocket101.play.ChunkRadiusUpdated;
+import sul.protocol.pocket101.play.Batch;
 import sul.protocol.pocket101.play.FullChunkData;
 import sul.protocol.pocket101.play.Login;
 import sul.protocol.pocket101.play.PlayStatus;
 import sul.protocol.pocket101.play.ResourcePacksInfo;
-import sul.protocol.pocket101.play.Respawn;
-import sul.protocol.pocket101.play.SetSpawnPosition;
-import sul.protocol.pocket101.play.SetTime;
 import sul.protocol.pocket101.play.StartGame;
-import sul.protocol.pocket101.types.BlockPosition;
-import sul.utils.Buffer;
 import sul.utils.Tuples;
 
 /**
@@ -65,7 +51,7 @@ import sul.utils.Tuples;
  *
  * @author robotman3000
  */
-public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPacket>, RakNetServerListener {
+public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<sul.utils.Packet>, RakNetServerListener {
 
     @Getter
     private RakNetServer server;
@@ -80,18 +66,195 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
         DragonProxy.getLogger().info("Starting up the Minecraft PE ClientProtocolAdapter");
     }
 
+    public Long getSessionID(UUID id) {
+        if (sessionList.containsValue(id)) {
+            for (Map.Entry<Long, UUID> entry : sessionList.entrySet()) {
+                if (entry.getValue().equals(id)) {
+                    return entry.getKey();
+                }
+            }
+        }
+        System.out.println("Ret null");
+        return null;
+    }
+
+    public UUID getSessionUUID(long id) {
+        return UUID.nameUUIDFromBytes(String.valueOf(id).getBytes());
+    }
+
+    public void onClientLoginRequest(Login packet, ClientConnection session) {
+        session.setStatus(ConnectionStatus.CONNECTING_CLIENT);
+        if (session.getUsername() != null) {
+            clientDisconectRequest(session, "Already logged in, this must be an error! ");
+            return;
+        }
+
+        PlayStatus status = new PlayStatus(); // Required; Tells the client that his connection was accepted or denied
+        if (packet.protocol != Versioning.MINECRAFT_PE_PROTOCOL) {
+            status.status = (packet.protocol < Versioning.MINECRAFT_PE_PROTOCOL ? PlayStatus.OUTDATED_CLIENT : PlayStatus.OUTDATED_SERVER);
+            sendPacket(status, session);
+            clientDisconectRequest(session, DragonProxy.getSelf().getLang().get(Lang.MESSAGE_UNSUPPORTED_CLIENT));
+            return;
+        }
+
+        LoginPacketPayload data = LoginPacketPayload.decode(packet.body);
+        session.setUsername(data.getUsername());
+
+        DragonProxy.getLogger().info(DragonProxy.getSelf().getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, session.getUsername(), ""));
+
+        session.setStatus(ConnectionStatus.CONNECTED);
+        switch (DragonProxy.getSelf().getAuthMode()) {
+            /*case "online":
+                // We must send enough packets to make chat accessable on the client
+                minimalClientHandshake(false);
+                this.status = ConnectionStatus.AWAITING_CLIENT_AUTHENTICATION;
+                dataCache.put(CacheKey.AUTHENTICATION_STATE, "email");
+
+                sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_NOTICE, username));
+                sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_EMAIL));
+                break;
+            case "cls":
+                this.status = ConnectionStatus.AWAITING_CLIENT_AUTHENTICATION;
+                authenticateCLSMode();
+                break;*/
+            case "offline":
+                // We translate everything we are sent without regard for what it is
+                //minimalClientHandshake(false, session);
+
+                DragonProxy.getLogger().debug(sender + "Initially joining [" + DragonProxy.getSelf().getConfig().getDefault_server() + "]... ");
+                session.connectToServer(DragonProxy.getSelf().getConfig().getRemote_servers().get(DragonProxy.getSelf().getConfig().getDefault_server()));
+                break;
+            default:
+                String error = "Unsupported authentication mode " + DragonProxy.getSelf().getAuthMode();
+                DragonProxy.getLogger().warning(sender + error);
+                clientDisconectRequest(session, error);
+        }
+    }
+
+    private void sendFlatChunks(int playerX, int playerZ, int circleRadius, boolean sendAir, ClientConnection session) {
+        int blocksX = 1;
+        int blocksZ = 1;
+
+        boolean cx = false; // Centered?
+        // float circleRadius = player.getRenderDistance(); // Circle
+        // Radius
+        int maxBlocksX, maxBlocksZ;
+
+        if (!cx) {
+            maxBlocksX = (int) (Math.ceil((circleRadius - blocksX / 2) / blocksX) * 2 + 1);
+            maxBlocksZ = (int) (Math.ceil((circleRadius - blocksZ / 2) / blocksZ) * 2 + 1);
+        } else {
+            maxBlocksX = (int) (Math.ceil(circleRadius / blocksX) * 2);
+            maxBlocksZ = (int) (Math.ceil(circleRadius / blocksZ) * 2);
+        }
+
+        // TODO: Cache the chunk circle
+        // Calculate the chunk ring
+        //ArrayList<Vector3D> loadChunksList = new ArrayList<>();
+        for (int z = -maxBlocksZ / 2; z <= maxBlocksZ / 2; z++) {
+            for (int x = -maxBlocksX / 2; x <= maxBlocksX / 2; x++) {
+                double distance = Math.sqrt(Math.pow(z * blocksZ, 2) + Math.pow(x * blocksX, 2));
+                boolean shouldSendChunk = (distance < circleRadius);
+                if (shouldSendChunk) {
+                    sendPacket(getFlatChunkPacket(x, z, (sendAir ? 0 : 1)), session);
+                    //loadChunksList.add(new Vector3D(nx - x, 0, nz - z));
+                }
+            }
+        }
+    }
+
+    private FullChunkData getFlatChunkPacket(int chunkX, int chunkZ, int blockId) {
+        /*cn.nukkit.level.format.anvil.Chunk chunk = cn.nukkit.level.format.anvil.Chunk.getEmptyChunk(chunkX, chunkZ);
+        int y = 1;
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                chunk.setBlock(x, y, z, blockId);
+            }
+        }*/
+
+        int length = 0;
+
+        length += 1; // Section count
+        //length += (chunk.getSections().length * (/*Section Size*/10240)) + (chunk.getSections().length /*Section header*/); // blocks[4096] + data[2048] + skyLight[2048] + blockLight[2048] 
+        length += 256; // Height Map
+        length += 256; // Unknown
+        length += (4 * 256); // Biome ID's
+        length += 4; // Varint for extradata replace with extradata len if sending extradata
+        length += 1; // Block entities; same as varit above
+
+        /* FullChunkData pePacket = new FullChunkData(new Tuples.IntXZ(chunkX, chunkZ), new byte[length], new byte[0]);
+        int index = 0;
+        pePacket.data[index++] = (byte) (chunk.getSections().length);
+        for (int ind = chunk.getSections().length - 1; ind >= 0; ind--) {
+            cn.nukkit.level.format.ChunkSection sec = chunk.getSection(ind);
+            pePacket.data[index++] = 0; // Version Header?
+            for (byte b : sec.getBytes()) {
+                pePacket.data[index++] = b;
+            }
+        }*/
+        FullChunkData pePacket = new FullChunkData(new Tuples.IntXZ(chunkX, chunkZ), new byte[1 + 256 + 256 + (4 * 256) + 1 + 4], new byte[0]);
+        return pePacket;
+    }
+
     @Override
-    public void handlePacket(RakNetPacket packet, ClientConnection session) {
+    public void onTick() {
+        if (server == null) {
+            identifier = new MCPEIdentifier(DragonProxy.getSelf().getNetwork().getMotd(),
+                    Versioning.MINECRAFT_PE_PROTOCOL,
+                    Versioning.MINECRAFT_PE_VERSION,
+                    DragonProxy.getSelf().getNetwork().getSessionRegister().getOnlineCount(),
+                    DragonProxy.getSelf().getConfig().getMax_players(),
+                    0,
+                    "DragonProxyWorld",
+                    "creative");
+
+            server = new RakNetServer(DragonProxy.getSelf().getConfig().getUdp_bind_port(),
+                    DragonProxy.getSelf().getConfig().getMax_players(),
+                    1464,
+                    identifier);
+            server.setListener(this);
+            server.startThreaded();
+        }
+    }
+
+    @Override
+    public void clientDisconectRequest(ClientConnection id, String reason) {
+        DragonProxy.getLogger().info(sender + "Proxy has commanded " + id + " to disconnect for the reason " + reason);
+        Long sessionID = getSessionID(id.getSessionID());
+        if (sessionID != null) {
+            server.removeSession(server.getSession(sessionID));
+        } else {
+            DragonProxy.getLogger().warning(sender + "Could not disconnect client: " + id + "; The session ID was null");
+        }
+    }
+
+    @Override
+    public void sendPacket(sul.utils.Packet packet, ClientConnection session) {
+        if (session == null) {
+            DragonProxy.getLogger().warning(sender + "sendPacket aborting because session is null");
+            return;
+        }
+
+        DragonProxy.getLogger().debug(sender + "Sending Packet: " + session.getSessionID() + ": " + packet.getClass().getCanonicalName());
+        server.sendMessage(getSessionID(session.getSessionID()), Reliability.UNRELIABLE, RakNetUtil.prepareToSend(packet, Reliability.UNRELIABLE));
+    }
+
+    @Override
+    public void handlePacket(sul.utils.Packet packet, ClientConnection session) {
         if (session == null) {
             DragonProxy.getLogger().debug(sender + "Session was null");
             return;
         }
-        DragonProxy.getLogger().debug(sender + "Handling Packet: " + session.getSessionID() + ": " + Integer.toHexString(packet.buffer().getByte(1)));
+        DragonProxy.getLogger().debug(sender + "Handling Packet: " + session.getSessionID() + ": " + packet.getClass().getCanonicalName());
 
+        if(packet instanceof Batch){
+            DragonProxy.getLogger().debug(sender + "\tBatch Contents: ");
+        }
+        
         if (session.getStatus() == ConnectionStatus.UNCONNECTED || session.getStatus() == ConnectionStatus.AWAITING_CLIENT_LOGIN) {
-            if (packet.buffer().getByte(1) == Login.ID) {
+            if (packet instanceof Login) {
                 try {
-                    Login pk = Login.fromBuffer(Arrays.copyOfRange(packet.array(), 1, packet.array().length));
+                    Login pk = (Login) packet;
                     onClientLoginRequest(pk, session);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -125,8 +288,8 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
             }
         }*/
 
-        if (session.getStatus() == ConnectionStatus.CONNECTED) {
-            Object[] packets = {new RakNetPacket(packet.buffer())};
+        //if (session.getStatus() == ConnectionStatus.CONNECTED) {
+            Object[] packets = {packet};
             if (session.getDownstreamProtocol().getSupportedPacketType() != getSupportedPacketType()) {
                 packets = PacketTranslatorRegister.translateToPC(session, packet);
             }
@@ -134,11 +297,11 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
             for (Object pack : packets) {
                 session.getDownstreamProtocol().sendPacket(pack);
             }
-        } else {
+        /*} else {
             DragonProxy.getLogger().warning(sender + "Ignoring packet from unconnected client " + session.getSessionID());
-        }
+        }*/
     }
-        
+
     @Override
     public void handlePacket(RakNetClientSession session, RakNetPacket packet, int channel) {
         if (!sessionList.containsKey(session.getGloballyUniqueId())) {
@@ -146,35 +309,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
             sessionList.put(session.getGloballyUniqueId(), getSessionUUID(session.getGloballyUniqueId()));
         }
         DragonProxy.getLogger().debug(sender + "Handling Packet from Channel: " + channel + ": " + Integer.toHexString(packet.buffer().getByte(1)));
-        handlePacket(packet, DragonProxy.getSelf().getNetwork().getSessionRegister().getSession(getSessionUUID(session.getGloballyUniqueId())));
-    }
-
-    @Override
-    public void sendPacket(RakNetPacket packet, ClientConnection session) {
-        if (session == null) {
-            DragonProxy.getLogger().warning(sender + "sendPacket aborting because session is null");
-            return;
-        }
-
-        DragonProxy.getLogger().debug(sender + "Sending Packet: " + session.getSessionID() + ": " + Integer.toHexString(packet.buffer().getByte(1)));
-        // packet.encode();
-        server.sendMessage(getSessionID(session.getSessionID()), Reliability.UNRELIABLE, packet);
-    }
-
-    public Long getSessionID(UUID id) {
-        if (sessionList.containsValue(id)) {
-            for (Map.Entry<Long, UUID> entry : sessionList.entrySet()) {
-                if (entry.getValue().equals(id)) {
-                    return entry.getKey();
-                }
-            }
-        }
-        System.out.println("Ret null");
-        return null;
-    }
-
-    public UUID getSessionUUID(long id) {
-        return UUID.nameUUIDFromBytes(String.valueOf(id).getBytes());
+        handlePacket(RakNetUtil.getPacket(Arrays.copyOfRange(packet.array(), 1, packet.array().length)), DragonProxy.getSelf().getNetwork().getSessionRegister().getSession(getSessionUUID(session.getGloballyUniqueId())));
     }
 
     @Override
@@ -249,94 +384,13 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
     }
 
     @Override
-    public void clientDisconectRequest(ClientConnection id, String reason) {
-        DragonProxy.getLogger().info(sender + "Proxy has commanded " + id + " to disconnect for the reason " + reason);
-        Long sessionID = getSessionID(id.getSessionID());
-        if (sessionID != null) {
-            server.removeSession(server.getSession(sessionID));
-        } else {
-            DragonProxy.getLogger().warning(sender + "Could not disconnect client: " + id + "; The session ID was null");
-        }
-    }
-
-    @Override
     public void handlePing(ServerPing ping) {
         DragonProxy.getLogger().debug(sender + "Ping From Client: " + ping.getSender());
     }
 
     @Override
-    public void onTick() {
-        if (server == null) {
-            identifier = new MCPEIdentifier(DragonProxy.getSelf().getNetwork().getMotd(),
-                    Versioning.MINECRAFT_PE_PROTOCOL,
-                    Versioning.MINECRAFT_PE_VERSION,
-                    DragonProxy.getSelf().getNetwork().getSessionRegister().getOnlineCount(),
-                    DragonProxy.getSelf().getConfig().getMax_players(),
-                    0,
-                    "DragonProxyWorld",
-                    "creative");
-
-            server = new RakNetServer(DragonProxy.getSelf().getConfig().getUdp_bind_port(),
-                    DragonProxy.getSelf().getConfig().getMax_players(),
-                    1464,
-                    identifier);
-            server.setListener(this);
-            server.startThreaded();
-        }
-    }
-
-    public void onClientLoginRequest(Login packet, ClientConnection session) {
-        session.setStatus(ConnectionStatus.CONNECTING_CLIENT);
-        if (session.getUsername() != null) {
-            clientDisconectRequest(session, "Already logged in, this must be an error! ");
-            return;
-        }
-
-        PlayStatus status = new PlayStatus(); // Required; Tells the client that his connection was accepted or denied
-        if (packet.protocol != Versioning.MINECRAFT_PE_PROTOCOL) {
-            status.status = (packet.protocol < Versioning.MINECRAFT_PE_PROTOCOL ? PlayStatus.OUTDATED_CLIENT : PlayStatus.OUTDATED_SERVER);
-            sendPacket(PacketTranslatorRegister.preparePacketForSending(status), session);
-            clientDisconectRequest(session, DragonProxy.getSelf().getLang().get(Lang.MESSAGE_UNSUPPORTED_CLIENT));
-            return;
-        }
-
-        LoginPacketPayload data = LoginPacketPayload.decode(packet.body);
-        session.setUsername(data.getUsername());
-
-        DragonProxy.getLogger().info(DragonProxy.getSelf().getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, session.getUsername(), ""));
-
-        session.setStatus(ConnectionStatus.CONNECTED);
-        switch (DragonProxy.getSelf().getAuthMode()) {
-            /*case "online":
-                // We must send enough packets to make chat accessable on the client
-                minimalClientHandshake(false);
-                this.status = ConnectionStatus.AWAITING_CLIENT_AUTHENTICATION;
-                dataCache.put(CacheKey.AUTHENTICATION_STATE, "email");
-
-                sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_NOTICE, username));
-                sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_EMAIL));
-                break;
-            case "cls":
-                this.status = ConnectionStatus.AWAITING_CLIENT_AUTHENTICATION;
-                authenticateCLSMode();
-                break;*/
-            case "offline":
-                // We translate everything we are sent without regard for what it is
-                //minimalClientHandshake(false, session);
-
-                DragonProxy.getLogger().debug(sender + "Initially joining [" + DragonProxy.getSelf().getConfig().getDefault_server() + "]... ");
-                session.connectToServer(DragonProxy.getSelf().getConfig().getRemote_servers().get(DragonProxy.getSelf().getConfig().getDefault_server()));
-                break;
-            default:
-                String error = "Unsupported authentication mode " + DragonProxy.getSelf().getAuthMode();
-                DragonProxy.getLogger().warning(sender + error);
-                clientDisconectRequest(session, error);
-        }
-    }
-
-    @Override
-    public Class<RakNetPacket> getSupportedPacketType() {
-        return RakNetPacket.class;
+    public Class<sul.utils.Packet> getSupportedPacketType() {
+        return sul.utils.Packet.class;
     }
 
     /*public void authenticateCLSMode() {
@@ -421,15 +475,15 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
         sendChat(reason);
         disconnect(reason);
     }*/
-
+    
     private void minimalClientHandshake(boolean errorMode, ClientConnection session) {
         DragonProxy.getLogger().debug(sender + "Performing a minimal handshake with the client " + session.getUsername() + ":" + session.getSessionID());
         PlayStatus status = new PlayStatus(); // Required; TODO: Find out why
         status.status = PlayStatus.OK;
-        sendPacket(PacketTranslatorRegister.preparePacketForSending(status), session);
+        sendPacket(status, session);
 
         // Required; Causes the client to switch to the "locating server" screen
-        sendPacket(PacketTranslatorRegister.preparePacketForSending(new ResourcePacksInfo(false, new sul.protocol.pocket101.types.Pack[0], new sul.protocol.pocket101.types.Pack[0])), session);
+        sendPacket(new ResourcePacksInfo(false, new sul.protocol.pocket101.types.Pack[0], new sul.protocol.pocket101.types.Pack[0]), session);
 
         StartGame startGamePacket = new StartGame(); // Required; Makes the client switch to the "generating world" screen
         startGamePacket.entityId = 1;
@@ -456,7 +510,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
         startGamePacket.generator = 1; //0 old, 1 infinite, 2 flat
         startGamePacket.position = new Tuples.FloatXYZ();
         startGamePacket.spawnPosition = new Tuples.IntXYZ();
-        sendPacket(PacketTranslatorRegister.preparePacketForSending(startGamePacket), session);
+        sendPacket(startGamePacket, session);
 
         //SetSpawnPosition pkSpawn = new SetSpawnPosition();
         //pkSpawn.position = new BlockPosition();
@@ -522,131 +576,18 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
 
         //sendFlatChunks(0, 0, 10, false, session);
         //sendFlatChunks(0, 0, 17, false, session);*/
-        /*ChunkRadiusUpdated pkChunkRadius = new ChunkRadiusUpdated();
+ /*ChunkRadiusUpdated pkChunkRadius = new ChunkRadiusUpdated();
         pkChunkRadius.radius = 3;
         sendPacket(new RakNetPacket(pkChunkRadius.encode()), session);
 
         /*SetCommandsEnabled pk = new SetCommandsEnabled();
         pk.enabled = true;
         sendPacket(pk, true);*/
-
         //Respawn pkResp = new Respawn();
         //pkResp.position = new Tuples.FloatXYZ();
         //sendPacket(PacketTranslatorRegister.preparePacketForSending(pkResp), session);
-        
         PlayStatus pkStat = new PlayStatus(); //Required; Spawns the client in the world and closes the loading screen
         pkStat.status = PlayStatus.SPAWNED;
-        sendPacket(PacketTranslatorRegister.preparePacketForSending(pkStat), session);
+        sendPacket(pkStat, session);
     }
-
-    private void sendFlatChunks(int playerX, int playerZ, int circleRadius, boolean sendAir, ClientConnection session) {
-        int blocksX = 1;
-        int blocksZ = 1;
-
-        boolean cx = false; // Centered?
-        // float circleRadius = player.getRenderDistance(); // Circle
-        // Radius
-        int maxBlocksX, maxBlocksZ;
-
-        if (!cx) {
-            maxBlocksX = (int) (Math.ceil((circleRadius - blocksX / 2) / blocksX) * 2 + 1);
-            maxBlocksZ = (int) (Math.ceil((circleRadius - blocksZ / 2) / blocksZ) * 2 + 1);
-        } else {
-            maxBlocksX = (int) (Math.ceil(circleRadius / blocksX) * 2);
-            maxBlocksZ = (int) (Math.ceil(circleRadius / blocksZ) * 2);
-        }
-
-        // TODO: Cache the chunk circle
-        // Calculate the chunk ring
-        //ArrayList<Vector3D> loadChunksList = new ArrayList<>();
-        for (int z = -maxBlocksZ / 2; z <= maxBlocksZ / 2; z++) {
-            for (int x = -maxBlocksX / 2; x <= maxBlocksX / 2; x++) {
-                double distance = Math.sqrt(Math.pow(z * blocksZ, 2) + Math.pow(x * blocksX, 2));
-                boolean shouldSendChunk = (distance < circleRadius);
-                if (shouldSendChunk) {
-                    sendPacket(PacketTranslatorRegister.preparePacketForSending(getFlatChunkPacket(x, z, (sendAir ? 0 : 1))), session);
-                    //loadChunksList.add(new Vector3D(nx - x, 0, nz - z));
-                }
-            }
-        }
-    }
-
-    private FullChunkData getFlatChunkPacket(int chunkX, int chunkZ, int blockId) {
-        /*cn.nukkit.level.format.anvil.Chunk chunk = cn.nukkit.level.format.anvil.Chunk.getEmptyChunk(chunkX, chunkZ);
-        int y = 1;
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                chunk.setBlock(x, y, z, blockId);
-            }
-        }*/
-
-        int length = 0;
-
-        length += 1; // Section count
-        //length += (chunk.getSections().length * (/*Section Size*/10240)) + (chunk.getSections().length /*Section header*/); // blocks[4096] + data[2048] + skyLight[2048] + blockLight[2048] 
-        length += 256; // Height Map
-        length += 256; // Unknown
-        length += (4 * 256); // Biome ID's
-        length += 4; // Varint for extradata replace with extradata len if sending extradata
-        length += 1; // Block entities; same as varit above
-
-        /* FullChunkData pePacket = new FullChunkData(new Tuples.IntXZ(chunkX, chunkZ), new byte[length], new byte[0]);
-        int index = 0;
-        pePacket.data[index++] = (byte) (chunk.getSections().length);
-        for (int ind = chunk.getSections().length - 1; ind >= 0; ind--) {
-            cn.nukkit.level.format.ChunkSection sec = chunk.getSection(ind);
-            pePacket.data[index++] = 0; // Version Header?
-            for (byte b : sec.getBytes()) {
-                pePacket.data[index++] = b;
-            }
-        }*/
-        FullChunkData pePacket = new FullChunkData(new Tuples.IntXZ(chunkX, chunkZ), new byte[1 + 256 + 256 + (4 * 256) + 1 + 4], new byte[0]);
-        return pePacket;
-    }
-
-    /*public void onClientLoginRequest(LoginPacket packet, String identifier) {
-        ClientConnection session = getSession(identifier);
-        if (session == null) {
-            return;
-        }
-
-        session.setStatus(ConnectionStatus.CONNECTING_CLIENT);
-        if (session.getUsername() != null) {
-            handler.closeSession(identifier, "Already logged in, this must be an error! ");
-            return;
-        }
-
-        PlayStatusPacket status = new PlayStatusPacket(); // Required; Tells the client that his connection was accepted or denied
-        if (packet.protocol != Versioning.MINECRAFT_PE_PROTOCOL) {
-            status.status = (packet.protocol < Versioning.MINECRAFT_PE_PROTOCOL ? PlayStatusPacket.LOGIN_FAILED_CLIENT : PlayStatusPacket.LOGIN_FAILED_SERVER);
-            sendPacket(status, session.getSessionID());
-            handler.closeSession(identifier, DragonProxy.getSelf().getLang().get(Lang.MESSAGE_UNSUPPORTED_CLIENT));
-            return;
-        }
-
-        session.setUsername(packet.username);
-        DragonProxy.getLogger().info(DragonProxy.getSelf().getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, packet.username, identifier));
-
-        switch (DragonProxy.getSelf().getAuthMode()) {
-            /*case "online":
-                // We must send enough packets to make chat accessable on the client
-                minimalClientHandshake(false);
-                this.status = ConnectionStatus.AWAITING_CLIENT_AUTHENTICATION;
-                dataCache.put(CacheKey.AUTHENTICATION_STATE, "email");
-
-                sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_NOTICE, username));
-                sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_EMAIL));
-                break;
-            case "cls":
-                this.status = ConnectionStatus.AWAITING_CLIENT_AUTHENTICATION;
-                authenticateCLSMode();
-                break;*//*
-            case "offline":
-                // We translate everything we are sent without regard for what it is
-                minimalClientHandshake(false, session);
-                DragonProxy.getLogger().debug("Initially joining [" + DragonProxy.getSelf().getConfig().getDefault_server() + "]... ");
-                session.connectToServer(DragonProxy.getSelf().getConfig().getRemote_servers().get(DragonProxy.getSelf().getConfig().getDefault_server()));
-                break;
-        }
-    }*/
 }

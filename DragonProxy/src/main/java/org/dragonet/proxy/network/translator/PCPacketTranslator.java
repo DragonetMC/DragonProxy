@@ -26,21 +26,5 @@ public interface PCPacketTranslator<P extends Packet> {
      * @param packet
      * @return
      */
-    public RakNetPacket[] translate(ClientConnection session, P packet);
-    
-    public default RakNetPacket[] fromSulPackets(Object... packets)	{
-    	RakNetPacket[] ret = new RakNetPacket[packets.length];
-    	for (int i = 0; i < packets.length; i++)	{
-    		if (packets[i] instanceof sul.utils.Packet)	{
-    			ret[i] = PacketTranslatorRegister.preparePacketForSending((sul.utils.Packet) packets[i]);
-    		} else if (packets[i] instanceof cn.nukkit.network.protocol.DataPacket)	{
-    			((cn.nukkit.network.protocol.DataPacket) packets[i]).encode();
-    			ret[i] = new RakNetPacket(((cn.nukkit.network.protocol.DataPacket) packets[i]).getByteArray());
-    		} else {
-    			System.err.println("Non-packet object passed to org.dragonet.proxy.network.translator.PCPacketTranslator.fromSulPackets(), aborting");
-    			//System.exit(1);
-    		}
-    	}
-    	return ret;
-    }
+    public sul.utils.Packet[] translate(ClientConnection session, P packet);
 }

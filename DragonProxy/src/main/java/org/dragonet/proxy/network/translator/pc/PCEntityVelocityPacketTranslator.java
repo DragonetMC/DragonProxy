@@ -24,10 +24,10 @@ import sul.utils.Tuples;
 public class PCEntityVelocityPacketTranslator implements PCPacketTranslator<ServerEntityVelocityPacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerEntityVelocityPacket packet) {
+    public sul.utils.Packet[] translate(ClientConnection session, ServerEntityVelocityPacket packet) {
         CachedEntity e = session.getEntityCache().get(packet.getEntityId());
         if (e == null) {
-            return new RakNetPacket[0];
+            return new sul.utils.Packet[0];
         }
         e.motionX = packet.getMotionX();
         e.motionY = packet.getMotionY();
@@ -37,7 +37,7 @@ public class PCEntityVelocityPacketTranslator implements PCPacketTranslator<Serv
         pk.entityId = packet.getEntityId();
         pk.motion = new Tuples.FloatXYZ((float) packet.getMotionX(), (float) packet.getMotionY(), (float) packet.getMotionZ());
         
-        return fromSulPackets(pk);
+        return new sul.utils.Packet[] {pk};
     }
 
 }

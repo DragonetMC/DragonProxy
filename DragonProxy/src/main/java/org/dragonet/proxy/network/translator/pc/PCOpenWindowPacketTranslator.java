@@ -23,11 +23,11 @@ import net.marfgamer.jraknet.RakNetPacket;
 public class PCOpenWindowPacketTranslator implements PCPacketTranslator<ServerOpenWindowPacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerOpenWindowPacket packet) {
+    public sul.utils.Packet[] translate(ClientConnection session, ServerOpenWindowPacket packet) {
         DragonProxy.getSelf().getGeneralThreadPool().execute(() -> {
             InventoryTranslatorRegister.open(session, packet);
         });
-        return new RakNetPacket[0];
+        return new sul.utils.Packet[0];
     }
 
 }

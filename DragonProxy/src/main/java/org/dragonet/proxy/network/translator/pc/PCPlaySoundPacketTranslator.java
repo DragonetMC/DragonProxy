@@ -27,7 +27,7 @@ import sul.utils.Tuples;
 public class PCPlaySoundPacketTranslator implements PCPacketTranslator<ServerPlaySoundPacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerPlaySoundPacket packet) {
+    public sul.utils.Packet[] translate(ClientConnection session, ServerPlaySoundPacket packet) {
         try {
             String soundName = null;
 
@@ -45,7 +45,7 @@ public class PCPlaySoundPacketTranslator implements PCPacketTranslator<ServerPla
                 soundName = ((CustomSound) packet.getSound()).getName();
             }
             if (soundName == null) {
-                return new RakNetPacket[0];
+                return new sul.utils.Packet[0];
             }
             short ev = 0;
             for (Field f : LevelEvent.class.getDeclaredFields()) {
@@ -54,16 +54,16 @@ public class PCPlaySoundPacketTranslator implements PCPacketTranslator<ServerPla
                 }
             }
             if (ev == 0) {
-                return new RakNetPacket[0];
+                return new sul.utils.Packet[0];
             }
             LevelEvent pkSound = new LevelEvent();
             pkSound.eventId = (short) ev;
             pkSound.position = new Tuples.FloatXYZ((float) packet.getX(), (float) packet.getY(), (float) packet.getZ());
             
-            return fromSulPackets(pkSound);
+            return new sul.utils.Packet[] {pkSound};
         } catch (Exception e) {
             e.printStackTrace();
-            return new RakNetPacket[0];
+            return new sul.utils.Packet[0];
         }
     }
 

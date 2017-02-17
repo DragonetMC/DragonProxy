@@ -189,7 +189,7 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerUnloadChunkPacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerUpdateScorePacket.class, new IgnorePacketTranslator());*/
         //PC_TO_PE_TRANSLATOR.put(ServerUpdateTileEntityPacket.class, new PCUpdateSignPacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerUpdateTimePacket.class, new PCUpdateTimePacketTranslator());
+        //PC_TO_PE_TRANSLATOR.put(ServerUpdateTimePacket.class, new PCUpdateTimePacketTranslator()); // This is causing array index exceptions
         /*PC_TO_PE_TRANSLATOR.put(ServerVehicleMovePacket.class, new IgnorePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerWindowItemsPacket.class, new PCWindowItemsTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerWindowPropertyPacket.class, new IgnorePacketTranslator());
@@ -278,64 +278,55 @@ public final class PacketTranslatorRegister {
         PE_TO_PC_TRANSLATOR.put(UseItem.class, new PEUseItemPacketTranslator());
     }
 
-    public static RakNetPacket[] translateToPE(ClientConnection session, Packet packet) {
+    public static sul.utils.Packet[] translateToPE(ClientConnection session, Packet packet) {
         if (packet == null) {
-            return new RakNetPacket[0];
+            return new sul.utils.Packet[0];
         }
 
         PCPacketTranslator<Packet> target = PC_TO_PE_TRANSLATOR.get(packet.getClass());
         if (target == null) {
             DragonProxy.getLogger().warning("[PC to PE] No translator found for : " + packet.getClass().getName());
-            return new RakNetPacket[0];
+            return new sul.utils.Packet[0];
         }
         try {
             DragonProxy.getLogger().info("[PC to PE] >>> " + packet.getClass().getName());
             return target.translate(session, packet);
         } catch (Exception e) {
             e.printStackTrace();
-            return new RakNetPacket[0];
+            return new sul.utils.Packet[0];
         }
     }
 
-    public static Packet[] translateToPC(ClientConnection session, RakNetPacket packet) {
+    public static Packet[] translateToPC(ClientConnection session, sul.utils.Packet packet) {
         if (packet == null) {
             return new Packet[0];
         }
-
-        if(packet.getId() == Batch.ID){
-            DragonProxy.getLogger().warning("[PE to PC] [Translator] Not decoding BatchPacket");
-        }
         
-        Class<? extends sul.utils.Packet> clazz = sul.protocol.pocket101.Packets.PLAY.get((packet.getId() & 0xFF));
-        if (clazz == null) {
-            DragonProxy.getLogger().warning("[PE to PC] No ID to packet mapping found for : " + (packet.getId() & 0xFF));
-            return new Packet[0];
-        }
-
-        PEPacketTranslator<sul.utils.Packet> target = PE_TO_PC_TRANSLATOR.get(clazz);
+        PEPacketTranslator<sul.utils.Packet> target = PE_TO_PC_TRANSLATOR.get(packet.getClass());
         if (target == null) {
-            DragonProxy.getLogger().warning("[PE to PC] No translator found for : " + packet.getId());
+            DragonProxy.getLogger().warning("[PE to PC] No translator found for : " + packet);
             return new Packet[0];
         }
 
         try {
             DragonProxy.getLogger().info("[PE to PC] <<< " + packet.getClass().getName());
-            sul.utils.Packet pack = clazz.getConstructor().newInstance();
-            return target.translate(session, pack);
+            return target.translate(session, packet);
         } catch (Exception e) {
             e.printStackTrace();
             return new Packet[0];
         }
     }
 
+    /*Deprecated
     public static RakNetPacket[] preparePacketsForSending(sul.utils.Packet... packets){
         RakNetPacket[] pk = new RakNetPacket[packets.length];
         for(int index = 0; index < packets.length; index++){
             pk[index] = preparePacketForSending(packets[index]);
         }
         return pk;
-    }
+    }*/
     
+    /*@Deprecated
     public static RakNetPacket preparePacketForSending(sul.utils.Packet packet) {
         DragonProxy.getLogger().debug("[Translator] Preping PE packet: " + packet.getClass().getCanonicalName());
         
@@ -347,16 +338,6 @@ public final class PacketTranslatorRegister {
             buff = batch.encode();
         }
         return new RakNetPacket(prep(buff));
-    }
-
-    private static byte[] prep(byte[] buff) {
-        byte[] buff2 = new byte[buff.length + 1];
-        int index = 0;
-        buff2[index++] = (byte) 0xFE;
-        for (byte b : buff) {
-            buff2[index++] = b;
-        }
-        return buff2;
-    }
+    }*/
 
 }

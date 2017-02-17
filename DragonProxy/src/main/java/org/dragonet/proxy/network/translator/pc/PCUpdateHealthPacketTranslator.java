@@ -24,7 +24,7 @@ import sul.utils.Tuples;
 public class PCUpdateHealthPacketTranslator implements PCPacketTranslator<ServerPlayerHealthPacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerPlayerHealthPacket packet) {
+    public sul.utils.Packet[] translate(ClientConnection session, ServerPlayerHealthPacket packet) {
     	// TODO: Support food and saturation
         SetHealth h = new SetHealth();
         h.health = (int) packet.getHealth();
@@ -36,10 +36,10 @@ public class PCUpdateHealthPacketTranslator implements PCPacketTranslator<Server
             Respawn r = new Respawn();
             r.position = new Tuples.FloatXYZ(0.0f, 0.0f, 0.0f);
             
-            return fromSulPackets(h, r);
+            return new sul.utils.Packet[] {h, r};
         }
         
-        return fromSulPackets(h);
+        return new sul.utils.Packet[] {h};
     }
 
 }

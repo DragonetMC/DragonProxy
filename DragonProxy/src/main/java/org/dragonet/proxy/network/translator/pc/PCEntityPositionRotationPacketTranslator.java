@@ -19,28 +19,28 @@ import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityPositionR
 
 import cn.nukkit.network.protocol.MoveEntityPacket;
 import net.marfgamer.jraknet.RakNetPacket;
+import sul.protocol.pocket101.play.MoveEntity;
+import sul.utils.Tuples;
 
 public class PCEntityPositionRotationPacketTranslator implements PCPacketTranslator<ServerEntityPositionRotationPacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerEntityPositionRotationPacket packet) {
+    public sul.utils.Packet[] translate(ClientConnection session, ServerEntityPositionRotationPacket packet) {
         CachedEntity e = session.getEntityCache().get(packet.getEntityId());
         if (e == null) {
-            return new RakNetPacket[0];
+            return new sul.utils.Packet[0];
         }
 
         e.relativeMove(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ(), packet.getYaw(), packet.getPitch());
 
-        MoveEntityPacket pk = new MoveEntityPacket();
-        pk.eid = e.eid;
+        MoveEntity pk = new MoveEntity();
+        pk.entityId = e.eid;
         pk.yaw = (byte) e.yaw;
         pk.headYaw = (byte) e.yaw;
         pk.pitch = (byte) e.pitch;
-        pk.x = (float) e.x;
-        pk.y = (float) (e.player ? e.y + 1.62f : e.y);
-        pk.z = (float) e.z;
+        pk.position = new Tuples.FloatXYZ((float) e.x, (float) (e.player ? e.y + 1.62f : e.y), (float) e.z);
         
-        return fromSulPackets(pk);
+        return new sul.utils.Packet[] {pk};
     }
 
 }

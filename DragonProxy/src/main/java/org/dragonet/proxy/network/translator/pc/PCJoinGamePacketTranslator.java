@@ -33,7 +33,7 @@ import sul.utils.Tuples;
 public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoinGamePacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerJoinGamePacket packet) {
+    public sul.utils.Packet[] translate(ClientConnection session, ServerJoinGamePacket packet) {
         //This packet is not fully useable, we cache it for now. 
         session.getDataCache().put(CacheKey.PLAYER_EID, packet.getEntityId());  //Stores the real entity ID
         
@@ -79,7 +79,7 @@ public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoin
         PlayStatus pkStat = new PlayStatus();
         pkStat.status = PlayStatus.SPAWNED;
         
-        return fromSulPackets(startGamePacket, /*pkEntityData, pkResp, pkSpawn,*/ pkStat);
+        return new sul.utils.Packet[] {startGamePacket, /*pkEntityData, pkResp, pkSpawn,*/ pkStat};
     }
 
 }

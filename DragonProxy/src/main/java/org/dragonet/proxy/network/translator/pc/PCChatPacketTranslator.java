@@ -23,7 +23,7 @@ import sul.utils.Packet;
 public class PCChatPacketTranslator implements PCPacketTranslator<ServerChatPacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerChatPacket packet) throws java.lang.IllegalStateException{
+    public sul.utils.Packet[] translate(ClientConnection session, ServerChatPacket packet) throws java.lang.IllegalStateException{
         Packet ret;
         
         switch (packet.getType()) {
@@ -45,6 +45,6 @@ public class PCChatPacketTranslator implements PCPacketTranslator<ServerChatPack
             break;
         }
         
-        return fromSulPackets(ret);
+        return new sul.utils.Packet[] {ret};
     }
 }

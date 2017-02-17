@@ -21,22 +21,23 @@ import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityEffectPac
 
 import cn.nukkit.network.protocol.MobEffectPacket;
 import net.marfgamer.jraknet.RakNetPacket;
+import sul.protocol.pocket101.play.MobEffect;
 
 public class PCEntityEffectPacketTranslator implements PCPacketTranslator<ServerEntityEffectPacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerEntityEffectPacket packet) {
+    public sul.utils.Packet[] translate(ClientConnection session, ServerEntityEffectPacket packet) {
         CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
         if (entity == null) {
-            return new RakNetPacket[0];
+            return new sul.utils.Packet[0];
         }
         int effectId = MagicValues.value(Integer.class, packet.getEffect());
 
-        MobEffectPacket eff = new MobEffectPacket();
-        eff.eid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
-        eff.effectId = effectId;
-        if (eff.effectId == -1) {// Is this the correct way to do this?
-            return new RakNetPacket[0]; //Not supported
+        MobEffect eff = new MobEffect();
+        eff.entityId = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
+        eff.effect = effectId;
+        if (eff.effect == -1) {// Is this the correct way to do this?
+            return new sul.utils.Packet[0]; //Not supported
         }
         if (entity.effects.contains(effectId)) {
             eff.eventId = MobEffectPacket.EVENT_MODIFY;
@@ -48,7 +49,7 @@ public class PCEntityEffectPacketTranslator implements PCPacketTranslator<Server
         eff.duration = packet.getDuration();
         eff.particles = packet.getShowParticles();
         
-        return fromSulPackets(eff);
+        return new sul.utils.Packet[] {eff};
     }
 
 }

@@ -24,14 +24,14 @@ import sul.protocol.pocket101.types.BlockPosition;
 public class PCBlockChangePacketTranslator implements PCPacketTranslator<ServerBlockChangePacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerBlockChangePacket packet) {
+    public sul.utils.Packet[] translate(ClientConnection session, ServerBlockChangePacket packet) {
         UpdateBlock pk = new UpdateBlock();
         pk.flagsAndMeta = UpdateBlock.PRIORITY;
         pk.block = (byte) (ItemBlockTranslator.translateToPE(packet.getRecord().getBlock().getId()) & 0xFF);
         //TODO: pk.blockData = (byte) (packet.getRecord().getBlock().getData() & 0xFF);
         pk.position = new BlockPosition(packet.getRecord().getPosition().getX(), (byte) (packet.getRecord().getPosition().getY() & 0xFF), packet.getRecord().getPosition().getZ());
         
-        return fromSulPackets(pk);
+        return new sul.utils.Packet[] {pk};
     }
 
 }

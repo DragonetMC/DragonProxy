@@ -26,7 +26,7 @@ import sul.utils.Tuples;
 public class PCSpawnMobPacketTranslator implements PCPacketTranslator<ServerSpawnMobPacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerSpawnMobPacket packet) {
+    public sul.utils.Packet[] translate(ClientConnection session, ServerSpawnMobPacket packet) {
         try {
             CachedEntity e = session.getEntityCache().newEntity(packet);
             if (e == null) {
@@ -45,10 +45,10 @@ public class PCSpawnMobPacketTranslator implements PCPacketTranslator<ServerSpaw
             pk.metadata = new Pocket101();
             pk.links = new long[0];
             
-            return fromSulPackets(pk);
+            return new sul.utils.Packet[] {pk};
         } catch (Exception e) {
             e.printStackTrace();
-            return new RakNetPacket[0];
+            return new sul.utils.Packet[0];
         }
     }
 

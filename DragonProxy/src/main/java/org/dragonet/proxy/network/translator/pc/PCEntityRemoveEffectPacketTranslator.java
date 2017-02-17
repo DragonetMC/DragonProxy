@@ -25,20 +25,20 @@ import sul.protocol.pocket101.play.MobEffect;
 public class PCEntityRemoveEffectPacketTranslator implements PCPacketTranslator<ServerEntityRemoveEffectPacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerEntityRemoveEffectPacket packet) {
+    public sul.utils.Packet[] translate(ClientConnection session, ServerEntityRemoveEffectPacket packet) {
         CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
         if (entity == null) {
-            return new RakNetPacket[0];
+            return new sul.utils.Packet[0];
         }
         int effectId = MagicValues.value(Integer.class, packet.getEffect());
         if (!entity.effects.contains(effectId)) {
-            return new RakNetPacket[0];
+            return new sul.utils.Packet[0];
         }
         MobEffect eff = new MobEffect();
         eff.entityId = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
         eff.eventId = MobEffect.REMOVE;
         
-        return fromSulPackets(eff);
+        return new sul.utils.Packet[] {eff};
     }
 
 }

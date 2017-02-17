@@ -24,7 +24,7 @@ import sul.protocol.pocket101.types.BlockPosition;
 public class PCMultiBlockChangePacketTranslator implements PCPacketTranslator<ServerMultiBlockChangePacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerMultiBlockChangePacket packet) {
+    public sul.utils.Packet[] translate(ClientConnection session, ServerMultiBlockChangePacket packet) {
         UpdateBlock[] packets = new UpdateBlock[packet.getRecords().length];
         for (int i = 0; i < packets.length; i++) {
             packets[i] = new UpdateBlock();
@@ -34,7 +34,7 @@ public class PCMultiBlockChangePacketTranslator implements PCPacketTranslator<Se
             packets[i].position = new BlockPosition(packet.getRecords()[i].getPosition().getX(), packet.getRecords()[i].getPosition().getY() & 0xFF, packet.getRecords()[i].getPosition().getZ());
             packets[i].block = ItemBlockTranslator.translateToPE(packet.getRecords()[i].getBlock().getId()) & 0xFF;
         }
-        return fromSulPackets(packets);
+        return packets;
     }
 
 }

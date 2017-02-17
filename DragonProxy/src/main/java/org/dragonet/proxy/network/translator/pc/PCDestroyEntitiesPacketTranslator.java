@@ -23,8 +23,8 @@ import sul.protocol.pocket101.play.RemoveEntity;
 public class PCDestroyEntitiesPacketTranslator implements PCPacketTranslator<ServerEntityDestroyPacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerEntityDestroyPacket packet) {
-    	RakNetPacket[] ret = new RakNetPacket[packet.getEntityIds().length];
+    public sul.utils.Packet[] translate(ClientConnection session, ServerEntityDestroyPacket packet) {
+    	sul.utils.Packet[] ret = new sul.utils.Packet[packet.getEntityIds().length];
         for (int i = 0; i < ret.length; i++) {
             CachedEntity e = session.getEntityCache().remove(packet.getEntityIds()[i]);
             if (e == null) {
@@ -33,7 +33,7 @@ public class PCDestroyEntitiesPacketTranslator implements PCPacketTranslator<Ser
             RemoveEntity re = new RemoveEntity();
             re.entityId = e.eid;
             
-            ret[i] = new RakNetPacket(re.encode());
+            ret[i] = re;
         }
         return ret;
     }

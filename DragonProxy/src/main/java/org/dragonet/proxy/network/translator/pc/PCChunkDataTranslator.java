@@ -31,7 +31,7 @@ import sul.utils.Tuples;
 public class PCChunkDataTranslator implements PCPacketTranslator<ServerChunkDataPacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerChunkDataPacket packet) {
+    public sul.utils.Packet[] translate(ClientConnection session, ServerChunkDataPacket packet) {
         Column col = packet.getColumn();
         cn.nukkit.level.format.anvil.Chunk chunk = cn.nukkit.level.format.anvil.Chunk.getEmptyChunk(col.getX(), col.getZ());
 
@@ -137,7 +137,7 @@ public class PCChunkDataTranslator implements PCPacketTranslator<ServerChunkData
                 pePacket.data[index++] = b;
             }
         }*/
-        return PacketTranslatorRegister.preparePacketsForSending(pePacket);
+        return new sul.utils.Packet[] {pePacket};
     }
 }
 

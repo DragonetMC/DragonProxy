@@ -28,7 +28,7 @@ import sul.protocol.pocket101.types.BlockPosition;
 public class PCUpdateSignPacketTranslator implements PCPacketTranslator<ServerUpdateTileEntityPacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerUpdateTileEntityPacket packet) {
+    public sul.utils.Packet[] translate(ClientConnection session, ServerUpdateTileEntityPacket packet) {
         CompoundTag root = new CompoundTag();
         try {
         root.putString("Text1", packet.getNBT().get("Text1").toString());
@@ -37,7 +37,7 @@ public class PCUpdateSignPacketTranslator implements PCPacketTranslator<ServerUp
         root.putString("Text4", packet.getNBT().get("Text4").toString());
         } catch (NullPointerException e)	{
         	//TE is not a sign, abort
-        	return new RakNetPacket[0];
+        	return new sul.utils.Packet[0];
         }
         
         root.putString("id", "Sign");
@@ -53,7 +53,7 @@ public class PCUpdateSignPacketTranslator implements PCPacketTranslator<ServerUp
 			e.printStackTrace();
 		}
 
-        return fromSulPackets(pkBlockData);
+        return new sul.utils.Packet[] {pkBlockData};
     }
 
 }

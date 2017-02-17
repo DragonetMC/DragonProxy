@@ -29,10 +29,10 @@ import sul.utils.Tuples;
 public class PCEntityMetadataPacketTranslator implements PCPacketTranslator<ServerEntityMetadataPacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerEntityMetadataPacket packet) {
+    public sul.utils.Packet[] translate(ClientConnection session, ServerEntityMetadataPacket packet) {
         CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
         if (entity == null) {
-            return new RakNetPacket[0];
+            return new sul.utils.Packet[0];
         }
         if (!entity.spawned && entity.objType == ObjectType.ITEM) {
             entity.spawned = true;  //Spawned
@@ -43,9 +43,9 @@ public class PCEntityMetadataPacketTranslator implements PCPacketTranslator<Serv
             pk.item = new Slot(item.id, item.meta, new byte[0]);
             pk.position = new Tuples.FloatXYZ((float) entity.x, (float) entity.y, (float) entity.z);
             pk.motion = new Tuples.FloatXYZ((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
-            return fromSulPackets(pk);
+            return new sul.utils.Packet[] {pk};
         }
-        return new RakNetPacket[0];
+        return new sul.utils.Packet[0];
     }
 
 }

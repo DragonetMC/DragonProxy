@@ -22,14 +22,14 @@ import net.marfgamer.jraknet.RakNetPacket;
 public class PCSpawnObjectPacketTranslator implements PCPacketTranslator<ServerSpawnObjectPacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerSpawnObjectPacket packet) {
+    public sul.utils.Packet[] translate(ClientConnection session, ServerSpawnObjectPacket packet) {
         if(packet.getType() == ObjectType.ITEM){
             //Currently only handles item data
             session.getEntityCache().newObject(packet);
-            //This crap needs entity meta to be completed so we have to wait. 
-            return new RakNetPacket[0];
+            //This needs entity meta to be completed so we have to wait. 
+            return new sul.utils.Packet[0];
         }
-        return new RakNetPacket[0];
+        return new sul.utils.Packet[0];
     }
 
 }

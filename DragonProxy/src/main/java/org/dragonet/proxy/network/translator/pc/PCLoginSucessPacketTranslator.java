@@ -13,12 +13,12 @@ import sul.protocol.pocket101.types.Pack;
 public class PCLoginSucessPacketTranslator implements PCPacketTranslator<LoginSuccessPacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, LoginSuccessPacket packet) {
+    public sul.utils.Packet[] translate(ClientConnection session, LoginSuccessPacket packet) {
         DragonProxy.getLogger().info("Recieved LoginSuccessPacket from remote server for player: " + packet.getProfile());
         PlayStatus pkPlayStatus = new PlayStatus();
         pkPlayStatus.status = PlayStatus.OK;
 
-        return fromSulPackets(pkPlayStatus, new ResourcePacksInfo(false, new sul.protocol.pocket101.types.Pack[0], new sul.protocol.pocket101.types.Pack[0]));
+        return new sul.utils.Packet[] {pkPlayStatus, new ResourcePacksInfo(false, new sul.protocol.pocket101.types.Pack[0], new sul.protocol.pocket101.types.Pack[0])};
     }
 
 }

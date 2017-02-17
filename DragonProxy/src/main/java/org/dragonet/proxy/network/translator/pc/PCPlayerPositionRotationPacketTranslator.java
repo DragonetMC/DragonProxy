@@ -24,7 +24,7 @@ import sul.utils.Tuples;
 public class PCPlayerPositionRotationPacketTranslator implements PCPacketTranslator<ServerPlayerPositionRotationPacket> {
 
     @Override
-    public RakNetPacket[] translate(ClientConnection session, ServerPlayerPositionRotationPacket packet) {
+    public sul.utils.Packet[] translate(ClientConnection session, ServerPlayerPositionRotationPacket packet) {
         MovePlayer pkMovePlayer = new MovePlayer();
         pkMovePlayer.entityId = 0;
         pkMovePlayer.position = new Tuples.FloatXYZ((float) packet.getX(), (float) packet.getY(), (float) packet.getZ());
@@ -38,7 +38,7 @@ public class PCPlayerPositionRotationPacketTranslator implements PCPacketTransla
         cliEntity.x = packet.getX();
         cliEntity.y = packet.getY();
         cliEntity.z = packet.getZ();
-        return fromSulPackets(pkMovePlayer);
+        return new sul.utils.Packet[] {pkMovePlayer};
     }
 
 }
