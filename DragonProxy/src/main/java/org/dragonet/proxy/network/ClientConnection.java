@@ -97,9 +97,10 @@ public class ClientConnection {
 
     public void connectToServer(RemoteServer server) {
         if (server != null) {
-            status = ConnectionStatus.CONNECTING_SERVER;
+            //status = ConnectionStatus.CONNECTING_SERVER;
             downstreamProtocol = server.getProtocolAdapter(this);
             downstreamProtocol.connectToRemoteServer(server.getRemoteAddr(), server.getRemotePort());
+            
         }
     }
 

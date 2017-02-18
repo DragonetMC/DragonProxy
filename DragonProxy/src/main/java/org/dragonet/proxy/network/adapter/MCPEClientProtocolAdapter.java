@@ -90,7 +90,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<sul.util
     }
 
     public void onClientLoginRequest(Login packet, ClientConnection session) {
-        session.setStatus(ConnectionStatus.CONNECTING_CLIENT);
+        //session.setStatus(ConnectionStatus.CONNECTING_CLIENT);
         if (session.getUsername() != null) {
             clientDisconectRequest(session, "Already logged in, this must be an error! ");
             return;
@@ -322,16 +322,23 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<sul.util
             }
         }*/
 
-        if (session.getStatus() == ConnectionStatus.CONNECTED) {
+        //if (session.getStatus() == ConnectionStatus.CONNECTED) {
             if (session.getDownstreamProtocol().getSupportedPacketType() != getSupportedPacketType()) {
                 packets = PacketTranslatorRegister.translateToPC(session, packet);
+            } else {
+                for(Object obj : packets){
+                    // Since the ServerProtocolAdapter handles encoding
+                    // we must decode here to avoid encoding twice
+                    sul.utils.Packet pk = (sul.utils.Packet) obj;
+                    pk.decode(pk.getBuffer());
+                }
             }
 
             for (Object pack : packets) {
                 session.getDownstreamProtocol().sendPacket(pack);
             }
-        } else {
-            DragonProxy.getLogger().debug(sender + "Queuing packets from unconnected client " + session.getSessionID());
+        /*} else {
+            DragonProxy.getLogger().debug(sender + "Queuing packets from unconnected client " + session.getSessionID() + " Status: " + session.getStatus());
             synchronized (queuedPackets) {
                 List<sul.utils.Packet> list = queuedPackets.getOrDefault(session.getSessionID(), new ArrayList<>());
 
@@ -345,7 +352,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<sul.util
 
                 queuedPackets.put(session.getSessionID(), list);
             }
-        }
+        }*/
     }
 
     @Override

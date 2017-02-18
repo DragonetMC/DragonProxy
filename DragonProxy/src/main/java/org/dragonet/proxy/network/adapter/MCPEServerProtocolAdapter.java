@@ -65,7 +65,7 @@ public class MCPEServerProtocolAdapter implements ServerProtocolAdapter<sul.util
 
     @Override
     public void disconnectFromRemoteServer(String reason) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        client.disconnect(reason);
     }
 
     @Override

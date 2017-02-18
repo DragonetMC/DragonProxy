@@ -91,7 +91,7 @@ public class RakNetUtil {
         List<sul.utils.Packet> packets = new ArrayList<>();
 
         try {
-            byte[] buffer = Zlib.inflate(batch.data, 64 * 1024 * 1024);
+            byte[] buffer = Zlib.inflate(batch.data);
             int bufferIndex = 0;
 
             while (bufferIndex < buffer.length) {
