@@ -34,6 +34,7 @@ import net.marfgamer.jraknet.server.RakNetServer;
 import net.marfgamer.jraknet.server.RakNetServerListener;
 import net.marfgamer.jraknet.server.ServerPing;
 import net.marfgamer.jraknet.session.RakNetClientSession;
+import net.marfgamer.jraknet.util.RakNetUtils;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.network.ClientConnection;
@@ -57,7 +58,7 @@ import sul.utils.Tuples;
  *
  * @author robotman3000
  */
-public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<sul.utils.Packet>, RakNetServerListener {
+public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPacket>, RakNetServerListener {
 
     @Getter
     private RakNetServer server;
@@ -256,35 +257,32 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<sul.util
         }
     }
 
+    private void sendPacket(sul.utils.Packet pk, ClientConnection session) {
+        sendPacket(RakNetUtil.prepareToSend(pk), session);
+    }
+
     @Override
-    public void sendPacket(sul.utils.Packet packet, ClientConnection session) {
+    public void sendPacket(RakNetPacket packet, ClientConnection session) {
         if (session == null) {
             DragonProxy.getLogger().warning(sender + "sendPacket aborting because session is null");
             return;
         }
 
         DragonProxy.getLogger().debug(sender + "Sending Packet: " + session.getSessionID() + ": " + packet.getClass().getCanonicalName());
-        server.sendMessage(getSessionID(session.getSessionID()), Reliability.UNRELIABLE, RakNetUtil.prepareToSend(packet));
+        server.sendMessage(getSessionID(session.getSessionID()), Reliability.UNRELIABLE, packet);
     }
 
     @Override
-    public void handlePacket(sul.utils.Packet packet, ClientConnection session) {
+    public void handlePacket(RakNetPacket raknetPk, ClientConnection session) {
         if (session == null) {
             DragonProxy.getLogger().debug(sender + "Session was null");
             return;
         }
+
+        sul.utils.Packet packet = RakNetUtil.getPacket(raknetPk);
         DragonProxy.getLogger().debug(sender + "Handling Packet: " + session.getSessionID() + ": " + packet.getClass().getCanonicalName());
 
-        Object[] packets = {packet};
-        if (packet instanceof Batch) {
-            sul.utils.Packet[] pkts = RakNetUtil.decodeBatch((Batch) packet);
-            for (sul.utils.Packet pack : pkts) {
-                DragonProxy.getLogger().debug(sender + "\tBatch Contents: " + pack.getClass().getCanonicalName());
-            }
-            packets = pkts;
-        }
-
-        //TODO: This doesn't account for the possibility that the LoginPacket is in the BatchPacket
+        //TODO: This doesn't account for the possibility that the LoginPacket is in a BatchPacket
         if (session.getStatus() == ConnectionStatus.UNCONNECTED || session.getStatus() == ConnectionStatus.AWAITING_CLIENT_LOGIN) {
             if (packet instanceof Login) {
                 try {
@@ -323,20 +321,10 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<sul.util
         }*/
 
         //if (session.getStatus() == ConnectionStatus.CONNECTED) {
-            if (session.getDownstreamProtocol().getSupportedPacketType() != getSupportedPacketType()) {
-                packets = PacketTranslatorRegister.translateToPC(session, packet);
-            } else {
-                for(Object obj : packets){
-                    // Since the ServerProtocolAdapter handles encoding
-                    // we must decode here to avoid encoding twice
-                    sul.utils.Packet pk = (sul.utils.Packet) obj;
-                    pk.decode(pk.getBuffer());
-                }
-            }
 
-            for (Object pack : packets) {
-                session.getDownstreamProtocol().sendPacket(pack);
-            }
+        RakNetUtil.handlePackets(session, raknetPk, packet, false);
+
+
         /*} else {
             DragonProxy.getLogger().debug(sender + "Queuing packets from unconnected client " + session.getSessionID() + " Status: " + session.getStatus());
             synchronized (queuedPackets) {
@@ -362,7 +350,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<sul.util
             sessionList.put(session.getGloballyUniqueId(), getSessionUUID(session.getGloballyUniqueId()));
         }
         DragonProxy.getLogger().debug(sender + "Handling Packet from Channel: " + channel + ": " + Integer.toHexString(packet.buffer().getByte(1)));
-        handlePacket(RakNetUtil.getPacket(Arrays.copyOfRange(packet.array(), 1, packet.array().length)), DragonProxy.getSelf().getNetwork().getSessionRegister().getSession(getSessionUUID(session.getGloballyUniqueId())));
+        handlePacket(packet, DragonProxy.getSelf().getNetwork().getSessionRegister().getSession(getSessionUUID(session.getGloballyUniqueId())));
     }
 
     @Override
@@ -445,8 +433,8 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<sul.util
     }
 
     @Override
-    public Class<sul.utils.Packet> getSupportedPacketType() {
-        return sul.utils.Packet.class;
+    public Class<RakNetPacket> getSupportedPacketType() {
+        return RakNetPacket.class;
     }
 
     /*public void authenticateCLSMode() {

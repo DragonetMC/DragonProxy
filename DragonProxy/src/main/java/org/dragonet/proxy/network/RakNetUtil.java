@@ -18,6 +18,7 @@ import net.marfgamer.jraknet.RakNetPacket;
 import net.marfgamer.jraknet.protocol.Reliability;
 import net.marfgamer.jraknet.protocol.message.CustomPacket;
 import net.marfgamer.jraknet.protocol.message.EncapsulatedPacket;
+import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.utilities.Zlib;
 import sul.protocol.pocket101.play.Batch;
 import sul.utils.Buffer;
@@ -123,13 +124,25 @@ public class RakNetUtil {
     public static sul.utils.Packet getPacket(byte[] data) {
         sul.utils.Packet packet = getPacket(data[0]);
         if (packet != null) {
-            packet.decode(data);
+            try {
+                packet.decode(data);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return packet;
     }
 
     public static sul.utils.Packet getPacket(RakNetPacket pack) {
-        return getPacket(pack.buffer().array());
+        return getPacket(Arrays.copyOfRange(pack.buffer().array(), 1, pack.buffer().array().length));
+    }
+
+    public static RakNetPacket prepareToSend(byte[] buffer) {
+        /*if (!(packet instanceof Batch) && packet.length() > 512) {
+            pk = batchPackets(packet);
+        }*/
+
+        return new RakNetPacket(append(buffer));
     }
 
     public static RakNetPacket prepareToSend(sul.utils.Packet packet) {
@@ -149,5 +162,32 @@ public class RakNetUtil {
             buff2[index++] = b;
         }
         return buff2;
+    }
+
+    public static void handlePackets(ClientConnection session, RakNetPacket raknetPk, sul.utils.Packet packet, boolean useUpstream) {
+        if (session.isPassthrough()) {
+            if (useUpstream) {
+                session.getUpstreamProtocol().sendPacket(raknetPk, session);
+            } else {
+                session.getDownstreamProtocol().sendPacket(raknetPk);
+            }
+        } else {
+            Object[] packets = {packet};
+            if (packet instanceof Batch) {
+                sul.utils.Packet[] pkts = RakNetUtil.decodeBatch((Batch) packet);
+                packets = pkts;
+            }
+
+            for (Object pack : packets) {
+                Object[] packetList = PacketTranslatorRegister.translateToPC(session, (Packet) pack);
+                for (Object obj : packetList) {
+                    if (useUpstream) {
+                        session.getUpstreamProtocol().sendPacket(obj, session);
+                    } else {
+                        session.getDownstreamProtocol().sendPacket(obj);
+                    }
+                }
+            }
+        }
     }
 }

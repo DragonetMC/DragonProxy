@@ -278,22 +278,27 @@ public final class PacketTranslatorRegister {
         PE_TO_PC_TRANSLATOR.put(UseItem.class, new PEUseItemPacketTranslator());
     }
 
-    public static sul.utils.Packet[] translateToPE(ClientConnection session, Packet packet) {
+    public static RakNetPacket[] translateToPE(ClientConnection session, Packet packet) {
         if (packet == null) {
-            return new sul.utils.Packet[0];
+            return new RakNetPacket[0];
         }
 
         PCPacketTranslator<Packet> target = PC_TO_PE_TRANSLATOR.get(packet.getClass());
         if (target == null) {
             DragonProxy.getLogger().warning("[PC to PE] No translator found for : " + packet.getClass().getName());
-            return new sul.utils.Packet[0];
+            return new RakNetPacket[0];
         }
         try {
             DragonProxy.getLogger().info("[PC to PE] >>> " + packet.getClass().getName());
-            return target.translate(session, packet);
+            sul.utils.Packet[] packets = target.translate(session, packet);
+            RakNetPacket[] rakPack = new RakNetPacket[packets.length];
+            for(int index = 0; index < packets.length; index++){
+                rakPack[index] = RakNetUtil.prepareToSend(packets[index]);
+            }
+            return rakPack;
         } catch (Exception e) {
             e.printStackTrace();
-            return new sul.utils.Packet[0];
+            return new RakNetPacket[0];
         }
     }
 

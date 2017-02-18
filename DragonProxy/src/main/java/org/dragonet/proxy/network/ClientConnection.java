@@ -75,6 +75,9 @@ public class ClientConnection {
  
     @Getter 
     private final WindowCache windowCache = new WindowCache(this); 
+    
+    @Getter
+    private boolean passthrough;
 
     public ClientConnection(ClientProtocolAdapter upstream, UUID sessionID) {
         this.upstreamProtocol = upstream;
@@ -99,8 +102,8 @@ public class ClientConnection {
         if (server != null) {
             //status = ConnectionStatus.CONNECTING_SERVER;
             downstreamProtocol = server.getProtocolAdapter(this);
+            setPassthroughStatus();
             downstreamProtocol.connectToRemoteServer(server.getRemoteAddr(), server.getRemotePort());
-            
         }
     }
 
@@ -120,5 +123,9 @@ public class ClientConnection {
     			upstreamProtocol.sendPacket((RakNetPacket) obj, this);
     		}
     	}
+    }
+
+    public void setPassthroughStatus() {
+        this.passthrough = downstreamProtocol.getSupportedPacketType() == upstreamProtocol.getSupportedPacketType();
     }
 }
