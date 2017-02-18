@@ -18,42 +18,39 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import org.dragonet.proxy.DragonProxy;
 
 public class Logger {
-
-    private DragonProxy proxy;
 
     private Calendar calender;
     private SimpleDateFormat consoleDate;
 
     public boolean debug = false;
+    public boolean useIntegerTime = false;
 
-	private File logFile;
-	FileOutputStream logOut;
-	private static final byte[] NEW_LINE = "\n".getBytes();
+    private File logFile;
+    FileOutputStream logOut;
+    private static final byte[] NEW_LINE = "\n".getBytes();
 
-    public Logger(DragonProxy proxy, File logFile) {
-        this.proxy = proxy;
+    public Logger(File logFile) {
         calender = Calendar.getInstance();
         consoleDate = new SimpleDateFormat("HH:mm:ss");
-        if(logFile != null){
-        	try{
-        		if(logFile.isFile()){
-            		if(logFile.exists()){
-            			logFile.delete();
-            		}
-            		logFile.createNewFile();
-            		logOut = new FileOutputStream(logFile);
-            		
-            		// Setting the variable here ensures that it will not be null
-            		// if, and only if everything else goes well
-            		this.logFile = logFile; 
-        		}
-        	} catch (Exception e){
-        		this.logFile = null;
-        		e.printStackTrace();
-        	}
+        if (logFile != null) {
+            try {
+                if (logFile.isFile()) {
+                    if (logFile.exists()) {
+                        logFile.delete();
+                    }
+                    logFile.createNewFile();
+                    logOut = new FileOutputStream(logFile);
+
+                    // Setting the variable here ensures that it will not be null
+                    // if, and only if everything else goes well
+                    this.logFile = logFile;
+                }
+            } catch (Exception e) {
+                this.logFile = null;
+                e.printStackTrace();
+            }
         }
     }
 
@@ -63,21 +60,24 @@ public class Logger {
 
     private void log(String levelColor, String level, String message) {
         StringBuilder builder = new StringBuilder();
-
-        builder.append(MCColor.toANSI(MCColor.AQUA + "[" + consoleDate.format(calender.getTime()) + "] "));
+        /*
+        Using interger time will make it possible to determine the exact order that
+        the messages were generated
+         */
+        builder.append(MCColor.toANSI(MCColor.AQUA + "[" + (useIntegerTime ? System.currentTimeMillis() : consoleDate.format(calender.getTime())) + "] "));
         builder.append(MCColor.toANSI(levelColor + "[" + level + "] "));
         builder.append(MCColor.toANSI(message + MCColor.WHITE + MCColor.RESET));
 
         String logMessage = builder.toString();
         System.out.println(logMessage);
-        
-        if(logFile != null){
-        	try {
-        		logOut.write(logMessage.getBytes());
-				logOut.write(NEW_LINE);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+
+        if (logFile != null) {
+            try {
+                logOut.write(logMessage.getBytes());
+                logOut.write(NEW_LINE);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -94,6 +94,8 @@ public class Logger {
     }
 
     public void debug(String message) {
-        if(debug) log(MCColor.DARK_GRAY, "DEBUG", message);
+        if (debug) {
+            log(MCColor.DARK_GRAY, "DEBUG", message);
+        }
     }
 }

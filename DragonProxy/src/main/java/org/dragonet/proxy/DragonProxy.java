@@ -86,7 +86,7 @@ public class DragonProxy {
 
     // Startup and shutdown
     public void run(String[] args) {
-        logger = new Logger(this, new File("proxy.log"));
+        logger = new Logger(new File("proxy.log"));
         // Load config.yml 
 
         try {
@@ -131,6 +131,8 @@ public class DragonProxy {
             return;
         }
 
+        getLogger().useIntegerTime = getConfig().isLogIntegerTime();
+        
         // Initialize console command reader
         console = new ConsoleCommandReader(this);
         console.startConsole();

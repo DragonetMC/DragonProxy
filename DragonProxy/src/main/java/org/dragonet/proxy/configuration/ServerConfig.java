@@ -54,5 +54,8 @@ public class ServerConfig {
     
     @Getter @Setter
     private boolean acceptPCClients;
+    
+    @Getter
+    private boolean logIntegerTime;
 
 }
