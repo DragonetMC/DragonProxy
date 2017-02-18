@@ -109,6 +109,8 @@ public class MCPCServerProtocolAdapter extends ClientListener implements ServerP
     public void disconnected(DisconnectedEvent event) {
         DragonProxy.getLogger().info(sender + "Disconected " + event.getSession().getLocalAddress() + " from remote server " + event.getSession().getHost() + " for " + event.getReason());
         event.getCause().printStackTrace();
+        upstream.getUpstreamProtocol().clientDisconectRequest(upstream, "Serverside Disconnected: " + event.getReason());
+        DragonProxy.getSelf().getSessionRegister().removeSession(upstream);
     }
 
     @Override

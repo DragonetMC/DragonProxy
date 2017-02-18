@@ -390,6 +390,9 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<sul.util
     @Override
     public void onClientDisconnect(RakNetClientSession session, String reason) {
         DragonProxy.getLogger().info(sender + "Client Disconnected: " + session.getAddress() + "; Reason: " + reason);
+        ClientConnection conn = DragonProxy.getSelf().getSessionRegister().getSession(getSessionUUID(session.getGloballyUniqueId()));
+        conn.getDownstreamProtocol().disconnectFromRemoteServer("Clientside Disconnected: " + reason);
+        DragonProxy.getSelf().getSessionRegister().removeSession(conn);
     }
 
     @Override
