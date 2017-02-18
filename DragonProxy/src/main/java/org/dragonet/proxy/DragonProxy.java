@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -28,6 +29,8 @@ import org.dragonet.proxy.commands.ConsoleCommandReader;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.RemoteServer;
 import org.dragonet.proxy.configuration.ServerConfig;
+import org.dragonet.proxy.network.ClientConnection;
+import org.dragonet.proxy.network.SessionRegister;
 import org.dragonet.proxy.network.adapter.ClientProtocolAdapter;
 import org.dragonet.proxy.network.adapter.MCPCClientProtocolAdapter;
 import org.dragonet.proxy.network.adapter.MCPEClientProtocolAdapter;
@@ -81,6 +84,7 @@ public class DragonProxy {
     @Getter
     private boolean isDebug = false;
 
+    // Startup and shutdown
     public void run(String[] args) {
         logger = new Logger(this, new File("proxy.log"));
         // Load config.yml 
@@ -193,29 +197,6 @@ public class DragonProxy {
         logger.info(lang.get(Lang.INIT_DONE));
     }
 
-    public static Logger getLogger() {
-        // TODO: In the future this should never return null
-        return logger;
-    }
-
-    public String getMotd() {
-        return network.getMotd();
-    }
-
-    public void onTick() {
-        network.onTick();
-    }
-
-    public void checkArguments(String[] args) {
-        for (String arg : args) {
-            if (arg.toLowerCase().contains("--debug")) {
-                isDebug = true;
-                getLogger().debug = true;
-                logger.info(MCColor.DARK_AQUA + "Proxy is running in debug mode.");
-            }
-        }
-    }
-
     public void shutdown() {
         logger.info(lang.get(Lang.SHUTTING_DOWN));
 
@@ -230,5 +211,50 @@ public class DragonProxy {
         }
         DragonProxy.getLogger().info("Goodbye!");
         System.exit(0);
+    }
+
+    // Internal methods
+    public void onTick() {
+        network.onTick();
+    }
+
+    private void checkArguments(String[] args) {
+        for (String arg : args) {
+            if (arg.toLowerCase().contains("--debug")) {
+                isDebug = true;
+                getLogger().debug = true;
+                logger.info(MCColor.DARK_AQUA + "Proxy is running in debug mode.");
+            }
+        }
+    }
+
+    // Quick Access
+    public static Logger getLogger() {
+        // TODO: In the future this should never return null
+        return logger;
+    }
+
+    public String getMotd() {
+        return network.getMotd();
+    }
+
+    public SessionRegister getSessionRegister() {
+        return getNetwork().getSessionRegister();
+    }
+
+    public ClientConnection getSession(UUID id) {
+        return getSessionRegister().getSession(id);
+    }
+
+    public void removeSession(ClientConnection id) {
+        getSessionRegister().removeSession(id);
+    }
+
+    public int getOnlineCount(){
+        return getSessionRegister().getOnlineCount();
+    }
+    
+    public int getMaxOnline(){
+        return config.getMax_players();
     }
 }
