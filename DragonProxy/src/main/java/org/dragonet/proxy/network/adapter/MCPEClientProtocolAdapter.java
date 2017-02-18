@@ -14,9 +14,14 @@ package org.dragonet.proxy.network.adapter;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.Getter;
@@ -43,6 +48,7 @@ import sul.protocol.pocket101.play.Login;
 import sul.protocol.pocket101.play.PlayStatus;
 import sul.protocol.pocket101.play.ResourcePacksInfo;
 import sul.protocol.pocket101.play.StartGame;
+import sul.utils.Packet;
 import sul.utils.Tuples;
 
 /**
@@ -60,6 +66,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<sul.util
     private Map<Long, UUID> sessionList = new HashMap<>();
 
     private MCPEIdentifier identifier;
+    private Map<UUID, List<sul.utils.Packet>> queuedPackets = Collections.synchronizedMap(new HashMap<>());
     private final String sender = "[PE Clientside] ";
 
     public MCPEClientProtocolAdapter() {
@@ -100,7 +107,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<sul.util
         LoginPacketPayload data = LoginPacketPayload.decode(packet.body);
         session.setUsername(data.getUsername());
 
-        DragonProxy.getLogger().info(DragonProxy.getSelf().getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, session.getUsername(), ""));
+        DragonProxy.getLogger().info(DragonProxy.getSelf().getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, session.getUsername(), "") + " " + session.getSessionID());
 
         session.setStatus(ConnectionStatus.CONNECTED);
         switch (DragonProxy.getSelf().getAuthMode()) {
@@ -214,6 +221,27 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<sul.util
                     identifier);
             server.setListener(this);
             server.startThreaded();
+        } else {
+            boolean isEmpty = true;
+            synchronized (queuedPackets) {
+                isEmpty = queuedPackets.isEmpty();
+            }
+            if (isEmpty) {
+                synchronized (queuedPackets) {
+                    for (Map.Entry<UUID, List<Packet>> ent : queuedPackets.entrySet()) {
+                        ClientConnection session = DragonProxy.getSelf().getNetwork().getSessionRegister().getSession(ent.getKey());
+                        if (session != null) {
+                            DragonProxy.getLogger().debug(sender + "Handling queued packets for session " + ent.getKey());
+                            for (sul.utils.Packet pk : ent.getValue()) {
+                                session.getUpstreamProtocol().handlePacket(pk, session);
+                            }
+                            ent.getValue().clear();
+                        } else {
+                            DragonProxy.getLogger().warning(sender + "Unable to handle queued packets for id " + ent.getKey() + " because the session was null");
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -236,7 +264,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<sul.util
         }
 
         DragonProxy.getLogger().debug(sender + "Sending Packet: " + session.getSessionID() + ": " + packet.getClass().getCanonicalName());
-        server.sendMessage(getSessionID(session.getSessionID()), Reliability.UNRELIABLE, RakNetUtil.prepareToSend(packet, Reliability.UNRELIABLE));
+        server.sendMessage(getSessionID(session.getSessionID()), Reliability.UNRELIABLE, RakNetUtil.prepareToSend(packet));
     }
 
     @Override
@@ -247,10 +275,16 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<sul.util
         }
         DragonProxy.getLogger().debug(sender + "Handling Packet: " + session.getSessionID() + ": " + packet.getClass().getCanonicalName());
 
-        if(packet instanceof Batch){
-            DragonProxy.getLogger().debug(sender + "\tBatch Contents: ");
+        Object[] packets = {packet};
+        if (packet instanceof Batch) {
+            sul.utils.Packet[] pkts = RakNetUtil.decodeBatch((Batch) packet);
+            for (sul.utils.Packet pack : pkts) {
+                DragonProxy.getLogger().debug(sender + "\tBatch Contents: " + pack.getClass().getCanonicalName());
+            }
+            packets = pkts;
         }
-        
+
+        //TODO: This doesn't account for the possibility that the LoginPacket is in the BatchPacket
         if (session.getStatus() == ConnectionStatus.UNCONNECTED || session.getStatus() == ConnectionStatus.AWAITING_CLIENT_LOGIN) {
             if (packet instanceof Login) {
                 try {
@@ -288,8 +322,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<sul.util
             }
         }*/
 
-        //if (session.getStatus() == ConnectionStatus.CONNECTED) {
-            Object[] packets = {packet};
+        if (session.getStatus() == ConnectionStatus.CONNECTED) {
             if (session.getDownstreamProtocol().getSupportedPacketType() != getSupportedPacketType()) {
                 packets = PacketTranslatorRegister.translateToPC(session, packet);
             }
@@ -297,9 +330,22 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<sul.util
             for (Object pack : packets) {
                 session.getDownstreamProtocol().sendPacket(pack);
             }
-        /*} else {
-            DragonProxy.getLogger().warning(sender + "Ignoring packet from unconnected client " + session.getSessionID());
-        }*/
+        } else {
+            DragonProxy.getLogger().debug(sender + "Queuing packets from unconnected client " + session.getSessionID());
+            synchronized (queuedPackets) {
+                List<sul.utils.Packet> list = queuedPackets.getOrDefault(session.getSessionID(), new ArrayList<>());
+
+                for (Object pk : packets) {
+                    //TODO: Should there be an instanceof check here?
+                    // It shouldn't be needed since the only case where the Object[] does
+                    // not contain sul packets is if the translater is run, wich requires 
+                    // the client to be connected. This code won't run if the client is connected
+                    list.add((Packet) pk);
+                }
+
+                queuedPackets.put(session.getSessionID(), list);
+            }
+        }
     }
 
     @Override
@@ -475,7 +521,6 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<sul.util
         sendChat(reason);
         disconnect(reason);
     }*/
-    
     private void minimalClientHandshake(boolean errorMode, ClientConnection session) {
         DragonProxy.getLogger().debug(sender + "Performing a minimal handshake with the client " + session.getUsername() + ":" + session.getSessionID());
         PlayStatus status = new PlayStatus(); // Required; TODO: Find out why

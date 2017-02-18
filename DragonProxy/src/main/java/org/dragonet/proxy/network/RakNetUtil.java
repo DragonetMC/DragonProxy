@@ -7,8 +7,13 @@ package org.dragonet.proxy.network;
 
 import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.utils.BinaryStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.Deflater;
 import net.marfgamer.jraknet.RakNetPacket;
 import net.marfgamer.jraknet.protocol.Reliability;
 import net.marfgamer.jraknet.protocol.message.CustomPacket;
@@ -23,14 +28,22 @@ import sul.utils.Packet;
  * @author enims
  */
 public class RakNetUtil {
-    
+
     public static Batch batchPackets(sul.utils.Packet... packets) {
         BinaryStream str = new BinaryStream();
         for (sul.utils.Packet packet : packets) {
-            str.putByteArray(packet.encode());
+            byte[] payload = packet.encode();
+            str.putUnsignedVarInt(payload.length);
+            str.putByteArray(payload);
         }
 
-        // Nasty hack to work around problems with the existing encode and decode methods
+        byte[] data = new byte[0];
+        try {
+            data = Zlib.deflate(str.getBuffer(), Deflater.BEST_COMPRESSION); // TODO: Replace the 0 with the configuration for network compression level
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         /*Batch batch = new Batch(str.get()) {
 
             @Override
@@ -71,7 +84,26 @@ public class RakNetUtil {
 
         };
         return batch;*/
-        return new Batch(str.get()); // This is the way the packet's used to be prepared. Still Works
+        return new Batch(data); // This is the way the packet's used to be prepared. Still Works
+    }
+
+    public static sul.utils.Packet[] decodeBatch(Batch batch) {
+        List<sul.utils.Packet> packets = new ArrayList<>();
+
+        try {
+            byte[] buffer = Zlib.inflate(batch.data, 64 * 1024 * 1024);
+            int bufferIndex = 0;
+
+            while (bufferIndex < buffer.length) {
+                sul.utils.Packet pk = getPacket(Arrays.copyOfRange(buffer, bufferIndex, buffer.length));
+                bufferIndex += pk.length();
+                packets.add(pk);
+            }
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return packets.toArray(new Packet[0]);
     }
 
     public static sul.utils.Packet getPacket(byte id) {
@@ -100,20 +132,15 @@ public class RakNetUtil {
         return getPacket(pack.buffer().array());
     }
 
-    public static RakNetPacket prepareToSend(sul.utils.Packet packet, Reliability reliability) {
+    public static RakNetPacket prepareToSend(sul.utils.Packet packet) {
         sul.utils.Packet pk = packet;
-        if(!(packet instanceof Batch) && packet.length() > 512){
+        if (!(packet instanceof Batch) && packet.length() > 512) {
             pk = batchPackets(packet);
         }
-        
-        /*EncapsulatedPacket enc = new EncapsulatedPacket();
-        enc.reliability = reliability;
-        enc.payload = new RakNetPacket(append(pk.encode()));
-        enc.encode();
-        return new RakNetPacket(enc.buffer.array());*/
-        return new RakNetPacket(append(pk.encode())); // This is the way the packet's used to be prepared. Still Works
+
+        return new RakNetPacket(append(pk.encode())); // The packet encapsulation is handled by JRakNet
     }
-    
+
     private static byte[] append(byte[] buff) {
         byte[] buff2 = new byte[buff.length + 1];
         int index = 0;

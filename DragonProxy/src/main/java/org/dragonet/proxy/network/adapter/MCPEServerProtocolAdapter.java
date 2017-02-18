@@ -77,7 +77,7 @@ public class MCPEServerProtocolAdapter implements ServerProtocolAdapter<sul.util
     public void sendPacket(sul.utils.Packet packet) {
         if (client.isConnected()) {
             DragonProxy.getLogger().debug(sender + "Sending Packet: " + upstream.getSessionID() + ": " + packet.getClass().getCanonicalName());
-            client.sendMessage(Reliability.RELIABLE, RakNetUtil.prepareToSend(packet, Reliability.RELIABLE));
+            client.sendMessage(Reliability.RELIABLE, RakNetUtil.prepareToSend(packet));
         } else {
             DragonProxy.getLogger().debug(sender + "Queuing packet: " + upstream.getSessionID() + ": " + packet.getClass().getCanonicalName());
             queuedPackets.add(packet);
