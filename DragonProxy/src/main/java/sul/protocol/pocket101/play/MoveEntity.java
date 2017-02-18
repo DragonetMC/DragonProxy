@@ -18,7 +18,7 @@ public class MoveEntity extends Packet {
 	public static final boolean SERVERBOUND = false;
 
 	public long entityId;
-	public Tuples.FloatXYZ position;
+	public Tuples.FloatXYZ position = new Tuples.FloatXYZ();
 	public byte pitch;
 	public byte headYaw;
 	public byte yaw;

@@ -19,12 +19,13 @@ public class Pocket101 extends Packet {
 
 	@Override
 	public byte[] encode() {
-		throw new MetadataException("This action is not supported yet");
+		//throw new MetadataException("This action is not supported yet");
+                return new byte[0];
 	}
 
 	@Override
 	public void decode(byte[] buffer) {
-		throw new MetadataException("This action is not supported yet");
+		//throw new MetadataException("This action is not supported yet");
 	}
 
 }
