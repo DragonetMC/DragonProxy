@@ -19,7 +19,7 @@ Note: Maven won't build the project because every class in DragonProxy/DragonPro
 #### Supported Remote Server Types
 - For PC/Mac Servers: `Bukkit`/`Spigot`/`Glowstone`/`SpongeVanilla`/`BungeeCord`
 - For Pocket Edition Servers: `MiNET`, `Nukkit`, `PocketMine-MP (and all forks)`
-- Not listed is **NOT** mean unsupported, just **untested**.
+- Not listed does **NOT** mean unsupported, just **untested**.
 
 ## Community
 **Website:** [http://dragonet.org](http://dragonet.org)  
