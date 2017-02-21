@@ -20,12 +20,10 @@
     </properties>
 
     <modules>
-        <!--<module>protocol</module>-->
         <module>DragonProxy</module>
-        <module>JRakNet</module>
     </modules>
     <build>
-	<defaultGoal>clean install</defaultGoal>
+	    <defaultGoal>clean install</defaultGoal>
     </build>
 
     <dependencies>
