@@ -93,8 +93,8 @@ public class MCPEServerProtocolAdapter implements ServerProtocolAdapter<RakNetPa
     }
 
     @Override
-    public void handlePacket(RakNetServerSession session, RakNetPacket packet, int channel) {
-        DragonProxy.getLogger().debug(sender + "Handling Packet from Channel: " + channel + ": " + Integer.toHexString(packet.buffer().getByte(1)));
+    public void handleMessage(RakNetServerSession session, RakNetPacket packet, int channel) {
+        DragonProxy.getLogger().debug(sender + "Handling Message from Channel: " + channel + ": " + Integer.toHexString(packet.buffer().getByte(1)));
         handlePacket(packet, upstream);
     }
 
