@@ -354,8 +354,8 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
     }
 
     @Override
-    public void onAcknowledge(RakNetClientSession session, Record record, Reliability reliability, int channel, RakNetPacket packet) {
-        DragonProxy.getLogger().debug(sender + "Recieved ACK for packet " + packet.getId());
+    public void onAcknowledge(RakNetClientSession session, Record record) {
+        DragonProxy.getLogger().debug(sender + "Recieved ACK");
     }
 
     @Override
@@ -407,8 +407,8 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
     }
 
     @Override
-    public void onNotAcknowledge(RakNetClientSession session, Record record, Reliability reliability, int channel, RakNetPacket packet) {
-        DragonProxy.getLogger().debug(sender + "Did not recieve ACK for packet " + packet.getId());
+    public void onNotAcknowledge(RakNetClientSession session, Record record) {
+        DragonProxy.getLogger().debug(sender + "Did not recieve ACK");
     }
 
     @Override
