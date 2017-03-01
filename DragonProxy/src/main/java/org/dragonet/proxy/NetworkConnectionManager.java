@@ -28,7 +28,7 @@ public class NetworkConnectionManager {
 
     @Getter
     @Setter
-    private String motd = "<No MOTD>";
+    private String motd = "Server by DragonProxy";
 
     private final DragonProxy proxy;
     private final ClientProtocolAdapter clientNetwork;

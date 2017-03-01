@@ -26,6 +26,7 @@ public class Logger {
 
     public boolean debug = false;
     public boolean useIntegerTime = false;
+	public boolean useAnsi = false;
 
     private File logFile;
     FileOutputStream logOut;
@@ -44,7 +45,7 @@ public class Logger {
                     logOut = new FileOutputStream(logFile);
 
                     // Setting the variable here ensures that it will not be null
-                    // if, and only if everything else goes well
+                    // if and only if everything else goes well
                     this.logFile = logFile;
                 }
             } catch (Exception e) {
@@ -61,13 +62,19 @@ public class Logger {
     private void log(String levelColor, String level, String message) {
         StringBuilder builder = new StringBuilder();
         /*
-        Using interger time will make it possible to determine the exact order that
-        the messages were generated
+         * Using interger time will make it possible to determine the exact order that
+         * the messages were generated
          */
-        builder.append(MCColor.toANSI(MCColor.AQUA + "[" + (useIntegerTime ? System.currentTimeMillis() : consoleDate.format(calender.getTime())) + "] "));
-        builder.append(MCColor.toANSI(levelColor + "[" + level + "] "));
-        builder.append(MCColor.toANSI(message + MCColor.WHITE + MCColor.RESET));
-
+		if(useAnsi) {
+			builder.append(MCColor.toANSI(MCColor.AQUA + "[" + (useIntegerTime ? System.currentTimeMillis() : consoleDate.format(calender.getTime())) + "] "));
+			builder.append(MCColor.toANSI(levelColor + "[" + level + "] "));
+			builder.append(MCColor.toANSI(message + MCColor.WHITE + MCColor.RESET));
+		} else {
+			builder.append("[" + (useIntegerTime ? System.currentTimeMillis() : consoleDate.format(calender.getTime())) + "] ");
+			builder.append(levelColor + "[" + level + "] ");
+			builder.append(message);
+		}
+        
         String logMessage = builder.toString();
         System.out.println(logMessage);
 

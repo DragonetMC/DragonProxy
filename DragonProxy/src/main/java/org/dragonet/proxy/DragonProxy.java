@@ -50,7 +50,7 @@ public class DragonProxy {
         self.run(args);
     }
 
-    public final static boolean IS_RELEASE = false; //DO NOT CHANGE, ONLY ON PRODUCTION
+    public final static boolean IS_RELEASE = false; //DO NOT CHANGE, ONLY ON RELEASE
 
     private static Logger logger = null;
 
@@ -87,25 +87,29 @@ public class DragonProxy {
     // Startup and shutdown
     public void run(String[] args) {
         logger = new Logger(new File("proxy.log"));
+		
+		if (!IS_RELEASE) {
+            logger.warning(MCColor.YELLOW + "This is a development build. It may contain bugs. Do not use on production.\n");
+        }
+		
         // Load config.yml 
-
         try {
             File fileConfig = new File("config.yml");
 
             boolean newConfig = false;
             if (!fileConfig.exists()) {
                 newConfig = fileConfig.createNewFile();
-                getLogger().info("Generating blank config file");
+                logger.info("Generating blank config file");
             }
             config = new Yaml().loadAs(new FileInputStream(fileConfig), ServerConfig.class);
 
             if (config == null) {
                 config = new ServerConfig();
-                getLogger().warning("Config file was null. Continuing by using default values");
+                logger.warning("Config file was null. Continuing by using default values");
             }
 
             if (newConfig) {
-                getLogger().info("Writing default values to blank config file");
+                logger.info("Writing default values to blank config file");
                 Map<String, RemoteServer> servers = new HashMap<>();
                 DesktopServer serv = new DesktopServer();
                 serv.setRemote_addr("127.0.0.1");
@@ -131,24 +135,12 @@ public class DragonProxy {
             return;
         }
 
-        getLogger().useIntegerTime = getConfig().isLogIntegerTime();
+        logger.useIntegerTime = getConfig().isLogIntegerTime();
         
         // Initialize console command reader
         console = new ConsoleCommandReader(this);
-        console.startConsole();
-
-        // Should we save console log? Set it in config file
-        /* if(config.isLog_console()){
-            console.startFile("console.log");
-            logger.info("Saving console output enabled");
-        } else {
-            logger.info("Saving console output disabled");
-        } */
-        // Put at the top instead
-        if (!IS_RELEASE) {
-            logger.warning(MCColor.YELLOW + "This is a development build. It may contain bugs. Do not use on production.\n");
-        }
-
+        console.startConsole();   
+		
         // Check for startup arguments
         checkArguments(args);
 
@@ -160,6 +152,7 @@ public class DragonProxy {
             ex.printStackTrace();
             return;
         }
+		
         // Load some more stuff
         logger.info(lang.get(Lang.INIT_LOADING, Versioning.RELEASE_VERSION));
         logger.info(lang.get(Lang.INIT_MC_PC_SUPPORT, Versioning.MINECRAFT_PC_VERSION));
@@ -211,7 +204,6 @@ public class DragonProxy {
             DragonProxy.getLogger().severe("Exception while shutting down!");
             ex.printStackTrace();
         }
-        DragonProxy.getLogger().info("Goodbye!");
         System.exit(0);
     }
 
@@ -224,7 +216,7 @@ public class DragonProxy {
         for (String arg : args) {
             if (arg.toLowerCase().contains("--debug")) {
                 isDebug = true;
-                getLogger().debug = true;
+                logger.debug = true;
                 logger.info(MCColor.DARK_AQUA + "Proxy is running in debug mode.");
             }
         }

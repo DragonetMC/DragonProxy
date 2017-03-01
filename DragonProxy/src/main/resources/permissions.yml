@@ -1,7 +1,7 @@
 # =================================
-#| DragonProxy Configuration File  |
-#|    Sponsered by BytePowered     |
+#| DragonProxy Configuration File |
 # =================================
+# https://github.com/DragonetMC/DragonProxy
 
 # Permissions which player will have if they have no group assigned
 default_permission: 

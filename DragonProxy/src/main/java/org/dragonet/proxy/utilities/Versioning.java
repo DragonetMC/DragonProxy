@@ -16,7 +16,7 @@ import org.spacehq.mc.protocol.MinecraftConstants;
 
 public class Versioning {
 
-    public final static int VERSION_INT = 007; //History: 0.0.6.01 (You can't have preR1 in an int!)
+    public final static int VERSION_INT = 007; // TODO: Remove after checking theres no conflicts
     public final static String RELEASE_VERSION = "0.0.7";
 
     public final static String MINECRAFT_PC_VERSION = MinecraftConstants.GAME_VERSION;
