@@ -344,7 +344,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
     }
 
     @Override
-    public void handlePacket(RakNetClientSession session, RakNetPacket packet, int channel) {
+    public void handleMessage(RakNetClientSession session, RakNetPacket packet, int channel) {
         if (!sessionList.containsKey(session.getGloballyUniqueId())) {
             DragonProxy.getLogger().warning(sender + "Session " + session.getAddress() + " didn't exist");
             sessionList.put(session.getGloballyUniqueId(), getSessionUUID(session.getGloballyUniqueId()));
