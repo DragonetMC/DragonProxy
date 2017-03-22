@@ -1,3 +1,10 @@
+## DragonProxy is dead.
+It was fun while it lasted, but its just too hard and barely anyone was helping us 
+
+
+
+
+
 # DragonProxy [[DONATE](http://dragonet.org/donate.php)]
 
 A proxy for **Minecraft - Pocket Edition** that allows connecting to **Minecraft PC** servers.
