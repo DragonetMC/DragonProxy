@@ -119,7 +119,7 @@ public class DragonProxy {
                 config.setDefault_server("localhost");
                 config.setAcceptPCClients(false);
                 config.setMax_players(10);
-                config.setMode("offline");
+                config.setMode("online");
                 String str = new Yaml().dump(config);
                 FileOutputStream fos = new FileOutputStream(fileConfig);
 
