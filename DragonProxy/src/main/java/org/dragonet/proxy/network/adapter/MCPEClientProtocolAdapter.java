@@ -43,12 +43,12 @@ import org.dragonet.proxy.network.PacketTranslatorRegister;
 import org.dragonet.proxy.network.RakNetUtil;
 import org.dragonet.proxy.utilities.LoginPacketPayload;
 import org.dragonet.proxy.utilities.Versioning;
-import sul.protocol.pocket101.play.Batch;
-import sul.protocol.pocket101.play.FullChunkData;
-import sul.protocol.pocket101.play.Login;
-import sul.protocol.pocket101.play.PlayStatus;
-import sul.protocol.pocket101.play.ResourcePacksInfo;
-import sul.protocol.pocket101.play.StartGame;
+import sul.protocol.pocket107.play.Batch;
+import sul.protocol.pocket107.play.FullChunkData;
+import sul.protocol.pocket107.play.Login;
+import sul.protocol.pocket107.play.PlayStatus;
+import sul.protocol.pocket107.play.ResourcePacksInfo;
+import sul.protocol.pocket107.play.StartGame;
 import sul.utils.Packet;
 import sul.utils.Tuples;
 
@@ -526,7 +526,7 @@ public class MCPEClientProtocolAdapter implements ClientProtocolAdapter<RakNetPa
         sendPacket(status, session);
 
         // Required; Causes the client to switch to the "locating server" screen
-        sendPacket(new ResourcePacksInfo(false, new sul.protocol.pocket101.types.Pack[0], new sul.protocol.pocket101.types.Pack[0]), session);
+        sendPacket(new ResourcePacksInfo(false, new sul.protocol.pocket107.types.Pack[0], new sul.protocol.pocket107.types.Pack[0]), session);
 
         StartGame startGamePacket = new StartGame(); // Required; Makes the client switch to the "generating world" screen
         startGamePacket.entityId = 1;
