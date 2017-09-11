@@ -12,23 +12,36 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.protocol.packet.ChatPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerChatPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.MessageTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.packet.ingame.server.ServerChatPacket;
+import sul.protocol.pocket132.play.Text;
+import sul.utils.Packet;
 
 public class PCChatPacketTranslator implements PCPacketTranslator<ServerChatPacket> {
 
+    public static final byte TYPE_RAW = 0;
+    public static final byte TYPE_CHAT = 1;
+    public static final byte TYPE_TRANSLATION = 2;
+    public static final byte TYPE_POPUP = 3;
+    public static final byte TYPE_TIP = 4;
+    public static final byte TYPE_SYSTEM = 5;
+    public static final byte TYPE_WHISPER = 6;
+    public static final byte TYPE_ANNOUNCEMENT = 7;
+
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerChatPacket packet) {
-        ChatPacket ret = new ChatPacket();
+    public Packet[] translate(UpstreamSession session, ServerChatPacket packet) {
+        Text text = new Text(TYPE_RAW, (byte)0);
+
+        String content = MessageTranslator.translate(packet.getMessage());
+        return new Packet[]{text.new Raw(content)};
+
+        // TODO: Detect types
         /*
          * Reset the chat message so we can parse the JSON again (if needed)
          */
-        ret.source = "";
-        ret.message = MessageTranslator.translate(packet.getMessage());
+        /*
         switch (packet.getType()) {
         case CHAT:
             ret.type = ChatPacket.TextType.CHAT;
@@ -40,5 +53,6 @@ public class PCChatPacketTranslator implements PCPacketTranslator<ServerChatPack
             break;
         }
         return new PEPacket[]{ret};
+        */
     }
 }

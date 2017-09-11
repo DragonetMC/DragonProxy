@@ -1,16 +1,27 @@
 package org.dragonet.raknet.protocol.packet;
 
 import org.dragonet.raknet.protocol.AcknowledgePacket;
+import org.dragonet.raknet.protocol.Packet;
 
 /**
- * author: MagicDroidX Nukkit Project
+ * author: MagicDroidX
+ * Nukkit Project
  */
 public class ACK extends AcknowledgePacket {
 
-    public static byte ID = (byte) 0xc0;
+    public static final byte ID = (byte) 0xc0;
 
     @Override
     public byte getID() {
         return ID;
+    }
+
+    public static final class Factory implements PacketFactory {
+
+        @Override
+        public Packet create() {
+            return new ACK();
+        }
+
     }
 }

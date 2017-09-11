@@ -12,32 +12,32 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.protocol.packet.PEPacket;
-import org.dragonet.proxy.protocol.packet.SetPlayerGameTypePacket;
+import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.dragonet.proxy.protocol.packet.AdventureSettingsPacket;
-import org.spacehq.mc.protocol.data.game.values.entity.player.GameMode;
-import org.spacehq.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
+import sul.protocol.pocket132.play.AdventureSettings;
+import sul.protocol.pocket132.play.SetPlayerGameType;
+import sul.utils.Packet;
 
 public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoinGamePacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerJoinGamePacket packet) {
+    public Packet[] translate(UpstreamSession session, ServerJoinGamePacket packet) {
         //This packet is not fully useable, we cache it for now. 
         session.getDataCache().put(CacheKey.PLAYER_EID, packet.getEntityId());  //Stores the real entity ID
 
         if (session.getProxy().getAuthMode().equals("online")) {
             //Online mode already sent packets
             
-            SetPlayerGameTypePacket pkSetGameMode = new SetPlayerGameTypePacket(packet.getGameMode() == GameMode.CREATIVE ? 1 : 0);
+            SetPlayerGameType pkSetGameMode = new SetPlayerGameType(packet.getGameMode() == GameMode.CREATIVE ? 1 : 0);
             
-            AdventureSettingsPacket adv = new AdventureSettingsPacket();
+            AdventureSettings adv = new AdventureSettings();
             int settings = 0x1 | 0x20 | 0x40;
             adv.flags = settings;
             
-            return new PEPacket[]{pkSetGameMode, adv};
+            return new Packet[]{pkSetGameMode, adv};
         }
 
         session.getDataCache().put(CacheKey.PACKET_JOIN_GAME_PACKET, packet);

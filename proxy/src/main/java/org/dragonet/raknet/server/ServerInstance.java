@@ -3,7 +3,8 @@ package org.dragonet.raknet.server;
 import org.dragonet.raknet.protocol.EncapsulatedPacket;
 
 /**
- * author: MagicDroidX Nukkit Project
+ * author: MagicDroidX
+ * Nukkit Project
  */
 public interface ServerInstance {
 

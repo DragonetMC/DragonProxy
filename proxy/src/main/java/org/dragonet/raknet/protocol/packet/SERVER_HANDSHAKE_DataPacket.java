@@ -5,11 +5,11 @@ import org.dragonet.raknet.protocol.Packet;
 import java.net.InetSocketAddress;
 
 /**
- * author: MagicDroidX Nukkit Project
+ * author: MagicDroidX
+ * Nukkit Project
  */
 public class SERVER_HANDSHAKE_DataPacket extends Packet {
-
-    public static byte ID = (byte) 0x10;
+    public static final byte ID = (byte) 0x10;
 
     @Override
     public byte getID() {
@@ -18,17 +18,17 @@ public class SERVER_HANDSHAKE_DataPacket extends Packet {
 
     public String address;
     public int port;
-    public InetSocketAddress[] systemAddresses = new InetSocketAddress[]{
-        new InetSocketAddress("127.0.0.1", 0),
-        new InetSocketAddress("0.0.0.0", 0),
-        new InetSocketAddress("0.0.0.0", 0),
-        new InetSocketAddress("0.0.0.0", 0),
-        new InetSocketAddress("0.0.0.0", 0),
-        new InetSocketAddress("0.0.0.0", 0),
-        new InetSocketAddress("0.0.0.0", 0),
-        new InetSocketAddress("0.0.0.0", 0),
-        new InetSocketAddress("0.0.0.0", 0),
-        new InetSocketAddress("0.0.0.0", 0)
+    public final InetSocketAddress[] systemAddresses = new InetSocketAddress[]{
+            new InetSocketAddress("127.0.0.1", 0),
+            new InetSocketAddress("0.0.0.0", 0),
+            new InetSocketAddress("0.0.0.0", 0),
+            new InetSocketAddress("0.0.0.0", 0),
+            new InetSocketAddress("0.0.0.0", 0),
+            new InetSocketAddress("0.0.0.0", 0),
+            new InetSocketAddress("0.0.0.0", 0),
+            new InetSocketAddress("0.0.0.0", 0),
+            new InetSocketAddress("0.0.0.0", 0),
+            new InetSocketAddress("0.0.0.0", 0)
     };
 
     public long sendPing;
@@ -47,9 +47,13 @@ public class SERVER_HANDSHAKE_DataPacket extends Packet {
         this.putLong(this.sendPong);
     }
 
-    @Override
-    public void decode() {
-        super.decode();
+    public static final class Factory implements Packet.PacketFactory {
+
+        @Override
+        public Packet create() {
+            return new SERVER_HANDSHAKE_DataPacket();
+        }
+
     }
 
 }

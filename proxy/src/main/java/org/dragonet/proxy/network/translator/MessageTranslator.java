@@ -12,11 +12,11 @@
  */
 package org.dragonet.proxy.network.translator;
 
-import java.util.List;
-import org.spacehq.mc.protocol.data.message.ChatColor;
-import org.spacehq.mc.protocol.data.message.ChatFormat;
-import org.spacehq.mc.protocol.data.message.Message;
+import com.github.steveice10.mc.protocol.data.message.ChatColor;
+import com.github.steveice10.mc.protocol.data.message.ChatFormat;
+import com.github.steveice10.mc.protocol.data.message.Message;
 
+import java.util.List;
 public final class MessageTranslator {
 
     /*
@@ -37,7 +37,7 @@ public final class MessageTranslator {
     private static String toMinecraftFormat(List<ChatFormat> formats) {
         String superBase = "";
         for (ChatFormat cf : formats) {
-            String base = "§";
+            String base = "\u00a7";
             switch (cf) {
                 case BOLD:
                     base += "l";

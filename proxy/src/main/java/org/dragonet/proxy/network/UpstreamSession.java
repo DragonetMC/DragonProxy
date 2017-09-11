@@ -12,6 +12,10 @@
  */
 package org.dragonet.proxy.network;
 
+import com.github.steveice10.mc.auth.exception.request.RequestException;
+import com.github.steveice10.mc.auth.service.AuthenticationService;
+import com.github.steveice10.mc.protocol.MinecraftProtocol;
+import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -35,10 +39,6 @@ import org.dragonet.proxy.utilities.HTTP;
 import org.dragonet.proxy.utilities.MCColor;
 import org.dragonet.proxy.utilities.Versioning;
 import org.dragonet.raknet.protocol.EncapsulatedPacket;
-import org.spacehq.mc.auth.exception.request.RequestException;
-import org.spacehq.mc.auth.service.AuthenticationService;
-import org.spacehq.mc.protocol.MinecraftProtocol;
-import org.spacehq.mc.protocol.data.game.values.PlayerListEntry;
 
 /**
  * Maintaince the connection between the proxy and Minecraft: Pocket Edition
@@ -280,7 +280,7 @@ public class UpstreamSession {
         if(server.getClass().isAssignableFrom(DesktopServer.class)){
             downstream = new PCDownstreamSession(proxy, this);
             ((PCDownstreamSession)downstream).setProtocol(protocol);
-            ((PCDownstreamSession)downstream).connect(server.getRemoteAddr(), server.getRemotePort());
+            downstream.connect(server.getRemoteAddr(), server.getRemotePort());
         }else{
             downstream = new PEDownstreamSession(proxy, this);
             ((PEDownstreamSession)downstream).connect((PocketServer) server);

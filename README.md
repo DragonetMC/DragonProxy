@@ -1,4 +1,8 @@
-![Logo](http://dragonet.org/assets/img/Dragonet.png)
+DragonProxy
+===========
+
+## WE ARE BACK
+- Currently updating for Minecraft Java `1.12.1` and Minecraft Bedrock/PE version `1.3.2 (132)`
 
 A proxy for **Minecraft - Pocket Edition** connecting to **Minecraft PC/Mac** servers.
 

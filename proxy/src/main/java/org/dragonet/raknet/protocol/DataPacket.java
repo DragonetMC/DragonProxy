@@ -1,15 +1,16 @@
 package org.dragonet.raknet.protocol;
 
-import org.dragonet.proxy.utilities.Binary;
+import cn.nukkit.utils.Binary;
 
-import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * author: MagicDroidX Nukkit Project
+ * author: MagicDroidX
+ * Nukkit Project
  */
 public abstract class DataPacket extends Packet {
 
-    public ArrayList<Object> packets = new ArrayList<>();
+    public ConcurrentLinkedQueue<Object> packets = new ConcurrentLinkedQueue<>();
 
     public Integer seqNumber;
 
@@ -49,7 +50,7 @@ public abstract class DataPacket extends Packet {
 
     @Override
     public Packet clean() {
-        this.packets.clear();
+        this.packets = new ConcurrentLinkedQueue<>();
         this.seqNumber = null;
         return super.clean();
     }
@@ -57,7 +58,7 @@ public abstract class DataPacket extends Packet {
     @Override
     public DataPacket clone() throws CloneNotSupportedException {
         DataPacket packet = (DataPacket) super.clone();
-        packet.packets = new ArrayList<>(this.packets);
+        packet.packets = new ConcurrentLinkedQueue<>(this.packets);
         return packet;
     }
 

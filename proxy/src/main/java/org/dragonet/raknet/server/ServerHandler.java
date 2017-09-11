@@ -2,18 +2,19 @@ package org.dragonet.raknet.server;
 
 import org.dragonet.raknet.RakNet;
 import org.dragonet.raknet.protocol.EncapsulatedPacket;
-import org.dragonet.proxy.utilities.Binary;
+import cn.nukkit.utils.Binary;
 
 import java.nio.charset.StandardCharsets;
 
 /**
- * author: MagicDroidX Nukkit Project
+ * author: MagicDroidX
+ * Nukkit Project
  */
 public class ServerHandler {
 
-    protected RakNetServer server;
+    protected final RakNetServer server;
 
-    protected ServerInstance instance;
+    protected final ServerInstance instance;
 
     public ServerHandler(RakNetServer server, ServerInstance instance) {
         this.server = server;
@@ -73,6 +74,15 @@ public class ServerHandler {
                 new byte[]{(byte) (address.length() & 0xff)},
                 address.getBytes(StandardCharsets.UTF_8),
                 Binary.writeInt(timeout)
+        );
+        this.server.pushMainToThreadPacket(buffer);
+    }
+
+    public void unblockAddress(String address) {
+        byte[] buffer = Binary.appendBytes(
+                RakNet.PACKET_UNBLOCK_ADDRESS,
+                new byte[]{(byte) (address.length() & 0xff)},
+                address.getBytes(StandardCharsets.UTF_8)
         );
         this.server.pushMainToThreadPacket(buffer);
     }

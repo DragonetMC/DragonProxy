@@ -6,11 +6,11 @@ import org.dragonet.raknet.protocol.Packet;
 import java.net.InetSocketAddress;
 
 /**
- * author: MagicDroidX Nukkit Project
+ * author: MagicDroidX
+ * Nukkit Project
  */
 public class OPEN_CONNECTION_REPLY_2 extends Packet {
-
-    public static byte ID = (byte) 0x08;
+    public static final byte ID = (byte) 0x08;
 
     @Override
     public byte getID() {
@@ -41,5 +41,14 @@ public class OPEN_CONNECTION_REPLY_2 extends Packet {
         this.clientAddress = address.getHostString();
         this.clientPort = address.getPort();
         this.mtuSize = this.getSignedShort();
+    }
+
+    public static final class Factory implements Packet.PacketFactory {
+
+        @Override
+        public Packet create() {
+            return new OPEN_CONNECTION_REPLY_2();
+        }
+
     }
 }

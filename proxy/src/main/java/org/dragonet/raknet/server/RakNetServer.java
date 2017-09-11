@@ -1,31 +1,38 @@
 package org.dragonet.raknet.server;
 
+import cn.nukkit.Server;
+import cn.nukkit.utils.ThreadedLogger;
+
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * author: MagicDroidX Nukkit Project
+ * author: MagicDroidX
+ * Nukkit Project
  */
 public class RakNetServer extends Thread {
-
-    protected int port;
+    protected final int port;
     protected String interfaz;
+
+    protected ThreadedLogger logger;
 
     protected ConcurrentLinkedQueue<byte[]> externalQueue;
     protected ConcurrentLinkedQueue<byte[]> internalQueue;
 
     protected boolean shutdown;
 
-    public RakNetServer(int port) {
-        this(port, "0.0.0.0");
+
+    public RakNetServer(ThreadedLogger logger, int port) {
+        this(logger, port, "0.0.0.0");
     }
 
-    public RakNetServer(int port, String interfaz) {
+    public RakNetServer(ThreadedLogger logger, int port, String interfaz) {
         this.port = port;
         if (port < 1 || port > 65536) {
             throw new IllegalArgumentException("Invalid port range");
         }
 
         this.interfaz = interfaz;
+        this.logger = logger;
 
         this.externalQueue = new ConcurrentLinkedQueue<>();
         this.internalQueue = new ConcurrentLinkedQueue<>();
@@ -47,6 +54,10 @@ public class RakNetServer extends Thread {
 
     public String getInterface() {
         return interfaz;
+    }
+
+    public ThreadedLogger getLogger() {
+        return logger;
     }
 
     public ConcurrentLinkedQueue<byte[]> getExternalQueue() {
@@ -74,12 +85,9 @@ public class RakNetServer extends Thread {
     }
 
     private class ShutdownHandler extends Thread {
-
         public void run() {
             if (!shutdown) {
-                /*
                 logger.emergency("RakNet crashed!");
-                 */
             }
         }
     }
@@ -88,11 +96,11 @@ public class RakNetServer extends Thread {
     public void run() {
         this.setName("RakNet Thread #" + Thread.currentThread().getId());
         Runtime.getRuntime().addShutdownHook(new ShutdownHandler());
-        UDPServerSocket socket = new UDPServerSocket(port, this.interfaz);
+        UDPServerSocket socket = new UDPServerSocket(this.getLogger(), port, this.interfaz);
         try {
             new SessionManager(this, socket);
         } catch (Exception e) {
-            e.printStackTrace();
+            Server.getInstance().getLogger().logException(e);
         }
     }
 }

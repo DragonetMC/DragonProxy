@@ -12,22 +12,21 @@
  */
 package org.dragonet.proxy.network;
 
+import com.github.steveice10.mc.protocol.MinecraftProtocol;
+import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
+import com.github.steveice10.packetlib.Client;
+import com.github.steveice10.packetlib.event.session.ConnectedEvent;
+import com.github.steveice10.packetlib.event.session.DisconnectedEvent;
+import com.github.steveice10.packetlib.event.session.PacketReceivedEvent;
+import com.github.steveice10.packetlib.event.session.SessionAdapter;
+import com.github.steveice10.packetlib.packet.Packet;
+import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 import lombok.Getter;
 import lombok.Setter;
 import org.dragonet.proxy.protocol.packet.PEPacket;
 import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
-import org.spacehq.mc.protocol.MinecraftProtocol;
-import org.spacehq.mc.protocol.packet.ingame.client.ClientChatPacket;
-import org.spacehq.packetlib.Client;
-import org.spacehq.packetlib.event.session.ConnectedEvent;
-import org.spacehq.packetlib.event.session.DisconnectedEvent;
-import org.spacehq.packetlib.event.session.PacketReceivedEvent;
-import org.spacehq.packetlib.event.session.SessionAdapter;
-import org.spacehq.packetlib.packet.Packet;
-import org.spacehq.packetlib.tcp.TcpSessionFactory;
-
 /**
  * Maintaince the connection between the proxy and remote Minecraft server.
  */

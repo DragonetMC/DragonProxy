@@ -12,11 +12,10 @@
  */
 package org.dragonet.proxy.network.translator;
 
-import org.dragonet.proxy.protocol.packet.PEPacket;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.spacehq.packetlib.packet.Packet;
+import sul.utils.Packet;
 
-public interface PCPacketTranslator<P extends Packet> {
+public interface PCPacketTranslator<P extends com.github.steveice10.packetlib.packet.Packet> {
 
     /**
      * Translate a packet from PC version to PE version.
@@ -25,6 +24,6 @@ public interface PCPacketTranslator<P extends Packet> {
      * @param packet
      * @return
      */
-    public PEPacket[] translate(UpstreamSession session, P packet);
+    Packet[] translate(UpstreamSession session, P packet);
 
 }

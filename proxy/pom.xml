@@ -66,6 +66,11 @@
             <artifactId>guava</artifactId>
             <version>19.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.sel-utils</groupId>
+            <artifactId>java</artifactId>
+            <version>v1.2.86</version>
+        </dependency>
         <!--<dependency>
             <groupId>org.dragonet.proxy</groupId>
             <artifactId>protocol</artifactId>

@@ -12,19 +12,19 @@
  */
 package org.dragonet.proxy.network.translator.pe;
 
-import org.dragonet.proxy.protocol.packet.ChatPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
+import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import org.dragonet.proxy.utilities.PatternChecker;
-import org.spacehq.mc.protocol.packet.ingame.client.ClientChatPacket;
-import org.spacehq.packetlib.packet.Packet;
+import sul.protocol.pocket132.play.Text;
 
-public class PEChatPacketTranslator implements PEPacketTranslator<ChatPacket> {
+public class PEChatPacketTranslator implements PEPacketTranslator<Text.Chat> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, ChatPacket packet) {
+    public Packet[] translate(UpstreamSession session, Text.Chat packet) {
         if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE) != null) {
             if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE).equals("email")) {
                 if (!PatternChecker.matchEmail(packet.message.trim())) {

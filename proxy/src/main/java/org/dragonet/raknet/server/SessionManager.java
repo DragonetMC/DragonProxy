@@ -1,61 +1,34 @@
 package org.dragonet.raknet.server;
 
-import org.dragonet.raknet.protocol.packet.DATA_PACKET_7;
-import org.dragonet.raknet.protocol.packet.DATA_PACKET_9;
-import org.dragonet.raknet.protocol.packet.OPEN_CONNECTION_REQUEST_1;
-import org.dragonet.raknet.protocol.packet.DATA_PACKET_3;
-import org.dragonet.raknet.protocol.packet.DATA_PACKET_6;
-import org.dragonet.raknet.protocol.packet.DATA_PACKET_2;
-import org.dragonet.raknet.protocol.packet.ADVERTISE_SYSTEM;
-import org.dragonet.raknet.protocol.packet.DATA_PACKET_B;
-import org.dragonet.raknet.protocol.packet.DATA_PACKET_0;
-import org.dragonet.raknet.protocol.packet.ACK;
-import org.dragonet.raknet.protocol.packet.DATA_PACKET_E;
-import org.dragonet.raknet.protocol.packet.DATA_PACKET_1;
-import org.dragonet.raknet.protocol.packet.UNCONNECTED_PONG;
-import org.dragonet.raknet.protocol.packet.DATA_PACKET_5;
-import org.dragonet.raknet.protocol.packet.OPEN_CONNECTION_REPLY_1;
-import org.dragonet.raknet.protocol.packet.DATA_PACKET_4;
-import org.dragonet.raknet.protocol.packet.DATA_PACKET_8;
-import org.dragonet.raknet.protocol.packet.DATA_PACKET_D;
-import org.dragonet.raknet.protocol.packet.UNCONNECTED_PING_OPEN_CONNECTIONS;
-import org.dragonet.raknet.protocol.packet.OPEN_CONNECTION_REQUEST_2;
-import org.dragonet.raknet.protocol.packet.OPEN_CONNECTION_REPLY_2;
-import org.dragonet.raknet.protocol.packet.NACK;
-import org.dragonet.raknet.protocol.packet.UNCONNECTED_PING;
-import org.dragonet.raknet.protocol.packet.DATA_PACKET_F;
-import org.dragonet.raknet.protocol.packet.DATA_PACKET_C;
-import org.dragonet.raknet.protocol.packet.DATA_PACKET_A;
 import org.dragonet.raknet.RakNet;
 import org.dragonet.raknet.protocol.EncapsulatedPacket;
 import org.dragonet.raknet.protocol.Packet;
-import org.dragonet.proxy.utilities.Binary;
+import cn.nukkit.utils.Binary;
+import cn.nukkit.utils.ThreadedLogger;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.socket.DatagramPacket;
+import org.dragonet.raknet.protocol.packet.*;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 /**
- * author: MagicDroidX Nukkit Project
+ * author: MagicDroidX
+ * Nukkit Project
  */
 public class SessionManager {
+    protected final Packet.PacketFactory[] packetPool = new Packet.PacketFactory[256];
 
-    protected Map<Byte, Class<? extends Packet>> packetPool = new ConcurrentHashMap<>();
+    protected final RakNetServer server;
 
-    protected RakNetServer server;
-
-    protected UDPServerSocket socket;
+    protected final UDPServerSocket socket;
 
     protected int receiveBytes = 0;
     protected int sendBytes = 0;
 
-    protected Map<String, Session> sessions = new ConcurrentHashMap<>();
+    protected final Map<String, Session> sessions = new HashMap<>();
 
     protected String name = "";
 
@@ -66,12 +39,14 @@ public class SessionManager {
     protected long ticks = 0;
     protected long lastMeasure;
 
-    protected Map<String, Long> block = new ConcurrentHashMap<>();
-    protected Map<String, Integer> ipSec = new ConcurrentHashMap<>();
+    protected final Map<String, Long> block = new HashMap<>();
+    protected final Map<String, Integer> ipSec = new HashMap<>();
 
     public boolean portChecking = true;
 
-    public long serverId;
+    public final long serverId;
+
+    protected String currentSource = "";
 
     public SessionManager(RakNetServer server, UDPServerSocket socket) throws Exception {
         this.server = server;
@@ -87,6 +62,10 @@ public class SessionManager {
         return this.server.port;
     }
 
+    public ThreadedLogger getLogger() {
+        return this.server.getLogger();
+    }
+
     public void run() throws Exception {
         this.tickProcessor();
     }
@@ -96,8 +75,18 @@ public class SessionManager {
         while (!this.shutdown) {
             long start = System.currentTimeMillis();
             int max = 5000;
-            while (max > 0 && this.receivePacket()) {
-                --max;
+            while (max > 0) {
+                try {
+                    if (!this.receivePacket()) {
+                        break;
+                    }
+                    --max;
+                } catch (Exception e) {
+                    if (!"".equals(currentSource)) {
+                        this.blockAddress(currentSource);
+                    }
+                    // else ignore
+                }
             }
             while (this.receiveStream()) ;
 
@@ -108,20 +97,19 @@ public class SessionManager {
                 } catch (InterruptedException e) {
                     //ignore
                 }
-                this.tick();
             }
+            this.tick();
         }
     }
 
     private void tick() throws Exception {
         long time = System.currentTimeMillis();
-        for (Session session : this.sessions.values()) {
+        for (Session session : new ArrayList<>(this.sessions.values())) {
             session.update(time);
         }
 
-        for (Map.Entry<String, Integer> entry : this.ipSec.entrySet()) {
-            String address = entry.getKey();
-            int count = entry.getValue();
+        for (String address : this.ipSec.keySet()) {
+            int count = this.ipSec.get(address);
             if (count >= this.packetLimit) {
                 this.blockAddress(address);
             }
@@ -129,7 +117,7 @@ public class SessionManager {
         this.ipSec.clear();
 
         if ((this.ticks & 0b1111) == 0) {
-            double diff = Math.max(50d, (double) time - this.lastMeasure);
+            double diff = Math.max(5d, (double) time - this.lastMeasure);
             this.streamOption("bandwidth", this.sendBytes / diff + ";" + this.receiveBytes / diff);
             this.lastMeasure = time;
             this.sendBytes = 0;
@@ -137,11 +125,11 @@ public class SessionManager {
 
             if (!this.block.isEmpty()) {
                 long now = System.currentTimeMillis();
-                for (Map.Entry<String, Long> entry : this.block.entrySet()) {
-                    String address = entry.getKey();
-                    long timeout = entry.getValue();
+                for (String address : new ArrayList<>(this.block.keySet())) {
+                    long timeout = this.block.get(address);
                     if (timeout <= now) {
                         this.block.remove(address);
+                        this.getLogger().notice("Unblocked " + address);
                     } else {
                         break;
                     }
@@ -155,12 +143,10 @@ public class SessionManager {
     private boolean receivePacket() throws Exception {
         DatagramPacket datagramPacket = this.socket.readPacket();
         if (datagramPacket != null) {
-            int len = datagramPacket.getLength();
-            byte[] buffer = datagramPacket.getData();
-            String source = datagramPacket.getAddress().getHostAddress();
-            int port = datagramPacket.getPort();
-            if (len > 0) {
-                this.receiveBytes += len;
+            // Check this early
+            try {
+                String source = datagramPacket.sender().getHostString();
+                currentSource = source; //in order to block address
                 if (this.block.containsKey(source)) {
                     return true;
                 }
@@ -171,10 +157,24 @@ public class SessionManager {
                     this.ipSec.put(source, 1);
                 }
 
+                ByteBuf byteBuf = datagramPacket.content();
+                if (byteBuf.readableBytes() == 0) {
+                    // Exit early to process another packet
+                    return true;
+                }
+                byte[] buffer = new byte[byteBuf.readableBytes()];
+                byteBuf.readBytes(buffer);
+                int len = buffer.length;
+                int port = datagramPacket.sender().getPort();
+
+                this.receiveBytes += len;
+
                 byte pid = buffer[0];
-                if (pid == UNCONNECTED_PONG.ID){
+
+                if (pid == UNCONNECTED_PONG.ID) {
                     return false;
                 }
+
                 Packet packet = this.getPacketFromPool(pid);
                 if (packet != null) {
                     packet.buffer = buffer;
@@ -196,6 +196,8 @@ public class SessionManager {
                 } else {
                     return false;
                 }
+            } finally {
+                datagramPacket.release();
             }
         }
 
@@ -381,8 +383,13 @@ public class SessionManager {
                     int timeout = Binary.readInt(Binary.subBytes(packet, offset, 4));
                     this.blockAddress(address, timeout);
                     break;
+                case RakNet.PACKET_UNBLOCK_ADDRESS:
+                    len = packet[offset++];
+                    address = new String(Binary.subBytes(packet, offset, len), StandardCharsets.UTF_8);
+                    this.unblockAddress(address);
+                    break;
                 case RakNet.PACKET_SHUTDOWN:
-                    for (Session session : this.sessions.values()) {
+                    for (Session session : new ArrayList<>(this.sessions.values())) {
                         this.removeSession(session);
                     }
 
@@ -405,18 +412,21 @@ public class SessionManager {
     }
 
     public void blockAddress(String address, int timeout) {
-        long finalTime = System.currentTimeMillis() + 300 * 1000;
+        long finalTime = System.currentTimeMillis() + timeout * 1000;
         if (!this.block.containsKey(address) || timeout == -1) {
             if (timeout == -1) {
                 finalTime = Long.MAX_VALUE;
             } else {
-                //GlowServer
-                //DragonetServer.instance().getLogger().info("Blocked " + address + " for " + timeout + " seconds");
+                this.getLogger().notice("Blocked " + address + " for " + timeout + " seconds");
             }
             this.block.put(address, finalTime);
         } else if (this.block.get(address) < finalTime) {
             this.block.put(address, finalTime);
         }
+    }
+
+    public void unblockAddress(String address) {
+        this.block.remove(address);
     }
 
     public Session getSession(String ip, int port) {
@@ -461,49 +471,43 @@ public class SessionManager {
         return this.serverId;
     }
 
-    private void registerPacket(byte id, Class<? extends Packet> clazz) {
-        this.packetPool.put(id, clazz);
+    private void registerPacket(byte id, Packet.PacketFactory factory) {
+        this.packetPool[id & 0xFF] = factory;
     }
 
     public Packet getPacketFromPool(byte id) {
-        if (this.packetPool.containsKey(id)) {
-            try {
-                return this.packetPool.get(id).newInstance();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
+        return this.packetPool[id & 0xFF].create();
     }
 
     private void registerPackets() {
+        // fill with dummy returning null
+        Arrays.fill(this.packetPool, (Packet.PacketFactory) () -> null);
+
         //this.registerPacket(UNCONNECTED_PING.ID, UNCONNECTED_PING.class);
-        this.registerPacket(UNCONNECTED_PING_OPEN_CONNECTIONS.ID, UNCONNECTED_PING_OPEN_CONNECTIONS.class);
-        this.registerPacket(OPEN_CONNECTION_REQUEST_1.ID, OPEN_CONNECTION_REQUEST_1.class);
-        this.registerPacket(OPEN_CONNECTION_REPLY_1.ID, OPEN_CONNECTION_REPLY_1.class);
-        this.registerPacket(OPEN_CONNECTION_REQUEST_2.ID, OPEN_CONNECTION_REQUEST_2.class);
-        this.registerPacket(OPEN_CONNECTION_REPLY_2.ID, OPEN_CONNECTION_REPLY_2.class);
-        this.registerPacket(UNCONNECTED_PONG.ID, UNCONNECTED_PONG.class);
-        this.registerPacket(ADVERTISE_SYSTEM.ID, ADVERTISE_SYSTEM.class);
-        this.registerPacket(DATA_PACKET_0.ID, DATA_PACKET_0.class);
-        this.registerPacket(DATA_PACKET_1.ID, DATA_PACKET_1.class);
-        this.registerPacket(DATA_PACKET_2.ID, DATA_PACKET_2.class);
-        this.registerPacket(DATA_PACKET_3.ID, DATA_PACKET_3.class);
-        this.registerPacket(DATA_PACKET_4.ID, DATA_PACKET_4.class);
-        this.registerPacket(DATA_PACKET_5.ID, DATA_PACKET_5.class);
-        this.registerPacket(DATA_PACKET_6.ID, DATA_PACKET_6.class);
-        this.registerPacket(DATA_PACKET_7.ID, DATA_PACKET_7.class);
-        this.registerPacket(DATA_PACKET_8.ID, DATA_PACKET_8.class);
-        this.registerPacket(DATA_PACKET_9.ID, DATA_PACKET_9.class);
-        this.registerPacket(DATA_PACKET_A.ID, DATA_PACKET_A.class);
-        this.registerPacket(DATA_PACKET_B.ID, DATA_PACKET_B.class);
-        this.registerPacket(DATA_PACKET_C.ID, DATA_PACKET_C.class);
-        this.registerPacket(DATA_PACKET_D.ID, DATA_PACKET_D.class);
-        this.registerPacket(DATA_PACKET_E.ID, DATA_PACKET_E.class);
-        this.registerPacket(DATA_PACKET_F.ID, DATA_PACKET_F.class);
-        this.registerPacket(NACK.ID, NACK.class);
-        this.registerPacket(ACK.ID, ACK.class);
+        this.registerPacket(UNCONNECTED_PING_OPEN_CONNECTIONS.ID, new UNCONNECTED_PING_OPEN_CONNECTIONS.Factory());
+        this.registerPacket(OPEN_CONNECTION_REQUEST_1.ID, new OPEN_CONNECTION_REQUEST_1.Factory());
+        this.registerPacket(OPEN_CONNECTION_REPLY_1.ID, new OPEN_CONNECTION_REPLY_1.Factory());
+        this.registerPacket(OPEN_CONNECTION_REQUEST_2.ID, new OPEN_CONNECTION_REQUEST_2.Factory());
+        this.registerPacket(OPEN_CONNECTION_REPLY_2.ID, new OPEN_CONNECTION_REPLY_2.Factory());
+        this.registerPacket(UNCONNECTED_PONG.ID, new UNCONNECTED_PONG.Factory());
+        this.registerPacket(ADVERTISE_SYSTEM.ID, new ADVERTISE_SYSTEM.Factory());
+        this.registerPacket(DATA_PACKET_0.ID, new DATA_PACKET_0.Factory());
+        this.registerPacket(DATA_PACKET_1.ID, new DATA_PACKET_1.Factory());
+        this.registerPacket(DATA_PACKET_2.ID, new DATA_PACKET_2.Factory());
+        this.registerPacket(DATA_PACKET_3.ID, new DATA_PACKET_3.Factory());
+        this.registerPacket(DATA_PACKET_4.ID, new DATA_PACKET_4.Factory());
+        this.registerPacket(DATA_PACKET_5.ID, new DATA_PACKET_5.Factory());
+        this.registerPacket(DATA_PACKET_6.ID, new DATA_PACKET_6.Factory());
+        this.registerPacket(DATA_PACKET_7.ID, new DATA_PACKET_7.Factory());
+        this.registerPacket(DATA_PACKET_8.ID, new DATA_PACKET_8.Factory());
+        this.registerPacket(DATA_PACKET_9.ID, new DATA_PACKET_9.Factory());
+        this.registerPacket(DATA_PACKET_A.ID, new DATA_PACKET_A.Factory());
+        this.registerPacket(DATA_PACKET_B.ID, new DATA_PACKET_B.Factory());
+        this.registerPacket(DATA_PACKET_C.ID, new DATA_PACKET_C.Factory());
+        this.registerPacket(DATA_PACKET_D.ID, new DATA_PACKET_D.Factory());
+        this.registerPacket(DATA_PACKET_E.ID, new DATA_PACKET_E.Factory());
+        this.registerPacket(DATA_PACKET_F.ID, new DATA_PACKET_F.Factory());
+        this.registerPacket(NACK.ID, new NACK.Factory());
+        this.registerPacket(ACK.ID, new ACK.Factory());
     }
 }

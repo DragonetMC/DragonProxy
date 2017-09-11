@@ -3,11 +3,11 @@ package org.dragonet.raknet.protocol.packet;
 import org.dragonet.raknet.protocol.Packet;
 
 /**
- * author: MagicDroidX Nukkit Project
+ * author: MagicDroidX
+ * Nukkit Project
  */
 public class CLIENT_CONNECT_DataPacket extends Packet {
-
-    public static byte ID = (byte) 0x09;
+    public static final byte ID = (byte) 0x09;
 
     @Override
     public byte getID() {
@@ -32,5 +32,14 @@ public class CLIENT_CONNECT_DataPacket extends Packet {
         this.clientID = this.getLong();
         this.sendPing = this.getLong();
         this.useSecurity = this.getByte() > 0;
+    }
+
+    public static final class Factory implements Packet.PacketFactory {
+
+        @Override
+        public Packet create() {
+            return new CLIENT_CONNECT_DataPacket();
+        }
+
     }
 }

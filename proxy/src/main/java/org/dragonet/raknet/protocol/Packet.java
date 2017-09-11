@@ -1,13 +1,14 @@
 package org.dragonet.raknet.protocol;
 
-import org.dragonet.proxy.utilities.Binary;
+import cn.nukkit.utils.Binary;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
- * author: MagicDroidX Nukkit Project
+ * author: MagicDroidX
+ * Nukkit Project
  */
 public abstract class Packet implements Cloneable {
 
@@ -35,7 +36,11 @@ public abstract class Packet implements Cloneable {
     }
 
     protected byte[] get() {
-        return Arrays.copyOfRange(this.buffer, this.offset, this.buffer.length - 1);
+        try {
+            return Arrays.copyOfRange(this.buffer, this.offset, this.buffer.length - 1);
+        } catch (Exception e) {
+            return new byte[0];
+        }
     }
 
     protected long getLong() {
@@ -74,7 +79,7 @@ public abstract class Packet implements Cloneable {
         byte version = this.getByte();
         if (version == 4) {
             String addr = ((~this.getByte()) & 0xff) + "." + ((~this.getByte()) & 0xff) + "." + ((~this.getByte()) & 0xff) + "." + ((~this.getByte()) & 0xff);
-            int port = this.getSignedShort() & 0xffff;
+            int port = this.getShort();
             return new InetSocketAddress(addr, port);
         } else {
             //todo IPV6 SUPPORT
@@ -167,5 +172,15 @@ public abstract class Packet implements Cloneable {
         Packet packet = (Packet) super.clone();
         packet.buffer = this.buffer.clone();
         return packet;
+    }
+
+    /**
+     * A factory to create new packet instances
+     */
+    public interface PacketFactory {
+        /**
+         * Creates the packet
+         */
+        Packet create();
     }
 }

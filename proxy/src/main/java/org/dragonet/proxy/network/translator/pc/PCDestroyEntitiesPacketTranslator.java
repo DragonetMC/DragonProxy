@@ -12,25 +12,25 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.protocol.packet.PEPacket;
-import org.dragonet.proxy.protocol.packet.RemoveEntityPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityDestroyPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerDestroyEntitiesPacket;
+import sul.protocol.pocket132.play.RemoveEntity;
+import sul.utils.Packet;
 
-public class PCDestroyEntitiesPacketTranslator implements PCPacketTranslator<ServerDestroyEntitiesPacket> {
+public class PCDestroyEntitiesPacketTranslator implements PCPacketTranslator<ServerEntityDestroyPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerDestroyEntitiesPacket packet) {
-        PEPacket[] ret = new PEPacket[packet.getEntityIds().length];
+    public Packet[] translate(UpstreamSession session, ServerEntityDestroyPacket packet) {
+        Packet[] ret = new Packet[packet.getEntityIds().length];
         for (int i = 0; i < ret.length; i++) {
             CachedEntity e = session.getEntityCache().remove(packet.getEntityIds()[i]);
             if (e == null) {
                 continue;
             }
-            ret[i] = new RemoveEntityPacket();
-            ((RemoveEntityPacket) ret[i]).eid = e.eid;
+            ret[i] = new RemoveEntity();
+            ((RemoveEntity) ret[i]).entityId = e.eid;
         }
         return ret;
     }

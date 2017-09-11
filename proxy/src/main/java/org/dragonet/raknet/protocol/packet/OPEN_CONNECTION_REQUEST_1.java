@@ -4,11 +4,11 @@ import org.dragonet.raknet.RakNet;
 import org.dragonet.raknet.protocol.Packet;
 
 /**
- * author: MagicDroidX Nukkit Project
+ * author: MagicDroidX
+ * Nukkit Project
  */
 public class OPEN_CONNECTION_REQUEST_1 extends Packet {
-
-    public static byte ID = (byte) 0x05;
+    public static final byte ID = (byte) 0x05;
 
     @Override
     public byte getID() {
@@ -31,7 +31,16 @@ public class OPEN_CONNECTION_REQUEST_1 extends Packet {
         super.decode();
         this.offset += 16; //skip magic bytes
         this.protocol = this.getByte();
-        this.mtuSize = (short) (this.get().length + 18);
+        this.mtuSize = (short) this.buffer.length;
+    }
+
+    public static final class Factory implements Packet.PacketFactory {
+
+        @Override
+        public Packet create() {
+            return new OPEN_CONNECTION_REQUEST_1();
+        }
+
     }
 
 }

@@ -1,12 +1,13 @@
 package org.dragonet.raknet.protocol;
 
-import org.dragonet.proxy.utilities.Binary;
-import org.dragonet.proxy.utilities.BinaryStream;
+import cn.nukkit.utils.Binary;
+import cn.nukkit.utils.BinaryStream;
 
 import java.util.TreeMap;
 
 /**
- * author: MagicDroidX Nukkit Project
+ * author: MagicDroidX
+ * Nukkit Project
  */
 public abstract class AcknowledgePacket extends Packet {
 
