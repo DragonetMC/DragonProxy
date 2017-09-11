@@ -17,3 +17,4 @@ console.log
 dependency-reduced-pom.xml
 nb-configuration.xml
 *.iml
+/.idea
