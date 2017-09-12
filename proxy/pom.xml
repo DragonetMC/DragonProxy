@@ -38,7 +38,7 @@
         <dependency>
             <groupId>com.github.Steveice10</groupId>
             <artifactId>MCProtocolLib</artifactId>
-            <version>1.12-1</version>
+            <version>master-1.12-1-gdae57d1-11</version>
         </dependency>
         <dependency>
             <groupId>com.github.Steveice10</groupId>

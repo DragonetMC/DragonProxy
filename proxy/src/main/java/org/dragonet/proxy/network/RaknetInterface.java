@@ -94,13 +94,13 @@ public class RaknetInterface implements ServerInstance {
         if (session == null) {
             return;
         }
-        System.out.println(" ==== ENCAPSULATED ==== ");
+        /* System.out.println(" ==== ENCAPSULATED ==== ");
         int xx = 0;
         for(byte b : packet.buffer) {
             System.out.print(Integer.toHexString(b & 0xFF) + " ");
             if((xx & 0xf) == 0) System.out.println();
             xx ++;
-        }
+        } */
         session.handlePacketBinary(packet);
     }
 
@@ -131,10 +131,10 @@ public class RaknetInterface implements ServerInstance {
         
         //Debug
 
-        System.out.println("Sending [" + packet.getClass().getSimpleName() + "] after 2 seconds... ");
-        try{
-            Thread.sleep(2000L);
-        }catch(Exception e){}
+        System.out.println("Sending [" + packet.getClass().getSimpleName() + "] ... ");
+        // try{
+        //     Thread.sleep(2000L);
+        // }catch(Exception e){}
 
         
         boolean overridedImmediate = immediate || IMMEDIATE_PACKETS.contains(packet.getClass().getSimpleName());

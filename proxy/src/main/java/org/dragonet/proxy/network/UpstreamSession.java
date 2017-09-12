@@ -193,6 +193,9 @@ public class UpstreamSession {
             pkStartGame.generator = 1;
             pkStartGame.spawnPosition = new Tuples.IntXYZ(0, 0, 0);
             pkStartGame.position = new Tuples.FloatXYZ(0f, 72f, 0f);
+            pkStartGame.levelId = "World";
+            pkStartGame.worldName = "World";
+            pkStartGame.premiumWorldTemplate = "";
             sendPacket(pkStartGame, true);
 
             SetSpawnPosition pkSpawn = new SetSpawnPosition();

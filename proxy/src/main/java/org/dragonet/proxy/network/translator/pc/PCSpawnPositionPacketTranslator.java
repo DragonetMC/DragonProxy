@@ -19,10 +19,7 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerSpawnPositionPacket;
-import sul.protocol.pocket113.play.AdventureSettings;
-import sul.protocol.pocket113.play.MovePlayer;
-import sul.protocol.pocket113.play.PlayStatus;
-import sul.protocol.pocket113.play.StartGame;
+import sul.protocol.pocket113.play.*;
 import sul.utils.Packet;
 import sul.utils.Tuples;
 
@@ -43,6 +40,7 @@ public class PCSpawnPositionPacketTranslator implements PCPacketTranslator<Serve
             }
             return null;
         }
+
         ServerJoinGamePacket restored = (ServerJoinGamePacket) session.getDataCache().remove(CacheKey.PACKET_JOIN_GAME_PACKET);
         StartGame ret = new StartGame();
         ret.entityId = 0; //Use EID 0 for eaisier management
@@ -52,14 +50,16 @@ public class PCSpawnPositionPacketTranslator implements PCPacketTranslator<Serve
         ret.gamemode = restored.getGameMode() == GameMode.CREATIVE ? 1 : 0;
         ret.spawnPosition = new Tuples.IntXYZ(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
         ret.position = new Tuples.FloatXYZ((float) packet.getPosition().getX(), (float) packet.getPosition().getY(), (float) packet.getPosition().getZ());
-
+        ret.levelId = "World";
+        ret.worldName = "World";
+        ret.premiumWorldTemplate = "";
         AdventureSettings adv = new AdventureSettings();
         int settings = 0x1 | 0x20 | 0x40;
         adv.flags = settings;
         
         PlayStatus stat = new PlayStatus();
         stat.status = PlayStatus.SPAWNED;
-        return new Packet[]{ret, adv, stat};
+        return new Packet[]{ret, new ResourcePacksInfo(), adv, stat};
     }
 
 }
