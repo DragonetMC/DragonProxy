@@ -61,7 +61,8 @@ public class ConsoleCommandReader {
 
                     proxy.getCommandRegister().callCommand(command);
                 } catch (Exception ex) {
-                    logger.severe("Error while reading command: " + ex);
+                    logger.severe("Error while executing command: " + ex);
+                    ex.printStackTrace();
                 }
             }
         }

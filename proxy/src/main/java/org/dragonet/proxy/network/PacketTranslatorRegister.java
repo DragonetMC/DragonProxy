@@ -12,6 +12,7 @@
  */
 package org.dragonet.proxy.network;
 
+import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMapDataPacket;
 import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
@@ -47,7 +48,7 @@ public final class PacketTranslatorRegister {
         // Map
         // removed??
         //PC_TO_PE_TRANSLATOR.put(ServerMultiChunkDataPacket.class, new PCMultiChunkDataPacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerMapDataPacket.class, new PCMultiChunkDataPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerChunkDataPacket.class, new PCMultiChunkDataPacketTranslator());
         /*
         PC_TO_PE_TRANSLATOR.put(ServerUpdateTimePacket.class, new PCUpdateTimePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerBlockChangePacket.class, new PCBlockChangePacketTranslator());

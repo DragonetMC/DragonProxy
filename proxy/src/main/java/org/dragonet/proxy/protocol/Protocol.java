@@ -38,6 +38,7 @@ public final class Protocol {
             return null;
         }
         int pid = data[0] & 0xFF;
+        System.out.println("FIRST BYTE = " + Integer.toHexString(pid) + ", len = " + data.length);
         if(pid != 0xfe) return null;
 
         byte[] inflated;

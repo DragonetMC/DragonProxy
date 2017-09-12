@@ -27,16 +27,15 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import lombok.Getter;
+import net.marfgamer.jraknet.protocol.Reliability;
+import net.marfgamer.jraknet.session.RakNetClientSession;
 import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.RemoteServer;
 import org.dragonet.proxy.network.cache.EntityCache;
 import org.dragonet.proxy.network.cache.WindowCache;
-import org.dragonet.proxy.utilities.HTTP;
-import org.dragonet.proxy.utilities.LoginChainDecoder;
-import org.dragonet.proxy.utilities.Versioning;
-import org.dragonet.raknet.protocol.EncapsulatedPacket;
+import org.dragonet.proxy.utilities.*;
 import sul.protocol.pocket113.play.*;
 import sul.protocol.pocket113.types.BlockPosition;
 import sul.utils.Packet;
@@ -53,6 +52,9 @@ public class UpstreamSession {
 
     @Getter
     private final String raknetID;
+
+    @Getter
+    private final RakNetClientSession raknetClient;
 
     @Getter
     private final InetSocketAddress remoteAddress;
@@ -88,10 +90,11 @@ public class UpstreamSession {
     /* ======================================================================================================= */
     private MinecraftProtocol protocol;
 
-    public UpstreamSession(DragonProxy proxy, String raknetID, InetSocketAddress remoteAddress) {
+    public UpstreamSession(DragonProxy proxy, String raknetID, RakNetClientSession raknetClient, InetSocketAddress remoteAddress) {
         this.proxy = proxy;
         this.raknetID = raknetID;
         this.remoteAddress = remoteAddress;
+        this.raknetClient = raknetClient;
         packetProcessor = new PEPacketProcessor(this);
         packetProcessorScheule = proxy.getGeneralThreadPool().scheduleAtFixedRate(packetProcessor, 10, 50, TimeUnit.MILLISECONDS);
     }
@@ -101,7 +104,23 @@ public class UpstreamSession {
     }
 
     public void sendPacket(Packet packet, boolean immediate) {
-        proxy.getNetwork().sendPacket(raknetID, packet, immediate);
+        System.out.println("Sending [" + packet.getClass().getSimpleName() + "] ... ");
+
+        packet.encode();
+
+        byte[] buffer;
+        try {
+            buffer = Zlib.deflate(
+                    Binary.appendBytes(Binary.writeUnsignedVarInt(packet.getBuffer().length), packet.getBuffer()),
+                    6
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+        // handler.sendEncapsulated(identifier, encapsulated, RakNet.FLAG_NEED_ACK | (overridedImmediate ? RakNet.PRIORITY_IMMEDIATE : RakNet.PRIORITY_NORMAL));
+        raknetClient.sendMessage(Reliability.RELIABLE_ORDERED, 0, new net.marfgamer.jraknet.Packet(Binary.appendBytes((byte) 0xfe, buffer)));
     }
 
     public void sendAllPackets(Packet[] packets, boolean immediate) {
@@ -137,7 +156,7 @@ public class UpstreamSession {
      */
     public void disconnect(String reason) {
         if(!connecting) {
-            proxy.getNetwork().closeSession(raknetID, reason);
+            sendPacket(new Disconnect(false, reason));
             //RakNet server will call onDisconnect()
         }
     }
@@ -156,8 +175,8 @@ public class UpstreamSession {
         packetProcessorScheule.cancel(true);
     }
 
-    public void handlePacketBinary(EncapsulatedPacket packet) {
-        packetProcessor.putPacket(packet.buffer);
+    public void handlePacketBinary(byte[] packet) {
+        packetProcessor.putPacket(packet);
     }
 
     public void onLogin(org.dragonet.proxy.protocol.patch_113.Login packet) {

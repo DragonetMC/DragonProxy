@@ -35,7 +35,7 @@ public final class CommandRegister {
         registerCommand("stop", new StopCommand("stop"));
         registerCommand("help", new HelpCommand("help"));
         registerCommand("kill", new KillCommand("kill")); // Bad things could happen
-        // registerCommand("test", new TestCommand("test")); // FOR TESTING
+        registerCommand("test", new TestCommand("test")); // FOR TESTING
     }
 
     public void registerCommand(String command, Command console) {

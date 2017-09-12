@@ -56,7 +56,11 @@ public class PCSpawnPositionPacketTranslator implements PCPacketTranslator<Serve
         AdventureSettings adv = new AdventureSettings();
         int settings = 0x1 | 0x20 | 0x40;
         adv.flags = settings;
-        
+
+        session.getEntityCache().getClientEntity().x = packet.getPosition().getX();
+        session.getEntityCache().getClientEntity().y = packet.getPosition().getY();
+        session.getEntityCache().getClientEntity().z = packet.getPosition().getZ();
+
         PlayStatus stat = new PlayStatus();
         stat.status = PlayStatus.SPAWNED;
         return new Packet[]{ret, new ResourcePacksInfo(), adv, stat};

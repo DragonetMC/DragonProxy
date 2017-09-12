@@ -87,7 +87,7 @@ public class DragonProxy {
                 //Create default config
                 FileOutputStream fos = new FileOutputStream(fileConfig);
                 InputStream ins = DragonProxy.class.getResourceAsStream("/config.yml");
-                int data = -1;
+                int data;
                 while((data = ins.read()) != -1){
                     fos.write(data);
                 }
@@ -172,7 +172,7 @@ public class DragonProxy {
     }
 
     public void onTick() {
-        network.onTick();
+        // network.onTick();
         sessionRegister.onTick();
     }
 
