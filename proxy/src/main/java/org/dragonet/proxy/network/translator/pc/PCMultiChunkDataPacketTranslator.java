@@ -14,18 +14,19 @@ package org.dragonet.proxy.network.translator.pc;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+
+import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
 import org.dragonet.proxy.protocol.packet.FullChunkPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.data.game.Chunk;
-import org.spacehq.mc.protocol.packet.ingame.server.world.ServerMultiChunkDataPacket;
+//import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMultiChunkDataPacket;
+import sul.utils.Packet;
 
-public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<ServerMultiChunkDataPacket> {
+public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<ServerChunkDataPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerMultiChunkDataPacket packet) {
+    public Packet[] translate(UpstreamSession session, ServerChunkDataPacket packet) {
 
         session.getProxy().getGeneralThreadPool().execute(() -> {
     		ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
@@ -36,7 +37,7 @@ public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<Serv
 
     		ByteArrayOutputStream bosTiles = new ByteArrayOutputStream();
     		DataOutputStream dosTiles = new DataOutputStream(bosTiles);
-
+            packet.get
     		try {
     			for (int col = 0; col < packet.getColumns(); col++) {
     				bos1.reset();

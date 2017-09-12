@@ -8,7 +8,6 @@ package org.dragonet.raknet;
  */
 public abstract class RakNet {
 
-    public static final String VERSION = "1.1.0";
     public static final byte PROTOCOL = 6;
     public static final byte[] MAGIC = new byte[]{
             (byte) 0x00, (byte) 0xff, (byte) 0xff, (byte) 0x00,

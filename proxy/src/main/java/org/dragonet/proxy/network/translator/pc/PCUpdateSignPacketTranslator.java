@@ -13,12 +13,11 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import org.dragonet.proxy.protocol.packet.BlockEntityDataPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
 import org.dragonet.proxy.nbt.tag.CompoundTag;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.MessageTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.packet.ingame.server.world.ServerUpdateSignPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerUpdateSignPacket;
 
 public class PCUpdateSignPacketTranslator implements PCPacketTranslator<ServerUpdateSignPacket> {
 

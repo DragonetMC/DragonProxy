@@ -14,20 +14,30 @@ package org.dragonet.proxy.network;
 
 import java.net.InetSocketAddress;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import lombok.Getter;
-import org.dragonet.proxy.protocol.packet.BatchPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
+import org.apache.commons.lang3.ArrayUtils;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.utilities.Binary;
 import org.dragonet.proxy.utilities.Versioning;
+import org.dragonet.proxy.utilities.Zlib;
 import org.dragonet.raknet.RakNet;
 import org.dragonet.raknet.protocol.EncapsulatedPacket;
 import org.dragonet.raknet.server.RakNetServer;
 import org.dragonet.raknet.server.ServerHandler;
 import org.dragonet.raknet.server.ServerInstance;
+import sul.utils.Packet;
 
 public class RaknetInterface implements ServerInstance {
+
+    private final static Set<String> IMMEDIATE_PACKETS = new HashSet<>();
+
+    static {
+        IMMEDIATE_PACKETS.add("PlayStatus");
+    }
 
     @Getter
     private final DragonProxy proxy;
@@ -42,7 +52,7 @@ public class RaknetInterface implements ServerInstance {
 
     public RaknetInterface(DragonProxy proxy, String ip, int port) {
         this.proxy = proxy;
-        rakServer = new RakNetServer(port, ip);
+        rakServer = new RakNetServer(proxy.getLogger(), port, ip);
         handler = new ServerHandler(rakServer, this);
         sessions = this.proxy.getSessionRegister();
     }
@@ -108,7 +118,7 @@ public class RaknetInterface implements ServerInstance {
         handler.closeSession(identifier, reason);
     }
 
-    public void sendPacket(String identifier, PEPacket packet, boolean immediate) {
+    public void sendPacket(String identifier, Packet packet, boolean immediate) {
         if (identifier == null || packet == null) {
             return;
         }
@@ -121,17 +131,23 @@ public class RaknetInterface implements ServerInstance {
         }catch(Exception e){}
 
         
-        boolean overridedImmediate = immediate || packet.isShouldSendImmidate();
+        boolean overridedImmediate = immediate || IMMEDIATE_PACKETS.contains(packet.getClass().getSimpleName());
         packet.encode();
-        if (packet.getData().length > 512 && !BatchPacket.class.isAssignableFrom(packet.getClass())) {
-            BatchPacket pkBatch = new BatchPacket();
-            pkBatch.packets.add(packet);
-            sendPacket(identifier, pkBatch, overridedImmediate);
+
+
+        byte[] buffer;
+        try {
+            buffer = Zlib.deflate(
+                    Binary.appendBytes(Binary.writeUnsignedVarInt(packet.getBuffer().length), packet.getBuffer()),
+                    6
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
             return;
         }
 
         EncapsulatedPacket encapsulated = new EncapsulatedPacket();
-        encapsulated.buffer = Binary.appendBytes((byte) 0xfe, packet.getData());
+        encapsulated.buffer = Binary.appendBytes((byte) 0xfe, buffer);
         encapsulated.needACK = true;
         encapsulated.reliability = (byte) 2;
         encapsulated.messageIndex = 0;

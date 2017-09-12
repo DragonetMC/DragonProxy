@@ -17,9 +17,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.github.steveice10.packetlib.packet.Packet;
 import lombok.Getter;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.spacehq.packetlib.packet.Packet;
 
 public final class WindowCache {
 

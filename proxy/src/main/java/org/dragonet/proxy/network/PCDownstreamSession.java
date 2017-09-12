@@ -23,7 +23,6 @@ import com.github.steveice10.packetlib.packet.Packet;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 import lombok.Getter;
 import lombok.Setter;
-import org.dragonet.proxy.protocol.packet.PEPacket;
 import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
@@ -105,7 +104,7 @@ public class PCDownstreamSession implements DownstreamSession<Packet> {
                 */
                 //Handle the packet
                 try {
-                    PEPacket[] packets = PacketTranslatorRegister.translateToPE(upstream, event.getPacket());
+                    sul.utils.Packet[] packets = PacketTranslatorRegister.translateToPE(upstream, event.getPacket());
                     if (packets == null) {
                         return;
                     }

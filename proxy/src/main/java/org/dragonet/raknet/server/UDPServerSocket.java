@@ -1,6 +1,5 @@
 package org.dragonet.raknet.server;
 
-import cn.nukkit.utils.ThreadedLogger;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -10,6 +9,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import org.dragonet.proxy.utilities.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -21,22 +21,22 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class UDPServerSocket extends ChannelInboundHandlerAdapter {
 
-    protected final ThreadedLogger logger;
+    protected final Logger logger;
     protected Bootstrap bootstrap;
     protected EventLoopGroup group;
     protected Channel channel;
 
     protected ConcurrentLinkedQueue<DatagramPacket> packets = new ConcurrentLinkedQueue<>();
 
-    public UDPServerSocket(ThreadedLogger logger) {
+    public UDPServerSocket(Logger logger) {
         this(logger, 19132, "0.0.0.0");
     }
 
-    public UDPServerSocket(ThreadedLogger logger, int port) {
+    public UDPServerSocket(Logger logger, int port) {
         this(logger, port, "0.0.0.0");
     }
 
-    public UDPServerSocket(ThreadedLogger logger, int port, String interfaz) {
+    public UDPServerSocket(Logger logger, int port, String interfaz) {
         this.logger = logger;
         try {
             bootstrap = new Bootstrap();
@@ -47,8 +47,8 @@ public class UDPServerSocket extends ChannelInboundHandlerAdapter {
                     .handler(this);
             channel = bootstrap.bind(interfaz, port).sync().channel();
         } catch (Exception e) {
-            this.logger.critical("**** FAILED TO BIND TO " + interfaz + ":" + port + "!");
-            this.logger.critical("Perhaps a server is already running on that port?");
+            this.logger.severe("**** FAILED TO BIND TO " + interfaz + ":" + port + "!");
+            this.logger.severe("Perhaps a server is already running on that port?");
             System.exit(1);
         }
     }
@@ -86,6 +86,7 @@ public class UDPServerSocket extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        this.logger.warning(cause.getMessage(), cause);
+        cause.printStackTrace();
+        this.logger.warning(cause.getMessage());
     }
 }

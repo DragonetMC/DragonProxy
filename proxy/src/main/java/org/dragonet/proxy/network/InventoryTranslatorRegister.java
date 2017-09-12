@@ -14,11 +14,21 @@ package org.dragonet.proxy.network;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
+import com.github.steveice10.mc.protocol.data.game.window.WindowType;
+import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientCloseWindowPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
 import org.dragonet.inventory.PEWindowConstantID;
 import org.dragonet.proxy.network.cache.CachedWindow;
+import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.inv.ChestWindowTranslator;
 import org.dragonet.proxy.network.translator.InventoryTranslator;
+import sul.protocol.pocket113.play.ContainerClose;
 import sul.protocol.pocket113.play.ContainerSetContent;
+import sul.protocol.pocket113.types.Slot;
 import sul.utils.Packet;
 
 public final class InventoryTranslatorRegister {
@@ -28,13 +38,13 @@ public final class InventoryTranslatorRegister {
     public static Packet[] sendPlayerInventory(UpstreamSession session) {
         CachedWindow win = session.getWindowCache().getPlayerInventory();
         //Translate and send
-        ContainerSetContent ret = new WindowItemsPacket();
-        ret.windowID = PEWindowConstantID.PLAYER_INVENTORY;
-        ret.slots = new PEInventorySlot[45];
+        ContainerSetContent ret = new ContainerSetContent();
+        ret.window = PEWindowConstantID.PLAYER_INVENTORY;
+        ret.slots = new Slot[45];
         for (int i = 9; i < win.slots.length; i++) {
             //TODO: Add NBT support
             if (win.slots[i] != null) {
-                ret.slots[i - 9] = PEInventorySlot.fromItemStack(win.slots[i]);
+                ret.slots[i - 9] = ItemBlockTranslator.translateToPE(win.slots[i]);
             }
         }
         for (int i = 36; i < 45; i++) {
@@ -43,7 +53,7 @@ public final class InventoryTranslatorRegister {
         ret.hotbar = HOTBAR_CONSTANTS;
 
         //TODO: Add armor support
-        return new PEPacket[]{ret};
+        return new Packet[]{ret};
     }
 
     // PC Type => PE Translator
@@ -58,7 +68,7 @@ public final class InventoryTranslatorRegister {
             //There is already a window opened
             int id = (int) session.getDataCache().remove(CacheKey.WINDOW_OPENED_ID);
             if (!byServer) {
-                session.getDownstream().send(new ClientCloseWindowPacket(id));
+                session.getDownstream().send(new ContainerClose((byte)(id & 0xFF)));
             }
             if (session.getDataCache().containsKey(CacheKey.WINDOW_BLOCK_POSITION)) {
                 //Already a block was replaced to Chest, reset it
@@ -70,8 +80,8 @@ public final class InventoryTranslatorRegister {
                         0);
             }
             if (byServer) {
-                WindowClosePacket pkClose = new WindowClosePacket();
-                pkClose.windowID = (byte) (id & 0xFF);
+                ContainerClose pkClose = new ContainerClose();
+                pkClose.window = (byte) (id & 0xFF);
                 session.sendPacket(pkClose, true);
             }
         }
@@ -84,8 +94,8 @@ public final class InventoryTranslatorRegister {
             session.getWindowCache().cacheWindow(cached);
             TRANSLATORS.get(win.getType()).open(session, cached);
 
-            Packet[] items = session.getWindowCache().getCachedPackets(win.getWindowId());
-            for (Packet item : items) {
+            com.github.steveice10.packetlib.packet.Packet[] items = session.getWindowCache().getCachedPackets(win.getWindowId());
+            for (com.github.steveice10.packetlib.packet.Packet item : items) {
                 if (item != null) {
                     if (ServerWindowItemsPacket.class.isAssignableFrom(item.getClass())) {
                         updateContent(session, (ServerWindowItemsPacket) item);

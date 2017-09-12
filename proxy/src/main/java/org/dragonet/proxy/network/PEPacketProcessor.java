@@ -18,8 +18,6 @@ import lombok.Getter;
 import org.dragonet.proxy.protocol.Protocol;
 import org.dragonet.proxy.protocol.packet.BatchPacket;
 import org.dragonet.proxy.protocol.packet.LoginPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
-import org.dragonet.proxy.protocol.packet.PEPacketIDs;
 import org.spacehq.packetlib.packet.Packet;
 
 public class PEPacketProcessor implements Runnable {

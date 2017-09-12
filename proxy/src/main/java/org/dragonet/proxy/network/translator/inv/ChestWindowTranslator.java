@@ -22,7 +22,7 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.InventoryTranslator;
 import org.dragonet.proxy.nbt.tag.CompoundTag;
-import org.spacehq.mc.protocol.data.game.Position;
+import com.github.steveice10.mc.protocol.data.game.Position;
 
 public class ChestWindowTranslator implements InventoryTranslator {
 

@@ -17,8 +17,8 @@ import org.dragonet.proxy.entity.meta.type.ByteMeta;
 import org.dragonet.proxy.entity.meta.type.ShortMeta;
 import org.dragonet.proxy.entity.EntityType;
 import org.dragonet.proxy.entity.meta.EntityMetaData;
-import org.spacehq.mc.protocol.data.game.EntityMetadata;
-import org.spacehq.mc.protocol.data.game.values.entity.MetadataType;
+import com.github.steveice10.mc.protocol.data.game.EntityMetadata;
+import com.github.steveice10.mc.protocol.data.game.values.entity.MetadataType;
 
 public final class EntityMetaTranslator {
 

@@ -15,8 +15,8 @@ package org.dragonet.proxy.entity;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
-import org.spacehq.mc.protocol.data.game.values.MagicValues;
-import org.spacehq.mc.protocol.data.game.values.entity.MobType;
+import com.github.steveice10.mc.protocol.data.game.values.MagicValues;
+import com.github.steveice10.mc.protocol.data.game.values.entity.MobType;
 
 public enum EntityType {
 

@@ -1,15 +1,14 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import org.dragonet.proxy.protocol.packet.AddPlayerPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
 import org.dragonet.proxy.protocol.packet.PlayerListPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.dragonet.proxy.utilities.DefaultSkin;
-import org.spacehq.mc.protocol.data.game.EntityMetadata;
-import org.spacehq.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
+import com.github.steveice10.mc.protocol.data.game.EntityMetadata;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
 
 public class PCSpawnPlayerPacketTranslator implements PCPacketTranslator<ServerSpawnPlayerPacket> {
 

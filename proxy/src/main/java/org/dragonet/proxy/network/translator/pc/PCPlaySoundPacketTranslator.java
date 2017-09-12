@@ -14,12 +14,11 @@ package org.dragonet.proxy.network.translator.pc;
 
 import java.lang.reflect.Field;
 import org.dragonet.proxy.protocol.packet.LevelEventPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.data.game.values.world.CustomSound;
-import org.spacehq.mc.protocol.data.game.values.world.GenericSound;
-import org.spacehq.mc.protocol.packet.ingame.server.world.ServerPlaySoundPacket;
+import com.github.steveice10.mc.protocol.data.game.values.world.CustomSound;
+import com.github.steveice10.mc.protocol.data.game.values.world.GenericSound;
+import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerPlaySoundPacket;
 
 public class PCPlaySoundPacketTranslator implements PCPacketTranslator<ServerPlaySoundPacket> {
 

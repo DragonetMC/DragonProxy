@@ -1,7 +1,7 @@
 package org.dragonet.raknet.server;
 
-import cn.nukkit.Server;
-import cn.nukkit.utils.ThreadedLogger;
+
+import org.dragonet.proxy.utilities.Logger;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -13,19 +13,19 @@ public class RakNetServer extends Thread {
     protected final int port;
     protected String interfaz;
 
-    protected ThreadedLogger logger;
-
     protected ConcurrentLinkedQueue<byte[]> externalQueue;
     protected ConcurrentLinkedQueue<byte[]> internalQueue;
 
     protected boolean shutdown;
 
+    protected Logger logger;
 
-    public RakNetServer(ThreadedLogger logger, int port) {
+
+    public RakNetServer(Logger logger, int port) {
         this(logger, port, "0.0.0.0");
     }
 
-    public RakNetServer(ThreadedLogger logger, int port, String interfaz) {
+    public RakNetServer(Logger logger, int port, String interfaz) {
         this.port = port;
         if (port < 1 || port > 65536) {
             throw new IllegalArgumentException("Invalid port range");
@@ -33,7 +33,6 @@ public class RakNetServer extends Thread {
 
         this.interfaz = interfaz;
         this.logger = logger;
-
         this.externalQueue = new ConcurrentLinkedQueue<>();
         this.internalQueue = new ConcurrentLinkedQueue<>();
 
@@ -56,7 +55,7 @@ public class RakNetServer extends Thread {
         return interfaz;
     }
 
-    public ThreadedLogger getLogger() {
+    public Logger getLogger() {
         return logger;
     }
 
@@ -87,7 +86,7 @@ public class RakNetServer extends Thread {
     private class ShutdownHandler extends Thread {
         public void run() {
             if (!shutdown) {
-                logger.emergency("RakNet crashed!");
+                logger.severe("RakNet crashed!");
             }
         }
     }
@@ -100,7 +99,7 @@ public class RakNetServer extends Thread {
         try {
             new SessionManager(this, socket);
         } catch (Exception e) {
-            Server.getInstance().getLogger().logException(e);
+            e.printStackTrace();
         }
     }
 }

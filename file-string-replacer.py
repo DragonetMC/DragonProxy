@@ -2,8 +2,13 @@
 
 import os
 
-REPLACE_FROM = "sul.protocol.pocket132"
-REPLACE_TO = "sul.protocol.pocket113"
+# change MCPE version
+# REPLACE_FROM = "sul.protocol.pocket132"
+# REPLACE_TO = "sul.protocol.pocket113"
+
+# update MCProtocolLib namespace
+REPLACE_FROM = "org.spacehq.mc"
+REPLACE_TO = "com.github.steveice10.mc"
 
 def main():
   g = os.walk("./proxy")
@@ -20,6 +25,7 @@ def performReplace(file_path):
     lines = r.readlines()
   with open(file_path, "w") as w:
     for l in lines:
+      if "import org.dragonet.proxy.protocol.packet.PEPacket" in l: continue;
       w.write(l.replace(REPLACE_FROM, REPLACE_TO))
 
 if __name__ == "__main__":

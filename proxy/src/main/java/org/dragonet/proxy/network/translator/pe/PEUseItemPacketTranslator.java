@@ -16,12 +16,12 @@ import org.dragonet.proxy.protocol.packet.UseItemPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
-import org.spacehq.mc.protocol.data.game.ItemStack;
-import org.spacehq.mc.protocol.data.game.Position;
-import org.spacehq.mc.protocol.data.game.values.Face;
-import org.spacehq.mc.protocol.data.game.values.MagicValues;
-import org.spacehq.mc.protocol.packet.ingame.client.player.ClientPlayerPlaceBlockPacket;
-import org.spacehq.mc.protocol.packet.ingame.client.player.ClientSwingArmPacket;
+import com.github.steveice10.mc.protocol.data.game.ItemStack;
+import com.github.steveice10.mc.protocol.data.game.Position;
+import com.github.steveice10.mc.protocol.data.game.values.Face;
+import com.github.steveice10.mc.protocol.data.game.values.MagicValues;
+import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPlaceBlockPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientSwingArmPacket;
 import org.spacehq.packetlib.packet.Packet;
 
 public class PEUseItemPacketTranslator implements PEPacketTranslator<UseItemPacket> {

@@ -21,7 +21,6 @@ import org.dragonet.proxy.protocol.packet.BatchPacket;
 import org.dragonet.proxy.protocol.packet.ChatPacket;
 import org.dragonet.proxy.protocol.packet.LoginPacket;
 import org.dragonet.proxy.protocol.packet.MovePlayerPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
 import org.dragonet.proxy.protocol.packet.SetSpawnPositionPacket;
 import org.dragonet.proxy.protocol.packet.StartGamePacket;
 import org.dragonet.proxy.DragonProxy;
