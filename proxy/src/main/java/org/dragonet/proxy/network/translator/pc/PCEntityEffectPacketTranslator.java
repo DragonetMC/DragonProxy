@@ -12,42 +12,39 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
+import com.github.steveice10.mc.protocol.data.MagicValues;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityEffectPacket;
 import org.dragonet.PocketPotionEffect;
-import org.dragonet.proxy.protocol.packet.MobEffectPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.data.game.values.MagicValues;
-import org.spacehq.mc.protocol.packet.ingame.server.entity.ServerEntityEffectPacket;
+import sul.protocol.pocket132.play.MobEffect;
+import sul.utils.Packet;
 
 public class PCEntityEffectPacketTranslator implements PCPacketTranslator<ServerEntityEffectPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerEntityEffectPacket packet) {
+    public Packet[] translate(UpstreamSession session, ServerEntityEffectPacket packet) {
         CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
         if (entity == null) {
             return null;
         }
         int effectId = MagicValues.value(Integer.class, packet.getEffect());
 
-        MobEffectPacket eff = new MobEffectPacket();
-        eff.eid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
-        eff.effect = PocketPotionEffect.getByID(effectId);
-        if (eff.effect == null) {
-            return null; //Not supported
-        }
+        MobEffect eff = new MobEffect();
+        eff.entityId = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
+        eff.effect = PocketPotionEffect.getByID(effectId).getEffect();
         if (entity.effects.contains(effectId)) {
-            eff.action = MobEffectPacket.EffectAction.MODIFY;
+            eff.eventId = MobEffect.MODIFY;
         } else {
-            eff.action = MobEffectPacket.EffectAction.ADD;
+            eff.eventId = MobEffect.ADD;
             entity.effects.add(effectId);
         }
-        eff.effect.setAmpilifier(packet.getAmplifier());
-        eff.effect.setDuration(packet.getDuration());
-        eff.effect.setParticles(!packet.getHideParticles());
-        return new PEPacket[]{eff};
+        eff.amplifier = packet.getAmplifier();
+        eff.duration = packet.getDuration();
+        eff.particles = packet.getShowParticles();
+        return new Packet[]{eff};
     }
 
 }

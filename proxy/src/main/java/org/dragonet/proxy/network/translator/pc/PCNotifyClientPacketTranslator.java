@@ -12,36 +12,36 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.protocol.packet.LevelEventPacket;
-import org.dragonet.proxy.protocol.packet.PEPacket;
-import org.dragonet.proxy.protocol.packet.SetPlayerGameTypePacket;
+import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
+import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.spacehq.mc.protocol.data.game.values.entity.player.GameMode;
-import org.spacehq.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
+import sul.protocol.pocket132.play.LevelEvent;
+import sul.protocol.pocket132.play.SetPlayerGameType;
+import sul.utils.Packet;
 
 public class PCNotifyClientPacketTranslator implements PCPacketTranslator<ServerNotifyClientPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerNotifyClientPacket packet) {
+    public Packet[] translate(UpstreamSession session, ServerNotifyClientPacket packet) {
         switch (packet.getNotification()) {
             case CHANGE_GAMEMODE:
                 GameMode gm = (GameMode) packet.getValue();
-                SetPlayerGameTypePacket pk = new SetPlayerGameTypePacket();
+                SetPlayerGameType pk = new SetPlayerGameType();
                 if (gm == GameMode.CREATIVE) {
                     pk.gamemode = 1;
                 } else {
                     pk.gamemode = 0;
                 }
-                return new PEPacket[]{pk};
+                return new Packet[]{pk};
             case START_RAIN:
-                LevelEventPacket evtStartRain = new LevelEventPacket();
-                evtStartRain.eventID = LevelEventPacket.Events.EVENT_START_RAIN;
-                return new PEPacket[]{evtStartRain};
+                LevelEvent evtStartRain = new LevelEvent();
+                evtStartRain.eventId = LevelEvent.START_RAIN;
+                return new Packet[]{evtStartRain};
             case STOP_RAIN:
-                LevelEventPacket evtStopRain = new LevelEventPacket();
-                evtStopRain.eventID = LevelEventPacket.Events.EVENT_STOP_RAIN;
-                return new PEPacket[]{evtStopRain};
+                LevelEvent evtStopRain = new LevelEvent();
+                evtStopRain.eventId = LevelEvent.STOP_RAIN;
+                return new Packet[]{evtStopRain};
         }
         return null;
     }

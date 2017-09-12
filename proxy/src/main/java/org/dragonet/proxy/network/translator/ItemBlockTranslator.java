@@ -12,13 +12,17 @@
  */
 package org.dragonet.proxy.network.translator;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Map;
-import org.dragonet.inventory.PEInventorySlot;
+
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
+import org.dragonet.proxy.nbt.stream.NBTInputStream;
 import org.dragonet.proxy.nbt.tag.CompoundTag;
-import org.spacehq.mc.protocol.data.game.ItemStack;
+import sul.protocol.pocket132.types.Slot;
 
 public class ItemBlockTranslator {
     
@@ -102,21 +106,21 @@ public class ItemBlockTranslator {
         return t;
     }
     
-    public static CompoundTag translateNBT(int id, org.spacehq.opennbt.tag.builtin.CompoundTag pcTag){
+    public static CompoundTag translateNBT(int id, com.github.steveice10.opennbt.tag.builtin.CompoundTag pcTag){
         CompoundTag peTag = new CompoundTag();
         if(pcTag != null && pcTag.contains("display")) {
 	  Object o = pcTag.get("display").getValue();
-	  if (o instanceof org.spacehq.opennbt.tag.builtin.CompoundTag) {
-		  org.spacehq.opennbt.tag.builtin.CompoundTag t = (org.spacehq.opennbt.tag.builtin.CompoundTag) o;
+	  if (o instanceof com.github.steveice10.opennbt.tag.builtin.CompoundTag) {
+          com.github.steveice10.opennbt.tag.builtin.CompoundTag t = (com.github.steveice10.opennbt.tag.builtin.CompoundTag) o;
 		  if (t.contains("Name")){
-		    peTag.putCompound("display", new CompoundTag().putString("Name", ((org.spacehq.opennbt.tag.builtin.CompoundTag)pcTag.get("display").getValue()).get("Name").getValue().toString()));
+		    peTag.putCompound("display", new CompoundTag().putString("Name", ((com.github.steveice10.opennbt.tag.builtin.CompoundTag)pcTag.get("display").getValue()).get("Name").getValue().toString()));
 		  }
 	  } else {
 		if (o instanceof LinkedHashMap) {
 			LinkedHashMap map = (LinkedHashMap) o;
 			Set<String> t = map.keySet();
 			  if (t.contains("Name")){
-			    org.spacehq.opennbt.tag.builtin.StringTag tag = (org.spacehq.opennbt.tag.builtin.StringTag ) map.get("Name");
+                  com.github.steveice10.opennbt.tag.builtin.StringTag tag = (com.github.steveice10.opennbt.tag.builtin.StringTag ) map.get("Name");
 			    peTag.putCompound("display", new CompoundTag().putString("Name", tag.getValue().toString()));
 			  }
 		}
@@ -129,26 +133,33 @@ public class ItemBlockTranslator {
         return peTag;
     }
     
-    public static PEInventorySlot translateToPE(ItemStack item){
+    public static Slot translateToPE(ItemStack item){
         if(item == null || item.getId() == 0) return null;
-        PEInventorySlot inv = new PEInventorySlot((short)translateToPE(item.getId()), (byte)(item.getAmount() & 0xFF), (short)item.getData(), translateNBT(item.getId(), item.getNBT()));
-        CompoundTag d = new CompoundTag();
+        Slot inv = new Slot();
+        inv.id = item.getId();
+        inv.metaAndCount = item.getData() << 8 | (item.getAmount() & 0xff);
+        /*CompoundTag d = new CompoundTag();
         d.putShort("id", item.getId());
         d.putShort("amount", item.getAmount());
-        d.putShort("data", item.getData());
-        inv.nbt.putCompound(DRAGONET_COMPOUND, d);
+        d.putShort("data", item.getData());*/
         return inv;
     }
     
-    public static ItemStack translateToPC(PEInventorySlot slot){
-        ItemStack item = null;
-        if(slot.nbt.contains(DRAGONET_COMPOUND)){
+    public static ItemStack translateToPC(Slot slot){
+        ItemStack item;
+        CompoundTag tag = null;
+        try {
+            tag = (CompoundTag) CompoundTag.readNamedTag(new NBTInputStream(new ByteArrayInputStream(slot.nbt)));
+        } catch (IOException e) {
+            e.printStackTrace(); // put this for now
+        }
+        if(tag != null && tag.contains(DRAGONET_COMPOUND)){
             item = new ItemStack(
-                    slot.nbt.getCompound(DRAGONET_COMPOUND).getShort("id"), 
-                    slot.nbt.getCompound(DRAGONET_COMPOUND).getShort("amount"), 
-                    slot.nbt.getCompound(DRAGONET_COMPOUND).getShort("data"));
+                    tag.getCompound(DRAGONET_COMPOUND).getShort("id"),
+                    tag.getCompound(DRAGONET_COMPOUND).getShort("amount"),
+                    tag.getCompound(DRAGONET_COMPOUND).getShort("data"));
         }else{
-            item = new ItemStack(translateToPC((int)slot.id), (int)(slot.count & 0xFF), (int)slot.meta);
+            item = new ItemStack(translateToPC(slot.id), slot.metaAndCount & 0xFF, slot.metaAndCount >> 8);
         }
         return item;
     }
