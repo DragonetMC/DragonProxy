@@ -12,23 +12,32 @@
  */
 package org.dragonet.proxy.protocol;
 
+import org.dragonet.proxy.protocol.patch_113.Login;
 import org.dragonet.proxy.utilities.BinaryStream;
 import org.dragonet.proxy.utilities.Zlib;
 import sul.protocol.pocket113.Packets;
 import sul.utils.Packet;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class Protocol {
+
+    public final static Map<Integer, Class<? extends Packet>> PATCHES = new HashMap<>();
+
+    static {
+        PATCHES.put(1, Login.class);
+    }
 
     public static Packet[] decode(byte[] data) {
         if (data == null || data.length < 1) {
             return null;
         }
         int pid = data[0] & 0xFF;
-        System.out.println("FIRST BYTE = 0x" + Integer.toHexString(pid) + ", len=" + data.length + ", 0xfe? " + (pid ==0xfe));
         if(pid != 0xfe) return null;
 
         byte[] inflated;
@@ -52,14 +61,18 @@ public final class Protocol {
             }
         }
 
-        System.out.println("decoded packets " + packets.size());
         return packets.size() > 0 ? packets.toArray(new Packet[0]) : null;
     }
 
     private static Packet decodeSingle(byte[] buffer) {
         int pid = buffer[0] & 0xFF;
-        if (Packets.PLAY.containsKey(pid)) {
-            Class<? extends Packet> c = Packets.PLAY.get(pid);
+        if (PATCHES.containsKey(pid) || Packets.PLAY.containsKey(pid)) {
+            Class<? extends Packet> c = PATCHES.containsKey(pid) ? PATCHES.get(pid) : Packets.PLAY.get(pid);
+            try{
+                FileOutputStream fos = new FileOutputStream("cap_" + c.getSimpleName() + ".bin");
+                fos.write(buffer);
+                fos.close();
+            }catch(Exception e){}
             try {
                 Packet pk = c.newInstance();
                 pk.decode(buffer);

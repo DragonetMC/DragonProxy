@@ -94,6 +94,13 @@ public class RaknetInterface implements ServerInstance {
         if (session == null) {
             return;
         }
+        System.out.println(" ==== ENCAPSULATED ==== ");
+        int xx = 0;
+        for(byte b : packet.buffer) {
+            System.out.print(Integer.toHexString(b & 0xFF) + " ");
+            if((xx & 0xf) == 0) System.out.println();
+            xx ++;
+        }
         session.handlePacketBinary(packet);
     }
 

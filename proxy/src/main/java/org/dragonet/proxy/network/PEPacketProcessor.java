@@ -18,7 +18,7 @@ import java.util.Deque;
 import com.github.steveice10.packetlib.packet.Packet;
 import lombok.Getter;
 import org.dragonet.proxy.protocol.Protocol;
-import sul.protocol.pocket113.play.Login;
+import org.dragonet.proxy.protocol.patch_113.Login;
 
 public class PEPacketProcessor implements Runnable {
 
@@ -64,7 +64,7 @@ public class PEPacketProcessor implements Runnable {
             case 1:
                 client.onLogin((Login) packet);
                 break;
-            case 9:  //Login
+            case 9:  //Text (check CLS Login)
                 if (client.getDataCache().get(CacheKey.AUTHENTICATION_STATE) != null) {
                     PacketTranslatorRegister.translateToPC(client, packet);
                     break;

@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.PocketServer;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.RemoteServer;
 import org.dragonet.proxy.network.cache.EntityCache;
@@ -161,14 +160,15 @@ public class UpstreamSession {
         packetProcessor.putPacket(packet.buffer);
     }
 
-    public void onLogin(Login packet) {
+    public void onLogin(org.dragonet.proxy.protocol.patch_113.Login packet) {
         if (username != null) {
             disconnect("Already logged in, this must be an error! ");
             return;
         }
 
         PlayStatus status = new PlayStatus();
-        if (packet.protocol != Versioning.MINECRAFT_PE_PROTOCOL) {
+        System.out.println("CLIENT PROTOCOL = " + packet.protocol);
+        if (packet.version != Versioning.MINECRAFT_PE_PROTOCOL) {
             status.status = PlayStatus.OUTDATED_CLIENT;
             sendPacket(status, true);
             disconnect(proxy.getLang().get(Lang.MESSAGE_UNSUPPORTED_CLIENT));
@@ -177,12 +177,13 @@ public class UpstreamSession {
         status.status = PlayStatus.OK;
         sendPacket(status, true);
 
-        sendPacket(new ResourcePacksInfo(), true);
+        System.out.println("chain len = " + packet.chain_data);
 
-        LoginChainDecoder chainDecoder = new LoginChainDecoder(packet.body.chain);
+        LoginChainDecoder chainDecoder = new LoginChainDecoder(packet.chain_data);
         chainDecoder.decode();
 
         this.username = chainDecoder.username;
+        System.out.println("decoded username: " + this.username);
         proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, username, remoteAddress));
         if (proxy.getAuthMode().equals("online")) {
             StartGame pkStartGame = new StartGame();
@@ -197,6 +198,8 @@ public class UpstreamSession {
             SetSpawnPosition pkSpawn = new SetSpawnPosition();
             pkSpawn.position = new BlockPosition(0, 72, 0);
             sendPacket(pkSpawn, true);
+
+            sendPacket(new ResourcePacksInfo(), true);
 
             PlayStatus pkStat = new PlayStatus();
             pkStat.status = PlayStatus.SPAWNED;
