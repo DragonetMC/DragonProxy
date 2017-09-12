@@ -7,8 +7,11 @@ import os
 # REPLACE_TO = "sul.protocol.pocket113"
 
 # update MCProtocolLib namespace
-REPLACE_FROM = "org.spacehq.mc"
-REPLACE_TO = "com.github.steveice10.mc"
+#REPLACE_FROM = "org.spacehq.mc"
+#REPLACE_TO = "com.github.steveice10.mc"
+
+REPLACE_FROM = "cn.nukkit.utils.Binary"
+REPLACE_TO = "org.dragonet.proxy.utilities.Binary"
 
 def main():
   g = os.walk("./proxy")

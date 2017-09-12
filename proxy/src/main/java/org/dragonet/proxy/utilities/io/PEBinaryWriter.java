@@ -69,7 +69,7 @@ public class PEBinaryWriter implements Flushable, Closeable {
     }
 
     public void writeVarLong(long value) throws IOException {
-        writeUnsignedVarLong(VarInt.encodeZigZag64(value));
+        writeUnsignedVarLong(BigInteger.valueOf(VarInt.encodeZigZag64(value)));
     }
 
     public void writeUnsignedVarLong(BigInteger value) throws IOException {

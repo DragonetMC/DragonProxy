@@ -32,7 +32,7 @@ public class PCChatPacketTranslator implements PCPacketTranslator<ServerChatPack
 
     @Override
     public Packet[] translate(UpstreamSession session, ServerChatPacket packet) {
-        Text text = new Text(TYPE_RAW, (byte)0);
+        Text text = new Text(TYPE_RAW);
 
         String content = MessageTranslator.translate(packet.getMessage());
         return new Packet[]{text.new Raw(content)};

@@ -1,8 +1,8 @@
 package org.dragonet.raknet.server;
 
+import org.dragonet.proxy.utilities.Binary;
 import org.dragonet.raknet.RakNet;
 import org.dragonet.raknet.protocol.EncapsulatedPacket;
-import cn.nukkit.utils.Binary;
 
 import java.nio.charset.StandardCharsets;
 

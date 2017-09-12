@@ -13,51 +13,38 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import java.lang.reflect.Field;
-import org.dragonet.proxy.protocol.packet.LevelEventPacket;
+
+import com.github.steveice10.mc.protocol.data.game.world.sound.BuiltinSound;
+import com.github.steveice10.mc.protocol.data.game.world.sound.CustomSound;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import com.github.steveice10.mc.protocol.data.game.values.world.CustomSound;
-import com.github.steveice10.mc.protocol.data.game.values.world.GenericSound;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerPlaySoundPacket;
+import sul.protocol.pocket113.play.PlaySound;
+import sul.protocol.pocket113.types.BlockPosition;
+import sul.utils.Packet;
 
 public class PCPlaySoundPacketTranslator implements PCPacketTranslator<ServerPlaySoundPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerPlaySoundPacket packet) {
+    public Packet[] translate(UpstreamSession session, ServerPlaySoundPacket packet) {
         try {
             String soundName = null;
 
-            if (GenericSound.class.isAssignableFrom(packet.getSound().getClass())) {
-                GenericSound sound = (GenericSound) packet.getSound();
-                for (Field f : GenericSound.class.getDeclaredFields()) {
-                    boolean saved = f.isAccessible();
-                    f.setAccessible(true);
-                    if (f.get(null).equals(sound)) {
-                        soundName = f.getName();
-                    }
-                    f.setAccessible(saved);
-                }
+            if (BuiltinSound.class.isAssignableFrom(packet.getSound().getClass())) {
+                BuiltinSound sound = (BuiltinSound) packet.getSound();
+                soundName = sound.name();
             } else {
                 soundName = ((CustomSound) packet.getSound()).getName();
             }
             if (soundName == null) {
                 return null;
             }
-            short ev = 0;
-            for (Field f : LevelEventPacket.Events.class.getDeclaredFields()) {
-                if (f.getType().equals(short.class) && f.getName().equalsIgnoreCase("EVENT_SOUND_" + soundName)) {
-                    ev = (short) f.get(null);
-                }
-            }
-            if (ev == 0) {
-                return null;
-            }
-            LevelEventPacket pkSound = new LevelEventPacket();
-            pkSound.eventID = (short) (LevelEventPacket.Events.EVENT_ADD_PARTICLE_MASK | ev);
-            pkSound.x = (float) packet.getX();
-            pkSound.y = (float) packet.getY();
-            pkSound.z = (float) packet.getZ();
-            return new PEPacket[]{pkSound};
+            PlaySound pk = new PlaySound();
+            pk.position = new BlockPosition((int) packet.getX(), (int) packet.getY(), (int) packet.getZ());
+            pk.name = soundName;
+            pk.volume = packet.getVolume();
+            pk.pitch = packet.getPitch();
+            return new Packet[]{pk};
         } catch (Exception e) {
             e.printStackTrace();
             return null;

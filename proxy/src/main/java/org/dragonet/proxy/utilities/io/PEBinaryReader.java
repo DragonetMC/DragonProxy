@@ -67,7 +67,7 @@ public class PEBinaryReader implements Closeable {
     }
 
     public long readVarLong() throws IOException {
-        return VarInt.decodeZigZag64(readUnsignedVarLong()).longValue();
+        return VarInt.decodeZigZag64(readUnsignedVarLong().longValue());
     }
 
     public BigInteger readUnsignedVarLong() throws IOException {

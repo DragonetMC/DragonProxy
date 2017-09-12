@@ -1,10 +1,9 @@
 package org.dragonet.raknet.server;
 
+import org.dragonet.proxy.utilities.Binary;
 import org.dragonet.raknet.RakNet;
 import org.dragonet.raknet.protocol.EncapsulatedPacket;
 import org.dragonet.raknet.protocol.Packet;
-import cn.nukkit.utils.Binary;
-import cn.nukkit.utils.ThreadedLogger;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.socket.DatagramPacket;
 import org.dragonet.raknet.protocol.packet.*;
@@ -62,7 +61,7 @@ public class SessionManager {
         return this.server.port;
     }
 
-    public ThreadedLogger getLogger() {
+    public org.dragonet.proxy.utilities.Logger getLogger() {
         return this.server.getLogger();
     }
 
@@ -129,7 +128,7 @@ public class SessionManager {
                     long timeout = this.block.get(address);
                     if (timeout <= now) {
                         this.block.remove(address);
-                        this.getLogger().notice("Unblocked " + address);
+                        this.getLogger().info("Unblocked " + address);
                     } else {
                         break;
                     }
@@ -417,7 +416,7 @@ public class SessionManager {
             if (timeout == -1) {
                 finalTime = Long.MAX_VALUE;
             } else {
-                this.getLogger().notice("Blocked " + address + " for " + timeout + " seconds");
+                this.getLogger().info("Blocked " + address + " for " + timeout + " seconds");
             }
             this.block.put(address, finalTime);
         } else if (this.block.get(address) < finalTime) {

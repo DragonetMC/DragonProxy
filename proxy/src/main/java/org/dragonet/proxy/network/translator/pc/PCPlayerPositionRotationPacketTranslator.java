@@ -12,22 +12,30 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.protocol.packet.MovePlayerPacket;
+import sul.protocol.pocket113.play.MovePlayer;
+import sul.utils.Packet;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
+import sul.utils.Tuples;
 
 public class PCPlayerPositionRotationPacketTranslator implements PCPacketTranslator<ServerPlayerPositionRotationPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerPlayerPositionRotationPacket packet) {
-        MovePlayerPacket pk = new MovePlayerPacket(0, (float) packet.getX(), (float) packet.getY(), (float) packet.getZ(), packet.getYaw(), packet.getPitch(), packet.getYaw(), false);
+    public Packet[] translate(UpstreamSession session, ServerPlayerPositionRotationPacket packet) {
+        MovePlayer pk = new MovePlayer();
+        pk.entityId = 0;
+        pk.position = new Tuples.FloatXYZ((float) packet.getX(), (float) packet.getY(), (float) packet.getZ());
+        pk.yaw = packet.getYaw();
+        pk.pitch = packet.getPitch();
+        pk.headYaw = packet.getYaw();
+        pk.animation = (byte) 0;
         CachedEntity cliEntity = session.getEntityCache().getClientEntity();
         cliEntity.x = packet.getX();
         cliEntity.y = packet.getY();
         cliEntity.z= packet.getZ();
-        return new PEPacket[]{pk};
+        return new Packet[]{pk};
     }
 
 }

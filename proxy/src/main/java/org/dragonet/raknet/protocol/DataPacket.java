@@ -1,6 +1,6 @@
 package org.dragonet.raknet.protocol;
 
-import cn.nukkit.utils.Binary;
+import org.dragonet.proxy.utilities.Binary;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 

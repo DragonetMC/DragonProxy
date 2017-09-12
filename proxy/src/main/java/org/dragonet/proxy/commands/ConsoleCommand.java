@@ -16,5 +16,5 @@ import org.dragonet.proxy.DragonProxy;
 
 public interface ConsoleCommand {
 
-    public void execute(DragonProxy proxy, String[] args);
+    void execute(DragonProxy proxy, String[] args);
 }

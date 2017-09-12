@@ -1,11 +1,11 @@
 package org.dragonet.raknet.server;
 
+import org.dragonet.proxy.utilities.Binary;
+import org.dragonet.proxy.utilities.BinaryStream;
 import org.dragonet.raknet.RakNet;
 import org.dragonet.raknet.protocol.DataPacket;
 import org.dragonet.raknet.protocol.EncapsulatedPacket;
 import org.dragonet.raknet.protocol.Packet;
-import cn.nukkit.utils.Binary;
-import cn.nukkit.utils.BinaryStream;
 import org.dragonet.raknet.protocol.packet.*;
 
 import java.io.IOException;

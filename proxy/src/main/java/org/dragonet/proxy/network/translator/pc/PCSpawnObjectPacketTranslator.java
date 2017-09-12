@@ -12,16 +12,17 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
+import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import com.github.steveice10.mc.protocol.data.game.values.entity.ObjectType;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnObjectPacket;
+import sul.utils.Packet;
 
 public class PCSpawnObjectPacketTranslator implements PCPacketTranslator<ServerSpawnObjectPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerSpawnObjectPacket packet) {
+    public Packet[] translate(UpstreamSession session, ServerSpawnObjectPacket packet) {
         if(packet.getType() == ObjectType.ITEM){
             //Currently only handles item data
             CachedEntity futureEntity = session.getEntityCache().newObject(packet);

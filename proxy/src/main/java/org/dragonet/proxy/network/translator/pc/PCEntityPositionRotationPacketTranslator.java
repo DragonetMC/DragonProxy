@@ -12,16 +12,19 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.protocol.packet.MoveEntitiesPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityMovementPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityPositionRotationPacket;
+import sul.protocol.pocket113.play.MoveEntity;
+import sul.utils.Packet;
+import sul.utils.Tuples;
 
 public class PCEntityPositionRotationPacketTranslator implements PCPacketTranslator<ServerEntityPositionRotationPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerEntityPositionRotationPacket packet) {
+    public Packet[] translate(UpstreamSession session, ServerEntityPositionRotationPacket packet) {
         CachedEntity e = session.getEntityCache().get(packet.getEntityId());
         if (e == null) {
             return null;
@@ -29,18 +32,16 @@ public class PCEntityPositionRotationPacketTranslator implements PCPacketTransla
 
         e.relativeMove(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ(), packet.getYaw(), packet.getPitch());
 
-        MoveEntitiesPacket pk = new MoveEntitiesPacket();
-        pk.eid = e.eid;
-        pk.yaw = e.yaw;
-        pk.headYaw = e.yaw;
-        pk.pitch = e.pitch;
-        pk.x = (float) e.x;
-        pk.y = (float) e.y;
+        MoveEntity pk = new MoveEntity();
+        pk.entityId = e.eid;
+        pk.yaw = (byte) (e.yaw / (360d / 256d));
+        pk.headYaw = (byte) (e.yaw / (360d / 256d));
+        pk.pitch = (byte) (e.pitch / (360d / 256d));
+        pk.position = new Tuples.FloatXYZ((float) e.getX(), (float) e.getY(), (float) e.getZ());
         if(e.player){
-            pk.y += 1.62f;
+            pk.position.y += 1.62f;
         }
-        pk.z = (float) e.z;
-        return new PEPacket[]{pk};
+        return new Packet[]{pk};
     }
 
 }

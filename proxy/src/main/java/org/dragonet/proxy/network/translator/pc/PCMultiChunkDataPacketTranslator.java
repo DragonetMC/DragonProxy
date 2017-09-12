@@ -15,13 +15,17 @@ package org.dragonet.proxy.network.translator.pc;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 
+import com.github.steveice10.mc.protocol.data.game.chunk.Chunk;
+import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
-import org.dragonet.proxy.protocol.packet.FullChunkPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-//import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMultiChunkDataPacket;
+import sul.protocol.pocket113.play.FullChunkData;
+import sul.protocol.pocket113.types.ChunkData;
+import sul.protocol.pocket113.types.Section;
 import sul.utils.Packet;
+import sul.utils.Tuples;
 
 public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<ServerChunkDataPacket> {
 
@@ -29,123 +33,48 @@ public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<Serv
     public Packet[] translate(UpstreamSession session, ServerChunkDataPacket packet) {
 
         session.getProxy().getGeneralThreadPool().execute(() -> {
-    		ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
-    		DataOutputStream dos1 = new DataOutputStream(bos1);
-
-    		ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
-    		DataOutputStream dos2 = new DataOutputStream(bos2);
-
-    		ByteArrayOutputStream bosTiles = new ByteArrayOutputStream();
-    		DataOutputStream dosTiles = new DataOutputStream(bosTiles);
-            packet.get
     		try {
-    			for (int col = 0; col < packet.getColumns(); col++) {
-    				bos1.reset();
-    				bos2.reset();
-    				bosTiles.reset();
 
-    				FullChunkPacket pePacket = new FullChunkPacket();
+				FullChunkData pePacket = new FullChunkData();
+				pePacket.position = new Tuples.IntXZ(packet.getColumn().getX(), packet.getColumn().getZ());
 
-    				pePacket.chunkX = packet.getX(col);
-    				pePacket.chunkZ = packet.getZ(col);
-    				pePacket.order = FullChunkPacket.ChunkOrder.COLUMNS;
-    				Chunk[] pcChunks = packet.getChunks(col);
-    				for (int x = 0; x < 16; x++) {
-    					for (int z = 0; z < 16; z++) {
-    						for (int y = 0; y < 128; y++) {
-    							if (pcChunks[y >> 4] == null || pcChunks[y >> 4].isEmpty()) {
-    								dos1.writeByte((byte) 0);
-    							} else {
-									dos1.writeByte(1);
-    								/*
-    								int pcBlock = pcChunks[y >> 4].getBlocks().getBlock(x, y % 16, z);
-    								int peBlock = pcBlock;
-    								peBlock = ItemBlockTranslator.translateToPE(peBlock);
-    								dos1.writeByte((byte) (peBlock & 0xFF));
-    								// dos1.writeByte((byte) 1);
-									*/
-    							}
-    						}
-    					}
-    				}
-    				for (int x = 0; x < 16; x++) {
-    					for (int z = 0; z < 16; z++) {
-    						for (int y = 0; y < 128; y += 2) {
-    							byte data1 = 0;
-    							byte data2 = 0;
-    							try {
-    								data1 = (byte) pcChunks[y >> 4].getBlocks().getData(x, y % 16, z);
-    							} catch (Exception e) {
+				ChunkData peChunk = new ChunkData();
+				for(int cy = 0; cy < 16; cy++) {
+					Chunk pcChunk = packet.getColumn().getChunks()[cy];
+					peChunk.sections[cy] = new Section();
+					if(pcChunk != null) {
+						processChunkSection(pcChunk, peChunk.sections[cy]);
+					}
+				}
+				pePacket.data = peChunk;
 
-    							}
-    							try {
-    								data2 = (byte) pcChunks[y >> 4].getBlocks().getData(x, (y + 1) % 16, z);
-    							} catch (Exception e) {
-
-    							}
-
-    							data1 |= ((data2 & 0xF) << 4);
-
-    							dos1.writeByte(data1);
-    						}
-    					}
-    				}
-    				for (int x = 0; x < 16; x++) {
-    					for (int z = 0; z < 16; z++) {
-    						for (int y = 0; y < 128; y += 2) {
-    							//if (noSkyLight) {
-    							//	temp.writeByte(0);
-    							//} else {
-    							byte data = 0;
-    							try {
-    								data = (byte) (pcChunks[y >> 4].getSkyLight().get(x, y & 0xF, z) & 0xF);
-    								data |= (pcChunks[y >> 4].getSkyLight().get(x, (y + 1) & 0xF, z) & 0xF);
-    							} catch (Exception e) {
-
-    							}
-    							dos1.writeByte(data);
-    							//}
-    						}
-    					}
-    				}
-    				dos1.write(bos2.toByteArray()); //Not bos1 contains previously generated data! Don't reset! 
-    				bos2.reset();//Now it's empty
-    				for (int x = 0; x < 16; x++) {
-    					for (int z = 0; z < 16; z++) {
-    						for (int y = 0; y < 128; y += 2) {
-    							byte data = pcChunks[y >> 4] == null || pcChunks[y >> 4].isEmpty() ? (byte) 0 : (byte) ((pcChunks[y >> 4].getBlockLight().get(x, y % 16, z) & 0xF) << 4);
-    							data |= pcChunks[(y + 1) >> 4] == null || pcChunks[(y + 1) >> 4].isEmpty() ? (byte) 0 : (byte) (pcChunks[(y + 1) >> 4].getBlockLight().get(x, (y + 1) % 16, z) & 0xF);
-    							dos1.writeByte(data);
-    						}
-    					}
-    				}
-    				//Height Map
-    				for (int i = 0; i < 256; i++) {
-    					dos1.writeByte((byte) 0xFF);
-    				}
-
-    				//Biome Colors
-    				for (int i = 0; i < 256; i++) {
-    					dos1.writeByte((byte) 0x01);
-    					dos1.writeByte((byte) 0x85);
-    					dos1.writeByte((byte) 0xB2);
-    					dos1.writeByte((byte) 0x4A);
-    				}
-
-    				bos2.reset();
-
-    				dos1.writeInt(0);//Extra data, should be little-endian but it's 0 here for now so it's okay. 
-
-    				dos1.write(bosTiles.toByteArray());
-
-                    pePacket.chunkData = bos1.toByteArray();
-                    session.sendPacket(pePacket, true);
-                }
-            } catch (Exception e) {
-            }
+				session.sendPacket(pePacket, true);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
         }
         );
 
         return null;
     }
+
+    private void processChunkSection(Chunk pc, Section pe) {
+		for(int y = 0; y < 16; y++) {
+			for(int z = 0; z < 16; z++) {
+				for(int x = 0; x < 16; x++) {
+					BlockState block = pc.getBlocks().get(x, y, z);
+					pe.blockIds[index(x, y, z)] = (byte) (ItemBlockTranslator.translateToPE(block.getId()) & 0xFF);
+					if(x % 2 == 0) {
+						pe.blockMetas[index(x,y,z)/2] = (byte) ((block.getData() << 8) | (pc.getBlocks().get(x+1, y,z).getData() & 0xF));
+						pe.skyLight[index(x,y,z)/2] = (byte) 0xFF;
+						pe.blockLight[index(x,y,z)/2] = (byte) 0xFF;
+					}
+				}
+			}
+		}
+	}
+
+	private static int index(int x, int y, int z) {
+		return y << 8 | z << 4 | x;
+	}
 }

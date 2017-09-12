@@ -1,11 +1,5 @@
 package org.dragonet.proxy.utilities;
 
-import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.data.*;
-import cn.nukkit.item.Item;
-import cn.nukkit.math.BlockVector3;
-import cn.nukkit.math.NukkitMath;
-
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -69,103 +63,6 @@ public class Binary {
 
     public static byte[] writeUUID(UUID uuid) {
         return appendBytes(writeLong(uuid.getMostSignificantBits()), writeLong(uuid.getLeastSignificantBits()));
-    }
-
-    public static byte[] writeMetadata(EntityMetadata metadata) {
-        BinaryStream stream = new BinaryStream();
-        Map<Integer, EntityData> map = metadata.getMap();
-        stream.putUnsignedVarInt(map.size());
-        for (int id : map.keySet()) {
-            EntityData d = map.get(id);
-            stream.putUnsignedVarInt(id);
-            stream.putUnsignedVarInt(d.getType());
-            switch (d.getType()) {
-                case Entity.DATA_TYPE_BYTE:
-                    stream.putByte(((ByteEntityData) d).getData().byteValue());
-                    break;
-                case Entity.DATA_TYPE_SHORT:
-                    stream.putLShort(((ShortEntityData) d).getData());
-                    break;
-                case Entity.DATA_TYPE_INT:
-                    stream.putVarInt(((IntEntityData) d).getData());
-                    break;
-                case Entity.DATA_TYPE_FLOAT:
-                    stream.putLFloat(((FloatEntityData) d).getData());
-                    break;
-                case Entity.DATA_TYPE_STRING:
-                    String s = ((StringEntityData) d).getData();
-                    stream.putUnsignedVarInt(s.getBytes(StandardCharsets.UTF_8).length);
-                    stream.put(s.getBytes(StandardCharsets.UTF_8));
-                    break;
-                case Entity.DATA_TYPE_SLOT:
-                    SlotEntityData slot = (SlotEntityData) d;
-                    stream.putLShort(slot.blockId);
-                    stream.putByte((byte) slot.meta);
-                    stream.putLShort(slot.count);
-                    break;
-                case Entity.DATA_TYPE_POS:
-                    IntPositionEntityData pos = (IntPositionEntityData) d;
-                    stream.putVarInt(pos.x);
-                    stream.putByte((byte) pos.y);
-                    stream.putVarInt(pos.z);
-                    break;
-                case Entity.DATA_TYPE_LONG:
-                    stream.putVarLong(((LongEntityData) d).getData());
-                    break;
-                case Entity.DATA_TYPE_VECTOR3F:
-                    Vector3fEntityData v3data = (Vector3fEntityData) d;
-                    stream.putLFloat(v3data.x);
-                    stream.putLFloat(v3data.y);
-                    stream.putLFloat(v3data.z);
-                    break;
-            }
-        }
-        return stream.getBuffer();
-    }
-
-    public static EntityMetadata readMetadata(byte[] payload) {
-        BinaryStream stream = new BinaryStream();
-        stream.setBuffer(payload);
-        long count = stream.getUnsignedVarInt();
-        EntityMetadata m = new EntityMetadata();
-        for (int i = 0; i < count; i++) {
-            int key = (int) stream.getUnsignedVarInt();
-            int type = (int) stream.getUnsignedVarInt();
-            EntityData value = null;
-            switch (type) {
-                case Entity.DATA_TYPE_BYTE:
-                    value = new ByteEntityData(key, stream.getByte());
-                    break;
-                case Entity.DATA_TYPE_SHORT:
-                    value = new ShortEntityData(key, stream.getLShort());
-                    break;
-                case Entity.DATA_TYPE_INT:
-                    value = new IntEntityData(key, stream.getVarInt());
-                    break;
-                case Entity.DATA_TYPE_FLOAT:
-                    value = new FloatEntityData(key, stream.getLFloat());
-                    break;
-                case Entity.DATA_TYPE_STRING:
-                    value = new StringEntityData(key, stream.getString());
-                    break;
-                case Entity.DATA_TYPE_SLOT:
-                    Item item = stream.getSlot();
-                    value = new SlotEntityData(key, item.getId(), item.getDamage(), item.getCount());
-                    break;
-                case Entity.DATA_TYPE_POS:
-                    BlockVector3 v3 = stream.getBlockCoords();
-                    value = new IntPositionEntityData(key, v3.x, v3.y, v3.z);
-                    break;
-                case Entity.DATA_TYPE_LONG:
-                    value = new LongEntityData(key, stream.getVarLong());
-                    break;
-                case Entity.DATA_TYPE_VECTOR3F:
-                    value = new Vector3fEntityData(key, stream.getVector3f());
-                    break;
-            }
-            if (value != null) m.put(value);
-        }
-        return m;
     }
 
     public static boolean readBool(byte b) {

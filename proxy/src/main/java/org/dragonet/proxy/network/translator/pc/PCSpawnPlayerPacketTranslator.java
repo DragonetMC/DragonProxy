@@ -1,25 +1,30 @@
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.protocol.packet.AddPlayerPacket;
-import org.dragonet.proxy.protocol.packet.PlayerListPacket;
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import org.dragonet.proxy.utilities.DefaultSkin;
-import com.github.steveice10.mc.protocol.data.game.EntityMetadata;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
+import sul.metadata.Pocket113;
+import sul.protocol.pocket113.play.AddPlayer;
+import sul.protocol.pocket113.play.PlayerList;
+import sul.protocol.pocket113.types.McpeUuid;
+import sul.protocol.pocket113.types.Skin;
+import sul.utils.Packet;
+import sul.utils.Tuples;
 
 public class PCSpawnPlayerPacketTranslator implements PCPacketTranslator<ServerSpawnPlayerPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerSpawnPlayerPacket packet) {
+    public Packet[] translate(UpstreamSession session, ServerSpawnPlayerPacket packet) {
         try {
             CachedEntity entity = session.getEntityCache().newPlayer(packet);
 
             // TODO: Do we need to register the player here ?
-            AddPlayerPacket pkAddPlayer = new AddPlayerPacket();
-            pkAddPlayer.eid = entity.eid;
+            AddPlayer pkAddPlayer = new AddPlayer();
+            pkAddPlayer.entityId = entity.eid;
 
             for (EntityMetadata meta : packet.getMetadata()) {
                 if (meta.getId() == 2) {
@@ -36,22 +41,25 @@ public class PCSpawnPlayerPacketTranslator implements PCPacketTranslator<ServerS
                 }
             }
 
-            pkAddPlayer.uuid = packet.getUUID();
+            pkAddPlayer.uuid = new McpeUuid(packet.getUUID().getMostSignificantBits(), packet.getUUID().getLeastSignificantBits());;
 
-            pkAddPlayer.x = (float) packet.getX() / 32;
-            pkAddPlayer.y = (float) packet.getY() / 32 + 1.62f;
-            pkAddPlayer.z = (float) packet.getZ() / 32;
-            pkAddPlayer.speedX = 0.0f;
-            pkAddPlayer.speedY = 0.0f;
-            pkAddPlayer.speedZ = 0.0f;
-            pkAddPlayer.yaw = (packet.getYaw() / 256) * 360;
-            pkAddPlayer.pitch = (packet.getPitch() / 256) * 360;
+            pkAddPlayer.position = new Tuples.FloatXYZ((float) packet.getX(), (float) packet.getY() + 1.62f, (float) packet.getZ());
+            pkAddPlayer.yaw = packet.getYaw();
+            pkAddPlayer.pitch = packet.getPitch();
 
-            pkAddPlayer.metadata = EntityMetaTranslator.translateToPE(packet.getMetadata(), null);
+            pkAddPlayer.metadata = new Pocket113();
+            pkAddPlayer._buffer = EntityMetaTranslator.translateToPE(packet.getMetadata(), null).encode();
             
-            PlayerListPacket lst = new PlayerListPacket(new PlayerListPacket.PlayerInfo(packet.getUUID(), packet.getEntityId(), pkAddPlayer.username, DefaultSkin.getDefaultSkinName(), DefaultSkin.getDefaultSkin().getData()));
+            PlayerList lst = new PlayerList(PlayerList.Add.ACTION);
+            sul.protocol.pocket113.types.PlayerList p = new sul.protocol.pocket113.types.PlayerList(
+                    new McpeUuid(packet.getUUID().getMostSignificantBits(), packet.getUUID().getLeastSignificantBits()),
+                    packet.getEntityId(),
+                    pkAddPlayer.username,
+                    new Skin(DefaultSkin.getDefaultSkinName(), DefaultSkin.getDefaultSkin().getData())
+            );
+            PlayerList.Add add = lst.new Add(new sul.protocol.pocket113.types.PlayerList[]{p});
             //TODO: get the default skin to work.
-            return new PEPacket[]{lst, pkAddPlayer};
+            return new Packet[]{add, pkAddPlayer};
         } catch (Exception e) {
             e.printStackTrace();
             return null;

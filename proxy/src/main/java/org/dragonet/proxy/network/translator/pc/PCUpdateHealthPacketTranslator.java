@@ -12,28 +12,26 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.protocol.packet.RespawnPacket;
-import org.dragonet.proxy.protocol.packet.SetHealthPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerUpdateHealthPacket;
+import sul.protocol.pocket113.play.Respawn;
+import sul.protocol.pocket113.play.SetHealth;
+import sul.utils.Packet;
 
-public class PCUpdateHealthPacketTranslator implements PCPacketTranslator<ServerUpdateHealthPacket> {
+public class PCUpdateHealthPacketTranslator implements PCPacketTranslator<ServerPlayerHealthPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerUpdateHealthPacket packet) {
-        SetHealthPacket h = new SetHealthPacket((int) packet.getHealth());
+    public Packet[] translate(UpstreamSession session, ServerPlayerHealthPacket packet) {
+        SetHealth h = new SetHealth((int) packet.getHealth());
         if (packet.getHealth() > 0 && h.health <= 0) {
             h.health = 1;
         }
         if (packet.getHealth() <= 0.0f) {
-            RespawnPacket r = new RespawnPacket();
-            r.x = 0.0f;
-            r.y = 0.0f;
-            r.z = 0.0f;
-            return new PEPacket[]{h, r};
+            Respawn r = new Respawn();
+            return new Packet[]{h, r};
         }
-        return new PEPacket[]{h};
+        return new Packet[]{h};
     }
 
 }

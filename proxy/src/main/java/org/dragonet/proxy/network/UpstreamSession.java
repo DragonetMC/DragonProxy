@@ -282,8 +282,9 @@ public class UpstreamSession {
             ((PCDownstreamSession)downstream).setProtocol(protocol);
             downstream.connect(server.getRemoteAddr(), server.getRemotePort());
         }else{
-            downstream = new PEDownstreamSession(proxy, this);
-            ((PEDownstreamSession)downstream).connect((PocketServer) server);
+            // downstream = new PEDownstreamSession(proxy, this);
+            // ((PEDownstreamSession)downstream).connect((PocketServer) server);
+            disconnect("PE targets not supported yet");
         }
     }
 

@@ -12,13 +12,13 @@
  */
 package org.dragonet.proxy.network.translator;
 
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.MetadataType;
 import org.dragonet.proxy.entity.meta.type.ByteArrayMeta;
 import org.dragonet.proxy.entity.meta.type.ByteMeta;
 import org.dragonet.proxy.entity.meta.type.ShortMeta;
 import org.dragonet.proxy.entity.EntityType;
 import org.dragonet.proxy.entity.meta.EntityMetaData;
-import com.github.steveice10.mc.protocol.data.game.EntityMetadata;
-import com.github.steveice10.mc.protocol.data.game.values.entity.MetadataType;
 
 public final class EntityMetaTranslator {
 

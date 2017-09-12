@@ -12,16 +12,17 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
+import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
+import com.github.steveice10.mc.protocol.data.game.PlayerListEntryAction;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import com.github.steveice10.mc.protocol.data.game.values.PlayerListEntry;
-import com.github.steveice10.mc.protocol.data.game.values.PlayerListEntryAction;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPlayerListEntryPacket;
+import sul.utils.Packet;
 
 public class PCPlayerListItemPacketTranslator implements PCPacketTranslator<ServerPlayerListEntryPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerPlayerListEntryPacket packet) {
+    public Packet[] translate(UpstreamSession session, ServerPlayerListEntryPacket packet) {
         if(packet.getAction() == PlayerListEntryAction.ADD_PLAYER){
             PlayerListEntry[] entries = packet.getEntries();
             for (PlayerListEntry entrie : entries) {

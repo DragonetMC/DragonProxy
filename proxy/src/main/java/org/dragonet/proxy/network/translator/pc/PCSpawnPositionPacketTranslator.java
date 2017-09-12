@@ -12,54 +12,54 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.protocol.packet.LoginStatusPacket;
-import org.dragonet.proxy.protocol.packet.MovePlayerPacket;
-import org.dragonet.proxy.protocol.packet.StartGamePacket;
+import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.dragonet.proxy.protocol.packet.AdventureSettingsPacket;
-import com.github.steveice10.mc.protocol.data.game.values.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerSpawnPositionPacket;
+import sul.protocol.pocket113.play.AdventureSettings;
+import sul.protocol.pocket113.play.MovePlayer;
+import sul.protocol.pocket113.play.PlayStatus;
+import sul.protocol.pocket113.play.StartGame;
+import sul.utils.Packet;
+import sul.utils.Tuples;
 
 public class PCSpawnPositionPacketTranslator implements PCPacketTranslator<ServerSpawnPositionPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerSpawnPositionPacket packet) {
+    public Packet[] translate(UpstreamSession session, ServerSpawnPositionPacket packet) {
         if (session.getDataCache().get(CacheKey.PACKET_JOIN_GAME_PACKET) == null) {
             if (session.getProxy().getAuthMode().equals("online")) {
                 session.sendChat(session.getProxy().getLang().get(Lang.MESSAGE_TELEPORT_TO_SPAWN));
-                MovePlayerPacket pkMovePlayer = new MovePlayerPacket(0, (float) packet.getPosition().getX(), (float) packet.getPosition().getY(), (float) packet.getPosition().getZ(), 0.0f, 0.0f, 0.0f, false);
-                pkMovePlayer.mode = MovePlayerPacket.MODE_RESET;
-                return new PEPacket[]{pkMovePlayer};
+                MovePlayer pkMovePlayer = new MovePlayer();
+                pkMovePlayer.position = new Tuples.FloatXYZ((float) packet.getPosition().getX(), (float) packet.getPosition().getY(), (float) packet.getPosition().getZ());
+                pkMovePlayer.animation = (byte) 0;
+                pkMovePlayer.onGround = true;
+                return new Packet[]{pkMovePlayer};
             } else {
                 session.disconnect(session.getProxy().getLang().get(Lang.MESSAGE_REMOTE_ERROR));
             }
             return null;
         }
         ServerJoinGamePacket restored = (ServerJoinGamePacket) session.getDataCache().remove(CacheKey.PACKET_JOIN_GAME_PACKET);
-        StartGamePacket ret = new StartGamePacket();
-        ret.eid = 0; //Use EID 0 for eaisier management
+        StartGame ret = new StartGame();
+        ret.entityId = 0; //Use EID 0 for eaisier management
         ret.dimension = (byte) (restored.getDimension() & 0xFF);
         ret.seed = 0;
         ret.generator = 1;
         ret.gamemode = restored.getGameMode() == GameMode.CREATIVE ? 1 : 0;
-        ret.spawnX = packet.getPosition().getX();
-        ret.spawnY = packet.getPosition().getY();
-        ret.spawnZ = packet.getPosition().getZ();
-        ret.x = packet.getPosition().getX();
-        ret.y = packet.getPosition().getY();
-        ret.z = packet.getPosition().getZ();
+        ret.spawnPosition = new Tuples.IntXYZ(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
+        ret.position = new Tuples.FloatXYZ((float) packet.getPosition().getX(), (float) packet.getPosition().getY(), (float) packet.getPosition().getZ());
 
-        AdventureSettingsPacket adv = new AdventureSettingsPacket();
+        AdventureSettings adv = new AdventureSettings();
         int settings = 0x1 | 0x20 | 0x40;
         adv.flags = settings;
         
-        LoginStatusPacket stat = new LoginStatusPacket();
-        stat.status = LoginStatusPacket.PLAYER_SPAWN;
-        return new PEPacket[]{ret, adv, stat};
+        PlayStatus stat = new PlayStatus();
+        stat.status = PlayStatus.SPAWNED;
+        return new Packet[]{ret, adv, stat};
     }
 
 }

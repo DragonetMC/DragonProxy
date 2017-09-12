@@ -12,55 +12,55 @@
  */
 package org.dragonet.proxy.network.translator.pe;
 
-import org.dragonet.proxy.protocol.packet.PlayerEquipmentPacket;
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
+import com.github.steveice10.mc.protocol.data.game.window.ClickItemParam;
+import com.github.steveice10.mc.protocol.data.game.window.WindowAction;
+import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerChangeHeldItemPacket;
+import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.network.InventoryTranslatorRegister;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
-import com.github.steveice10.mc.protocol.data.game.ItemStack;
-import com.github.steveice10.mc.protocol.data.game.values.window.ClickItemParam;
-import com.github.steveice10.mc.protocol.data.game.values.window.WindowAction;
-import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientChangeHeldItemPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientWindowActionPacket;
-import org.spacehq.packetlib.packet.Packet;
+import sul.protocol.pocket113.play.MobEquipment;
 
-public class PEPlayerEquipmentPacketTranslator implements PEPacketTranslator<PlayerEquipmentPacket> {
+public class PEPlayerEquipmentPacketTranslator implements PEPacketTranslator<MobEquipment> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, PlayerEquipmentPacket packet) {
-        if (packet.selectedSlot > 8) {
+    public Packet[] translate(UpstreamSession session, MobEquipment packet) {
+        if (packet.hotbarSlot > 8) {
             return null;
         }
-        if(packet.slot == 0x28 || packet.slot == 0 || packet.slot == 255){
+        if(packet.inventorySlot == 0x28 || packet.inventorySlot == 0 || packet.inventorySlot == 255){
             //That thing changed to air
             //TODO
         }
-        if (InventoryTranslatorRegister.HOTBAR_CONSTANTS[packet.selectedSlot] == packet.slot) {
+        if (InventoryTranslatorRegister.HOTBAR_CONSTANTS[packet.hotbarSlot] == packet.inventorySlot) {
             //Just switched selected slot index, no swapping
-            ClientChangeHeldItemPacket pk = new ClientChangeHeldItemPacket(packet.selectedSlot);
+            ClientPlayerChangeHeldItemPacket pk = new ClientPlayerChangeHeldItemPacket(packet.hotbarSlot);
             return new Packet[]{pk};
         }
         CachedWindow playerInv = session.getWindowCache().getPlayerInventory();
-        ItemStack tmp = playerInv.slots[36 + packet.selectedSlot];
+        ItemStack tmp = playerInv.slots[36 + packet.hotbarSlot];
         boolean hotbarSlotWasEmpty = tmp == null || tmp.getId() == 0;
-        boolean invSlotWasEmpty = playerInv.slots[packet.slot] == null || playerInv.slots[packet.slot].getId() == 0;
-        playerInv.slots[36 + packet.selectedSlot] = playerInv.slots[packet.slot];
-        playerInv.slots[packet.slot] = tmp;
+        boolean invSlotWasEmpty = playerInv.slots[packet.inventorySlot] == null || playerInv.slots[packet.inventorySlot].getId() == 0;
+        playerInv.slots[36 + packet.hotbarSlot] = playerInv.slots[packet.inventorySlot];
+        playerInv.slots[packet.inventorySlot] = tmp;
         session.sendAllPackets(InventoryTranslatorRegister.sendPlayerInventory(session), true);
 
         //Now the tricky part
         if(!invSlotWasEmpty){
-            ClientWindowActionPacket act1 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), packet.slot, playerInv.slots[36 + packet.selectedSlot], WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
-            ClientWindowActionPacket act2 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), 36 + packet.selectedSlot, tmp, WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
+            ClientWindowActionPacket act1 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), packet.inventorySlot, playerInv.slots[36 + packet.hotbarSlot], WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
+            ClientWindowActionPacket act2 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), 36 + packet.hotbarSlot, tmp, WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
             if(!hotbarSlotWasEmpty){
                 //We have another piece now
-                ClientWindowActionPacket act3 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), packet.slot, null, WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
+                ClientWindowActionPacket act3 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), packet.inventorySlot, null, WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
                 return new Packet[]{act1, act2, act3};
             }
             return new Packet[]{act1, act2};
         }else{
-            ClientWindowActionPacket act1 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), 36 + packet.selectedSlot, playerInv.slots[36 + packet.selectedSlot], WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
-            ClientWindowActionPacket act2 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), packet.slot, null, WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
+            ClientWindowActionPacket act1 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), 36 + packet.hotbarSlot, playerInv.slots[36 + packet.hotbarSlot], WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
+            ClientWindowActionPacket act2 = new ClientWindowActionPacket(0, (short)(System.currentTimeMillis() & 0xFFFF), packet.inventorySlot, null, WindowAction.CLICK_ITEM, ClickItemParam.LEFT_CLICK);
             return new Packet[]{act1, act2};
         }
     }

@@ -12,11 +12,12 @@
  */
 package org.dragonet.inventory;
 
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
+import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.github.steveice10.mc.protocol.data.game.ItemStack;
-import org.spacehq.opennbt.tag.builtin.CompoundTag;
 
 public class ItemList {
 

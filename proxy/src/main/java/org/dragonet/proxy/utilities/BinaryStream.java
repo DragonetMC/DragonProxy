@@ -1,11 +1,15 @@
 package org.dragonet.proxy.utilities;
 
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 /**
- * author: MagicDroidX Nukkit Project
+ * author: MagicDroidX
+ * Nukkit Project
  */
 public class BinaryStream {
 
@@ -41,18 +45,18 @@ public class BinaryStream {
         this.buffer = buffer;
         this.count = buffer == null ? -1 : buffer.length;
     }
-	
-	public void setBuffer(byte[] buffer, int offset) {
+
+    public void setBuffer(byte[] buffer, int offset) {
         this.setBuffer(buffer);
         this.setOffset(offset);
     }
 
-    public void setOffset(int offset) {
-        this.offset = offset;
-    }
-
     public int getOffset() {
         return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 
     public byte[] getBuffer() {
@@ -64,7 +68,7 @@ public class BinaryStream {
     }
 
     public byte[] get() {
-        return Arrays.copyOfRange(this.buffer, this.offset, this.count - 1);
+        return this.get(this.count - this.offset);
     }
 
     public byte[] get(int len) {
@@ -72,6 +76,7 @@ public class BinaryStream {
             this.offset = this.count - 1;
             return new byte[0];
         }
+        len = Math.min(len, this.getCount() - this.offset);
         this.offset += len;
         return Arrays.copyOfRange(this.buffer, this.offset - len, this.offset);
     }
@@ -127,14 +132,6 @@ public class BinaryStream {
         this.put(Binary.writeShort(s));
     }
 
-    public short getSignedShort() {
-        return Binary.readSignedShort(this.get(2));
-    }
-
-    public void putSignedShort(short s) {
-        this.put(Binary.writeShort(s));
-    }
-
     public int getLShort() {
         return Binary.readLShort(this.get(2));
     }
@@ -143,16 +140,12 @@ public class BinaryStream {
         this.put(Binary.writeLShort(s));
     }
 
-    public short getSignedLShort() {
-        return Binary.readSignedLShort(this.get(2));
-    }
-
-    public void putSignedLShort(short s) {
-        this.put(Binary.writeLShort(s));
-    }
-
     public float getFloat() {
-        return Binary.readFloat(this.get(4));
+        return getFloat(-1);
+    }
+
+    public float getFloat(int accuracy) {
+        return Binary.readFloat(this.get(4), accuracy);
     }
 
     public void putFloat(float v) {
@@ -160,7 +153,11 @@ public class BinaryStream {
     }
 
     public float getLFloat() {
-        return Binary.readLFloat(this.get(4));
+        return getLFloat(-1);
+    }
+
+    public float getLFloat(int accuracy) {
+        return Binary.readLFloat(this.get(4), accuracy);
     }
 
     public void putLFloat(float v) {
@@ -183,10 +180,6 @@ public class BinaryStream {
         this.put(Binary.writeLTriad(triad));
     }
 
-    public byte getSignedByte() {
-        return this.buffer[this.offset++];
-    }
-
     public boolean getBoolean() {
         return this.getByte() == 0x01;
     }
@@ -203,24 +196,6 @@ public class BinaryStream {
         this.put(new byte[]{b});
     }
 
-    public byte[][] getDataArray() {
-        return this.getDataArray(10);
-    }
-
-    public byte[][] getDataArray(int len) {
-        byte[][] data = new byte[len][];
-        for (int i = 0; i < len && !this.feof(); ++i) {
-            data[i] = this.get(this.getTriad());
-        }
-        return data;
-    }
-
-    public void putDataArray(byte[][] data) {
-        for (byte[] v : data) {
-            this.putTriad(v.length);
-            this.put(v);
-        }
-    }
 
     public void putUUID(UUID uuid) {
         this.put(Binary.writeUUID(uuid));
@@ -230,14 +205,66 @@ public class BinaryStream {
         return Binary.readUUID(this.get(16));
     }
 
+    public byte[] getByteArray() {
+        return this.get((int) this.getUnsignedVarInt());
+    }
+
+    public void putByteArray(byte[] b) {
+        this.putUnsignedVarInt(b.length);
+        this.put(b);
+    }
+
     public String getString() {
-        return new String(this.get(this.getShort()), StandardCharsets.UTF_8);
+        return new String(this.getByteArray(), StandardCharsets.UTF_8);
     }
 
     public void putString(String string) {
         byte[] b = string.getBytes(StandardCharsets.UTF_8);
-        this.putShort(b.length);
-        this.put(b);
+        this.putByteArray(b);
+    }
+
+    public long getUnsignedVarInt() {
+        return VarInt.readUnsignedVarInt(this);
+    }
+
+    public void putUnsignedVarInt(long v) {
+        VarInt.writeUnsignedVarInt(this, v);
+    }
+
+    public int getVarInt() {
+        return VarInt.readVarInt(this);
+    }
+
+    public void putVarInt(int v) {
+        VarInt.writeVarInt(this, v);
+    }
+
+    public long getVarLong() {
+        return VarInt.readVarLong(this);
+    }
+
+    public void putVarLong(long v) {
+        VarInt.writeVarLong(this, v);
+    }
+
+    public long getUnsignedVarLong() {
+        return VarInt.readUnsignedVarLong(this);
+    }
+
+    public void putUnsignedVarLong(long v) {
+        VarInt.writeUnsignedVarLong(this, v);
+    }
+
+    public void putBlockCoords(int x, int y, int z) {
+        this.putVarInt(x);
+        this.putUnsignedVarInt(y);
+        this.putVarInt(z);
+    }
+
+    public void putVector3f(float x, float y, float z) {
+        this.putLFloat(x);
+        this.putLFloat(y);
+        this.putLFloat(z);
     }
 
     public boolean feof() {
@@ -270,8 +297,8 @@ public class BinaryStream {
         if (minCapacity < 0) { // overflow
             throw new OutOfMemoryError();
         }
-        return (minCapacity > MAX_ARRAY_SIZE)
-                ? Integer.MAX_VALUE
-                : MAX_ARRAY_SIZE;
+        return (minCapacity > MAX_ARRAY_SIZE) ?
+                Integer.MAX_VALUE :
+                MAX_ARRAY_SIZE;
     }
 }
