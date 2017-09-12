@@ -19,3 +19,4 @@ nb-configuration.xml
 *.iml
 /.idea
 *.bat
+/config.yml

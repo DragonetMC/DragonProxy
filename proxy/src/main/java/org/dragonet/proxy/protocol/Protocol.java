@@ -12,33 +12,63 @@
  */
 package org.dragonet.proxy.protocol;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang3.ArrayUtils;
-import sul.protocol.pocket105.play.Batch;
+import org.dragonet.proxy.utilities.BinaryStream;
+import org.dragonet.proxy.utilities.Zlib;
 import sul.protocol.pocket113.Packets;
 import sul.utils.Packet;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public final class Protocol {
 
-    public static Packet decode(byte[] data) {
+    public static Packet[] decode(byte[] data) {
         if (data == null || data.length < 1) {
             return null;
         }
         int pid = data[0] & 0xFF;
+        System.out.println("FIRST BYTE = 0x" + Integer.toHexString(pid) + ", len=" + data.length + ", 0xfe? " + (pid ==0xfe));
+        if(pid != 0xfe) return null;
+
+        byte[] inflated;
+        try {
+            inflated = Zlib.inflate(Arrays.copyOfRange(data, 1, data.length));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        ArrayList<Packet> packets = new ArrayList<>(2);
+        BinaryStream stream = new BinaryStream(inflated);
+        while(stream.offset < inflated.length) {
+            byte[] buffer = stream.get(stream.getLShort());
+            Packet decoded = decodeSingle(buffer);
+
+            if(decoded != null) {
+                packets.add(decoded);
+            } else {
+                System.out.println("decode fail");
+            }
+        }
+
+        System.out.println("decoded packets " + packets.size());
+        return packets.size() > 0 ? packets.toArray(new Packet[0]) : null;
+    }
+
+    private static Packet decodeSingle(byte[] buffer) {
+        int pid = buffer[0] & 0xFF;
         if (Packets.PLAY.containsKey(pid)) {
             Class<? extends Packet> c = Packets.PLAY.get(pid);
-            // remove the padding
-            byte[] decodable = ArrayUtils.remove(data, 1);
-            decodable = ArrayUtils.remove(decodable, 1);
             try {
                 Packet pk = c.newInstance();
-                pk.decode(decodable);
+                pk.decode(buffer);
                 return pk;
             } catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException ex) {
+                ex.printStackTrace();
             }
+        } else {
+            System.out.println("can not decode for pid 0x" + Integer.toHexString(pid));
         }
         return null;
     }

@@ -19,7 +19,6 @@ import com.github.steveice10.packetlib.packet.Packet;
 import lombok.Getter;
 import org.dragonet.proxy.protocol.Protocol;
 import sul.protocol.pocket113.play.Login;
-import sul.protocol.pocket113.Packets;
 
 public class PEPacketProcessor implements Runnable {
 
@@ -44,11 +43,13 @@ public class PEPacketProcessor implements Runnable {
         while (cnt < MAX_PACKETS_PER_CYCLE && !packets.isEmpty()) {
             cnt++;
             byte[] bin = packets.pop();
-            sul.utils.Packet packet = Protocol.decode(bin);
-            if (packet == null) {
+            sul.utils.Packet[] packets = Protocol.decode(bin);
+            if (packets == null && packets.length > 0) {
                 continue;
             }
-            handlePacket(packet);
+            for (sul.utils.Packet p : packets) {
+                handlePacket(p);
+            }
         }
     }
 
@@ -56,6 +57,8 @@ public class PEPacketProcessor implements Runnable {
         if (packet == null) {
             return;
         }
+
+        System.out.println("RECEIVED PACKET=" + packet.getClass().getSimpleName());
 
         switch (packet.getId()) {
             case 1:

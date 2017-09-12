@@ -94,7 +94,6 @@ public class RaknetInterface implements ServerInstance {
         if (session == null) {
             return;
         }
-        packet.buffer = Arrays.copyOfRange(packet.buffer, 1, packet.buffer.length);
         session.handlePacketBinary(packet);
     }
 

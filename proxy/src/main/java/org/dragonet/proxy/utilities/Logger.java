@@ -19,6 +19,8 @@ import java.util.Calendar;
 
 public class Logger {
 
+    private boolean colorful = false;
+
     private DragonProxy proxy;
 
     private Calendar calender;
@@ -27,7 +29,7 @@ public class Logger {
     public boolean debug = false;
 
     public Logger(DragonProxy proxy) {
-        proxy = proxy;
+        this.proxy = proxy;
         calender = Calendar.getInstance();
         consoleDate = new SimpleDateFormat("HH:mm:ss");
     }
@@ -37,13 +39,23 @@ public class Logger {
     }
 
     private void log(String levelColor, String level, String message) {
-        StringBuilder builder = new StringBuilder();
+        if(colorful) {
+            StringBuilder builder = new StringBuilder();
 
-        builder.append(MCColor.toANSI(MCColor.AQUA + "[" + consoleDate.format(calender.getTime()) + "] "));
-        builder.append(MCColor.toANSI(levelColor + "[" + level + "] "));
-        builder.append(MCColor.toANSI(message + MCColor.WHITE + MCColor.RESET));
+            builder.append(MCColor.toANSI(MCColor.AQUA + "[" + consoleDate.format(calender.getTime()) + "] "));
+            builder.append(MCColor.toANSI(levelColor + "[" + level + "] "));
+            builder.append(MCColor.toANSI(message + MCColor.WHITE + MCColor.RESET));
 
-        System.out.println(builder.toString());
+            System.out.println(builder.toString());
+        } else {
+            StringBuilder builder = new StringBuilder();
+
+            builder.append("[" + consoleDate.format(calender.getTime()) + "] ");
+            builder.append("[" + level + "] ");
+            builder.append(message);
+
+            System.out.println(builder.toString());
+        }
     }
 
     public void info(String message) {
