@@ -16,7 +16,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.ServerChatPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.MessageTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.pocket132.play.Text;
+import sul.protocol.pocket113.play.Text;
 import sul.utils.Packet;
 
 public class PCChatPacketTranslator implements PCPacketTranslator<ServerChatPacket> {

@@ -13,7 +13,7 @@
 package org.dragonet.proxy.protocol;
 
 import java.util.Arrays;
-import sul.protocol.pocket132.Packets;
+import sul.protocol.pocket113.Packets;
 import sul.utils.Packet;
 
 public final class Protocol {

@@ -24,7 +24,7 @@ import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
-import sul.protocol.pocket132.play.PlayerAction;
+import sul.protocol.pocket113.play.PlayerAction;
 
 public class PEPlayerActionPacketTranslator implements PEPacketTranslator<PlayerAction> {
 

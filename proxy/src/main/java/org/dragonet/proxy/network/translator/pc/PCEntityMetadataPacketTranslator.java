@@ -19,7 +19,7 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.pocket132.play.AddItemEntity;
+import sul.protocol.pocket113.play.AddItemEntity;
 import sul.utils.Packet;
 import sul.utils.Tuples;
 

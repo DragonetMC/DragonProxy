@@ -16,8 +16,8 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMultiB
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.pocket132.play.UpdateBlock;
-import sul.protocol.pocket132.types.BlockPosition;
+import sul.protocol.pocket113.play.UpdateBlock;
+import sul.protocol.pocket113.types.BlockPosition;
 import sul.utils.Packet;
 
 public class PCMultiBlockChangePacketTranslator implements PCPacketTranslator<ServerMultiBlockChangePacket> {

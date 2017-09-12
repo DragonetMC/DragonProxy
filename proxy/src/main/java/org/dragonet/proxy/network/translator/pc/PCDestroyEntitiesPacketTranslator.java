@@ -16,7 +16,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntit
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.pocket132.play.RemoveEntity;
+import sul.protocol.pocket113.play.RemoveEntity;
 import sul.utils.Packet;
 
 public class PCDestroyEntitiesPacketTranslator implements PCPacketTranslator<ServerEntityDestroyPacket> {

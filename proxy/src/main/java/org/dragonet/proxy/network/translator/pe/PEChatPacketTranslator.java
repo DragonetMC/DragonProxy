@@ -19,7 +19,7 @@ import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import org.dragonet.proxy.utilities.PatternChecker;
-import sul.protocol.pocket132.play.Text;
+import sul.protocol.pocket113.play.Text;
 
 public class PEChatPacketTranslator implements PEPacketTranslator<Text.Chat> {
 
