@@ -2,9 +2,9 @@ DragonProxy
 ===========
 
 ## WE ARE BACK
-- Currently updating for Minecraft Java `1.12.1` and Minecraft Bedrock/PE version `1.3.2 (132)`
+- Currently updating for Minecraft - Java Edition version `1.12.1` and Minecraft Bedrock version `1.2.0.11 (132)`
 
-A proxy for **Minecraft - Pocket Edition** connecting to **Minecraft PC/Mac** servers.
+A proxy for **Minecraft Bedrock** connecting to **Minecraft - Java Edition** servers.
 
 Video by **[@MrPowerGamerBR](https://github.com/MrPowerGamerBR)** (On an older version): https://www.youtube.com/watch?v=oRSKQMzZYDE
 
@@ -20,8 +20,8 @@ Once compiled, run `dragonproxy-*.jar` in `proxy/target` where '*' is the versio
 See the tutorial in the [wiki](https://github.com/DragonetMC/DragonProxy/wiki).
 
 #### Supported Remote Server Types
-- For PC/Mac Servers: `Bukkit`/`Spigot`/`Glowstone`/`SpongeVanilla`/`BungeeCord`
-- For Pocket Edition Servers: `MiNET`, `Nukkit`, `PocketMine-MP (and all forks)`
+- For Java Edition Servers: `Bukkit`/`Spigot`/`Glowstone`/`SpongeVanilla`/`BungeeCord`
+- For Bedrock Servers: `MiNET`, `Nukkit`, `PocketMine-MP (and all forks)`
 - Not listed is **NOT** mean unsupported, just **untested**.
 
 ## Community
@@ -29,5 +29,5 @@ See the tutorial in the [wiki](https://github.com/DragonetMC/DragonProxy/wiki).
 **Forums:** [http://forums.dragonet.org](http://forums.dragonet.org)
 
 ## Libraries Used
-* RakLib Port by the Nukkit project @ [Site](http://nukkit.io)
+* JRakNet by the MarfGamer @ [Link](https://github.com/JRakNet/JRakNet)
 * @Steveice10 's MCProtocolLib @ [Link](https://github.com/Steveice10/MCProtocolLib)
