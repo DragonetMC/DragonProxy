@@ -15,11 +15,15 @@ package org.dragonet.proxy.network;
 import java.net.InetSocketAddress;
 import java.util.*;
 
+import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import net.marfgamer.jraknet.RakNetPacket;
+import net.marfgamer.jraknet.identifier.Identifier;
 import net.marfgamer.jraknet.identifier.MinecraftIdentifier;
+import net.marfgamer.jraknet.protocol.ConnectionType;
 import net.marfgamer.jraknet.server.RakNetServer;
 import net.marfgamer.jraknet.server.RakNetServerListener;
+import net.marfgamer.jraknet.server.ServerPing;
 import net.marfgamer.jraknet.session.RakNetClientSession;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
@@ -45,16 +49,25 @@ public class RaknetInterface implements RakNetServerListener {
         this.proxy = proxy;
         rakServer = new RakNetServer(port, Integer.MAX_VALUE);
         rakServer.addListener(this);
+        rakServer.addSelfListener();
         sessions = this.proxy.getSessionRegister();
         rakServer.startThreaded();
     }
 
     public void setBroadcastName(String serverName, int players, int maxPlayers) {
         rakServer.setIdentifier(new MinecraftIdentifier(serverName, Versioning.MINECRAFT_PE_PROTOCOL, Versioning.MINECRAFT_PE_VERSION, players, maxPlayers, new Random().nextLong(), "DragonProxy", "Survival"));
+        if(!rakServer.isBroadcastingEnabled()) {
+            rakServer.setBroadcastingEnabled(true);
+        }
     }
 
     /* public void onTick() {
     } */
+
+    @Override
+    public void handlePing(ServerPing ping) {
+        System.out.println("PING " + ping.getSender().toString());
+    }
 
     @Override
     public void onClientConnect(RakNetClientSession session) {

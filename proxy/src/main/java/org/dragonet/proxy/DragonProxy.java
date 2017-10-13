@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import net.marfgamer.jraknet.RakNetLogger;
+import net.marfgamer.jraknet.RakNet;
 import org.dragonet.proxy.network.SessionRegister;
 import org.dragonet.proxy.network.RaknetInterface;
 import org.dragonet.proxy.configuration.Lang;
@@ -89,7 +89,7 @@ public class DragonProxy {
                 FileOutputStream fos = new FileOutputStream(fileConfig);
                 InputStream ins = DragonProxy.class.getResourceAsStream("/config.yml");
                 int data;
-                while((data = ins.read()) != -1){
+                while ((data = ins.read()) != -1) {
                     fos.write(data);
                 }
                 ins.close();
@@ -106,7 +106,7 @@ public class DragonProxy {
         console = new ConsoleCommandReader(this);
         console.startConsole();
 
-    	// Should we save console log? Set it in config file
+        // Should we save console log? Set it in config file
        /* if(config.isLog_console()){
             console.startFile("console.log");
             logger.info("Saving console output enabled");
@@ -115,14 +115,14 @@ public class DragonProxy {
         } */
 
         // Put at the top instead
-        if(!IS_RELEASE) {
+        if (!IS_RELEASE) {
             logger.warning(MCColor.YELLOW + "This is a development build. It may contain bugs. Do not use on production.\n");
         }
 
         // Check for startup arguments
         checkArguments(args);
-		
-	    // Load language file
+
+        // Load language file
         try {
             lang = new Lang(config.getLang());
         } catch (IOException ex) {
@@ -130,17 +130,17 @@ public class DragonProxy {
             ex.printStackTrace();
             return;
         }
-	    // Load some more stuff
+        // Load some more stuff
         logger.info(lang.get(Lang.INIT_LOADING, Versioning.RELEASE_VERSION));
         logger.info(lang.get(Lang.INIT_MC_PC_SUPPORT, Versioning.MINECRAFT_PC_VERSION));
         logger.info(lang.get(Lang.INIT_MC_PE_SUPPORT, Versioning.MINECRAFT_PE_VERSION));
         authMode = config.getMode().toLowerCase();
-        if(!authMode.equals("cls") && !authMode.equals("online") && !authMode.equals("offline")){
+        if (!authMode.equals("cls") && !authMode.equals("online") && !authMode.equals("offline")) {
             logger.severe("Invalid login 'mode' option detected, must be cls/online/offline. You set it to '" + authMode + "'! ");
             return;
         }
-		
-	    // Init session and command stuff
+
+        // Init session and command stuff
         sessionRegister = new SessionRegister(this);
         commandRegister = new CommandRegister(this);
 
@@ -159,7 +159,7 @@ public class DragonProxy {
 
         // Bind
         logger.info(lang.get(Lang.INIT_BINDING, config.getUdp_bind_ip(), config.getUdp_bind_port()));
-        RakNetLogger.setLevel(9999);
+        RakNet.enableLogging();
         network = new RaknetInterface(this,
                 config.getUdp_bind_ip(), //IP
                 config.getUdp_bind_port()); //Port
