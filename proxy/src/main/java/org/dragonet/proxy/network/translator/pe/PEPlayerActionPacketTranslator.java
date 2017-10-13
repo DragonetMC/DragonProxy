@@ -24,7 +24,7 @@ import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
-import sul.protocol.pocket113.play.PlayerAction;
+import sul.protocol.bedrock137.play.PlayerAction;
 
 public class PEPlayerActionPacketTranslator implements PEPacketTranslator<PlayerAction> {
 
@@ -53,7 +53,7 @@ public class PEPlayerActionPacketTranslator implements PEPacketTranslator<Player
             ClientPlayerStatePacket stat = new ClientPlayerStatePacket((int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.LEAVE_BED);
             return new Packet[]{stat};
         }
-        if (packet.action == PlayerAction.RELEASE_ITEM) {
+        if (packet.action == PlayerAction.DROP_ITEM) {
             ClientPlayerActionPacket act = new ClientPlayerActionPacket(com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.DROP_ITEM, new Position(0, 0, 0), BlockFace.UP);
             return new Packet[]{act};
         }

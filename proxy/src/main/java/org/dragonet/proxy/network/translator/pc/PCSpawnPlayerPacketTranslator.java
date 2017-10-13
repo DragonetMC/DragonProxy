@@ -5,13 +5,11 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import org.dragonet.proxy.utilities.DefaultSkin;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
-import sul.metadata.Pocket113;
-import sul.protocol.pocket113.play.AddPlayer;
-import sul.protocol.pocket113.play.PlayerList;
-import sul.protocol.pocket113.types.McpeUuid;
-import sul.protocol.pocket113.types.Skin;
+import sul.metadata.Bedrock137;
+import sul.protocol.bedrock137.play.AddPlayer;
+import sul.protocol.bedrock137.play.PlayerList;
+import sul.protocol.bedrock137.types.McpeUuid;
 import sul.utils.Packet;
 import sul.utils.Tuples;
 
@@ -47,19 +45,20 @@ public class PCSpawnPlayerPacketTranslator implements PCPacketTranslator<ServerS
             pkAddPlayer.yaw = packet.getYaw();
             pkAddPlayer.pitch = packet.getPitch();
 
-            pkAddPlayer.metadata = new Pocket113();
+            pkAddPlayer.metadata = new Bedrock137();
             pkAddPlayer._buffer = EntityMetaTranslator.translateToPE(packet.getMetadata(), null).encode();
             
             PlayerList lst = new PlayerList(PlayerList.Add.ACTION);
-            sul.protocol.pocket113.types.PlayerList p = new sul.protocol.pocket113.types.PlayerList(
+            // TODO: send skin
+            /* sul.protocol.bedrock137.types.PlayerList p = new sul.protocol.bedrock137.types.PlayerList(
                     new McpeUuid(packet.getUUID().getMostSignificantBits(), packet.getUUID().getLeastSignificantBits()),
                     packet.getEntityId(),
                     pkAddPlayer.username,
-                    new Skin(DefaultSkin.getDefaultSkinName(), DefaultSkin.getDefaultSkin().getData())
+                    null//new Skin(DefaultSkin.getDefaultSkinName(), DefaultSkin.getDefaultSkin().getData())
             );
-            PlayerList.Add add = lst.new Add(new sul.protocol.pocket113.types.PlayerList[]{p});
+            PlayerList.Add add = lst.new Add(new sul.protocol.bedrock137.types.PlayerList[]{p}); */
             //TODO: get the default skin to work.
-            return new Packet[]{add, pkAddPlayer};
+            return new Packet[]{/*add, */pkAddPlayer};
         } catch (Exception e) {
             e.printStackTrace();
             return null;

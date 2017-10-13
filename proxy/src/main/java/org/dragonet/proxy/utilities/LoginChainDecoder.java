@@ -3,6 +3,7 @@ package org.dragonet.proxy.utilities;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import sul.protocol.bedrock137.types.LoginBody;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -15,13 +16,15 @@ import java.util.UUID;
  */
 public class LoginChainDecoder {
 
-    private final byte[] chain;
+    private final LoginBody body;
 
     public String username;
     public UUID clientUniqueId;
 
-    public LoginChainDecoder(byte[] chain) {
-        this.chain = chain;
+    public JsonObject clientData;
+
+    public LoginChainDecoder(LoginBody body) {
+        this.body = body;
     }
 
     /**
@@ -29,7 +32,8 @@ public class LoginChainDecoder {
      * Note: the credit of this function goes to Nukkit development team
      */
     public void decode() {
-        Map<String, List<String>> map = new Gson().fromJson(new String(chain),
+        // chain
+        Map<String, List<String>> map = new Gson().fromJson(new String(body.chain),
                 new TypeToken<Map<String, List<String>>>() {
                 }.getType());
         if (map.isEmpty() || !map.containsKey("chain") || map.get("chain").isEmpty()) return;
@@ -43,6 +47,9 @@ public class LoginChainDecoder {
                 if (extra.has("identity")) this.clientUniqueId = UUID.fromString(extra.get("identity").getAsString());
             }
         }
+
+        // client data
+        clientData = decodeToken(new String(body.clientData, StandardCharsets.UTF_8));
     }
 
     /**
@@ -53,6 +60,6 @@ public class LoginChainDecoder {
     private JsonObject decodeToken(String token) {
         String[] base = token.split("\\.");
         if (base.length < 2) return null;
-        return new Gson().fromJson(new String(Base64.getDecoder().decode(base[1]), StandardCharsets.UTF_8), JsonObject.class);
+        return new Gson().fromJson(new String(Base64.getDecoder().decode(base[1].replace("-_", "+/")), StandardCharsets.UTF_8), JsonObject.class);
     }
 }

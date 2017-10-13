@@ -17,8 +17,8 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePack
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.pocket113.play.AdventureSettings;
-import sul.protocol.pocket113.play.SetPlayerGameType;
+import sul.protocol.bedrock137.play.AdventureSettings;
+import sul.protocol.bedrock137.play.SetPlayerGameType;
 import sul.utils.Packet;
 
 public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoinGamePacket> {

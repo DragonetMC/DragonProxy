@@ -16,8 +16,8 @@ import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.pocket113.play.LevelEvent;
-import sul.protocol.pocket113.play.SetPlayerGameType;
+import sul.protocol.bedrock137.play.LevelEvent;
+import sul.protocol.bedrock137.play.SetPlayerGameType;
 import sul.utils.Packet;
 
 public class PCNotifyClientPacketTranslator implements PCPacketTranslator<ServerNotifyClientPacket> {

@@ -17,7 +17,7 @@ import org.dragonet.proxy.nbt.tag.CompoundTag;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.MessageTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.pocket113.play.BlockEntityData;
+import sul.protocol.bedrock137.play.BlockEntityData;
 import sul.utils.Packet;
 
 import java.io.ByteArrayOutputStream;

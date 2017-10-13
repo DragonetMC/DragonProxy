@@ -13,7 +13,6 @@
 package org.dragonet.proxy.network.translator.inv;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
-import com.github.steveice10.opennbt.NBTIO;
 import org.dragonet.inventory.InventoryType;
 import org.dragonet.proxy.nbt.stream.NBTOutputStream;
 import org.dragonet.proxy.network.CacheKey;
@@ -22,14 +21,13 @@ import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.InventoryTranslator;
 import org.dragonet.proxy.nbt.tag.CompoundTag;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
-import sul.protocol.pocket113.play.BlockEntityData;
-import sul.protocol.pocket113.play.ContainerOpen;
-import sul.protocol.pocket113.play.ContainerSetContent;
-import sul.protocol.pocket113.types.BlockPosition;
-import sul.protocol.pocket113.types.Slot;
+import sul.protocol.bedrock137.play.BlockEntityData;
+import sul.protocol.bedrock137.play.ContainerOpen;
+import sul.protocol.bedrock137.play.InventoryContent;
+import sul.protocol.bedrock137.types.BlockPosition;
+import sul.protocol.bedrock137.types.Slot;
 
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class ChestWindowTranslator implements InventoryTranslator {
@@ -74,7 +72,7 @@ public class ChestWindowTranslator implements InventoryTranslator {
     }
     
     private void sendContent(UpstreamSession session, CachedWindow win){
-        ContainerSetContent pk = new ContainerSetContent();
+        InventoryContent pk = new InventoryContent();
         pk.window = (byte)(win.windowId & 0xFF);
         pk.slots = new Slot[win.slots.length];
         for(int i = 0; i < pk.slots.length; i++){

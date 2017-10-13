@@ -17,7 +17,7 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityPositionRotationPacket;
-import sul.protocol.pocket113.play.MoveEntity;
+import sul.protocol.bedrock137.play.MoveEntity;
 import sul.utils.Packet;
 import sul.utils.Tuples;
 

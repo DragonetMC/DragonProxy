@@ -26,9 +26,9 @@ import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.inv.ChestWindowTranslator;
 import org.dragonet.proxy.network.translator.InventoryTranslator;
-import sul.protocol.pocket113.play.ContainerClose;
-import sul.protocol.pocket113.play.ContainerSetContent;
-import sul.protocol.pocket113.types.Slot;
+import sul.protocol.bedrock137.play.ContainerClose;
+import sul.protocol.bedrock137.play.InventoryContent;
+import sul.protocol.bedrock137.types.Slot;
 import sul.utils.Packet;
 
 public final class InventoryTranslatorRegister {
@@ -38,7 +38,7 @@ public final class InventoryTranslatorRegister {
     public static Packet[] sendPlayerInventory(UpstreamSession session) {
         CachedWindow win = session.getWindowCache().getPlayerInventory();
         //Translate and send
-        ContainerSetContent ret = new ContainerSetContent();
+        InventoryContent ret = new InventoryContent();
         ret.window = PEWindowConstantID.PLAYER_INVENTORY;
         ret.slots = new Slot[45];
         for (int i = 9; i < win.slots.length; i++) {
@@ -50,7 +50,7 @@ public final class InventoryTranslatorRegister {
         for (int i = 36; i < 45; i++) {
             ret.slots[i] = ret.slots[i - 9];    //Duplicate
         }
-        ret.hotbar = HOTBAR_CONSTANTS;
+        // ret.hotbar = HOTBAR_CONSTANTS;
 
         //TODO: Add armor support
         return new Packet[]{ret};

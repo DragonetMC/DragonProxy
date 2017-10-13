@@ -22,7 +22,7 @@ import java.util.Map;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import org.dragonet.proxy.nbt.stream.NBTInputStream;
 import org.dragonet.proxy.nbt.tag.CompoundTag;
-import sul.protocol.pocket113.types.Slot;
+import sul.protocol.bedrock137.types.Slot;
 
 public class ItemBlockTranslator {
     

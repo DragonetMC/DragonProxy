@@ -17,8 +17,8 @@ import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
-import sul.metadata.Pocket113;
-import sul.protocol.pocket113.play.AddEntity;
+import sul.metadata.Bedrock137;
+import sul.protocol.bedrock137.play.AddEntity;
 import sul.utils.Packet;
 import sul.utils.Tuples;
 
@@ -38,7 +38,7 @@ public class PCSpawnMobPacketTranslator implements PCPacketTranslator<ServerSpaw
             pk.position = new Tuples.FloatXYZ((float) e.x, (float) e.y, (float) e.z);
             pk.motion = new Tuples.FloatXYZ((float) e.motionX, (float) e.motionY, (float) e.motionZ);
             //TODO: Hack for now. ;P 
-            pk.metadata = new Pocket113();
+            pk.metadata = new Bedrock137();
             pk.metadata._buffer = EntityMetaTranslator.translateToPE(e.pcMeta, e.peType).encode();
 
             return new Packet[]{pk};

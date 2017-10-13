@@ -17,7 +17,7 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
-import sul.protocol.pocket113.play.MovePlayer;
+import sul.protocol.bedrock137.play.MovePlayer;
 
 public class PEMovePlayerPacketTranslator implements PEPacketTranslator<MovePlayer> {
     

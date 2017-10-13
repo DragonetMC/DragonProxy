@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import net.marfgamer.jraknet.RakNetLogger;
 import org.dragonet.proxy.network.SessionRegister;
 import org.dragonet.proxy.network.RaknetInterface;
 import org.dragonet.proxy.configuration.Lang;
@@ -158,6 +159,7 @@ public class DragonProxy {
 
         // Bind
         logger.info(lang.get(Lang.INIT_BINDING, config.getUdp_bind_ip(), config.getUdp_bind_port()));
+        RakNetLogger.setLevel(9999);
         network = new RaknetInterface(this,
                 config.getUdp_bind_ip(), //IP
                 config.getUdp_bind_port()); //Port
@@ -166,7 +168,7 @@ public class DragonProxy {
         motd = config.getMotd();
         motd = motd.replace("&", "§");
 
-        network.setBroadcastName(motd, -1, -1);
+        network.setBroadcastName(motd, 1, 2);
         ticker.start();
         logger.info(lang.get(Lang.INIT_DONE));
     }

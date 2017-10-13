@@ -16,7 +16,7 @@ import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.network.InventoryTranslatorRegister;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
-import sul.protocol.pocket113.play.ContainerClose;
+import sul.protocol.bedrock137.play.ContainerClose;
 
 public class PEWindowClosePacketTranslator implements PEPacketTranslator<ContainerClose> {
 

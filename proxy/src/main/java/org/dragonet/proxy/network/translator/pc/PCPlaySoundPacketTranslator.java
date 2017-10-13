@@ -19,8 +19,8 @@ import com.github.steveice10.mc.protocol.data.game.world.sound.CustomSound;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerPlaySoundPacket;
-import sul.protocol.pocket113.play.PlaySound;
-import sul.protocol.pocket113.types.BlockPosition;
+import sul.protocol.bedrock137.play.PlaySound;
+import sul.protocol.bedrock137.types.BlockPosition;
 import sul.utils.Packet;
 
 public class PCPlaySoundPacketTranslator implements PCPacketTranslator<ServerPlaySoundPacket> {

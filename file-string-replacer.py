@@ -3,15 +3,17 @@
 import os
 
 # change MCPE version
-# REPLACE_FROM = "sul.protocol.pocket132"
-# REPLACE_TO = "sul.protocol.pocket113"
+#REPLACE_FROM = "sul.protocol.pocket132"
+#REPLACE_TO = "sul.protocol.bedrock137"
+REPLACE_FROM = "Pocket132"
+REPLACE_TO = "Bedrock137"
 
 # update MCProtocolLib namespace
 #REPLACE_FROM = "org.spacehq.mc"
 #REPLACE_TO = "com.github.steveice10.mc"
 
-REPLACE_FROM = "cn.nukkit.utils.Binary"
-REPLACE_TO = "org.dragonet.proxy.utilities.Binary"
+#REPLACE_FROM = "cn.nukkit.utils.Binary"
+#REPLACE_TO = "org.dragonet.proxy.utilities.Binary"
 
 def main():
   g = os.walk("./proxy")

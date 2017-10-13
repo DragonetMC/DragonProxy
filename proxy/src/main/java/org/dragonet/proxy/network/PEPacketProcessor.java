@@ -18,7 +18,7 @@ import java.util.Deque;
 import com.github.steveice10.packetlib.packet.Packet;
 import lombok.Getter;
 import org.dragonet.proxy.protocol.Protocol;
-import org.dragonet.proxy.protocol.patch_113.Login;
+import sul.protocol.bedrock137.play.Login;
 
 public class PEPacketProcessor implements Runnable {
 
@@ -39,17 +39,21 @@ public class PEPacketProcessor implements Runnable {
 
     @Override
     public void run() {
-        int cnt = 0;
-        while (cnt < MAX_PACKETS_PER_CYCLE && !packets.isEmpty()) {
-            cnt++;
-            byte[] bin = packets.pop();
-            sul.utils.Packet[] packets = Protocol.decode(bin);
-            if (packets == null && packets.length > 0) {
-                continue;
+        try {
+            int cnt = 0;
+            while (cnt < MAX_PACKETS_PER_CYCLE && !packets.isEmpty()) {
+                cnt++;
+                byte[] bin = packets.pop();
+                sul.utils.Packet[] packets = Protocol.decode(bin);
+                if (packets == null && packets.length > 0) {
+                    continue;
+                }
+                for (sul.utils.Packet p : packets) {
+                    handlePacket(p);
+                }
             }
-            for (sul.utils.Packet p : packets) {
-                handlePacket(p);
-            }
+        }catch(Exception e){
+            e.printStackTrace();
         }
     }
 

@@ -16,7 +16,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.ServerChatPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.MessageTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.pocket113.play.Text;
+import sul.protocol.bedrock137.play.Text;
 import sul.utils.Packet;
 
 public class PCChatPacketTranslator implements PCPacketTranslator<ServerChatPacket> {
@@ -32,10 +32,10 @@ public class PCChatPacketTranslator implements PCPacketTranslator<ServerChatPack
 
     @Override
     public Packet[] translate(UpstreamSession session, ServerChatPacket packet) {
-        Text text = new Text(TYPE_RAW);
+        Text text = new Text();
 
         String content = MessageTranslator.translate(packet.getMessage());
-        return new Packet[]{text.new Raw(content)};
+        return new Packet[]{text.new Raw(content, "")};
 
         // TODO: Detect types
         /*

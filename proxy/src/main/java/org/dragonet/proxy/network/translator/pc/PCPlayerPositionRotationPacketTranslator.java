@@ -12,7 +12,7 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import sul.protocol.pocket113.play.MovePlayer;
+import sul.protocol.bedrock137.play.MovePlayer;
 import sul.utils.Packet;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;

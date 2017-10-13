@@ -15,8 +15,8 @@ package org.dragonet.proxy.network.translator.pc;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.pocket113.play.Respawn;
-import sul.protocol.pocket113.play.SetHealth;
+import sul.protocol.bedrock137.play.Respawn;
+import sul.protocol.bedrock137.play.SetHealth;
 import sul.utils.Packet;
 
 public class PCUpdateHealthPacketTranslator implements PCPacketTranslator<ServerPlayerHealthPacket> {

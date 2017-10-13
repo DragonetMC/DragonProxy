@@ -3,12 +3,11 @@ package org.dragonet.proxy.commands.defaults;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.commands.Command;
 import org.dragonet.proxy.network.UpstreamSession;
-import sul.protocol.pocket113.play.FullChunkData;
-import sul.protocol.pocket113.play.MovePlayer;
-import sul.protocol.pocket113.play.PlayStatus;
-import sul.protocol.pocket113.play.ResourcePacksInfo;
-import sul.protocol.pocket113.types.ChunkData;
-import sul.protocol.pocket113.types.Section;
+import sul.protocol.bedrock137.play.MovePlayer;
+import sul.protocol.bedrock137.play.PlayStatus;
+import sul.protocol.bedrock137.play.ResourcePacksInfo;
+import sul.protocol.bedrock137.types.ChunkData;
+import sul.protocol.bedrock137.types.Section;
 import sul.utils.Tuples;
 
 import java.util.Arrays;
@@ -39,13 +38,17 @@ public class TestCommand extends Command {
             player.sendPacket(m);
             player.sendChat("\u00a7bTeleported to: " + dest.toString());
         } else if(args[0].equalsIgnoreCase("chunk")) {
+            /*
+            FullChunkData chunk = new FullChunkData(Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+            Arrays.fill(chunk.ids, (byte)1);
+            */
             ChunkData data = new ChunkData();
             data.sections = new Section[16];
-            for(int i = 0; i < 16; i++) {
-                data.sections[i] = new Section();
-                Arrays.fill(data.sections[i].blockIds, (byte)1);
+            for(int cy = 0; cy < 16; cy++) {
+                data.sections[cy] = new Section();
+                Arrays.fill(data.sections[cy].blockIds, (byte)1);
             }
-            FullChunkData chunk = new FullChunkData(new Tuples.IntXZ(0, 0), data);
+            sul.protocol.bedrock137.play.FullChunkData chunk = new sul.protocol.bedrock137.play.FullChunkData(new Tuples.IntXZ(Integer.parseInt(args[1]), Integer.parseInt(args[2])), data);
             player.sendPacket(chunk);
         }
     }

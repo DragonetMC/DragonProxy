@@ -22,7 +22,7 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientWindowActionPacket;
-import sul.protocol.pocket113.play.MobEquipment;
+import sul.protocol.bedrock137.play.MobEquipment;
 
 public class PEPlayerEquipmentPacketTranslator implements PEPacketTranslator<MobEquipment> {
 

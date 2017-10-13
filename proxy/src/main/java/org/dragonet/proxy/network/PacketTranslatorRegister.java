@@ -24,7 +24,7 @@ import org.dragonet.proxy.network.translator.pe.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerChatPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerSpawnPositionPacket;
-import sul.protocol.pocket113.play.*;
+import sul.protocol.bedrock137.play.*;
 
 public final class PacketTranslatorRegister {
 
@@ -86,7 +86,7 @@ public final class PacketTranslatorRegister {
         PE_TO_PC_TRANSLATOR.put(Text.class, new PEChatPacketTranslator());
 
         // Entity
-        PE_TO_PC_TRANSLATOR.put(UseItem.class, new PEUseItemPacketTranslator());
+        // PE_TO_PC_TRANSLATOR.put(UseItem.class, new PEUseItemPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(MovePlayer.class, new PEMovePlayerPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(PlayerAction.class, new PEPlayerActionPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(Interact.class, new PEInteractPacketTranslator());

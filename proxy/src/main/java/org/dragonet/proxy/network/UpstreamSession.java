@@ -36,8 +36,8 @@ import org.dragonet.proxy.configuration.RemoteServer;
 import org.dragonet.proxy.network.cache.EntityCache;
 import org.dragonet.proxy.network.cache.WindowCache;
 import org.dragonet.proxy.utilities.*;
-import sul.protocol.pocket113.play.*;
-import sul.protocol.pocket113.types.BlockPosition;
+import sul.protocol.bedrock137.play.*;
+import sul.protocol.bedrock137.types.BlockPosition;
 import sul.utils.Packet;
 import sul.utils.Tuples;
 
@@ -63,6 +63,9 @@ public class UpstreamSession {
     private final PEPacketProcessor packetProcessor;
 
     private final ScheduledFuture<?> packetProcessorScheule;
+
+    @Getter
+    private LoginChainDecoder profile;
 
     @Getter
     private String username;
@@ -179,7 +182,7 @@ public class UpstreamSession {
         packetProcessor.putPacket(packet);
     }
 
-    public void onLogin(org.dragonet.proxy.protocol.patch_113.Login packet) {
+    public void onLogin(Login packet) {
         if (username != null) {
             disconnect("Already logged in, this must be an error! ");
             return;
@@ -187,7 +190,7 @@ public class UpstreamSession {
 
         PlayStatus status = new PlayStatus();
         System.out.println("CLIENT PROTOCOL = " + packet.protocol);
-        if (packet.version != Versioning.MINECRAFT_PE_PROTOCOL) {
+        if (packet.protocol != Versioning.MINECRAFT_PE_PROTOCOL) {
             status.status = PlayStatus.OUTDATED_CLIENT;
             sendPacket(status, true);
             disconnect(proxy.getLang().get(Lang.MESSAGE_UNSUPPORTED_CLIENT));
@@ -196,12 +199,12 @@ public class UpstreamSession {
         status.status = PlayStatus.OK;
         sendPacket(status, true);
 
-        System.out.println("chain len = " + packet.chain_data);
+        System.out.println("chain len = " + packet.body.chain);
 
-        LoginChainDecoder chainDecoder = new LoginChainDecoder(packet.chain_data);
-        chainDecoder.decode();
+        profile = new LoginChainDecoder(packet.body);
+        profile.decode();
 
-        this.username = chainDecoder.username;
+        this.username = profile.username;
         System.out.println("decoded username: " + this.username);
         proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, username, remoteAddress));
         if (proxy.getAuthMode().equals("online")) {
@@ -321,8 +324,8 @@ public class UpstreamSession {
             }
             return;
         }
-        Text text = new Text((byte)0); // raw
-        Text.Raw raw = text.new Raw(chat);
+        Text text = new Text(); // raw
+        Text.Raw raw = text.new Raw(chat, "");
         sendPacket(raw, true);
     }
 
