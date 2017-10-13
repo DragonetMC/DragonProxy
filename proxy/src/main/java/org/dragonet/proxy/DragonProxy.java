@@ -166,7 +166,7 @@ public class DragonProxy {
 
         // MOTD
         motd = config.getMotd();
-        motd = motd.replace("&", "§");
+        motd = motd.replace("&", "\u00a7");
 
         network.setBroadcastName(motd, 1, 2);
         ticker.start();
