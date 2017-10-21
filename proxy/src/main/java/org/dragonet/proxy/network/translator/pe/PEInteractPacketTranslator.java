@@ -17,13 +17,13 @@ import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerInteractEntityPacket;
-import sul.protocol.bedrock137.play.Interact;
+import org.dragonet.proxy.protocol.packets.InteractPacket;
 
-public class PEInteractPacketTranslator implements PEPacketTranslator<Interact> {
+public class PEInteractPacketTranslator implements PEPacketTranslator<InteractPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, Interact packet) {
-        ClientPlayerInteractEntityPacket pk = new ClientPlayerInteractEntityPacket((int) (packet.target & 0xFFFFFFFF), InteractAction.ATTACK);
+    public Packet[] translate(UpstreamSession session, InteractPacket packet) {
+        ClientPlayerInteractEntityPacket pk = new ClientPlayerInteractEntityPacket((int) (packet.targetRtid & 0xFFFFFFFF), InteractAction.ATTACK);
         return new Packet[]{pk};
     }
 

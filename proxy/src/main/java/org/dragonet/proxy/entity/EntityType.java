@@ -57,7 +57,7 @@ public enum EntityType {
     @Getter
     private final int peType;
 
-    private EntityType(int peType) {
+    EntityType(int peType) {
         this.peType = peType;
     }
 

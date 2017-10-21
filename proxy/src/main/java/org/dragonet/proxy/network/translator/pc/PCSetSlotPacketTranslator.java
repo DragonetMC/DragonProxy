@@ -16,14 +16,13 @@ import org.dragonet.proxy.network.InventoryTranslatorRegister;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientCloseWindowPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
-import sul.utils.Packet;
+import org.dragonet.proxy.protocol.PEPacket;
 
 public class PCSetSlotPacketTranslator implements PCPacketTranslator<ServerSetSlotPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, ServerSetSlotPacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerSetSlotPacket packet) {
         if (!session.getWindowCache().hasWindow(packet.getWindowId())) {
             //Cache this
             session.getWindowCache().newCachedPacket(packet.getWindowId(), packet);

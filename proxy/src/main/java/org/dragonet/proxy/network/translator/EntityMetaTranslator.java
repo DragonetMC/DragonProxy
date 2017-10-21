@@ -56,7 +56,7 @@ public final class EntityMetaTranslator {
                     }else{
                         data = 1;
                     }
-                    peMeta.map.put(EntityMetaData.Constants.DATA_SHOW_NAMETAG, new ByteMeta(data));
+                    peMeta.map.put(EntityMetaData.Constants.DATA_FLAG_CAN_SHOW_NAMETAG, new ByteMeta(data));
                     break;
                 case 6://Health
                     //Not supported on MCPE yet
@@ -64,14 +64,14 @@ public final class EntityMetaTranslator {
                 case 7://Potion color
                     peMeta.map.put(EntityMetaData.Constants.DATA_POTION_COLOR, new ByteMeta((byte) ((int) m.getValue() & 0xFF)));
                     break;
-                case 8://Potion visible
-                    peMeta.map.put(EntityMetaData.Constants.DATA_POTION_VISIBLE, new ByteMeta((byte) m.getValue()));
+                case 8://Potion visible, not sure here
+                    peMeta.map.put(EntityMetaData.Constants.DATA_POTION_AMBIENT, new ByteMeta((byte) m.getValue()));
                     break;
                 case 9://Arrows stick into player's body
                     //Not supported on MCPE yet
                     break;
                 case 15://Has no AI
-                    peMeta.map.put(EntityMetaData.Constants.DATA_NO_AI, new ByteMeta((byte) m.getValue()));
+                    peMeta.map.put(EntityMetaData.Constants.DATA_FLAG_NO_AI, new ByteMeta((byte) m.getValue()));
                     break;
                 case 12://Age
                     byte age;
@@ -82,7 +82,7 @@ public final class EntityMetaTranslator {
                     }else{
                         age = 0;
                     }
-                    peMeta.map.put(EntityMetaData.Constants.DATA_AGE, new ByteMeta((age <= 0 ? (byte)0x1 : (byte)0x0)));
+                    peMeta.map.put(EntityMetaData.Constants.DATA_ENTITY_AGE, new ByteMeta((age <= 0 ? (byte)0x1 : (byte)0x0)));
                     break;
                 case 16:
                     //Not supported yet

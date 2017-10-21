@@ -27,10 +27,9 @@ import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.inv.ChestWindowTranslator;
 import org.dragonet.proxy.network.translator.InventoryTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
-import sul.protocol.bedrock137.play.ContainerClose;
-import sul.protocol.bedrock137.play.InventoryContent;
-import sul.protocol.bedrock137.types.Slot;
-import sul.utils.Packet;
+import org.dragonet.proxy.protocol.packets.ContainerClosePacket;
+import org.dragonet.proxy.protocol.packets.InventoryContentPacket;
+import org.dragonet.proxy.protocol.type.Slot;
 
 public final class InventoryTranslatorRegister {
 
@@ -39,22 +38,22 @@ public final class InventoryTranslatorRegister {
     public static PEPacket[] sendPlayerInventory(UpstreamSession session) {
         CachedWindow win = session.getWindowCache().getPlayerInventory();
         //Translate and send
-        InventoryContent ret = new InventoryContent();
-        ret.window = PEWindowConstantID.PLAYER_INVENTORY;
-        ret.slots = new Slot[45];
+        InventoryContentPacket ret = new InventoryContentPacket();
+        ret.windowId = PEWindowConstantID.PLAYER_INVENTORY;
+        ret.items = new Slot[45];
         for (int i = 9; i < win.slots.length; i++) {
             //TODO: Add NBT support
             if (win.slots[i] != null) {
-                ret.slots[i - 9] = ItemBlockTranslator.translateToPE(win.slots[i]);
+                ret.items[i - 9] = ItemBlockTranslator.translateToPE(win.slots[i]);
             }
         }
         for (int i = 36; i < 45; i++) {
-            ret.slots[i] = ret.slots[i - 9];    //Duplicate
+            ret.items[i] = ret.items[i - 9];    //Duplicate
         }
         // ret.hotbar = HOTBAR_CONSTANTS;
 
         //TODO: Add armor support
-        return new Packet[]{ret};
+        return new PEPacket[]{ret};
     }
 
     // PC Type => PE Translator
@@ -69,7 +68,7 @@ public final class InventoryTranslatorRegister {
             //There is already a window opened
             int id = (int) session.getDataCache().remove(CacheKey.WINDOW_OPENED_ID);
             if (!byServer) {
-                session.getDownstream().send(new ContainerClose((byte)(id & 0xFF)));
+                session.getDownstream().send(new ContainerClosePacket((byte)(id & 0xFF)));
             }
             if (session.getDataCache().containsKey(CacheKey.WINDOW_BLOCK_POSITION)) {
                 //Already a block was replaced to Chest, reset it
@@ -80,10 +79,8 @@ public final class InventoryTranslatorRegister {
                         1, //Set to stone since we don't know what it was, server will correct it once client interacts it
                         0);
             }
-            if (byServer) {
-                ContainerClose pkClose = new ContainerClose();
-                pkClose.window = (byte) (id & 0xFF);
-                session.sendPacket(pkClose, true);
+            if (byServer) {;
+                session.sendPacket(new ContainerClosePacket((byte) (id & 0xFF)), true);
             }
         }
     }

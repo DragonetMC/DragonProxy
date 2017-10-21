@@ -22,12 +22,12 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientWindowActionPacket;
-import sul.protocol.bedrock137.play.MobEquipment;
+import org.dragonet.proxy.protocol.packets.MobEquipmentPacket;
 
-public class PEPlayerEquipmentPacketTranslator implements PEPacketTranslator<MobEquipment> {
+public class PEPlayerEquipmentPacketTranslator implements PEPacketTranslator<MobEquipmentPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, MobEquipment packet) {
+    public Packet[] translate(UpstreamSession session, MobEquipmentPacket packet) {
         if (packet.hotbarSlot > 8) {
             return null;
         }

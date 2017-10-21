@@ -1,28 +1,28 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
+import org.dragonet.proxy.entity.meta.EntityMetaData;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
-import sul.metadata.Bedrock137;
-import sul.protocol.bedrock137.play.AddPlayer;
-import sul.protocol.bedrock137.play.PlayerList;
-import sul.protocol.bedrock137.types.McpeUuid;
-import sul.utils.Packet;
-import sul.utils.Tuples;
+import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.AddPlayerPacket;
+import org.dragonet.proxy.utilities.Vector3F;
+
+import java.util.UUID;
 
 public class PCSpawnPlayerPacketTranslator implements PCPacketTranslator<ServerSpawnPlayerPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, ServerSpawnPlayerPacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerSpawnPlayerPacket packet) {
         try {
             CachedEntity entity = session.getEntityCache().newPlayer(packet);
 
             // TODO: Do we need to register the player here ?
-            AddPlayer pkAddPlayer = new AddPlayer();
-            pkAddPlayer.entityId = entity.eid;
+            AddPlayerPacket pkAddPlayer = new AddPlayerPacket();
+            pkAddPlayer.eid = entity.eid;
+            pkAddPlayer.rtid = entity.eid;
 
             for (EntityMetadata meta : packet.getMetadata()) {
                 if (meta.getId() == 2) {
@@ -39,26 +39,27 @@ public class PCSpawnPlayerPacketTranslator implements PCPacketTranslator<ServerS
                 }
             }
 
-            pkAddPlayer.uuid = new McpeUuid(packet.getUUID().getMostSignificantBits(), packet.getUUID().getLeastSignificantBits());;
+            pkAddPlayer.uuid = packet.getUUID();
 
-            pkAddPlayer.position = new Tuples.FloatXYZ((float) packet.getX(), (float) packet.getY() + 1.62f, (float) packet.getZ());
+            pkAddPlayer.position = new Vector3F((float) packet.getX(), (float) packet.getY() + 1.62f, (float) packet.getZ());
             pkAddPlayer.yaw = packet.getYaw();
             pkAddPlayer.pitch = packet.getPitch();
 
-            pkAddPlayer.metadata = new Bedrock137();
-            pkAddPlayer._buffer = EntityMetaTranslator.translateToPE(packet.getMetadata(), null).encode();
-            
-            PlayerList lst = new PlayerList(PlayerList.Add.ACTION);
-            // TODO: send skin
-            /* sul.protocol.bedrock137.type.PlayerList p = new sul.protocol.bedrock137.type.PlayerList(
-                    new McpeUuid(packet.getUUID().getMostSignificantBits(), packet.getUUID().getLeastSignificantBits()),
-                    packet.getEntityId(),
-                    pkAddPlayer.username,
-                    null//new Skin(DefaultSkin.getDefaultSkinName(), DefaultSkin.getDefaultSkin().getData())
-            );
-            PlayerList.Add add = lst.new Add(new sul.protocol.bedrock137.type.PlayerList[]{p}); */
+            pkAddPlayer.meta = EntityMetaData.createDefault();
+
+            /* PlayerListEntry entry = new PlayerListEntry();
+            entry.uuid = packet.getUUID();
+            entry.eid = pkAddPlayer.eid;
+            entry.username = pkAddPlayer.username;
+            entry.skin = Skin.defaultSkin;
+            entry.xboxUserId = "";
+            PlayerListPacket lst = new PlayerListPacket();
+            lst.type = PlayerListPacket.TYPE_ADD;
+            lst.entries = new PlayerListEntry[] {
+                    entry
+            }; */
             //TODO: get the default skin to work.
-            return new Packet[]{/*add, */pkAddPlayer};
+            return new PEPacket[]{/*add, */pkAddPlayer};
         } catch (Exception e) {
             e.printStackTrace();
             return null;

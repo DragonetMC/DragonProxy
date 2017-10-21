@@ -26,6 +26,8 @@ import lombok.Setter;
 import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
+import org.dragonet.proxy.protocol.PEPacket;
+
 /**
  * Maintaince the connection between the proxy and remote Minecraft server.
  */
@@ -105,7 +107,7 @@ public class PCDownstreamSession implements DownstreamSession<Packet> {
                 }
                 //Handle the packet
                 try {
-                    sul.utils.Packet[] packets = PacketTranslatorRegister.translateToPE(upstream, event.getPacket());
+                    PEPacket[] packets = PacketTranslatorRegister.translateToPE(upstream, event.getPacket());
                     if (packets == null) {
                         return;
                     }

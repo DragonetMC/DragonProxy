@@ -13,7 +13,6 @@
 package org.dragonet.proxy.network;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMapDataPacket;
 import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import java.util.HashMap;
@@ -24,12 +23,13 @@ import org.dragonet.proxy.network.translator.pe.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerChatPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerSpawnPositionPacket;
-import sul.protocol.bedrock137.play.*;
+import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.*;
 
 public final class PacketTranslatorRegister {
 
     private final static Map<Class<? extends Packet>, PCPacketTranslator> PC_TO_PE_TRANSLATOR = new HashMap<>();
-    private final static Map<Class<? extends sul.utils.Packet>, PEPacketTranslator> PE_TO_PC_TRANSLATOR = new HashMap<>();
+    private final static Map<Class<? extends PEPacket>, PEPacketTranslator> PE_TO_PC_TRANSLATOR = new HashMap<>();
 
     /**
      * PC to PE
@@ -83,20 +83,20 @@ public final class PacketTranslatorRegister {
      */
     static {
         // Chat
-        PE_TO_PC_TRANSLATOR.put(Text.class, new PEChatPacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(TextPacket.class, new PEChatPacketTranslator());
 
         // Entity
         // PE_TO_PC_TRANSLATOR.put(UseItem.class, new PEUseItemPacketTranslator());
-        PE_TO_PC_TRANSLATOR.put(MovePlayer.class, new PEMovePlayerPacketTranslator());
-        PE_TO_PC_TRANSLATOR.put(PlayerAction.class, new PEPlayerActionPacketTranslator());
-        PE_TO_PC_TRANSLATOR.put(Interact.class, new PEInteractPacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(MovePlayerPacket.class, new PEMovePlayerPacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(PlayerActionPacket.class, new PEPlayerActionPacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(InteractPacket.class, new PEInteractPacketTranslator());
         
         //Inventory
-        PE_TO_PC_TRANSLATOR.put(ContainerClose.class, new PEWindowClosePacketTranslator());
-        PE_TO_PC_TRANSLATOR.put(MobEquipment.class, new PEPlayerEquipmentPacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(ContainerClosePacket.class, new PEWindowClosePacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(MobEquipmentPacket.class, new PEPlayerEquipmentPacketTranslator());
     }
 
-    public static sul.utils.Packet[] translateToPE(UpstreamSession session, Packet packet) {
+    public static PEPacket[] translateToPE(UpstreamSession session, Packet packet) {
         if (packet == null) {
             return null;
         }
@@ -112,7 +112,7 @@ public final class PacketTranslatorRegister {
         }
     }
 
-    public static Packet[] translateToPC(UpstreamSession session, sul.utils.Packet packet) {
+    public static Packet[] translateToPC(UpstreamSession session, PEPacket packet) {
         if (packet == null) {
             return null;
         }

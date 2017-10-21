@@ -17,12 +17,12 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
-import sul.utils.Packet;
+import org.dragonet.proxy.protocol.PEPacket;
 
 public class PCWindowItemsTranslator implements PCPacketTranslator<ServerWindowItemsPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, ServerWindowItemsPacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerWindowItemsPacket packet) {
         if (!session.getWindowCache().hasWindow(packet.getWindowId())) {
             //Cache this
             session.getWindowCache().newCachedPacket(packet.getWindowId(), packet);

@@ -4,6 +4,7 @@ import org.dragonet.proxy.nbt.stream.NBTInputStream;
 import org.dragonet.proxy.nbt.stream.NBTOutputStream;
 import org.dragonet.proxy.nbt.tag.CompoundTag;
 import org.dragonet.proxy.nbt.tag.Tag;
+import org.dragonet.proxy.protocol.type.PEEntityLink;
 import org.dragonet.proxy.protocol.type.Slot;
 
 import java.io.ByteArrayInputStream;
@@ -171,22 +172,6 @@ public class BinaryStream {
         this.put(Binary.writeLFloat(v));
     }
 
-    public int getTriad() {
-        return Binary.readTriad(this.get(3));
-    }
-
-    public void putTriad(int triad) {
-        this.put(Binary.writeTriad(triad));
-    }
-
-    public int getLTriad() {
-        return Binary.readLTriad(this.get(3));
-    }
-
-    public void putLTriad(int triad) {
-        this.put(Binary.writeLTriad(triad));
-    }
-
     public boolean getBoolean() {
         return this.getByte() == 0x01;
     }
@@ -202,7 +187,6 @@ public class BinaryStream {
     public void putByte(byte b) {
         this.put(new byte[]{b});
     }
-
 
     public void putUUID(UUID uuid) {
         this.put(Binary.writeUUID(uuid));
@@ -427,6 +411,22 @@ public class BinaryStream {
         for(GameRule rule : rules.values()) {
             rule.write(this);
         }
+    }
+
+    public void putEntityLink(PEEntityLink link) {
+        putVarLong(link.eidFrom);
+        putVarLong(link.eidTo);
+        putByte((byte)(link.type & 0xFF));
+        putByte((byte)(link.data & 0xFF));
+    }
+
+    public PEEntityLink getEntityLink() {
+        PEEntityLink link = new PEEntityLink();
+        link.eidFrom = getVarLong();
+        link.eidTo = getVarLong();
+        link.type = getByte();
+        link.data = getByte();
+        return link;
     }
 
 }

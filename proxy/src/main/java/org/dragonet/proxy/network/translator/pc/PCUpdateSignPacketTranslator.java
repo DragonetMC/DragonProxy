@@ -12,45 +12,36 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
+import com.github.steveice10.mc.protocol.data.game.world.block.UpdatedTileType;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerUpdateTileEntityPacket;
 import org.dragonet.proxy.nbt.tag.CompoundTag;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.translator.MessageTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.bedrock137.play.BlockEntityData;
-import sul.utils.Packet;
-
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.BlockEntityDataPacket;
 
 public class PCUpdateSignPacketTranslator implements PCPacketTranslator<ServerUpdateTileEntityPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, ServerUpdateTileEntityPacket packet) {
-        CompoundTag root = new CompoundTag();
-        root.putString("id", "Sign");
-        root.putInt("x", packet.getPosition().getX());
-        root.putInt("y", packet.getPosition().getY());
-        root.putInt("z", packet.getPosition().getZ());
-        /* root.putString("Text1", MessageTranslator.translate(packet.getLines()[0]));
-        root.putString("Text2", MessageTranslator.translate(packet.getLines()[1]));
-        root.putString("Text3", MessageTranslator.translate(packet.getLines()[2]));
-        root.putString("Text4", MessageTranslator.translate(packet.getLines()[3])); */
+    public PEPacket[] translate(UpstreamSession session, ServerUpdateTileEntityPacket packet) {
+        if(packet.getType().equals(UpdatedTileType.SIGN)) {
+            CompoundTag root = new CompoundTag();
+            root.putString("id", "Sign");
+            root.putInt("x", packet.getPosition().getX());
+            root.putInt("y", packet.getPosition().getY());
+            root.putInt("z", packet.getPosition().getZ());
+            root.putString("Text1", (String) packet.getNBT().get("Text1").getValue());
+            root.putString("Text2", (String) packet.getNBT().get("Text2").getValue());
+            root.putString("Text3", (String) packet.getNBT().get("Text3").getValue());
+            root.putString("Text4", (String) packet.getNBT().get("Text4").getValue());
 
-        BlockEntityData data = new BlockEntityData();
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream(bos);
-        try {
-            packet.getNBT().write(dos);
-            dos.close();
-            bos.close();
-            data.nbt = bos.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
+            BlockEntityDataPacket data = new BlockEntityDataPacket();
+            data.tag = root;
+            //packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ(), root
+            return new PEPacket[]{data};
+        } else {
+            return null;
         }
-        //packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ(), root
-        return new Packet[]{data};
     }
 
 }

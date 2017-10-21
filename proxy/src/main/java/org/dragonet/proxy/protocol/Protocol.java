@@ -41,11 +41,26 @@ public final class Protocol {
         packets.put(MOB_EFFECT_PACKET, MobEffectPacket.class);
         packets.put(ADD_ITEM_ENTITY_PACKET, AddItemEntityPacket.class);
         packets.put(MOVE_ENTITY_PACKET, MoveEntityPacket.class);
+        packets.put(MOVE_PLAYER_PACKET, MovePlayerPacket.class);
         packets.put(SET_ENTITY_MOTION_PACKET, SetEntityMotionPacket.class);
         packets.put(SET_PLAYER_GAME_TYPE_PACKET, SetPlayerGameTypePacket.class);
         packets.put(ADVENTURE_SETTINGS_PACKET, AdventureSettingsPacket.class);
         packets.put(SET_SPAWN_POSITION_PACKET, SetSpawnPositionPacket.class);
+        packets.put(LEVEL_EVENT_PACKET, LevelEventPacket.class);
+        packets.put(PLAY_SOUND_PACKET, PlaySoundPacket.class);
+        packets.put(ADD_ENTITY_PACKET, AddEntityPacket.class);
+        packets.put(ADD_PLAYER_PACKET, AddPlayerPacket.class);
+        packets.put(PLAYER_LIST_PACKET, PlayerListPacket.class);
+        packets.put(SET_HEALTH_PACKET, SetHealthPacket.class);
+        packets.put(RESPAWN_PACKET, RespawnPacket.class);
+        packets.put(BLOCK_ENTITY_DATA_PACKET, BlockEntityDataPacket.class);
+        packets.put(SET_TIME_PACKET, SetTimePacket.class);
+        packets.put(INTERACT_PACKET, InteractPacket.class);
+        packets.put(PLAYER_ACTION_PACKET, PlayerActionPacket.class);
+        packets.put(MOB_EQUIPMENT_PACKET, MobEquipmentPacket.class);
 
+        packets.put(CONTAINER_OPEN_PACKET, ContainerOpenPacket.class);
+        packets.put(CONTAINER_CLOSE_PACKET, ContainerClosePacket.class);
         packets.put(INVENTORY_CONTENT_PACKET, InventoryContentPacket.class);
         packets.put(INVENTORY_SLOT_PACKET, InventorySlotPacket.class);
 

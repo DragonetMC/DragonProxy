@@ -17,12 +17,12 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
-import sul.protocol.bedrock137.play.MovePlayer;
+import org.dragonet.proxy.protocol.packets.MovePlayerPacket;
 
-public class PEMovePlayerPacketTranslator implements PEPacketTranslator<MovePlayer> {
+public class PEMovePlayerPacketTranslator implements PEPacketTranslator<MovePlayerPacket> {
     
     @Override
-    public Packet[] translate(UpstreamSession session, MovePlayer packet) {
+    public Packet[] translate(UpstreamSession session, MovePlayerPacket packet) {
         ClientPlayerPositionRotationPacket pk = new ClientPlayerPositionRotationPacket(!packet.onGround, packet.position.x, packet.position.y, packet.position.z, packet.yaw, packet.pitch);
         CachedEntity cliEntity = session.getEntityCache().getClientEntity();
         cliEntity.x = packet.position.x;

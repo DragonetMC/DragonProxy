@@ -16,12 +16,12 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenW
 import org.dragonet.proxy.network.InventoryTranslatorRegister;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.utils.Packet;
+import org.dragonet.proxy.protocol.PEPacket;
 
 public class PCOpenWindowPacketTranslator implements PCPacketTranslator<ServerOpenWindowPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, ServerOpenWindowPacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerOpenWindowPacket packet) {
         session.getProxy().getGeneralThreadPool().execute(() -> {
             InventoryTranslatorRegister.open(session, packet);
         });

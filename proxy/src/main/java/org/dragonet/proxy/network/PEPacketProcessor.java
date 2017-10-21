@@ -18,9 +18,9 @@ import java.util.Deque;
 
 import com.github.steveice10.packetlib.packet.Packet;
 import lombok.Getter;
-import net.marfgamer.jraknet.RakNetPacket;
+import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.Protocol;
-import sul.protocol.bedrock137.play.Login;
+import org.dragonet.proxy.protocol.packets.LoginPacket;
 
 public class PEPacketProcessor implements Runnable {
 
@@ -46,7 +46,7 @@ public class PEPacketProcessor implements Runnable {
         while (cnt < MAX_PACKETS_PER_CYCLE && !packets.isEmpty()) {
             cnt++;
             byte[] p = packets.pop();
-            sul.utils.Packet[] packets;
+            PEPacket[] packets;
             try {
                 packets = Protocol.decode(p);
                 if (packets == null && packets.length > 0) {
@@ -56,14 +56,14 @@ public class PEPacketProcessor implements Runnable {
                 e.printStackTrace();
                 return;
             }
-            for (sul.utils.Packet decoded : packets) {
+            for (PEPacket decoded : packets) {
                 handlePacket(decoded);
             }
         }
 
     }
 
-    public void handlePacket(sul.utils.Packet packet) {
+    public void handlePacket(PEPacket packet) {
         if (packet == null) {
             return;
         }
@@ -71,13 +71,13 @@ public class PEPacketProcessor implements Runnable {
         System.out.println("RECEIVED PACKET=" + packet.getClass().getSimpleName());
         try{
             FileOutputStream fos = new FileOutputStream("cap_" + System.currentTimeMillis() + "_" + packet.getClass().getSimpleName() + ".bin");
-            fos.write(packet._buffer);
+            fos.write(packet.getBuffer());
             fos.close();
         }catch(Exception e){}
 
-        switch (packet.getId()) {
+        switch (packet.pid()) {
             case 1:
-                client.onLogin((Login) packet);
+                client.onLogin((LoginPacket) packet);
                 break;
             case 9:  //Text (check CLS Login)
                 if (client.getDataCache().get(CacheKey.AUTHENTICATION_STATE) != null) {

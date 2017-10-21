@@ -14,21 +14,17 @@ package org.dragonet.proxy.network.translator.inv;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import org.dragonet.inventory.InventoryType;
-import org.dragonet.proxy.nbt.stream.NBTOutputStream;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.InventoryTranslator;
 import org.dragonet.proxy.nbt.tag.CompoundTag;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
-import sul.protocol.bedrock137.play.BlockEntityData;
-import sul.protocol.bedrock137.play.ContainerOpen;
-import sul.protocol.bedrock137.play.InventoryContent;
-import sul.protocol.bedrock137.types.BlockPosition;
-import sul.protocol.bedrock137.types.Slot;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import org.dragonet.proxy.protocol.packets.BlockEntityDataPacket;
+import org.dragonet.proxy.protocol.packets.ContainerOpenPacket;
+import org.dragonet.proxy.protocol.packets.InventoryContentPacket;
+import org.dragonet.proxy.protocol.type.Slot;
+import org.dragonet.proxy.utilities.BlockPosition;
 
 public class ChestWindowTranslator implements InventoryTranslator {
 
@@ -43,17 +39,13 @@ public class ChestWindowTranslator implements InventoryTranslator {
             .putInt("x", pos.getX())
             .putInt("y", pos.getY())
             .putInt("z", pos.getZ());
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try {
-            CompoundTag.writeNamedTag(tag, new NBTOutputStream(bos));
-            bos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-        session.sendPacket(new BlockEntityData(new BlockPosition(pos.getX(), pos.getY(), pos.getZ()), bos.toByteArray()));
-        ContainerOpen pk = new ContainerOpen();
-        pk.window = (byte)(window.windowId & 0xFF);
+        BlockEntityDataPacket blockEntityData = new BlockEntityDataPacket();
+        blockEntityData.blockPosition = new BlockPosition(pos.getX(), pos.getY(), pos.getZ());
+        blockEntityData.tag = tag;
+        session.sendPacket(blockEntityData);
+
+        ContainerOpenPacket pk = new ContainerOpenPacket();
+        pk.windowId = window.windowId;
         // pk. = window.size <= 27 ? (short)(InventoryType.SlotSize.CHEST & 0xFFFF) : (short)(InventoryType.SlotSize.DOUBLE_CHEST & 0xFFFF);
         pk.type = window.size <= 27 ? InventoryType.PEInventory.CHEST : InventoryType.PEInventory.DOUBLE_CHEST;
         pk.position = new BlockPosition(pos.getX(), pos.getY(), pos.getZ());
@@ -72,11 +64,11 @@ public class ChestWindowTranslator implements InventoryTranslator {
     }
     
     private void sendContent(UpstreamSession session, CachedWindow win){
-        InventoryContent pk = new InventoryContent();
-        pk.window = (byte)(win.windowId & 0xFF);
-        pk.slots = new Slot[win.slots.length];
-        for(int i = 0; i < pk.slots.length; i++){
-            pk.slots[i] = ItemBlockTranslator.translateToPE(win.slots[i]);
+        InventoryContentPacket pk = new InventoryContentPacket();
+        pk.windowId = (byte)(win.windowId & 0xFF);
+        pk.items = new Slot[win.slots.length];
+        for(int i = 0; i < pk.items.length; i++){
+            pk.items[i] = ItemBlockTranslator.translateToPE(win.slots[i]);
         }
         session.sendPacket(pk, true);
     }

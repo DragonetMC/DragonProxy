@@ -18,13 +18,13 @@ import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
+import org.dragonet.proxy.protocol.packets.TextPacket;
 import org.dragonet.proxy.utilities.PatternChecker;
-import sul.protocol.bedrock137.play.Text;
 
-public class PEChatPacketTranslator implements PEPacketTranslator<Text.Chat> {
+public class PEChatPacketTranslator implements PEPacketTranslator<TextPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, Text.Chat packet) {
+    public Packet[] translate(UpstreamSession session, TextPacket packet) {
         if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE) != null) {
             if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE).equals("email")) {
                 if (!PatternChecker.matchEmail(packet.message.trim())) {

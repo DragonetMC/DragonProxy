@@ -3,12 +3,13 @@ package org.dragonet.proxy.commands.defaults;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.commands.Command;
 import org.dragonet.proxy.network.UpstreamSession;
-import sul.protocol.bedrock137.play.MovePlayer;
-import sul.protocol.bedrock137.play.PlayStatus;
-import sul.protocol.bedrock137.play.ResourcePacksInfo;
-import sul.protocol.bedrock137.types.ChunkData;
-import sul.protocol.bedrock137.types.Section;
-import sul.utils.Tuples;
+import org.dragonet.proxy.protocol.packets.FullChunkDataPacket;
+import org.dragonet.proxy.protocol.packets.MovePlayerPacket;
+import org.dragonet.proxy.protocol.packets.PlayStatusPacket;
+import org.dragonet.proxy.protocol.packets.ResourcePacksInfoPacket;
+import org.dragonet.proxy.protocol.type.chunk.ChunkData;
+import org.dragonet.proxy.protocol.type.chunk.Section;
+import org.dragonet.proxy.utilities.Vector3F;
 
 import java.util.Arrays;
 
@@ -24,17 +25,18 @@ public class TestCommand extends Command {
     public void execute(DragonProxy proxy, String[] args) {
         UpstreamSession player = proxy.getSessionRegister().getAll().values().toArray(new UpstreamSession[1])[0];
         if(args[0].equalsIgnoreCase("status")) {
-            PlayStatus s = new PlayStatus(3);
+            PlayStatusPacket s = new PlayStatusPacket();
+            s.status = PlayStatusPacket.PLAYER_SPAWN;
             player.sendPacket(s);
         } else if(args[0].equalsIgnoreCase("res")) {
-            player.sendPacket(new ResourcePacksInfo());
+            player.sendPacket(new ResourcePacksInfoPacket());
         } else if(args[0].equalsIgnoreCase("spawnpos")) {
             player.sendChat("spawn at: " + player.getEntityCache().getClientEntity().getX() + ", " + player.getEntityCache().getClientEntity().getY() + ", " + player.getEntityCache().getClientEntity().getZ());
         } else if(args[0].equalsIgnoreCase("tp")) {
-            Tuples.FloatXYZ dest = new Tuples.FloatXYZ(Float.parseFloat(args[1]), Float.parseFloat(args[2]), Float.parseFloat(args[3]));
-            MovePlayer m = new MovePlayer(0L,
-                    dest,
-                    0f, 0f, 0f, MovePlayer.TELEPORT, true, 0L, 0, 0);
+            Vector3F dest = new Vector3F(Float.parseFloat(args[1]), Float.parseFloat(args[2]), Float.parseFloat(args[3]));
+            MovePlayerPacket m = new MovePlayerPacket();
+            m.mode = MovePlayerPacket.MODE_TELEPORT;
+            m.position = dest;
             player.sendPacket(m);
             player.sendChat("\u00a7bTeleported to: " + dest.toString());
         } else if(args[0].equalsIgnoreCase("chunk")) {
@@ -48,7 +50,10 @@ public class TestCommand extends Command {
                 data.sections[cy] = new Section();
                 Arrays.fill(data.sections[cy].blockIds, (byte)1);
             }
-            sul.protocol.bedrock137.play.FullChunkData chunk = new sul.protocol.bedrock137.play.FullChunkData(new Tuples.IntXZ(Integer.parseInt(args[1]), Integer.parseInt(args[2])), data);
+            FullChunkDataPacket chunk = new FullChunkDataPacket();
+            chunk.x = Integer.parseInt(args[1]);
+            chunk.z = Integer.parseInt(args[2]);
+            chunk.payload = data.encode();
             player.sendPacket(chunk);
         }
     }

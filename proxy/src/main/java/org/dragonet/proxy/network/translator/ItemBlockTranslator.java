@@ -148,19 +148,14 @@ public class ItemBlockTranslator {
     
     public static ItemStack translateToPC(Slot slot){
         ItemStack item;
-        CompoundTag tag = null;
-        try {
-            tag = (CompoundTag) CompoundTag.readNamedTag(new NBTInputStream(new ByteArrayInputStream(slot.nbt)));
-        } catch (IOException e) {
-            e.printStackTrace(); // put this for now
-        }
+        CompoundTag tag = slot.tag;
         if(tag != null && tag.contains(DRAGONET_COMPOUND)){
             item = new ItemStack(
                     tag.getCompound(DRAGONET_COMPOUND).getShort("id"),
                     tag.getCompound(DRAGONET_COMPOUND).getShort("amount"),
                     tag.getCompound(DRAGONET_COMPOUND).getShort("data"));
         }else{
-            item = new ItemStack(translateToPC(slot.id), slot.metaAndCount & 0xFF, slot.metaAndCount >> 8);
+            item = new ItemStack(translateToPC(slot.id), slot.count, slot.damage);
         }
         return item;
     }

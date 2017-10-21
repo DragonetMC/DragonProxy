@@ -15,16 +15,16 @@ package org.dragonet.proxy.network.translator.pc;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerUpdateTimePacket;
-import sul.protocol.bedrock137.play.SetTime;
-import sul.utils.Packet;
+import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.SetTimePacket;
 
 public class PCUpdateTimePacketTranslator implements PCPacketTranslator<ServerUpdateTimePacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, ServerUpdateTimePacket packet) {
-        SetTime pk = new SetTime();
-        pk.time = (int) (packet.getTime());
-        return new Packet[]{pk};
+    public PEPacket[] translate(UpstreamSession session, ServerUpdateTimePacket packet) {
+        SetTimePacket pk = new SetTimePacket();
+        pk.time = (int) packet.getTime();
+        return new PEPacket[]{pk};
     }
 
 }

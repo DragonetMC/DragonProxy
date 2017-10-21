@@ -15,23 +15,23 @@ package org.dragonet.proxy.network.translator.pc;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.bedrock137.play.Respawn;
-import sul.protocol.bedrock137.play.SetHealth;
-import sul.utils.Packet;
+import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.RespawnPacket;
+import org.dragonet.proxy.protocol.packets.SetHealthPacket;
 
 public class PCUpdateHealthPacketTranslator implements PCPacketTranslator<ServerPlayerHealthPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, ServerPlayerHealthPacket packet) {
-        SetHealth h = new SetHealth((int) packet.getHealth());
+    public PEPacket[] translate(UpstreamSession session, ServerPlayerHealthPacket packet) {
+        SetHealthPacket h = new SetHealthPacket((int) packet.getHealth());
         if (packet.getHealth() > 0 && h.health <= 0) {
             h.health = 1;
         }
         if (packet.getHealth() <= 0.0f) {
-            Respawn r = new Respawn();
-            return new Packet[]{h, r};
+            RespawnPacket r = new RespawnPacket();
+            return new PEPacket[]{h, r};
         }
-        return new Packet[]{h};
+        return new PEPacket[]{h};
     }
 
 }

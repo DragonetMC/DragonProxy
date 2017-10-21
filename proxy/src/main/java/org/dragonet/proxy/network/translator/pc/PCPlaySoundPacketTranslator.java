@@ -12,23 +12,21 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import java.lang.reflect.Field;
-
 import com.github.steveice10.mc.protocol.data.game.world.sound.BuiltinSound;
 import com.github.steveice10.mc.protocol.data.game.world.sound.CustomSound;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerPlaySoundPacket;
-import sul.protocol.bedrock137.play.PlaySound;
-import sul.protocol.bedrock137.types.BlockPosition;
-import sul.utils.Packet;
+import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.PlaySoundPacket;
+import org.dragonet.proxy.utilities.BlockPosition;
 
 public class PCPlaySoundPacketTranslator implements PCPacketTranslator<ServerPlaySoundPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, ServerPlaySoundPacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerPlaySoundPacket packet) {
         try {
-            String soundName = null;
+            String soundName;
 
             if (BuiltinSound.class.isAssignableFrom(packet.getSound().getClass())) {
                 BuiltinSound sound = (BuiltinSound) packet.getSound();
@@ -39,12 +37,12 @@ public class PCPlaySoundPacketTranslator implements PCPacketTranslator<ServerPla
             if (soundName == null) {
                 return null;
             }
-            PlaySound pk = new PlaySound();
-            pk.position = new BlockPosition((int) packet.getX(), (int) packet.getY(), (int) packet.getZ());
+            PlaySoundPacket pk = new PlaySoundPacket();
+            pk.blockPosition = new BlockPosition((int) packet.getX(), (int) packet.getY(), (int) packet.getZ());
             pk.name = soundName;
             pk.volume = packet.getVolume();
             pk.pitch = packet.getPitch();
-            return new Packet[]{pk};
+            return new PEPacket[]{pk};
         } catch (Exception e) {
             e.printStackTrace();
             return null;
