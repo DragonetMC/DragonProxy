@@ -2,6 +2,7 @@ package org.dragonet.proxy.protocol.packets;
 
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.ProtocolInfo;
+import org.dragonet.proxy.utilities.Versioning;
 
 /**
  * Created on 2017/10/21.
@@ -17,7 +18,7 @@ public class PlayStatusPacket extends PEPacket {
     public final static int LOGIN_FAILED_EDU_VANILLA = 6;
 
     public int status;
-    public int protocol;
+    public int protocol = Versioning.MINECRAFT_PE_PROTOCOL;
 
     @Override
     public int pid() {

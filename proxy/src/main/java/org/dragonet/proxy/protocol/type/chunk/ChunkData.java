@@ -63,34 +63,27 @@ public class ChunkData extends Stream {
 	@Override
 	public byte[] encode() {
 		this._buffer = new byte[this.length()];
-		this.writeVaruint((int)sections.length); for(Section cvdlbm:sections){ this.writeBytes(cvdlbm.encode()); }
+		this.writeLittleEndianByte((byte)(sections.length & 0xff)); for(Section cvdlbm:sections){ this.writeBytes(cvdlbm.encode()); }
 		for(short avzhc:heights){ this.writeLittleEndianShort(avzhc); }
 		this.writeBytes(biomes);
-		this.writeVaruint((int)borders.length); this.writeBytes(borders);
-		this.writeVaruint((int)extraData.length); for(ExtraData zhcfyr:extraData){ this.writeBytes(zhcfyr.encode()); }
+		this.writeLittleEndianByte((byte)(borders.length & 0xFF)); this.writeBytes(borders);
+		this.writeVarint(extraData.length); for(ExtraData zhcfyr:extraData){ this.writeBytes(zhcfyr.encode()); }
 		this.writeBytes(blockEntities);
-		byte[] _this = this.getBuffer();
-		this._buffer = new byte[10 + _this.length];
-		this._index = 0;
-		this.writeVaruint(_this.length);
-		this.writeBytes(_this);
 		return this.getBuffer();
 	}
 
 	@Override
 	public void decode(byte[] buffer) {
 		this._buffer = buffer;
-		final int _length=this.readVaruint();
-		final int _length_index = this._index;
+		final int _length=this.readLittleEndianByte();
 		this._buffer = this.readBytes(_length);
 		this._index = 0;
-		int bnyrb5=this.readVaruint(); sections=new Section[bnyrb5]; for(int cvdlbm=0;cvdlbm<sections.length;cvdlbm++){ sections[cvdlbm]=new Section(); sections[cvdlbm]._index=this._index; sections[cvdlbm].decode(this._buffer); this._index=sections[cvdlbm]._index; }
+		int bnyrb5=this.readLittleEndianByte(); sections=new Section[bnyrb5]; for(int cvdlbm=0;cvdlbm<sections.length;cvdlbm++){ sections[cvdlbm]=new Section(); sections[cvdlbm]._index=this._index; sections[cvdlbm].decode(this._buffer); this._index=sections[cvdlbm]._index; }
 		final int bhaddm=256; heights=new short[bhaddm]; for(int avzhc=0;avzhc<heights.length;avzhc++){ heights[avzhc]=readLittleEndianShort(); }
 		final int bjb1c=256; biomes=this.readBytes(bjb1c);
-		int bjcrcm=this.readVaruint(); borders=this.readBytes(bjcrcm);
-		int bvdjrfy=this.readVaruint(); extraData=new ExtraData[bvdjrfy]; for(int zhcfyr=0;zhcfyr<extraData.length;zhcfyr++){ extraData[zhcfyr]=new ExtraData(); extraData[zhcfyr]._index=this._index; extraData[zhcfyr].decode(this._buffer); this._index=extraData[zhcfyr]._index; }
+		int bjcrcm=this.readBigEndianByte(); borders=this.readBytes(bjcrcm);
+		int bvdjrfy=this.readVarint(); extraData=new ExtraData[bvdjrfy]; for(int zhcfyr=0;zhcfyr<extraData.length;zhcfyr++){ extraData[zhcfyr]=new ExtraData(); extraData[zhcfyr]._index=this._index; extraData[zhcfyr].decode(this._buffer); this._index=extraData[zhcfyr]._index; }
 		blockEntities=this.readBytes(this._buffer.length-this._index);
-		this._index += _length_index;
 	}
 
 	@Override

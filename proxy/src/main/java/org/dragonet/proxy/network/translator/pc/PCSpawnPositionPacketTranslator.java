@@ -53,9 +53,9 @@ public class PCSpawnPositionPacketTranslator implements PCPacketTranslator<Serve
         ret.seed = 0;
         ret.generator = 1;
         ret.gamemode = restored.getGameMode() == GameMode.CREATIVE ? 1 : 0;
-        ret.spawnPosition = new BlockPosition(0, 0, 0); // new Tuples.IntXYZ(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
-        ret.position = new Vector3F(0f, 0f, 0f);// new Tuples.FloatXYZ((float) packet.getPosition().getX(), (float) packet.getPosition().getY(), (float) packet.getPosition().getZ());
-        ret.levelId = "";
+        ret.spawnPosition = new BlockPosition(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
+        ret.position = new Vector3F((float) packet.getPosition().getX(), (float) packet.getPosition().getY(), (float) packet.getPosition().getZ());
+        ret.levelId = "World";
         ret.worldName = "World";
         ret.premiumWorldTemplateId = "";
         AdventureSettingsPacket adv = new AdventureSettingsPacket();

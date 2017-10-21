@@ -97,14 +97,14 @@ public class PCDownstreamSession implements DownstreamSession<Packet> {
 
             @Override
             public void packetReceived(PacketReceivedEvent event) {
-                if (!event.getPacket().getClass().getSimpleName().toLowerCase().contains("block")
+                /* if (!event.getPacket().getClass().getSimpleName().toLowerCase().contains("block")
                         && !event.getPacket().getClass().getSimpleName().toLowerCase().contains("entity")
                         && !event.getPacket().getClass().getSimpleName().toLowerCase().contains("time")
                         && !event.getPacket().getClass().getSimpleName().toLowerCase().contains("chunk")) {
                     String debug_string = event.getPacket().getClass().getSimpleName() + " > " + event.getPacket().toString();
                     if(debug_string.length() > 128) debug_string = debug_string.substring(0, 128) + "... ";
                     System.out.println("REMOTE << " + debug_string);
-                }
+                } */
                 //Handle the packet
                 try {
                     PEPacket[] packets = PacketTranslatorRegister.translateToPE(upstream, event.getPacket());

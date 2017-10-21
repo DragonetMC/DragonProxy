@@ -34,6 +34,8 @@ public final class Protocol {
         packets.put(LOGIN_PACKET, LoginPacket.class);
         packets.put(PLAY_STATUS_PACKET, PlayStatusPacket.class);
         packets.put(START_GAME_PACKET, StartGamePacket.class);
+        packets.put(REQUEST_CHUNK_RADIUS_PACKET, RequestChunkRadiusPacket.class);
+        packets.put(CHUNK_RADIUS_UPDATED_PACKET, ChunkRadiusUpdatedPacket.class);
         packets.put(FULL_CHUNK_DATA_PACKET, FullChunkDataPacket.class);
         packets.put(UPDATE_BLOCK_PACKET, UpdateBlockPacket.class);
         packets.put(TEXT_PACKET, TextPacket.class);
@@ -102,7 +104,7 @@ public final class Protocol {
             fos.write(buffer);
             fos.close();
         }catch(Exception e){}
-        int pid = buffer[0] & 0xFF;
+        byte pid = (byte) new BinaryStream(buffer).getUnsignedVarInt();
         if (packets.containsKey(pid)) {
             Class<? extends PEPacket> c = packets.get(pid);
             try {

@@ -37,8 +37,8 @@ public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<Serv
 				pePacket.z = packet.getColumn().getZ();
 
 				ChunkData chunk = new ChunkData();
-				chunk.decode(pePacket.payload);
 				processChunkSection(packet.getColumn().getChunks(), chunk);
+				pePacket.payload = chunk.encode();
 
 				session.sendPacket(pePacket, true);
 			} catch (Exception e) {
@@ -55,6 +55,9 @@ public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<Serv
 		int maxY = pc.length << 4;
 		if(maxY > 15) maxY = 15;
 		pe.sections = new Section[16];
+		for(int i = 0; i < pe.sections.length; i++) {
+			pe.sections[i] = new Section();
+		}
 		for(int y = 0; y < maxY; y++) {
 			int cy = y >> 4;
 			if (pc[cy] == null || pc[cy].isEmpty()) continue;

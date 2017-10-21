@@ -105,7 +105,12 @@ public class UpstreamSession {
     }
 
     public void sendPacket(PEPacket packet, boolean immediate) {
-        System.out.println("Sending [" + packet.getClass().getSimpleName() + "] ... ");
+        System.out.println("Sending [" + packet.getClass().getSimpleName() + "] ");
+        /*for(int count = 0; count < 3; count++) {
+            System.out.print(".");
+            try{Thread.sleep(1000L);}catch (Exception e){}
+        }
+        System.out.println();*/
 
         packet.encode();
 
@@ -197,6 +202,8 @@ public class UpstreamSession {
         status.status = PlayStatusPacket.LOGIN_SUCCESS;
         sendPacket(status, true);
 
+        sendPacket(new ResourcePacksInfoPacket());
+
         profile = packet.decoded;
 
         this.username = profile.username;
@@ -219,8 +226,6 @@ public class UpstreamSession {
             SetSpawnPositionPacket pkSpawn = new SetSpawnPositionPacket();
             pkSpawn.position = new BlockPosition(0, 72, 0);
             sendPacket(pkSpawn, true);
-
-            sendPacket(new ResourcePacksInfoPacket(), true);
 
             //TODO: send some initial chunks to prevent shaking
 

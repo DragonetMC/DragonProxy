@@ -20,7 +20,10 @@ import com.github.steveice10.packetlib.packet.Packet;
 import lombok.Getter;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.Protocol;
+import org.dragonet.proxy.protocol.ProtocolInfo;
+import org.dragonet.proxy.protocol.packets.ChunkRadiusUpdatedPacket;
 import org.dragonet.proxy.protocol.packets.LoginPacket;
+import org.dragonet.proxy.protocol.packets.RequestChunkRadiusPacket;
 
 public class PEPacketProcessor implements Runnable {
 
@@ -49,7 +52,7 @@ public class PEPacketProcessor implements Runnable {
             PEPacket[] packets;
             try {
                 packets = Protocol.decode(p);
-                if (packets == null && packets.length > 0) {
+                if (packets == null || packets.length <= 0) {
                     continue;
                 }
             } catch (Exception e) {
@@ -76,10 +79,13 @@ public class PEPacketProcessor implements Runnable {
         }catch(Exception e){}
 
         switch (packet.pid()) {
-            case 1:
+            case ProtocolInfo.LOGIN_PACKET:
                 client.onLogin((LoginPacket) packet);
                 break;
-            case 9:  //Text (check CLS Login)
+            case ProtocolInfo.REQUEST_CHUNK_RADIUS_PACKET:
+                client.sendPacket(new ChunkRadiusUpdatedPacket(((RequestChunkRadiusPacket)packet).radius));
+                break;
+            case ProtocolInfo.TEXT_PACKET:  //Text (check CLS Login)
                 if (client.getDataCache().get(CacheKey.AUTHENTICATION_STATE) != null) {
                     PacketTranslatorRegister.translateToPC(client, packet);
                     break;

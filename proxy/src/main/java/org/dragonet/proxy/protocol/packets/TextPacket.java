@@ -91,6 +91,10 @@ public class TextPacket extends PEPacket {
             break;
         }
 
-        putString(xboxUserId);
+        if(xboxUserId != null) {
+            putString(xboxUserId);
+        } else {
+            putString("");
+        }
     }
 }
