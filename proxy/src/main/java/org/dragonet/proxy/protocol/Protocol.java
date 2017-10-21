@@ -12,25 +12,50 @@
  */
 package org.dragonet.proxy.protocol;
 
+import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.utilities.BinaryStream;
 import org.dragonet.proxy.utilities.Zlib;
-import sul.protocol.bedrock137.Packets;
-import sul.utils.Packet;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.dragonet.proxy.protocol.ProtocolInfo.*;
 
 public final class Protocol {
 
-    public static Packet[] decode(byte[] data) {
+    public final static Map<Byte, Class<? extends PEPacket>> packets = new HashMap<>();
+
+    static {
+        packets.put(DISCONNECT_PACKET, DisconnectPacket.class);
+        packets.put(LOGIN_PACKET, LoginPacket.class);
+        packets.put(PLAY_STATUS_PACKET, PlayStatusPacket.class);
+        packets.put(START_GAME_PACKET, StartGamePacket.class);
+        packets.put(FULL_CHUNK_DATA_PACKET, FullChunkDataPacket.class);
+        packets.put(UPDATE_BLOCK_PACKET, UpdateBlockPacket.class);
+        packets.put(TEXT_PACKET, TextPacket.class);
+        packets.put(REMOVE_ENTITY_PACKET, RemoveEntityPacket.class);
+        packets.put(MOB_EFFECT_PACKET, MobEffectPacket.class);
+        packets.put(ADD_ITEM_ENTITY_PACKET, AddItemEntityPacket.class);
+        packets.put(MOVE_ENTITY_PACKET, MoveEntityPacket.class);
+        packets.put(SET_ENTITY_MOTION_PACKET, SetEntityMotionPacket.class);
+        packets.put(SET_PLAYER_GAME_TYPE_PACKET, SetPlayerGameTypePacket.class);
+        packets.put(ADVENTURE_SETTINGS_PACKET, AdventureSettingsPacket.class);
+        packets.put(SET_SPAWN_POSITION_PACKET, SetSpawnPositionPacket.class);
+
+        packets.put(INVENTORY_CONTENT_PACKET, InventoryContentPacket.class);
+        packets.put(INVENTORY_SLOT_PACKET, InventorySlotPacket.class);
+
+        packets.put(RESOURCE_PACKS_INFO_PACKET, ResourcePacksInfoPacket.class);
+    }
+
+    public static PEPacket[] decode(byte[] data) throws Exception {
         if (data == null || data.length < 1) {
             return null;
         }
-        int pid = data[0] & 0xFF;
-        System.out.println("FIRST BYTE = " + Integer.toHexString(pid) + ", len = " + data.length);
-        if(pid != 0xfe) return null;
 
         byte[] inflated;
         try {
@@ -40,11 +65,11 @@ public final class Protocol {
             return null;
         }
 
-        ArrayList<Packet> packets = new ArrayList<>(2);
+        ArrayList<PEPacket> packets = new ArrayList<>(2);
         BinaryStream stream = new BinaryStream(inflated);
         while(stream.offset < inflated.length) {
-            byte[] buffer = stream.get(stream.getLShort());
-            Packet decoded = decodeSingle(buffer);
+            byte[] buffer = stream.get((int)stream.getUnsignedVarInt());
+            PEPacket decoded = decodeSingle(buffer);
 
             if(decoded != null) {
                 packets.add(decoded);
@@ -53,21 +78,23 @@ public final class Protocol {
             }
         }
 
-        return packets.size() > 0 ? packets.toArray(new Packet[0]) : null;
+        return packets.size() > 0 ? packets.toArray(new PEPacket[0]) : null;
     }
 
-    private static Packet decodeSingle(byte[] buffer) {
+    private static PEPacket decodeSingle(byte[] buffer) {
+        try{
+            FileOutputStream fos = new FileOutputStream("raw_" + System.currentTimeMillis() + ".bin");
+            fos.write(buffer);
+            fos.close();
+        }catch(Exception e){}
         int pid = buffer[0] & 0xFF;
-        if (Packets.PLAY.containsKey(pid)) {
-            Class<? extends Packet> c = Packets.PLAY.get(pid);
-            try{
-                FileOutputStream fos = new FileOutputStream("cap_" + c.getSimpleName() + ".bin");
-                fos.write(buffer);
-                fos.close();
-            }catch(Exception e){}
+        if (packets.containsKey(pid)) {
+            Class<? extends PEPacket> c = packets.get(pid);
             try {
-                Packet pk = c.newInstance();
-                pk.decode(buffer);
+                PEPacket pk = c.newInstance();
+                pk.setBuffer(buffer);
+                pk.decode();
+                System.out.println(pk.getClass().getSimpleName());
                 return pk;
             } catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException ex) {
                 ex.printStackTrace();

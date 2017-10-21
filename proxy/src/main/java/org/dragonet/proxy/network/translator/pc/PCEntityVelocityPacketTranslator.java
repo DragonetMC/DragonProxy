@@ -16,14 +16,14 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntit
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.bedrock137.play.SetEntityMotion;
-import sul.utils.Packet;
-import sul.utils.Tuples;
+import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.SetEntityMotionPacket;
+import org.dragonet.proxy.utilities.Vector3F;
 
 public class PCEntityVelocityPacketTranslator implements PCPacketTranslator<ServerEntityVelocityPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, ServerEntityVelocityPacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerEntityVelocityPacket packet) {
         CachedEntity e = session.getEntityCache().get(packet.getEntityId());
         if (e == null) {
             return null;
@@ -32,10 +32,10 @@ public class PCEntityVelocityPacketTranslator implements PCPacketTranslator<Serv
         e.motionY = packet.getMotionY();
         e.motionZ = packet.getMotionZ();
 
-        SetEntityMotion pk = new SetEntityMotion();
-        pk.entityId = packet.getEntityId();
-        pk.motion = new Tuples.FloatXYZ((float) packet.getMotionX(), (float) packet.getMotionY(), (float) packet.getMotionZ());
-        return new Packet[]{pk};
+        SetEntityMotionPacket pk = new SetEntityMotionPacket();
+        pk.rtid = packet.getEntityId();
+        pk.motion = new Vector3F((float) packet.getMotionX(), (float) packet.getMotionY(), (float) packet.getMotionZ());
+        return new PEPacket[]{pk};
     }
 
 }

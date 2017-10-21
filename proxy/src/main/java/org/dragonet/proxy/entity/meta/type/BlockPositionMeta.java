@@ -16,17 +16,15 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import org.dragonet.proxy.entity.meta.EntityMetaData;
 import org.dragonet.proxy.entity.meta.EntityMetaDataObject;
+import org.dragonet.proxy.utilities.BinaryStream;
+import org.dragonet.proxy.utilities.BlockPosition;
 
-public class CoordinateMeta implements EntityMetaDataObject {
+public class BlockPositionMeta implements EntityMetaDataObject {
 
-    public int data1;
-    public int data2;
-    public int data3;
+    public BlockPosition position;
 
-    public CoordinateMeta(int data1, int data2, int data3) {
-        this.data1 = data1;
-        this.data2 = data2;
-        this.data3 = data3;
+    public BlockPositionMeta(BlockPosition position) {
+        this.position = position;
     }
 
     @Override
@@ -35,13 +33,7 @@ public class CoordinateMeta implements EntityMetaDataObject {
     }
 
     @Override
-    public byte[] encode() {
-        ByteBuffer buff = ByteBuffer.allocate(12);
-        buff.order(ByteOrder.LITTLE_ENDIAN);
-        buff.putInt(this.data1);
-        buff.putInt(this.data2);
-        buff.putInt(this.data3);
-        return buff.array();
+    public void encode(BinaryStream out) {
+        out.putSignedBlockPosition(position);
     }
-
 }

@@ -19,26 +19,27 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.bedrock137.play.AddItemEntity;
-import sul.utils.Packet;
-import sul.utils.Tuples;
+import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.AddItemEntityPacket;
+import org.dragonet.proxy.utilities.Vector3F;
 
 public class PCEntityMetadataPacketTranslator implements PCPacketTranslator<ServerEntityMetadataPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, ServerEntityMetadataPacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerEntityMetadataPacket packet) {
         CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
         if (entity == null) {
             return null;
         }
         if (!entity.spawned && entity.objType == ObjectType.ITEM) {
             entity.spawned = true;  //Spawned
-            AddItemEntity pk = new AddItemEntity();
-            pk.entityId = packet.getEntityId();
+            AddItemEntityPacket pk = new AddItemEntityPacket();
+            pk.eid = packet.getEntityId();
+            pk.rtid = packet.getEntityId();
             pk.item = ItemBlockTranslator.translateToPE((ItemStack) packet.getMetadata()[0].getValue());
-            pk.position = new Tuples.FloatXYZ((float) entity.x, (float) entity.y, (float) entity.z);
-            pk.motion = new Tuples.FloatXYZ((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
-            return new Packet[]{pk};
+            pk.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
+            pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
+            return new PEPacket[]{pk};
         }
         return null;
     }

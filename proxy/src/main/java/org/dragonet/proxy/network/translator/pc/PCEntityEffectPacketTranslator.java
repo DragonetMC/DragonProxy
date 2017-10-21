@@ -19,32 +19,32 @@ import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.bedrock137.play.MobEffect;
-import sul.utils.Packet;
+import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.MobEffectPacket;
 
 public class PCEntityEffectPacketTranslator implements PCPacketTranslator<ServerEntityEffectPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, ServerEntityEffectPacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerEntityEffectPacket packet) {
         CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
         if (entity == null) {
             return null;
         }
         int effectId = MagicValues.value(Integer.class, packet.getEffect());
 
-        MobEffect eff = new MobEffect();
-        eff.entityId = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
-        eff.effect = PocketPotionEffect.getByID(effectId).getEffect();
+        MobEffectPacket eff = new MobEffectPacket();
+        eff.rtid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
+        eff.effectId = PocketPotionEffect.getByID(effectId).getEffect();
         if (entity.effects.contains(effectId)) {
-            eff.eventId = MobEffect.MODIFY;
+            eff.eventId = MobEffectPacket.EVENT_MODIFY;
         } else {
-            eff.eventId = MobEffect.ADD;
+            eff.eventId = MobEffectPacket.EVENT_ADD;
             entity.effects.add(effectId);
         }
         eff.amplifier = packet.getAmplifier();
         eff.duration = packet.getDuration();
         eff.particles = packet.getShowParticles();
-        return new Packet[]{eff};
+        return new PEPacket[]{eff};
     }
 
 }

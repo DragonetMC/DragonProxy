@@ -26,6 +26,7 @@ import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.inv.ChestWindowTranslator;
 import org.dragonet.proxy.network.translator.InventoryTranslator;
+import org.dragonet.proxy.protocol.PEPacket;
 import sul.protocol.bedrock137.play.ContainerClose;
 import sul.protocol.bedrock137.play.InventoryContent;
 import sul.protocol.bedrock137.types.Slot;
@@ -35,7 +36,7 @@ public final class InventoryTranslatorRegister {
 
     public final static int[] HOTBAR_CONSTANTS = new int[]{36, 37, 38, 39, 40, 41, 42, 43, 44};
 
-    public static Packet[] sendPlayerInventory(UpstreamSession session) {
+    public static PEPacket[] sendPlayerInventory(UpstreamSession session) {
         CachedWindow win = session.getWindowCache().getPlayerInventory();
         //Translate and send
         InventoryContent ret = new InventoryContent();

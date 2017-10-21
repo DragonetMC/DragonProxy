@@ -12,7 +12,6 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-
 import com.github.steveice10.mc.protocol.data.game.chunk.BlockStorage;
 import com.github.steveice10.mc.protocol.data.game.chunk.Chunk;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
@@ -20,23 +19,26 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkD
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.bedrock137.play.FullChunkData;
-import sul.protocol.bedrock137.types.ChunkData;
-import sul.protocol.bedrock137.types.Section;
-import sul.utils.Packet;
-import sul.utils.Tuples;
+import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.FullChunkDataPacket;
+import org.dragonet.proxy.protocol.type.chunk.ChunkData;
+import org.dragonet.proxy.protocol.type.chunk.Section;
 
 public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<ServerChunkDataPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, ServerChunkDataPacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerChunkDataPacket packet) {
 
         session.getProxy().getGeneralThreadPool().execute(() -> {
     		try {
 
-				FullChunkData pePacket = new FullChunkData(new Tuples.IntXZ(packet.getColumn().getX(), packet.getColumn().getZ()), new ChunkData());
+				FullChunkDataPacket pePacket = new FullChunkDataPacket();
+				pePacket.x = packet.getColumn().getX();
+				pePacket.z = packet.getColumn().getZ();
 
-				processChunkSection(packet.getColumn().getChunks(), pePacket.data);
+				ChunkData chunk = new ChunkData();
+				chunk.decode(pePacket.payload);
+				processChunkSection(packet.getColumn().getChunks(), chunk);
 
 				session.sendPacket(pePacket, true);
 			} catch (Exception e) {

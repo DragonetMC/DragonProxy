@@ -12,15 +12,14 @@
  */
 package org.dragonet.proxy.network;
 
+import java.io.FileOutputStream;
 import java.net.InetSocketAddress;
 import java.util.*;
 
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import net.marfgamer.jraknet.RakNetPacket;
-import net.marfgamer.jraknet.identifier.Identifier;
 import net.marfgamer.jraknet.identifier.MinecraftIdentifier;
-import net.marfgamer.jraknet.protocol.ConnectionType;
 import net.marfgamer.jraknet.server.RakNetServer;
 import net.marfgamer.jraknet.server.RakNetServerListener;
 import net.marfgamer.jraknet.server.ServerPing;
@@ -93,8 +92,8 @@ public class RaknetInterface implements RakNetServerListener {
         if (upstream == null) {
             return;
         }
-        System.out.println("Received RakNet packet: " + packet.getClass().getSimpleName());
-        upstream.handlePacketBinary(packet.buffer().array());
+        // System.out.println("Received RakNet packet: " + packet.getClass().getSimpleName());
+        upstream.handlePacketBinary(packet.array());
     }
 
     @Override

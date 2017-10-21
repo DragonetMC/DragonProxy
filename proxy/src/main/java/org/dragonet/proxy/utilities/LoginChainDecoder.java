@@ -16,15 +16,17 @@ import java.util.UUID;
  */
 public class LoginChainDecoder {
 
-    private final LoginBody body;
+    private final byte[] chainJWT;
+    private final byte[] clientDataJWT;
 
     public String username;
     public UUID clientUniqueId;
 
     public JsonObject clientData;
 
-    public LoginChainDecoder(LoginBody body) {
-        this.body = body;
+    public LoginChainDecoder(byte[] chainJWT, byte[] clientDataJWT) {
+        this.chainJWT = chainJWT;
+        this.clientDataJWT = clientDataJWT;
     }
 
     /**
@@ -33,7 +35,7 @@ public class LoginChainDecoder {
      */
     public void decode() {
         // chain
-        Map<String, List<String>> map = new Gson().fromJson(new String(body.chain),
+        Map<String, List<String>> map = new Gson().fromJson(new String(chainJWT),
                 new TypeToken<Map<String, List<String>>>() {
                 }.getType());
         if (map.isEmpty() || !map.containsKey("chain") || map.get("chain").isEmpty()) return;
@@ -49,7 +51,7 @@ public class LoginChainDecoder {
         }
 
         // client data
-        clientData = decodeToken(new String(body.clientData, StandardCharsets.UTF_8));
+        clientData = decodeToken(new String(clientDataJWT, StandardCharsets.UTF_8));
     }
 
     /**

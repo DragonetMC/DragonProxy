@@ -1,10 +1,17 @@
 package org.dragonet.proxy.utilities;
 
-import java.math.BigInteger;
+import org.dragonet.proxy.nbt.stream.NBTInputStream;
+import org.dragonet.proxy.nbt.stream.NBTOutputStream;
+import org.dragonet.proxy.nbt.tag.CompoundTag;
+import org.dragonet.proxy.nbt.tag.Tag;
+import org.dragonet.proxy.protocol.type.Slot;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -255,13 +262,7 @@ public class BinaryStream {
         VarInt.writeUnsignedVarLong(this, v);
     }
 
-    public void putBlockCoords(int x, int y, int z) {
-        this.putVarInt(x);
-        this.putUnsignedVarInt(y);
-        this.putVarInt(z);
-    }
-
-    public void putVector3f(float x, float y, float z) {
+    public void putVector3F(float x, float y, float z) {
         this.putLFloat(x);
         this.putLFloat(y);
         this.putLFloat(z);
@@ -301,4 +302,131 @@ public class BinaryStream {
                 Integer.MAX_VALUE :
                 MAX_ARRAY_SIZE;
     }
+
+
+    /* ==== Methods adapted from PMMP ==== */
+
+    public Vector3F getVector3F() {
+        return new Vector3F(getLFloat(), getLFloat(), getLFloat());
+    }
+
+    public void putVector3F(Vector3F v) {
+        if(v == null) {
+            putVector3F(0f, 0f, 0f);
+            return;
+        }
+        putLFloat(v.x);
+        putLFloat(v.y);
+        putLFloat(v.z);
+    }
+
+    public void putSlot(Slot slot) {
+        if (slot == null || slot.id == 0) {
+            putVarInt(0);
+            return;
+        }
+
+        putVarInt(slot.id);
+        int aux = ((slot.damage & 0x7fff) << 8) | slot.count;
+        putVarInt(aux);
+
+        if (slot.tag != null && !slot.tag.isEmpty()) {
+            byte[] data = null;
+            try {
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                NBTOutputStream nos = new NBTOutputStream(bos);
+                Tag.writeNamedTag(slot.tag, nos);
+                nos.close();
+                bos.close();
+                data = bos.toByteArray();
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            if (data != null && data.length > 0) {
+                putLShort(data.length);
+                put(data);
+            } else {
+                putLShort(0);
+            }
+        } else {
+            putLShort(0);
+        }
+
+        putVarInt(0);
+        putVarInt(0);
+    }
+
+    public Slot getSlot() {
+        int id = getVarInt();
+        if (id == 0) {
+            return Slot.AIR.clone();
+        }
+        int aux = getVarInt();
+        int damage = aux >> 8;
+        if (damage == 0x7fff) damage = -1;
+        int count = aux & 0xff;
+        int lNbt = getLShort();
+        CompoundTag tag = null;
+        if (lNbt > 0) {
+            try {
+                byte[] bNbt = get(lNbt);
+                NBTInputStream bin = new NBTInputStream(new ByteArrayInputStream(bNbt));
+                tag = (CompoundTag) Tag.readNamedTag(bin);
+                bin.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return new Slot(id, damage, count, tag);
+    }
+
+    public BlockPosition getBlockPosition() {
+        return new BlockPosition(getVarInt(), (int) getUnsignedVarInt(), getVarInt());
+    }
+
+    public void putBlockPosition(BlockPosition blockPosition) {
+        putVarInt(blockPosition.x);
+        putUnsignedVarInt(blockPosition.y);
+        putVarInt(blockPosition.z);
+    }
+
+    public BlockPosition getSignedBlockPosition() {
+        return new BlockPosition(getVarInt(), getVarInt(), getVarInt());
+    }
+
+    public void putSignedBlockPosition(BlockPosition blockPosition) {
+        putVarInt(blockPosition.x);
+        putVarInt(blockPosition.y);
+        putVarInt(blockPosition.z);
+    }
+
+    public float getByteRotation(){
+        return (((float)(getByte() & 0xFF)) * (360 / 256));
+    }
+
+    public void putByteRotation(float rotation){
+        putByte((byte) (((int)(rotation / (360 / 256))) & 0xFF));
+    }
+
+    public Map<String, GameRule> getGameRules() {
+        int count = (int) getUnsignedVarInt();
+        Map<String, GameRule> rules = new HashMap<>();
+        for(int i = 0; i < count; i++) {
+            GameRule rule = GameRule.read(this);
+            rules.put(rule.name, rule);
+        }
+        return rules;
+    }
+
+    public void putGameRules(Map<String, GameRule> rules) {
+        if(rules == null) {
+            putUnsignedVarInt(0);
+            return;
+        }
+        putUnsignedVarInt(rules.size());
+        for(GameRule rule : rules.values()) {
+            rule.write(this);
+        }
+    }
+
 }

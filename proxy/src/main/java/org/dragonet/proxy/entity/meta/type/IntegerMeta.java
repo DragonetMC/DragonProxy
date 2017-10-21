@@ -12,10 +12,9 @@
  */
 package org.dragonet.proxy.entity.meta.type;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import org.dragonet.proxy.entity.meta.EntityMetaData;
 import org.dragonet.proxy.entity.meta.EntityMetaDataObject;
+import org.dragonet.proxy.utilities.BinaryStream;
 
 public class IntegerMeta implements EntityMetaDataObject {
 
@@ -31,11 +30,7 @@ public class IntegerMeta implements EntityMetaDataObject {
     }
 
     @Override
-    public byte[] encode() {
-        ByteBuffer buff = ByteBuffer.allocate(4);
-        buff.order(ByteOrder.LITTLE_ENDIAN);
-        buff.putInt(this.data);
-        return buff.array();
+    public void encode(BinaryStream out) {
+        out.putVarInt(data);
     }
-
 }

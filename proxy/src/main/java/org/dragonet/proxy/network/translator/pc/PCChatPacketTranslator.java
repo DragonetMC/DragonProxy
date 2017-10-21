@@ -16,8 +16,8 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.ServerChatPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.MessageTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.bedrock137.play.Text;
-import sul.utils.Packet;
+import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.TextPacket;
 
 public class PCChatPacketTranslator implements PCPacketTranslator<ServerChatPacket> {
 
@@ -31,13 +31,14 @@ public class PCChatPacketTranslator implements PCPacketTranslator<ServerChatPack
     public static final byte TYPE_ANNOUNCEMENT = 7;
 
     @Override
-    public Packet[] translate(UpstreamSession session, ServerChatPacket packet) {
-        Text text = new Text();
+    public PEPacket[] translate(UpstreamSession session, ServerChatPacket packet) {
+        TextPacket pe = new TextPacket();
+        pe.type = TYPE_RAW;
+        pe.message = MessageTranslator.translate(packet.getMessage());
 
-        String content = MessageTranslator.translate(packet.getMessage());
-        return new Packet[]{text.new Raw(content, "")};
+        return new PEPacket[]{pe};
 
-        // TODO: Detect types
+        // TODO: Detect type
         /*
          * Reset the chat message so we can parse the JSON again (if needed)
          */

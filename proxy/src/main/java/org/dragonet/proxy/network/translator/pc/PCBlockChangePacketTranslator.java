@@ -16,21 +16,22 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerBlockC
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.bedrock137.play.UpdateBlock;
-import sul.protocol.bedrock137.types.BlockPosition;
-import sul.utils.Packet;
+import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.UpdateBlockPacket;
+import org.dragonet.proxy.utilities.BlockPosition;
 
 public class PCBlockChangePacketTranslator implements PCPacketTranslator<ServerBlockChangePacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, ServerBlockChangePacket packet) {
-        UpdateBlock pk = new UpdateBlock();
-        pk.flagsAndMeta =  UpdateBlock.NEIGHBORS << 4 | (packet.getRecord().getBlock().getData() & 0xf);
-        pk.block = (byte) (ItemBlockTranslator.translateToPE(packet.getRecord().getBlock().getId()) & 0xFF);
-        pk.position = new BlockPosition(packet.getRecord().getPosition().getX(),
+    public PEPacket[] translate(UpstreamSession session, ServerBlockChangePacket packet) {
+        UpdateBlockPacket pk = new UpdateBlockPacket();
+        pk.flags =  UpdateBlockPacket.FLAG_NEIGHBORS << 4;
+        pk.data = (packet.getRecord().getBlock().getData() & 0xf);
+        pk.id = (byte) (ItemBlockTranslator.translateToPE(packet.getRecord().getBlock().getId()) & 0xFF);
+        pk.blockPosition = new BlockPosition(packet.getRecord().getPosition().getX(),
                 packet.getRecord().getPosition().getY(),
                 packet.getRecord().getPosition().getZ());
-        return new Packet[]{pk};
+        return new PEPacket[]{pk};
     }
 
 }

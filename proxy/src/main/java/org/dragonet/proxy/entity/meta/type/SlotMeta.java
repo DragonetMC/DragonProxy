@@ -16,17 +16,15 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import org.dragonet.proxy.entity.meta.EntityMetaData;
 import org.dragonet.proxy.entity.meta.EntityMetaDataObject;
+import org.dragonet.proxy.protocol.type.Slot;
+import org.dragonet.proxy.utilities.BinaryStream;
 
 public class SlotMeta implements EntityMetaDataObject {
 
-    public short data1;
-    public byte data2;
-    public short data3;
+    public Slot slot;
 
-    public SlotMeta(short data1, byte data2, short data3) {
-        this.data1 = data1;
-        this.data2 = data2;
-        this.data3 = data3;
+    public SlotMeta(Slot slot) {
+        this.slot = slot;
     }
 
     @Override
@@ -35,13 +33,7 @@ public class SlotMeta implements EntityMetaDataObject {
     }
 
     @Override
-    public byte[] encode() {
-        ByteBuffer buff = ByteBuffer.allocate(5);
-        buff.order(ByteOrder.LITTLE_ENDIAN);
-        buff.putShort(this.data1);
-        buff.put(this.data2);
-        buff.putShort(this.data3);
-        return buff.array();
+    public void encode(BinaryStream out) {
+        out.putSlot(slot);
     }
-
 }

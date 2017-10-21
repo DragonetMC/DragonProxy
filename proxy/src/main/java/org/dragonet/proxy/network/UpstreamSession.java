@@ -35,11 +35,9 @@ import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.RemoteServer;
 import org.dragonet.proxy.network.cache.EntityCache;
 import org.dragonet.proxy.network.cache.WindowCache;
+import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.utilities.*;
-import sul.protocol.bedrock137.play.*;
-import sul.protocol.bedrock137.types.BlockPosition;
-import sul.utils.Packet;
-import sul.utils.Tuples;
 
 /**
  * Maintaince the connection between the proxy and Minecraft: Pocket Edition
@@ -102,11 +100,11 @@ public class UpstreamSession {
         packetProcessorScheule = proxy.getGeneralThreadPool().scheduleAtFixedRate(packetProcessor, 10, 50, TimeUnit.MILLISECONDS);
     }
 
-    public void sendPacket(Packet packet) {
+    public void sendPacket(PEPacket packet) {
         sendPacket(packet, false);
     }
 
-    public void sendPacket(Packet packet, boolean immediate) {
+    public void sendPacket(PEPacket packet, boolean immediate) {
         System.out.println("Sending [" + packet.getClass().getSimpleName() + "] ... ");
 
         packet.encode();
@@ -126,9 +124,9 @@ public class UpstreamSession {
         raknetClient.sendMessage(Reliability.RELIABLE_ORDERED, 0, new net.marfgamer.jraknet.Packet(Binary.appendBytes((byte) 0xfe, buffer)));
     }
 
-    public void sendAllPackets(Packet[] packets, boolean immediate) {
+    public void sendAllPackets(PEPacket[] packets, boolean immediate) {
         if (packets.length < 5) {
-            for (Packet packet : packets) {
+            for (PEPacket packet : packets) {
                 sendPacket(packet);
             }
         }/* else {
@@ -159,7 +157,7 @@ public class UpstreamSession {
      */
     public void disconnect(String reason) {
         if(!connecting) {
-            sendPacket(new Disconnect(false, reason));
+            sendPacket(new DisconnectPacket(false, reason));
             //RakNet server will call onDisconnect()
         }
     }
@@ -182,52 +180,52 @@ public class UpstreamSession {
         packetProcessor.putPacket(packet);
     }
 
-    public void onLogin(Login packet) {
+    public void onLogin(LoginPacket packet) {
         if (username != null) {
             disconnect("Already logged in, this must be an error! ");
             return;
         }
 
-        PlayStatus status = new PlayStatus();
+        PlayStatusPacket status = new PlayStatusPacket();
         System.out.println("CLIENT PROTOCOL = " + packet.protocol);
         if (packet.protocol != Versioning.MINECRAFT_PE_PROTOCOL) {
-            status.status = PlayStatus.OUTDATED_CLIENT;
+            status.status = PlayStatusPacket.LOGIN_FAILED_CLIENT;
             sendPacket(status, true);
             disconnect(proxy.getLang().get(Lang.MESSAGE_UNSUPPORTED_CLIENT));
             return;
         }
-        status.status = PlayStatus.OK;
+        status.status = PlayStatusPacket.LOGIN_SUCCESS;
         sendPacket(status, true);
 
-        System.out.println("chain len = " + packet.body.chain);
-
-        profile = new LoginChainDecoder(packet.body);
-        profile.decode();
+        profile = packet.decoded;
 
         this.username = profile.username;
         System.out.println("decoded username: " + this.username);
         proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, username, remoteAddress));
         if (proxy.getAuthMode().equals("online")) {
-            StartGame pkStartGame = new StartGame();
-            pkStartGame.entityId = 0; //Use EID 0 for eaisier management
+            StartGamePacket pkStartGame = new StartGamePacket();
+            pkStartGame.eid = 0; //Use EID 0 for eaisier management
+            pkStartGame.rtid = 0;
             pkStartGame.dimension = (byte) 0;
             pkStartGame.seed = 0;
             pkStartGame.generator = 1;
-            pkStartGame.spawnPosition = new Tuples.IntXYZ(0, 0, 0);
-            pkStartGame.position = new Tuples.FloatXYZ(0f, 72f, 0f);
+            pkStartGame.spawnPosition = new BlockPosition(0, 0, 0);
+            pkStartGame.position = new Vector3F(0f, 72f, 0f);
             pkStartGame.levelId = "World";
             pkStartGame.worldName = "World";
-            pkStartGame.premiumWorldTemplate = "";
+            pkStartGame.premiumWorldTemplateId = "";
             sendPacket(pkStartGame, true);
 
-            SetSpawnPosition pkSpawn = new SetSpawnPosition();
+            SetSpawnPositionPacket pkSpawn = new SetSpawnPositionPacket();
             pkSpawn.position = new BlockPosition(0, 72, 0);
             sendPacket(pkSpawn, true);
 
-            sendPacket(new ResourcePacksInfo(), true);
+            sendPacket(new ResourcePacksInfoPacket(), true);
 
-            PlayStatus pkStat = new PlayStatus();
-            pkStat.status = PlayStatus.SPAWNED;
+            //TODO: send some initial chunks to prevent shaking
+
+            PlayStatusPacket pkStat = new PlayStatusPacket();
+            pkStat.status = PlayStatusPacket.PLAYER_SPAWN;
             sendPacket(pkStat, true);
 
             dataCache.put(CacheKey.AUTHENTICATION_STATE, "email");
@@ -324,16 +322,18 @@ public class UpstreamSession {
             }
             return;
         }
-        Text text = new Text(); // raw
-        Text.Raw raw = text.new Raw(chat, "");
-        sendPacket(raw, true);
+        TextPacket text = new TextPacket(); // raw
+        text.type = TextPacket.TYPE_RAW;
+        text.message = chat;
+        sendPacket(text, true);
     }
 
     public void sendFakeBlock(int x, int y, int z, int id, int meta) {
-        UpdateBlock pkBlock = new UpdateBlock();
-        pkBlock.flagsAndMeta = UpdateBlock.NEIGHBORS << 4 | (meta & 0xF);
-        pkBlock.position = new BlockPosition(x, y, z);
-        pkBlock.block = (byte) (id & 0xFF);
+        UpdateBlockPacket pkBlock = new UpdateBlockPacket();
+        pkBlock.id = id;
+        pkBlock.data = meta;
+        pkBlock.flags = UpdateBlockPacket.FLAG_NEIGHBORS;
+        pkBlock.blockPosition = new BlockPosition(x, y, z);
         sendPacket(pkBlock, true);
     }
 

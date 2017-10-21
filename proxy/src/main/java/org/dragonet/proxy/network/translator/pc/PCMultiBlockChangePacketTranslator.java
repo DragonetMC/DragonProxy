@@ -16,21 +16,22 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMultiB
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.bedrock137.play.UpdateBlock;
-import sul.protocol.bedrock137.types.BlockPosition;
-import sul.utils.Packet;
+import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.UpdateBlockPacket;
+import org.dragonet.proxy.utilities.BlockPosition;
 
 public class PCMultiBlockChangePacketTranslator implements PCPacketTranslator<ServerMultiBlockChangePacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, ServerMultiBlockChangePacket packet) {
-        UpdateBlock[] packets = new UpdateBlock[packet.getRecords().length];
-        int generalFlag = packet.getRecords().length > 64 ? UpdateBlock.PRIORITY : UpdateBlock.NEIGHBORS;
+    public PEPacket[] translate(UpstreamSession session, ServerMultiBlockChangePacket packet) {
+        UpdateBlockPacket[] packets = new UpdateBlockPacket[packet.getRecords().length];
+        int generalFlag = packet.getRecords().length > 64 ? UpdateBlockPacket.FLAG_ALL_PRIORITY : UpdateBlockPacket.FLAG_NEIGHBORS;
         for (int i = 0; i < packets.length; i++) {
-            packets[i] = new UpdateBlock();
-            packets[i].position = new BlockPosition(packet.getRecords()[i].getPosition().getX(), packet.getRecords()[i].getPosition().getY(), packet.getRecords()[i].getPosition().getZ());
-            packets[i].block = (byte) (ItemBlockTranslator.translateToPE(packet.getRecords()[i].getBlock().getId()) & 0xFF);
-            packets[i].flagsAndMeta = generalFlag << 4 | (packet.getRecords()[i].getBlock().getData() & 0xF);
+            packets[i] = new UpdateBlockPacket();
+            packets[i].blockPosition = new BlockPosition(packet.getRecords()[i].getPosition().getX(), packet.getRecords()[i].getPosition().getY(), packet.getRecords()[i].getPosition().getZ());
+            packets[i].id = (byte) (ItemBlockTranslator.translateToPE(packet.getRecords()[i].getBlock().getId()) & 0xFF);
+            packets[i].data = generalFlag;
+            packets[i].flags = packet.getRecords()[i].getBlock().getData();
         }
         return packets;
     }

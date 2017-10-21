@@ -35,7 +35,7 @@ remote_servers:
   my_pe_server:
     # Next line indicates this is a Pocket Edition server. 
     !!org.dragonet.proxy.PocketServer
-    remote_addr: 'your.mcpe.server.com'
+    remote_addr: 'your.packets.server.com'
     remote_port: 19132
 
 

@@ -17,27 +17,28 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePack
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.bedrock137.play.AdventureSettings;
-import sul.protocol.bedrock137.play.SetPlayerGameType;
-import sul.utils.Packet;
+import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.AdventureSettingsPacket;
+import org.dragonet.proxy.protocol.packets.SetPlayerGameTypePacket;
 
 public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoinGamePacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, ServerJoinGamePacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerJoinGamePacket packet) {
         //This packet is not fully useable, we cache it for now. 
         session.getDataCache().put(CacheKey.PLAYER_EID, packet.getEntityId());  //Stores the real entity ID
 
         if (session.getProxy().getAuthMode().equals("online")) {
             //Online mode already sent packets
             
-            SetPlayerGameType pkSetGameMode = new SetPlayerGameType(packet.getGameMode() == GameMode.CREATIVE ? 1 : 0);
+            SetPlayerGameTypePacket pkSetGameMode = new SetPlayerGameTypePacket();
+            pkSetGameMode.gamemode = packet.getGameMode() == GameMode.CREATIVE ? 1 : 0;
             
-            AdventureSettings adv = new AdventureSettings();
-            int settings = 0x1 | 0x20 | 0x40;
-            adv.flags = settings;
+            AdventureSettingsPacket adv = new AdventureSettingsPacket();
+            adv.setFlag(AdventureSettingsPacket.AUTO_JUMP, true);
+            adv.setFlag(AdventureSettingsPacket.ALLOW_FLIGHT, true);
             
-            return new Packet[]{pkSetGameMode, adv};
+            return new PEPacket[]{pkSetGameMode, adv};
         }
 
         session.getDataCache().put(CacheKey.PACKET_JOIN_GAME_PACKET, packet);

@@ -1,7 +1,7 @@
 package org.dragonet.proxy.utilities;
 
 /**
- * Utils for casting number types to other number types
+ * Utils for casting number type to other number type
  */
 public final class NumberConversions {
     private NumberConversions() {}

@@ -50,13 +50,13 @@ public class PCSpawnPlayerPacketTranslator implements PCPacketTranslator<ServerS
             
             PlayerList lst = new PlayerList(PlayerList.Add.ACTION);
             // TODO: send skin
-            /* sul.protocol.bedrock137.types.PlayerList p = new sul.protocol.bedrock137.types.PlayerList(
+            /* sul.protocol.bedrock137.type.PlayerList p = new sul.protocol.bedrock137.type.PlayerList(
                     new McpeUuid(packet.getUUID().getMostSignificantBits(), packet.getUUID().getLeastSignificantBits()),
                     packet.getEntityId(),
                     pkAddPlayer.username,
                     null//new Skin(DefaultSkin.getDefaultSkinName(), DefaultSkin.getDefaultSkin().getData())
             );
-            PlayerList.Add add = lst.new Add(new sul.protocol.bedrock137.types.PlayerList[]{p}); */
+            PlayerList.Add add = lst.new Add(new sul.protocol.bedrock137.type.PlayerList[]{p}); */
             //TODO: get the default skin to work.
             return new Packet[]{/*add, */pkAddPlayer};
         } catch (Exception e) {

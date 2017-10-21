@@ -18,13 +18,13 @@ import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PCPacketTranslator;
-import sul.protocol.bedrock137.play.MobEffect;
-import sul.utils.Packet;
+import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.MobEffectPacket;
 
 public class PCEntityRemoveEffectPacketTranslator implements PCPacketTranslator<ServerEntityRemoveEffectPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, ServerEntityRemoveEffectPacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerEntityRemoveEffectPacket packet) {
         CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
         if (entity == null) {
             return null;
@@ -33,10 +33,10 @@ public class PCEntityRemoveEffectPacketTranslator implements PCPacketTranslator<
         if (!entity.effects.contains(effectId)) {
             return null;
         }
-        MobEffect eff = new MobEffect();
-        eff.entityId = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
-        eff.eventId = MobEffect.REMOVE;
-        return new Packet[]{eff};
+        MobEffectPacket eff = new MobEffectPacket();
+        eff.rtid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
+        eff.eventId = MobEffectPacket.EVENT_REMOVE;
+        return new PEPacket[]{eff};
     }
 
 }

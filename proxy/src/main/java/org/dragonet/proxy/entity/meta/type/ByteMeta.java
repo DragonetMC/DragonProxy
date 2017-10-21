@@ -14,6 +14,7 @@ package org.dragonet.proxy.entity.meta.type;
 
 import org.dragonet.proxy.entity.meta.EntityMetaData;
 import org.dragonet.proxy.entity.meta.EntityMetaDataObject;
+import org.dragonet.proxy.utilities.BinaryStream;
 
 public class ByteMeta implements EntityMetaDataObject {
 
@@ -29,7 +30,7 @@ public class ByteMeta implements EntityMetaDataObject {
     }
 
     @Override
-    public byte[] encode() {
-        return new byte[]{this.data};
+    public void encode(BinaryStream out) {
+        out.putByte(data);
     }
 }

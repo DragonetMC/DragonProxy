@@ -159,7 +159,7 @@ public class DragonProxy {
 
         // Bind
         logger.info(lang.get(Lang.INIT_BINDING, config.getUdp_bind_ip(), config.getUdp_bind_port()));
-        RakNet.enableLogging();
+        // RakNet.enableLogging();
         network = new RaknetInterface(this,
                 config.getUdp_bind_ip(), //IP
                 config.getUdp_bind_port()); //Port

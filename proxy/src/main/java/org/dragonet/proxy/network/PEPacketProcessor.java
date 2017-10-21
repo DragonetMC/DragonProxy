@@ -12,11 +12,13 @@
  */
 package org.dragonet.proxy.network;
 
+import java.io.FileOutputStream;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
 import com.github.steveice10.packetlib.packet.Packet;
 import lombok.Getter;
+import net.marfgamer.jraknet.RakNetPacket;
 import org.dragonet.proxy.protocol.Protocol;
 import sul.protocol.bedrock137.play.Login;
 
@@ -39,22 +41,26 @@ public class PEPacketProcessor implements Runnable {
 
     @Override
     public void run() {
-        try {
-            int cnt = 0;
-            while (cnt < MAX_PACKETS_PER_CYCLE && !packets.isEmpty()) {
-                cnt++;
-                byte[] bin = packets.pop();
-                sul.utils.Packet[] packets = Protocol.decode(bin);
+
+        int cnt = 0;
+        while (cnt < MAX_PACKETS_PER_CYCLE && !packets.isEmpty()) {
+            cnt++;
+            byte[] p = packets.pop();
+            sul.utils.Packet[] packets;
+            try {
+                packets = Protocol.decode(p);
                 if (packets == null && packets.length > 0) {
                     continue;
                 }
-                for (sul.utils.Packet p : packets) {
-                    handlePacket(p);
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
             }
-        }catch(Exception e){
-            e.printStackTrace();
+            for (sul.utils.Packet decoded : packets) {
+                handlePacket(decoded);
+            }
         }
+
     }
 
     public void handlePacket(sul.utils.Packet packet) {
@@ -63,6 +69,11 @@ public class PEPacketProcessor implements Runnable {
         }
 
         System.out.println("RECEIVED PACKET=" + packet.getClass().getSimpleName());
+        try{
+            FileOutputStream fos = new FileOutputStream("cap_" + System.currentTimeMillis() + "_" + packet.getClass().getSimpleName() + ".bin");
+            fos.write(packet._buffer);
+            fos.close();
+        }catch(Exception e){}
 
         switch (packet.getId()) {
             case 1:

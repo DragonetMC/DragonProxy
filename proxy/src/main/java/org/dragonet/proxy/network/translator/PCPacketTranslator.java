@@ -13,7 +13,7 @@
 package org.dragonet.proxy.network.translator;
 
 import org.dragonet.proxy.network.UpstreamSession;
-import sul.utils.Packet;
+import org.dragonet.proxy.protocol.PEPacket;
 
 public interface PCPacketTranslator<P extends com.github.steveice10.packetlib.packet.Packet> {
 
@@ -24,6 +24,6 @@ public interface PCPacketTranslator<P extends com.github.steveice10.packetlib.pa
      * @param packet
      * @return
      */
-    Packet[] translate(UpstreamSession session, P packet);
+    PEPacket[] translate(UpstreamSession session, P packet);
 
 }
