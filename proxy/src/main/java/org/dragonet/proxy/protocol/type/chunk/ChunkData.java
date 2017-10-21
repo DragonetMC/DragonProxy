@@ -8,12 +8,14 @@
  */
 package org.dragonet.proxy.protocol.type.chunk;
 
+import org.dragonet.proxy.utilities.BinaryStream;
+
 import java.util.Arrays;
 
 /**
  * Chunk's blocks, lights and other immutable data.
  */
-public class ChunkData extends Stream {
+public class ChunkData extends BinaryStream {
 
 	/**
 	 * 16x16x16 section of the chunk. The array's keys also indicate the section's height
@@ -55,35 +57,17 @@ public class ChunkData extends Stream {
 		this.blockEntities = blockEntities;
 	}
 
-	@Override
-	public int length() {
-		int length=Buffer.varuintLength(sections.length) + Buffer.varuintLength(borders.length) + borders.length + Buffer.varuintLength(extraData.length) + blockEntities.length + 773; for(Section cvdlbm:sections){ length+=cvdlbm.length(); };for(ExtraData zhcfyr:extraData){ length+=zhcfyr.length(); } return length;
-	}
-
-	@Override
-	public byte[] encode() {
-		this._buffer = new byte[this.length()];
-		this.writeLittleEndianByte((byte)(sections.length & 0xff)); for(Section cvdlbm:sections){ this.writeBytes(cvdlbm.encode()); }
-		for(short avzhc:heights){ this.writeLittleEndianShort(avzhc); }
-		this.writeBytes(biomes);
-		this.writeLittleEndianByte((byte)(borders.length & 0xFF)); this.writeBytes(borders);
-		this.writeVarint(extraData.length); for(ExtraData zhcfyr:extraData){ this.writeBytes(zhcfyr.encode()); }
-		this.writeBytes(blockEntities);
-		return this.getBuffer();
-	}
-
-	@Override
-	public void decode(byte[] buffer) {
-		this._buffer = buffer;
-		final int _length=this.readLittleEndianByte();
-		this._buffer = this.readBytes(_length);
-		this._index = 0;
-		int bnyrb5=this.readLittleEndianByte(); sections=new Section[bnyrb5]; for(int cvdlbm=0;cvdlbm<sections.length;cvdlbm++){ sections[cvdlbm]=new Section(); sections[cvdlbm]._index=this._index; sections[cvdlbm].decode(this._buffer); this._index=sections[cvdlbm]._index; }
-		final int bhaddm=256; heights=new short[bhaddm]; for(int avzhc=0;avzhc<heights.length;avzhc++){ heights[avzhc]=readLittleEndianShort(); }
-		final int bjb1c=256; biomes=this.readBytes(bjb1c);
-		int bjcrcm=this.readBigEndianByte(); borders=this.readBytes(bjcrcm);
-		int bvdjrfy=this.readVarint(); extraData=new ExtraData[bvdjrfy]; for(int zhcfyr=0;zhcfyr<extraData.length;zhcfyr++){ extraData[zhcfyr]=new ExtraData(); extraData[zhcfyr]._index=this._index; extraData[zhcfyr].decode(this._buffer); this._index=extraData[zhcfyr]._index; }
-		blockEntities=this.readBytes(this._buffer.length-this._index);
+	public void encode() {
+		reset();
+		putByte((byte)(sections.length & 0xff));
+		for(Section cvdlbm:sections){ this.put(cvdlbm.encode()); }
+		for(short avzhc:heights){ this.putLShort(avzhc); }
+		this.put(biomes);
+		this.putByte((byte)(borders.length & 0xFF));
+		this.put(borders);
+		this.putVarInt(extraData.length);
+		for(ExtraData zhcfyr:extraData){ this.put(zhcfyr.encode()); }
+		this.put(blockEntities);
 	}
 
 	@Override

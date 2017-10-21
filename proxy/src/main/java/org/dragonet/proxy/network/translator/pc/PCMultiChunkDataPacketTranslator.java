@@ -38,7 +38,8 @@ public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<Serv
 
 				ChunkData chunk = new ChunkData();
 				processChunkSection(packet.getColumn().getChunks(), chunk);
-				pePacket.payload = chunk.encode();
+				chunk.encode();
+				pePacket.payload = chunk.getBuffer();
 
 				session.sendPacket(pePacket, true);
 			} catch (Exception e) {

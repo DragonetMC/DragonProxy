@@ -20,6 +20,18 @@ public class PlayStatusPacket extends PEPacket {
     public int status;
     public int protocol = Versioning.MINECRAFT_PE_PROTOCOL;
 
+    public PlayStatusPacket() {
+    }
+
+    public PlayStatusPacket(int status) {
+        this.status = status;
+    }
+
+    public PlayStatusPacket(int status, int protocol) {
+        this.status = status;
+        this.protocol = protocol;
+    }
+
     @Override
     public int pid() {
         return ProtocolInfo.PLAY_STATUS_PACKET;

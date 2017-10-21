@@ -20,10 +20,7 @@ import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerSpawnPositionPacket;
 import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.protocol.packets.AdventureSettingsPacket;
-import org.dragonet.proxy.protocol.packets.MovePlayerPacket;
-import org.dragonet.proxy.protocol.packets.ResourcePacksInfoPacket;
-import org.dragonet.proxy.protocol.packets.StartGamePacket;
+import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.utilities.BlockPosition;
 import org.dragonet.proxy.utilities.Vector3F;
 
@@ -58,15 +55,18 @@ public class PCSpawnPositionPacketTranslator implements PCPacketTranslator<Serve
         ret.levelId = "World";
         ret.worldName = "World";
         ret.premiumWorldTemplateId = "";
+
         AdventureSettingsPacket adv = new AdventureSettingsPacket();
         adv.setFlag(AdventureSettingsPacket.AUTO_JUMP, true);
         adv.setFlag(AdventureSettingsPacket.ALLOW_FLIGHT, true);
+
+        PlayStatusPacket play = new PlayStatusPacket(PlayStatusPacket.PLAYER_SPAWN);
 
         session.getEntityCache().getClientEntity().x = packet.getPosition().getX();
         session.getEntityCache().getClientEntity().y = packet.getPosition().getY();
         session.getEntityCache().getClientEntity().z = packet.getPosition().getZ();
 
-        return new PEPacket[]{ret, new ResourcePacksInfoPacket(), adv};
+        return new PEPacket[]{ret, new ResourcePacksInfoPacket(), adv, play};
     }
 
 }
