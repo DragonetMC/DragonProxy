@@ -1,4 +1,4 @@
-#### If you have onlie mode enabled in the configuration file you will be notified to login.
+#### If you have online mode enabled in the configuration file you will be prompted  to login.
 ## Step 1. If you connect to your proxy you should see this:
 ![Screenshot](https://raw.githubusercontent.com/DragonetMC/DragonProxy/master/screenshots/online-login.png)
 
