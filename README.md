@@ -15,7 +15,9 @@ Video by **[@MrPowerGamerBR](https://github.com/MrPowerGamerBR)** (On an older v
 Wanna donate to help us? Go to http://dragonet.org/donate.php
 
 ## Installation
-[![Build Status](https://drone.io/github.com/DragonetMC/DragonProxy/status.png)](https://drone.io/github.com/DragonetMC/DragonProxy/files) [Download](https://drone.io/github.com/DragonetMC/DragonProxy/files)
+[![Build Status](https://drone.io/github.com/DragonetMC/DragonProxy/status.png)](https://drone.io/github.com/DragonetMC/DragonProxy/file)
+
+[Download](https://drone.io/github.com/DragonetMC/DragonProxy/files)
 Once compiled, run `dragonproxy-*.jar` in `proxy/target` where '*' is the version number.
 
 ## Compiling
