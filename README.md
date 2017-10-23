@@ -2,9 +2,10 @@ DragonProxy
 ===========
 
 ## WE ARE BACK
-- Currently updating for Minecraft - Java Edition version `1.12.1` and Minecraft Bedrock version `1.2.3 (137)`
-- able to connect, chat
-- chunk sending is WIP
+- Currently supporting 1.2.x
+- Chat supported
+- Chunk supported
+- Inventory WIP
 
 A proxy for **Minecraft Bedrock** connecting to **Minecraft - Java Edition** servers.
 

@@ -61,6 +61,18 @@ public class PCPlayerPositionRotationPacketTranslator implements PCPacketTransla
             ret.premiumWorldTemplateId = "";
             session.sendPacket(ret);
 
+            AdventureSettingsPacket adv = new AdventureSettingsPacket();
+            adv.setFlag(AdventureSettingsPacket.WORLD_IMMUTABLE, restored.getGameMode().equals(GameMode.SPECTATOR));
+            adv.setFlag(AdventureSettingsPacket.ALLOW_FLIGHT, false);
+            adv.setFlag(AdventureSettingsPacket.ATTACK_PLAYERS, true);
+            adv.setFlag(AdventureSettingsPacket.ATTACK_MOBS, true);
+            adv.setFlag(AdventureSettingsPacket.BUILD_AND_MINE, true);
+            adv.setFlag(AdventureSettingsPacket.NO_CLIP, restored.getGameMode().equals(GameMode.SPECTATOR));
+            adv.commandsPermission = AdventureSettingsPacket.PERMISSION_NORMAL;
+            adv.playerPermission = 1;
+            adv.setFlag(AdventureSettingsPacket.FLYING, false);
+            session.sendPacket(adv);
+
             session.setSpawned();
 
             session.getEntityCache().getClientEntity().x = packet.getX();

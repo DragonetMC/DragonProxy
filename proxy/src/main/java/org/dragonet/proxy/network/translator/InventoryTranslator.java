@@ -23,14 +23,14 @@ public interface InventoryTranslator {
      * @param window
      * @return Can that window be opened on MCPE?
      */
-    public boolean open(UpstreamSession session, CachedWindow window);
+    boolean open(UpstreamSession session, CachedWindow window);
     
     /**
      * Update a window's content. 
      * @param session
      * @param window
      */
-    public void updateContent(UpstreamSession session, CachedWindow window);
+    void updateContent(UpstreamSession session, CachedWindow window);
     
     /**
      * Update a single slot in a window. 
@@ -38,5 +38,5 @@ public interface InventoryTranslator {
      * @param window
      * @param slotIndex 
      */
-    public void updateSlot(UpstreamSession session, CachedWindow window, int slotIndex);
+    void updateSlot(UpstreamSession session, CachedWindow window, int slotIndex);
 }
