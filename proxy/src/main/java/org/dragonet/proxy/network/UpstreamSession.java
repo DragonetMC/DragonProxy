@@ -19,11 +19,10 @@ import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import java.io.FileOutputStream;
 import java.net.InetSocketAddress;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import lombok.Getter;
@@ -37,6 +36,7 @@ import org.dragonet.proxy.network.cache.EntityCache;
 import org.dragonet.proxy.network.cache.WindowCache;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.*;
+import org.dragonet.proxy.protocol.type.chunk.ChunkData;
 import org.dragonet.proxy.utilities.*;
 
 /**
@@ -53,6 +53,14 @@ public class UpstreamSession {
 
     @Getter
     private final RakNetClientSession raknetClient;
+
+    @Getter
+    private boolean loggedIn;
+
+    @Getter
+    private boolean spawned;
+
+    private List<PEPacket> cachedPackets;
 
     @Getter
     private final InetSocketAddress remoteAddress;
@@ -106,11 +114,6 @@ public class UpstreamSession {
 
     public void sendPacket(PEPacket packet, boolean immediate) {
         System.out.println("Sending [" + packet.getClass().getSimpleName() + "] ");
-        /*for(int count = 0; count < 3; count++) {
-            System.out.print(".");
-            try{Thread.sleep(1000L);}catch (Exception e){}
-        }
-        System.out.println();*/
 
         packet.encode();
 
@@ -202,12 +205,20 @@ public class UpstreamSession {
         status.status = PlayStatusPacket.LOGIN_SUCCESS;
         sendPacket(status, true);
 
+        // Get the profile and read out the username!
+        profile = packet.decoded;
+        this.username = profile.username;
+
+        // Okay @dktapps ;)
         sendPacket(new ResourcePacksInfoPacket());
 
-        profile = packet.decoded;
+        // now wait for response
+    }
 
-        this.username = profile.username;
-        System.out.println("decoded username: " + this.username);
+    public void postLogin() {
+        sendPacket(new ResourcePackStackPacket());
+
+        loggedIn = true;
         proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, username, remoteAddress));
         if (proxy.getAuthMode().equals("online")) {
             StartGamePacket pkStartGame = new StartGamePacket();
@@ -286,6 +297,53 @@ public class UpstreamSession {
             protocol = new MinecraftProtocol(username);
 
             proxy.getLogger().debug("Initially joining [" + proxy.getConfig().getDefault_server() + "]... ");
+
+            /*// begin test things
+            StartGamePacket pkStartGame = new StartGamePacket();
+            pkStartGame.eid = 0; //Use EID 0 for eaisier management
+            pkStartGame.rtid = 0;
+            pkStartGame.dimension = (byte) 0;
+            pkStartGame.seed = 0;
+            pkStartGame.generator = 1;
+            pkStartGame.position = new Vector3F(0f, 72f, 0f);
+            pkStartGame.levelId = "";
+            pkStartGame.worldName = "World";
+            pkStartGame.spawnPosition = new BlockPosition(0, 0, 0);
+            pkStartGame.premiumWorldTemplateId = "";
+            sendPacket(pkStartGame, true);
+
+            PlayStatusPacket pkStat = new PlayStatusPacket();
+            pkStat.status = PlayStatusPacket.PLAYER_SPAWN;
+            sendPacket(pkStat, true);
+
+            AdventureSettingsPacket adv = new AdventureSettingsPacket();
+            adv.setFlag(AdventureSettingsPacket.AUTO_JUMP, true);
+            adv.setFlag(AdventureSettingsPacket.ALLOW_FLIGHT, true);
+            sendPacket(adv);
+
+            for(int x = -7; x < 8; x ++) {
+                for(int z = -7; z < 8; z ++) {
+                    org.dragonet.proxy.protocol.type.chunk.ChunkData c = new ChunkData();
+                    c.sections = new org.dragonet.proxy.protocol.type.chunk.Section[16];
+                    for(int cy = 0; cy < 16; cy++) {
+                        c.sections[cy] = new org.dragonet.proxy.protocol.type.chunk.Section();
+                        if(cy < 4) {
+                            Arrays.fill(c.sections[cy].blockIds, (byte)1);
+                        }
+                    }
+                    org.dragonet.proxy.protocol.packets.FullChunkDataPacket p = new org.dragonet.proxy.protocol.packets.FullChunkDataPacket();
+                    p.x = x; p.z = z;
+                    c.encode();
+                    p.payload = c.getBuffer();
+                    sendPacket(p);
+                }
+            }
+
+//            InventoryContentPacket content = new InventoryContentPacket();
+//            content.items = new org.dragonet.proxy.protocol.type.Slot[36];
+//            sendPacket(content);
+            // end of test things*/
+
             connectToServer(proxy.getConfig().getRemote_servers().get(proxy.getConfig().getDefault_server()));
         }
     }
@@ -294,6 +352,9 @@ public class UpstreamSession {
         if(server == null) return;
         connecting = true;
         if(downstream != null && downstream.isConnected()){
+            spawned = false;
+            cachedPackets = null;
+
             downstream.disconnect();
             // TODO: Send chat message about server change.
 
@@ -308,6 +369,7 @@ public class UpstreamSession {
             sendPacket(batch, true); */
             return;
         }
+        cachedPackets = new LinkedList<>();
         if(server.getClass().isAssignableFrom(DesktopServer.class)){
             downstream = new PCDownstreamSession(proxy, this);
             ((PCDownstreamSession)downstream).setProtocol(protocol);
@@ -372,5 +434,29 @@ public class UpstreamSession {
     
     public void onConnected() {
         connecting = false;
+    }
+
+    public void putCachePacket(PEPacket p) {
+        if(spawned || cachedPackets == null) {
+            System.out.println("Not caching since already spawned! ");
+            sendPacket(p);
+            return;
+        }
+        cachedPackets.add(p);
+    }
+
+    public void setSpawned() {
+        spawned = true;
+
+        if(cachedPackets != null) {
+            for(PEPacket p : cachedPackets) {
+                sendPacket(p);
+            }
+
+            PlayStatusPacket play = new PlayStatusPacket(PlayStatusPacket.PLAYER_SPAWN);
+            sendPacket(play);
+
+            cachedPackets = null;
+        }
     }
 }

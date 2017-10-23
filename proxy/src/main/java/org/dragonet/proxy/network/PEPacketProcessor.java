@@ -82,6 +82,12 @@ public class PEPacketProcessor implements Runnable {
             case ProtocolInfo.LOGIN_PACKET:
                 client.onLogin((LoginPacket) packet);
                 break;
+            case ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET:
+                if(client.isLoggedIn()) {
+                    return;
+                }
+                client.postLogin();
+                break;
             case ProtocolInfo.REQUEST_CHUNK_RADIUS_PACKET:
                 client.sendPacket(new ChunkRadiusUpdatedPacket(((RequestChunkRadiusPacket)packet).radius));
                 break;

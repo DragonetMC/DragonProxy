@@ -8,6 +8,8 @@
  */
 package org.dragonet.proxy.protocol.type.chunk;
 
+import org.dragonet.proxy.utilities.BinaryStream;
+
 import java.util.Arrays;
 
 
@@ -15,7 +17,7 @@ import java.util.Arrays;
  * Section of a chunk with informations about blocks and lights. The array of bytes
  * are always ordered `xzy`.
  */
-public class Section extends Stream {
+public class Section {
 
 	public byte storageVersion = 0;
 	public byte[] blockIds = new byte[4096];
@@ -29,26 +31,16 @@ public class Section extends Stream {
 		this.blockMetas = blockMetas;
 	}
 
-	@Override
-	public int length() {
-		return 6145;
+	public void encode(BinaryStream out) {
+		out.putByte(storageVersion);
+		out.put(blockIds);
+		out.put(blockMetas);
 	}
 
-	@Override
-	public byte[] encode() {
-		this._buffer = new byte[this.length()];
-		this.writeLittleEndianByte(storageVersion);
-		this.writeBytes(blockIds);
-		this.writeBytes(blockMetas);
-		return this.getBuffer();
-	}
-
-	@Override
-	public void decode(byte[] buffer) {
-		this._buffer = buffer;
-		storageVersion=readLittleEndianByte();
-		final int bjbnsr=4096; blockIds=this.readBytes(bjbnsr);
-		final int bjbntvym=2048; blockMetas=this.readBytes(bjbntvym);
+	public void decode(BinaryStream in) {
+		storageVersion = (byte) (in.getByte() & 0xFF);
+		blockIds = in.get(4096);
+		blockMetas = in.get(2048);
 	}
 
 	@Override

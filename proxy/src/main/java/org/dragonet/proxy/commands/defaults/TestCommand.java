@@ -53,7 +53,8 @@ public class TestCommand extends Command {
             FullChunkDataPacket chunk = new FullChunkDataPacket();
             chunk.x = Integer.parseInt(args[1]);
             chunk.z = Integer.parseInt(args[2]);
-            chunk.payload = data.encode();
+            data.encode();
+            chunk.payload = data.getBuffer();
             player.sendPacket(chunk);
         }
     }

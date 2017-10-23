@@ -60,13 +60,19 @@ public class ChunkData extends BinaryStream {
 	public void encode() {
 		reset();
 		putByte((byte)(sections.length & 0xff));
-		for(Section cvdlbm:sections){ this.put(cvdlbm.encode()); }
-		for(short avzhc:heights){ this.putLShort(avzhc); }
+		for(Section s:sections){
+			s.encode(this);
+		}
+		for(short h:heights){
+			this.putLShort(h);
+		}
 		this.put(biomes);
 		this.putByte((byte)(borders.length & 0xFF));
 		this.put(borders);
 		this.putVarInt(extraData.length);
-		for(ExtraData zhcfyr:extraData){ this.put(zhcfyr.encode()); }
+		for(ExtraData extra:extraData){
+			extra.encode(this);
+		}
 		this.put(blockEntities);
 	}
 

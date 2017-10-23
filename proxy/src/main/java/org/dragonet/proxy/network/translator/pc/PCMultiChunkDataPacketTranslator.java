@@ -24,6 +24,8 @@ import org.dragonet.proxy.protocol.packets.FullChunkDataPacket;
 import org.dragonet.proxy.protocol.type.chunk.ChunkData;
 import org.dragonet.proxy.protocol.type.chunk.Section;
 
+import java.util.Arrays;
+
 public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<ServerChunkDataPacket> {
 
     @Override
@@ -41,25 +43,29 @@ public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<Serv
 				chunk.encode();
 				pePacket.payload = chunk.getBuffer();
 
-				session.sendPacket(pePacket, true);
+				session.putCachePacket(pePacket);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
         }
-        );
+		);
 
 
         return null;
     }
 
     private void processChunkSection(Chunk[] pc, ChunkData pe) {
-		int maxY = pc.length << 4;
-		if(maxY > 15) maxY = 15;
+		/*pe.sections = new Section[16];
+		for(int i = 0; i < 16; i++) {
+			pe.sections[i] = new Section();
+			if(i < 2)
+				Arrays.fill(pe.sections[i].blockIds, (byte)1);
+		}*/
 		pe.sections = new Section[16];
-		for(int i = 0; i < pe.sections.length; i++) {
+		for(int i = 0; i < 16; i++) {
 			pe.sections[i] = new Section();
 		}
-		for(int y = 0; y < maxY; y++) {
+		for(int y = 0; y < 256; y++) {
 			int cy = y >> 4;
 			if (pc[cy] == null || pc[cy].isEmpty()) continue;
 			BlockStorage blocks = pc[cy].getBlocks();
