@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.dragonet.proxy.entity.meta.type.ByteArrayMeta;
 import org.dragonet.proxy.entity.meta.type.ByteMeta;
+import org.dragonet.proxy.entity.meta.type.LongMeta;
 import org.dragonet.proxy.entity.meta.type.ShortMeta;
 import org.dragonet.proxy.utilities.BinaryStream;
 
@@ -185,6 +186,20 @@ public class EntityMetaData extends BinaryStream {
         }
     }
 
+    public void setGenericFlag(int flagId, boolean value) {
+        long flag = 0;
+        if(!map.containsKey(Constants.DATA_FLAGS)) {
+            map.put(Constants.DATA_FLAGS, new LongMeta(0L));
+        } else {
+            flag = ((LongMeta)map.get(Constants.DATA_FLAGS)).data;
+        }
+        boolean currValue = ((flag >> flagId) & 0b1) > 0;
+        if(currValue != value) {
+            flag ^= (1 << flagId);
+        }
+        ((LongMeta)map.get(Constants.DATA_FLAGS)).data = flag;
+    }
+
     public static EntityMetaData from(BinaryStream source) {
         // TODO
         return createDefault();
@@ -192,12 +207,9 @@ public class EntityMetaData extends BinaryStream {
 
     public static EntityMetaData createDefault() {
         EntityMetaData data = new EntityMetaData();
-        data.set(Constants.DATA_FLAGS, new ByteMeta((byte) 0));
+        data.set(Constants.DATA_FLAGS, new LongMeta(1 << Constants.DATA_FLAG_AFFECTED_BY_GRAVITY));
         data.set(Constants.DATA_AIR, new ShortMeta((short) 300));
         data.set(Constants.DATA_NAMETAG, new ByteArrayMeta(""));
-        data.set(Constants.DATA_FLAG_CAN_SHOW_NAMETAG, new ByteMeta((byte) 0x01));
-        data.set(Constants.DATA_FLAG_SILENT, new ByteMeta((byte) 0));
-        data.set(Constants.DATA_FLAG_NO_AI, new ByteMeta((byte) 0));
         return data;
     }
 

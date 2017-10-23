@@ -16,7 +16,6 @@ import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.network.CacheKey;
-import org.dragonet.proxy.network.PCDownstreamSession;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
@@ -24,6 +23,7 @@ import org.dragonet.proxy.network.translator.PCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.utilities.BlockPosition;
+import org.dragonet.proxy.utilities.Constants;
 import org.dragonet.proxy.utilities.Vector3F;
 
 public class PCPlayerPositionRotationPacketTranslator implements PCPacketTranslator<ServerPlayerPositionRotationPacket> {
@@ -36,7 +36,7 @@ public class PCPlayerPositionRotationPacketTranslator implements PCPacketTransla
                 if (session.getProxy().getAuthMode().equals("online")) {
                     session.sendChat(session.getProxy().getLang().get(Lang.MESSAGE_TELEPORT_TO_SPAWN));
                     MovePlayerPacket pkMovePlayer = new MovePlayerPacket();
-                    pkMovePlayer.position = new Vector3F((float) packet.getX(), (float) packet.getY(), (float) packet.getZ());
+                    pkMovePlayer.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET, (float) packet.getZ());
                     pkMovePlayer.mode = MovePlayerPacket.MODE_TELEPORT;
                     pkMovePlayer.onGround = true;
                     return new PEPacket[]{pkMovePlayer};
@@ -55,7 +55,7 @@ public class PCPlayerPositionRotationPacketTranslator implements PCPacketTransla
             ret.generator = 1;
             ret.gamemode = restored.getGameMode() == GameMode.CREATIVE ? 1 : 0;
             ret.spawnPosition = new BlockPosition((int) packet.getX(), (int) packet.getY(), (int) packet.getZ());
-            ret.position = new Vector3F((float) packet.getX(), (float) packet.getY(), (float) packet.getZ());
+            ret.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET, (float) packet.getZ());
             ret.levelId = "";
             ret.worldName = "World";
             ret.premiumWorldTemplateId = "";
@@ -63,7 +63,7 @@ public class PCPlayerPositionRotationPacketTranslator implements PCPacketTransla
 
             AdventureSettingsPacket adv = new AdventureSettingsPacket();
             adv.setFlag(AdventureSettingsPacket.WORLD_IMMUTABLE, restored.getGameMode().equals(GameMode.SPECTATOR));
-            adv.setFlag(AdventureSettingsPacket.ALLOW_FLIGHT, false);
+            adv.setFlag(AdventureSettingsPacket.ALLOW_FLIGHT, true);
             adv.setFlag(AdventureSettingsPacket.ATTACK_PLAYERS, true);
             adv.setFlag(AdventureSettingsPacket.ATTACK_MOBS, true);
             adv.setFlag(AdventureSettingsPacket.BUILD_AND_MINE, true);
@@ -76,7 +76,7 @@ public class PCPlayerPositionRotationPacketTranslator implements PCPacketTransla
             session.setSpawned();
 
             session.getEntityCache().getClientEntity().x = packet.getX();
-            session.getEntityCache().getClientEntity().y = packet.getY();
+            session.getEntityCache().getClientEntity().y = packet.getY() + Constants.PLAYER_HEAD_OFFSET;
             session.getEntityCache().getClientEntity().z = packet.getZ();
 
             return null;
@@ -91,7 +91,7 @@ public class PCPlayerPositionRotationPacketTranslator implements PCPacketTransla
         pk.headYaw = packet.getYaw();
         CachedEntity cliEntity = session.getEntityCache().getClientEntity();
         cliEntity.x = packet.getX();
-        cliEntity.y = packet.getY();
+        cliEntity.y = packet.getY() + Constants.PLAYER_HEAD_OFFSET;
         cliEntity.z= packet.getZ();
         return new PEPacket[]{pk};
     }

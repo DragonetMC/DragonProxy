@@ -16,6 +16,7 @@ import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadat
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.MetadataType;
 import org.dragonet.proxy.entity.meta.type.ByteArrayMeta;
 import org.dragonet.proxy.entity.meta.type.ByteMeta;
+import org.dragonet.proxy.entity.meta.type.LongMeta;
 import org.dragonet.proxy.entity.meta.type.ShortMeta;
 import org.dragonet.proxy.entity.EntityType;
 import org.dragonet.proxy.entity.meta.EntityMetaData;
@@ -34,12 +35,13 @@ public final class EntityMetaTranslator {
             switch (m.getId()) {
                 case 0://Flags
                     byte pcFlags = ((byte) m.getValue());
-                    byte peFlags = (byte) ((pcFlags & 0x01) > 0 ? EntityMetaData.Constants.DATA_FLAG_ONFIRE : 0);
+                    long peFlags = peMeta.map.containsKey(EntityMetaData.Constants.DATA_FLAGS) ? ((LongMeta)peMeta.map.get(EntityMetaData.Constants.DATA_FLAGS)).data : 0;
+                    peFlags |= (byte) ((pcFlags & 0x01) > 0 ? EntityMetaData.Constants.DATA_FLAG_ONFIRE : 0);
                     peFlags |= (pcFlags & 0x02) > 0 ? EntityMetaData.Constants.DATA_FLAG_SNEAKING : 0;
                     peFlags |= (pcFlags & 0x08) > 0 ? EntityMetaData.Constants.DATA_FLAG_SPRINTING : 0;
                     peFlags |= (pcFlags & 0x10) > 0 ? EntityMetaData.Constants.DATA_FLAG_ACTION : 0;
                     peFlags |= (pcFlags & 0x20) > 0 ? EntityMetaData.Constants.DATA_FLAG_INVISIBLE : 0;
-                    peMeta.map.put(EntityMetaData.Constants.DATA_FLAGS, new ByteMeta(peFlags));
+                    peMeta.map.put(EntityMetaData.Constants.DATA_FLAGS, new LongMeta(peFlags));
                     break;
                 case 1://Air
                     peMeta.map.put(EntityMetaData.Constants.DATA_AIR, new ShortMeta((short) m.getValue()));
@@ -56,7 +58,7 @@ public final class EntityMetaTranslator {
                     }else{
                         data = 1;
                     }
-                    peMeta.map.put(EntityMetaData.Constants.DATA_FLAG_CAN_SHOW_NAMETAG, new ByteMeta(data));
+                    peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_CAN_SHOW_NAMETAG, data > 0);
                     break;
                 case 6://Health
                     //Not supported on MCPE yet
@@ -71,7 +73,7 @@ public final class EntityMetaTranslator {
                     //Not supported on MCPE yet
                     break;
                 case 15://Has no AI
-                    peMeta.map.put(EntityMetaData.Constants.DATA_FLAG_NO_AI, new ByteMeta((byte) m.getValue()));
+                    peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_NO_AI, true);
                     break;
                 case 12://Age
                     byte age;

@@ -60,6 +60,7 @@ public final class Protocol {
         packets.put(INTERACT_PACKET, InteractPacket.class);
         packets.put(PLAYER_ACTION_PACKET, PlayerActionPacket.class);
         packets.put(MOB_EQUIPMENT_PACKET, MobEquipmentPacket.class);
+        packets.put(SET_ENTITY_DATA_PACKET, SetEntityDataPacket.class);
 
         packets.put(CONTAINER_OPEN_PACKET, ContainerOpenPacket.class);
         packets.put(CONTAINER_CLOSE_PACKET, ContainerClosePacket.class);

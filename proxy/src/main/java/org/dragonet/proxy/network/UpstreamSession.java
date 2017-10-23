@@ -32,6 +32,8 @@ import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.RemoteServer;
+import org.dragonet.proxy.entity.meta.EntityMetaData;
+import org.dragonet.proxy.entity.meta.type.ByteMeta;
 import org.dragonet.proxy.network.cache.EntityCache;
 import org.dragonet.proxy.network.cache.WindowCache;
 import org.dragonet.proxy.protocol.PEPacket;
@@ -455,6 +457,13 @@ public class UpstreamSession {
 
             PlayStatusPacket play = new PlayStatusPacket(PlayStatusPacket.PLAYER_SPAWN);
             sendPacket(play);
+
+            SetEntityDataPacket data = new SetEntityDataPacket();
+            data.meta = new EntityMetaData();
+            data.meta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_AFFECTED_BY_GRAVITY, true);
+            data.meta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_SPRINTING, false);
+            data.meta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_CAN_FLY, true);
+            sendPacket(data); // auto use default
 
             cachedPackets = null;
         }
