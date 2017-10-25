@@ -14,7 +14,7 @@ package org.dragonet.proxy.utilities;
 
 public class Versioning {
 
-    public final static String RELEASE_VERSION = "0.1.0-preR1";
+    public final static String RELEASE_VERSION = "0.2.0-preR1";
 
     public final static String MINECRAFT_PC_VERSION = "1.12.1";
     // public final static int MINECRAFT_PC_PROTOCOL = 47;
