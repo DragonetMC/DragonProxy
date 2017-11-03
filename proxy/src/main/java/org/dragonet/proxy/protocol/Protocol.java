@@ -36,6 +36,7 @@ public final class Protocol {
         packets.put(START_GAME_PACKET, StartGamePacket.class);
         packets.put(REQUEST_CHUNK_RADIUS_PACKET, RequestChunkRadiusPacket.class);
         packets.put(CHUNK_RADIUS_UPDATED_PACKET, ChunkRadiusUpdatedPacket.class);
+        packets.put(COMMAND_REQUEST_PACKET, CommandRequestPacket.class);
         packets.put(FULL_CHUNK_DATA_PACKET, FullChunkDataPacket.class);
         packets.put(UPDATE_BLOCK_PACKET, UpdateBlockPacket.class);
         packets.put(TEXT_PACKET, TextPacket.class);
