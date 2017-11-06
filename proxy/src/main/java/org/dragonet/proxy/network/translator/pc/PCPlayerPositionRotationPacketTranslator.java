@@ -15,6 +15,8 @@ package org.dragonet.proxy.network.translator.pc;
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import org.dragonet.proxy.configuration.Lang;
+import org.dragonet.proxy.entity.PEEntityAttribute;
+import org.dragonet.proxy.entity.meta.EntityMetaData;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.network.UpstreamSession;
@@ -61,6 +63,17 @@ public class PCPlayerPositionRotationPacketTranslator implements PCPacketTransla
             ret.premiumWorldTemplateId = "";
             session.sendPacket(ret);
 
+            UpdateAttributesPacket attr = new UpdateAttributesPacket();
+            attr.rtid = 0L;
+            attr.entries = new PEEntityAttribute[] {
+                    PEEntityAttribute.findAttribute(PEEntityAttribute.ABSORPTION),
+                    PEEntityAttribute.findAttribute(PEEntityAttribute.EXHAUSTION),
+                    PEEntityAttribute.findAttribute(PEEntityAttribute.HUNGER),
+                    PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE_LEVEL),
+                    PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE),
+            };
+            session.sendPacket(attr);
+
             AdventureSettingsPacket adv = new AdventureSettingsPacket();
             adv.setFlag(AdventureSettingsPacket.WORLD_IMMUTABLE, restored.getGameMode().equals(GameMode.SPECTATOR));
             adv.setFlag(AdventureSettingsPacket.ALLOW_FLIGHT, true);
@@ -72,6 +85,10 @@ public class PCPlayerPositionRotationPacketTranslator implements PCPacketTransla
             adv.playerPermission = 1;
             adv.setFlag(AdventureSettingsPacket.FLYING, false);
             session.sendPacket(adv);
+
+            SetEntityDataPacket entityData = new SetEntityDataPacket();
+            entityData.meta = EntityMetaData.createDefault();
+            session.sendPacket(entityData);
 
             session.setSpawned();
 

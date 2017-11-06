@@ -19,7 +19,19 @@ public class UpdateAttributesPacket extends PEPacket {
 
     @Override
     public void encodePayload() {
-
+        putUnsignedVarLong(rtid);
+        if(entries != null && entries.length > 0) {
+            putUnsignedVarInt(entries.length);
+            for(PEEntityAttribute attr : entries) {
+                putLFloat(attr.min);
+                putLFloat(attr.max);
+                putLFloat(attr.currentValue);
+                putLFloat(attr.defaultValue);
+                putString(attr.name);
+            }
+        } else {
+            putUnsignedVarInt(0);
+        }
     }
 
     @Override
