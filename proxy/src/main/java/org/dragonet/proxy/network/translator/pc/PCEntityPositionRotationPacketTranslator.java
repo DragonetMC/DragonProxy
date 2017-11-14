@@ -36,7 +36,7 @@ public class PCEntityPositionRotationPacketTranslator implements PCPacketTransla
         pk.yaw = (byte) (e.yaw / (360d / 256d));
         pk.headYaw = (byte) (e.yaw / (360d / 256d));
         pk.pitch = (byte) (e.pitch / (360d / 256d));
-        pk.position = new Vector3F((float) e.getX(), (float) e.getY(), (float) e.getZ());
+        pk.position = new Vector3F((float) e.x, (float) e.y, (float) e.z);
         if(e.player){
             pk.position.y += 1.62f;
         }

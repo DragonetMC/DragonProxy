@@ -17,7 +17,6 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 import com.github.steveice10.packetlib.packet.Packet;
-import lombok.Getter;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.Protocol;
 import org.dragonet.proxy.protocol.ProtocolInfo;
@@ -26,25 +25,27 @@ import org.dragonet.proxy.protocol.packets.LoginPacket;
 import org.dragonet.proxy.protocol.packets.RequestChunkRadiusPacket;
 
 public class PEPacketProcessor implements Runnable {
-
-    public final static int MAX_PACKETS_PER_CYCLE = 200;
-
-    @Getter
+	//vars
+	public final static int MAX_PACKETS_PER_CYCLE = 200;
+	
     private final UpstreamSession client;
-
     private final Deque<byte[]> packets = new ArrayDeque<>();
-
+	
+	//constructor
     public PEPacketProcessor(UpstreamSession client) {
         this.client = client;
     }
-
+	
+	//public
+    public UpstreamSession getClient() {
+    	return client;
+    }
+    
     public void putPacket(byte[] packet) {
         packets.add(packet);
     }
-
-    @Override
+    
     public void run() {
-
         int cnt = 0;
         while (cnt < MAX_PACKETS_PER_CYCLE && !packets.isEmpty()) {
             cnt++;
@@ -65,7 +66,6 @@ public class PEPacketProcessor implements Runnable {
         }
 
     }
-
     public void handlePacket(PEPacket packet) {
         if (packet == null) {
             return;
@@ -111,5 +111,7 @@ public class PEPacketProcessor implements Runnable {
                 break;
         }
     }
-
+	
+	//private
+    
 }

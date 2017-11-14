@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import net.marfgamer.jraknet.RakNet;
 import org.dragonet.proxy.network.SessionRegister;
 import org.dragonet.proxy.network.RaknetInterface;
 import org.dragonet.proxy.configuration.Lang;
@@ -30,55 +29,64 @@ import org.dragonet.proxy.commands.CommandRegister;
 import org.dragonet.proxy.commands.ConsoleCommandReader;
 
 import org.mcstats.Metrics;
-import lombok.Getter;
 import org.yaml.snakeyaml.Yaml;
 
 public class DragonProxy {
-
+	//vars
+	public final static boolean IS_RELEASE = false; //DO NOT CHANGE, ONLY ON PRODUCTION
+	
+    private Logger logger;
+    private final TickerThread ticker = new TickerThread(this);
+    private ServerConfig config;
+    private Lang lang;
+    private SessionRegister sessionRegister;
+    private RaknetInterface network;
+    private boolean shuttingDown;
+    private ScheduledExecutorService generalThreadPool;
+    private CommandRegister commandRegister;
+    private String authMode;
+    private ConsoleCommandReader console;
+    private Metrics metrics;
+    private String motd;
+    private boolean debug = false;
+    
+	//main
     public static void main(String[] args) {
         new DragonProxy().run(args);
     }
-	
-    public final static boolean IS_RELEASE = false; //DO NOT CHANGE, ONLY ON PRODUCTION
-
-    @Getter
-    private Logger logger;
-
-    private final TickerThread ticker = new TickerThread(this);
-
-    @Getter
-    private ServerConfig config;
-
-    @Getter
-    private Lang lang;
-
-    @Getter
-    private SessionRegister sessionRegister;
-
-    @Getter
-    private RaknetInterface network;
-
-    @Getter
-    private boolean shuttingDown;
-
-    @Getter
-    private ScheduledExecutorService generalThreadPool;
-
-    @Getter
-    private CommandRegister commandRegister;
-
-    @Getter
-    private String authMode;
-
-    private ConsoleCommandReader console;
-
-    private Metrics metrics;
-
-    private String motd;
-
-    @Getter
-    private boolean isDebug = false;
-
+    
+    //functions
+    public Logger getLogger() {
+    	return logger;
+    }
+    public ServerConfig getConfig() {
+    	return config;
+    }
+    public Lang getLang() {
+    	return lang;
+    }
+    public SessionRegister getSessionRegister() {
+    	return sessionRegister;
+    }
+    public RaknetInterface getNetwork() {
+    	return network;
+    }
+    public boolean isShuttingDown() {
+    	return shuttingDown;
+    }
+    public ScheduledExecutorService getGeneralThreadPool() {
+    	return generalThreadPool;
+    }
+    public CommandRegister getCommandRegister() {
+    	return commandRegister;
+    }
+    public String getAuthMode() {
+    	return authMode;
+    }
+    public boolean isDebug() {
+    	return debug;
+    }
+    
     public void run(String[] args) {
         logger = new Logger(this);
 
@@ -124,9 +132,9 @@ public class DragonProxy {
 
         // Load language file
         try {
-            lang = new Lang(config.getLang());
+            lang = new Lang(config.lang);
         } catch (IOException ex) {
-            logger.severe("Failed to load language file: " + config.getLang() + "!");
+            logger.severe("Failed to load language file: " + config.lang + "!");
             ex.printStackTrace();
             return;
         }
@@ -134,7 +142,7 @@ public class DragonProxy {
         logger.info(lang.get(Lang.INIT_LOADING, Versioning.RELEASE_VERSION));
         logger.info(lang.get(Lang.INIT_MC_PC_SUPPORT, Versioning.MINECRAFT_PC_VERSION));
         logger.info(lang.get(Lang.INIT_MC_PE_SUPPORT, Versioning.MINECRAFT_PE_VERSION));
-        authMode = config.getMode().toLowerCase();
+        authMode = config.mode.toLowerCase();
         if (!authMode.equals("cls") && !authMode.equals("online") && !authMode.equals("offline")) {
             logger.severe("Invalid login 'mode' option detected, must be cls/online/offline. You set it to '" + authMode + "'! ");
             return;
@@ -154,18 +162,18 @@ public class DragonProxy {
         }
 
         // Create thread pool
-        logger.info(lang.get(Lang.INIT_CREATING_THREAD_POOL, config.getThread_pool_size()));
-        generalThreadPool = Executors.newScheduledThreadPool(config.getThread_pool_size());
+        logger.info(lang.get(Lang.INIT_CREATING_THREAD_POOL, config.thread_pool_size));
+        generalThreadPool = Executors.newScheduledThreadPool(config.thread_pool_size);
 
         // Bind
-        logger.info(lang.get(Lang.INIT_BINDING, config.getUdp_bind_ip(), config.getUdp_bind_port()));
+        logger.info(lang.get(Lang.INIT_BINDING, config.udp_bind_ip, config.udp_bind_port));
         // RakNet.enableLogging();
         network = new RaknetInterface(this,
-                config.getUdp_bind_ip(), //IP
-                config.getUdp_bind_port()); //Port
+                config.udp_bind_ip, //IP
+                config.udp_bind_port); //Port
 
         // MOTD
-        motd = config.getMotd();
+        motd = config.motd;
         motd = motd.replace("&", "\u00a7");
 
         network.setBroadcastName(motd, 1, 2);
@@ -181,7 +189,7 @@ public class DragonProxy {
     public void checkArguments(String[] args){
         for(String arg : args){
             if(arg.toLowerCase().contains("--debug")){
-                isDebug = true;
+                debug = true;
                 getLogger().debug = true;
                 logger.info(MCColor.DARK_AQUA + "Proxy is running in debug mode.");
             }
@@ -191,7 +199,7 @@ public class DragonProxy {
     public void shutdown() {
         logger.info(lang.get(Lang.SHUTTING_DOWN));
 
-        isDebug = false;
+        debug = false;
         this.shuttingDown = true;
         network.shutdown();
         try{

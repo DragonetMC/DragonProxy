@@ -10,8 +10,6 @@ import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.AddPlayerPacket;
 import org.dragonet.proxy.utilities.Vector3F;
 
-import java.util.UUID;
-
 public class PCSpawnPlayerPacketTranslator implements PCPacketTranslator<ServerSpawnPlayerPacket> {
 
     @Override

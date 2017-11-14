@@ -17,7 +17,6 @@ import java.util.Map;
 
 import org.dragonet.proxy.entity.meta.type.*;
 import org.dragonet.proxy.utilities.BinaryStream;
-import org.dragonet.proxy.utilities.BlockPosition;
 
 public class EntityMetaData extends BinaryStream {
 

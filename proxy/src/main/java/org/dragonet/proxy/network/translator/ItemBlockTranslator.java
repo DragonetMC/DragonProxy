@@ -12,15 +12,12 @@
  */
 package org.dragonet.proxy.network.translator;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Map;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
-import org.dragonet.proxy.nbt.stream.NBTInputStream;
 import org.dragonet.proxy.nbt.tag.CompoundTag;
 import org.dragonet.proxy.protocol.type.Slot;
 
@@ -106,7 +103,8 @@ public class ItemBlockTranslator {
         return t;
     }
     
-    public static CompoundTag translateNBT(int id, com.github.steveice10.opennbt.tag.builtin.CompoundTag pcTag){
+    @SuppressWarnings("unchecked")
+	public static CompoundTag translateNBT(int id, com.github.steveice10.opennbt.tag.builtin.CompoundTag pcTag){
         CompoundTag peTag = new CompoundTag();
         if(pcTag != null && pcTag.contains("display")) {
 	  Object o = pcTag.get("display").getValue();
@@ -117,7 +115,7 @@ public class ItemBlockTranslator {
 		  }
 	  } else {
 		if (o instanceof LinkedHashMap) {
-			LinkedHashMap map = (LinkedHashMap) o;
+			LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) o;
 			Set<String> t = map.keySet();
 			  if (t.contains("Name")){
                   com.github.steveice10.opennbt.tag.builtin.StringTag tag = (com.github.steveice10.opennbt.tag.builtin.StringTag ) map.get("Name");

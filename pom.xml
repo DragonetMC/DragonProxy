@@ -1,39 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>9</version>
-    </parent>
-
-    <groupId>org.dragonet.proxy</groupId>
-    <artifactId>DragonProxy-parent</artifactId>
-    <version>0.2.0-preR1</version>
-    <packaging>pom</packaging>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
-
-    <modules>
-        <!--<module>protocol</module>-->
-        <module>proxy</module>
-    </modules>
-    <build>
-	<defaultGoal>clean install</defaultGoal>
-    </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.14.8</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
-
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.dragonet.proxy</groupId>
+  <artifactId>DragonProxy-parent</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+  <name>DragonProxy</name>
+  
+  <build>
+	<defaultGoal>package</defaultGoal>
+  </build>
+  <modules>
+    <!--<module>protocol</module>-->
+    <module>proxy</module>
+  </modules>
+  
+  <description>A proxy for Minecraft: Pocket Editions to join Minecraft desktop(Java) version servers.</description>
+  <url>http://dragonet.org/</url>
 </project>

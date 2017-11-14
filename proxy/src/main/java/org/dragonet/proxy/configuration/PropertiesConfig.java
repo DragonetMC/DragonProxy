@@ -18,13 +18,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import lombok.Getter;
 
 public class PropertiesConfig {
-
-    @Getter
+	//vars
     private final Properties config;
-
+    
+    //constructor
     public PropertiesConfig(String defaultResourcePath, String fileName, boolean saveDefault) throws IOException {
         Properties defaultConfig = new Properties();
         defaultConfig.load(PropertiesConfig.class.getResourceAsStream(defaultResourcePath));
@@ -43,4 +42,12 @@ public class PropertiesConfig {
             ris.close();
         }
     }
+    
+    //public
+    public Properties getConfig() {
+    	return config;
+    }
+    
+    //private
+    
 }

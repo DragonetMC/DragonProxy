@@ -1,14 +1,12 @@
 package org.dragonet.proxy.utilities;
 
 
-import com.github.steveice10.opennbt.NBTIO;
 import org.dragonet.proxy.entity.PEEntityAttribute;
 import org.dragonet.proxy.nbt.stream.NBTInputStream;
 import org.dragonet.proxy.nbt.stream.NBTOutputStream;
 import org.dragonet.proxy.nbt.tag.CompoundTag;
 import org.dragonet.proxy.nbt.tag.Tag;
 import org.dragonet.proxy.protocol.type.PEEntityLink;
-import org.dragonet.proxy.protocol.type.Skin;
 import org.dragonet.proxy.protocol.type.Slot;
 
 import java.io.ByteArrayInputStream;

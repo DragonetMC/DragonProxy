@@ -17,10 +17,8 @@ import java.util.Map;
 
 import com.github.steveice10.mc.protocol.data.MagicValues;
 import com.github.steveice10.mc.protocol.data.game.entity.type.MobType;
-import lombok.Getter;
 
 public enum EntityType {
-
     CHICKEN(10),
     COW(11),
     PIG(12),
@@ -53,16 +51,10 @@ public enum EntityType {
     EXP_ORB(69),
     ARROW(80),
     SNOW_BALL(81);
-
-    @Getter
+	
+	private final static Map<Integer, EntityType> PC_TO_PE = new HashMap<>();
     private final int peType;
-
-    EntityType(int peType) {
-        this.peType = peType;
-    }
-
-    private final static Map<Integer, EntityType> PC_TO_PE = new HashMap<>();
-
+    
     static {
         for (EntityType peType : EntityType.values()) {
             try {
@@ -73,15 +65,21 @@ public enum EntityType {
             }
         }
     }
-
+    
+    EntityType(int peType) {
+        this.peType = peType;
+    }
+    
     public static EntityType convertToPE(MobType pcType) {
         return convertToPE(MagicValues.value(Integer.class, pcType));
     }
-
     public static EntityType convertToPE(int pcType) {
         if (!PC_TO_PE.containsKey(pcType)) {
             return null;
         }
         return PC_TO_PE.get(pcType);
+    }
+    public int getPeType() {
+    	return peType;
     }
 }

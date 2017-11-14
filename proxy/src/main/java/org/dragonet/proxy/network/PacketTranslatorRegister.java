@@ -14,7 +14,6 @@ package org.dragonet.proxy.network;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPlayerListEntryPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.*;
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnObjectPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
@@ -35,8 +34,8 @@ import org.dragonet.proxy.protocol.packets.*;
 
 public final class PacketTranslatorRegister {
 
-    private final static Map<Class<? extends Packet>, PCPacketTranslator> PC_TO_PE_TRANSLATOR = new HashMap<>();
-    private final static Map<Class<? extends PEPacket>, PEPacketTranslator> PE_TO_PC_TRANSLATOR = new HashMap<>();
+    private final static Map<Class<? extends Packet>, PCPacketTranslator<? extends Packet>> PC_TO_PE_TRANSLATOR = new HashMap<>();
+    private final static Map<Class<? extends PEPacket>, PEPacketTranslator<? extends PEPacket>> PE_TO_PC_TRANSLATOR = new HashMap<>();
 
     /**
      * PC to PE
@@ -102,11 +101,12 @@ public final class PacketTranslatorRegister {
         PE_TO_PC_TRANSLATOR.put(MobEquipmentPacket.class, new PEPlayerEquipmentPacketTranslator());
     }
 
-    public static PEPacket[] translateToPE(UpstreamSession session, Packet packet) {
+    @SuppressWarnings("unchecked")
+	public static PEPacket[] translateToPE(UpstreamSession session, Packet packet) {
         if (packet == null) {
             return null;
         }
-        PCPacketTranslator target = PC_TO_PE_TRANSLATOR.get(packet.getClass());
+        PCPacketTranslator<Packet> target = (PCPacketTranslator<Packet>) PC_TO_PE_TRANSLATOR.get(packet.getClass());
         if (target == null) {
             return null;
         }
@@ -118,11 +118,12 @@ public final class PacketTranslatorRegister {
         }
     }
 
-    public static Packet[] translateToPC(UpstreamSession session, PEPacket packet) {
+    @SuppressWarnings("unchecked")
+	public static Packet[] translateToPC(UpstreamSession session, PEPacket packet) {
         if (packet == null) {
             return null;
         }
-        PEPacketTranslator target = PE_TO_PC_TRANSLATOR.get(packet.getClass());
+        PEPacketTranslator<PEPacket> target = (PEPacketTranslator<PEPacket>) PE_TO_PC_TRANSLATOR.get(packet.getClass());
         if (target == null) {
             return null;
         }
