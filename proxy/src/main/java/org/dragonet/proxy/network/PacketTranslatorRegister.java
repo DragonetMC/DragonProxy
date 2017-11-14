@@ -90,6 +90,7 @@ public final class PacketTranslatorRegister {
     static {
         // Chat
         PE_TO_PC_TRANSLATOR.put(TextPacket.class, new PEChatPacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(CommandRequestPacket.class, new PECommandPacketTranslator());
 
         // Entity
         // PE_TO_PC_TRANSLATOR.put(UseItem.class, new PEUseItemPacketTranslator());

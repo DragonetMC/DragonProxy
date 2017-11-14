@@ -20,3 +20,4 @@ nb-configuration.xml
 /.idea
 *.bat
 /config.yml
+run/

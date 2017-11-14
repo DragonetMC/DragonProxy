@@ -83,7 +83,7 @@ public class StartGamePacket extends PEPacket {
         putBoolean(multiplayerGame);
         putBoolean(lanBroadcast);
         putBoolean(xboxLiveBroadcast);
-        putBoolean(commandsEnabled);
+        putBoolean(true);
         putBoolean(texturePacksRequired);
         putGameRules(gameRules);
         putBoolean(bonusChestEnabled);
