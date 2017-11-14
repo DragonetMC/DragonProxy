@@ -39,6 +39,7 @@ import org.dragonet.proxy.network.cache.WindowCache;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.protocol.type.chunk.ChunkData;
+import org.dragonet.proxy.protocol.type.chunk.Section;
 import org.dragonet.proxy.utilities.*;
 
 /**
@@ -227,13 +228,15 @@ public class UpstreamSession {
             StartGamePacket pkStartGame = new StartGamePacket();
             pkStartGame.eid = 0; //Use EID 0 for eaisier management
             pkStartGame.rtid = 0;
-            pkStartGame.dimension = (byte) 0;
+            pkStartGame.dimension = 0;
             pkStartGame.seed = 0;
             pkStartGame.generator = 1;
-            pkStartGame.spawnPosition = new BlockPosition(0, 0, 0);
-            pkStartGame.position = new Vector3F(0f, 72f, 0f);
-            pkStartGame.levelId = "World";
+            pkStartGame.spawnPosition = new BlockPosition(0, 72, 0);
+            pkStartGame.position = new Vector3F(0f, 72f + Constants.PLAYER_HEAD_OFFSET, 0f);
+            pkStartGame.levelId = "";
             pkStartGame.worldName = "World";
+            pkStartGame.defaultPlayerPermission = 2;
+            pkStartGame.commandsEnabled = true;
             pkStartGame.premiumWorldTemplateId = "";
             sendPacket(pkStartGame, true);
 
@@ -241,7 +244,17 @@ public class UpstreamSession {
             pkSpawn.position = new BlockPosition(0, 72, 0);
             sendPacket(pkSpawn, true);
 
-            //TODO: send some initial chunks to prevent shaking
+            ChunkData data = new ChunkData();
+            data.sections = new Section[16];
+            for(int cy = 0; cy < 16; cy++) {
+                data.sections[cy] = new Section();
+                Arrays.fill(data.sections[cy].blockIds, (byte)1);
+            }
+            data.encode();
+            sendPacket(new FullChunkDataPacket(0, 0, data.getBuffer()));
+            sendPacket(new FullChunkDataPacket(0, -1, data.getBuffer()));
+            sendPacket(new FullChunkDataPacket(-1, 0, data.getBuffer()));
+            sendPacket(new FullChunkDataPacket(-1, -1, data.getBuffer()));
 
             PlayStatusPacket pkStat = new PlayStatusPacket();
             pkStat.status = PlayStatusPacket.PLAYER_SPAWN;
@@ -442,7 +455,7 @@ public class UpstreamSession {
     public void putCachePacket(PEPacket p) {
         if(p == null) return;
         if(spawned || cachedPackets == null) {
-            System.out.println("Not caching since already spawned! ");
+            // System.out.println("Not caching since already spawned! ");
             sendPacket(p);
             return;
         }
@@ -457,13 +470,6 @@ public class UpstreamSession {
 
             PlayStatusPacket play = new PlayStatusPacket(PlayStatusPacket.PLAYER_SPAWN);
             sendPacket(play);
-
-            SetEntityDataPacket data = new SetEntityDataPacket();
-            data.meta = new EntityMetaData();
-            data.meta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_AFFECTED_BY_GRAVITY, true);
-            data.meta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_SPRINTING, false);
-            data.meta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_CAN_FLY, true);
-            sendPacket(data); // auto use default
 
             cachedPackets = null;
         }

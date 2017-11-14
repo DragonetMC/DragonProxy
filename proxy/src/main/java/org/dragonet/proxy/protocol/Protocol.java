@@ -40,6 +40,7 @@ public final class Protocol {
         packets.put(UPDATE_BLOCK_PACKET, UpdateBlockPacket.class);
         packets.put(TEXT_PACKET, TextPacket.class);
         packets.put(COMMAND_REQUEST_PACKET, CommandRequestPacket.class);
+        packets.put(CHANGE_DIMENSION_PACKET, ChangeDimensionPacket.class);
         packets.put(REMOVE_ENTITY_PACKET, RemoveEntityPacket.class);
         packets.put(MOB_EFFECT_PACKET, MobEffectPacket.class);
         packets.put(ADD_ITEM_ENTITY_PACKET, AddItemEntityPacket.class);

@@ -38,6 +38,10 @@ public class MovePlayerPacket extends PEPacket {
         putByte(mode);
         putBoolean(onGround);
         putUnsignedVarLong(ridingRuntimeId);
+        if(mode == MODE_TELEPORT) {
+            putLInt(0);
+            putLInt(0);
+        }
     }
 
     @Override
@@ -50,5 +54,9 @@ public class MovePlayerPacket extends PEPacket {
         mode = (byte) (getByte() & 0xFF);
         onGround = getBoolean();
         ridingRuntimeId = getUnsignedVarLong();
+        // if(mode == MODE_TELEPORT) {
+        //   getLInt();
+        //   getLInt();
+        // }
     }
 }
