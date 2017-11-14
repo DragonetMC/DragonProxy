@@ -55,7 +55,7 @@ public final class PacketTranslatorRegister {
         //PC_TO_PE_TRANSLATOR.put(ServerMultiChunkDataPacket.class, new PCMultiChunkDataPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerChunkDataPacket.class, new PCMultiChunkDataPacketTranslator());
 
-        PC_TO_PE_TRANSLATOR.put(ServerUpdateTimePacket.class, new PCUpdateTimePacketTranslator());
+        // PC_TO_PE_TRANSLATOR.put(ServerUpdateTimePacket.class, new PCUpdateTimePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerBlockChangePacket.class, new PCBlockChangePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerMultiBlockChangePacket.class, new PCMultiBlockChangePacketTranslator());
 //        PC_TO_PE_TRANSLATOR.put(ServerUpdateSignPacket.class, new PCUpdateSignPacketTranslator());
@@ -89,6 +89,7 @@ public final class PacketTranslatorRegister {
     static {
         // Chat
         PE_TO_PC_TRANSLATOR.put(TextPacket.class, new PEChatPacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(CommandRequestPacket.class, new PECommandRequestPacketTranslator());
 
         // Entity
         // PE_TO_PC_TRANSLATOR.put(UseItem.class, new PEUseItemPacketTranslator());

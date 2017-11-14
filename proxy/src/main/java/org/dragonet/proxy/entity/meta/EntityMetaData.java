@@ -206,14 +206,14 @@ public class EntityMetaData extends BinaryStream {
 
     public static EntityMetaData createDefault() {
         EntityMetaData data = new EntityMetaData();
-        data.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_AFFECTED_BY_GRAVITY, true);
-        data.setGenericFlag(Constants.DATA_FLAG_ONFIRE, true);
+        data.setGenericFlag(Constants.DATA_FLAG_AFFECTED_BY_GRAVITY, true);
+        data.setGenericFlag(Constants.DATA_FLAG_HAS_COLLISION, true);
         data.set(Constants.DATA_AIR, new ShortMeta((short) 200));
         data.set(Constants.DATA_MAX_AIR, new ShortMeta((short) 400));
         data.set(Constants.DATA_NAMETAG, new ByteArrayMeta("Entity"));
-        // data.set(Constants.DATA_LEAD_HOLDER_EID, new LongMeta(-1L));
-        // data.set(Constants.DATA_SCALE, new FloatMeta(1.0f));
-        // data.set(Constants.DATA_BED_POSITION, new BlockPositionMeta(new BlockPosition(0, 0, 0)));
+        data.set(Constants.DATA_LEAD_HOLDER_EID, new LongMeta(-1L));
+        data.set(Constants.DATA_SCALE, new FloatMeta(1.0f));
+        data.set(Constants.DATA_BED_POSITION, new BlockPositionMeta(new BlockPosition(0, 0, 0)));
         return data;
     }
 

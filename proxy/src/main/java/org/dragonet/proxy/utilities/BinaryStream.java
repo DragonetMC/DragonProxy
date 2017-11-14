@@ -445,9 +445,9 @@ public class BinaryStream {
     }
 
     public void putVector3F(float x, float y, float z) {
-        this.putLFloat(x);
-        this.putLFloat(y);
-        this.putLFloat(z);
+        this.putLFloat(Math.round(x * 10000f) / 10000f);
+        this.putLFloat(Math.round(y * 10000f) / 10000f);
+        this.putLFloat(Math.round(z * 10000f) / 10000f);
     }
 
     /**

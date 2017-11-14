@@ -13,6 +13,20 @@ public class FullChunkDataPacket extends PEPacket {
 
     public byte[] payload;
 
+    public FullChunkDataPacket() {
+    }
+
+    public FullChunkDataPacket(int x, int z) {
+        this.x = x;
+        this.z = z;
+    }
+
+    public FullChunkDataPacket(int x, int z, byte[] payload) {
+        this.x = x;
+        this.z = z;
+        this.payload = payload;
+    }
+
     @Override
     public int pid() {
         return ProtocolInfo.FULL_CHUNK_DATA_PACKET;

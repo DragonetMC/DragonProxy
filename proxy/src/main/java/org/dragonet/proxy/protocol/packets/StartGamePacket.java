@@ -32,8 +32,8 @@ public class StartGamePacket extends PEPacket {
     public boolean eduMode;
     public float rainLevel;
     public float lightningLevel;
-    public boolean multiplayerGame;
-    public boolean lanBroadcast;
+    public boolean multiplayerGame = true;
+    public boolean lanBroadcast = true;
     public boolean xboxLiveBroadcast;
     public boolean commandsEnabled;
     public boolean texturePacksRequired;
