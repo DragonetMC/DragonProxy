@@ -62,6 +62,8 @@ public class PCPlayerPositionRotationPacketTranslator implements PCPacketTransla
             ret.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET, (float) packet.getZ());
             ret.levelId = "";
             ret.worldName = "World";
+            ret.commandsEnabled = true;
+            ret.defaultPlayerPermission = 2;
             ret.premiumWorldTemplateId = "";
             session.sendPacket(ret);
 
@@ -84,8 +86,8 @@ public class PCPlayerPositionRotationPacketTranslator implements PCPacketTransla
             adv.setFlag(AdventureSettingsPacket.ATTACK_MOBS, true);
             adv.setFlag(AdventureSettingsPacket.BUILD_AND_MINE, true);
             // adv.setFlag(AdventureSettingsPacket.NO_CLIP, restored.getGameMode().equals(GameMode.SPECTATOR));
-            adv.commandsPermission = AdventureSettingsPacket.PERMISSION_NORMAL;
-            adv.playerPermission = 1;
+            adv.commandsPermission = AdventureSettingsPacket.PERMISSION_OPERATOR;
+            adv.playerPermission = 2;
             adv.setFlag(AdventureSettingsPacket.FLYING, false);
             session.sendPacket(adv);
 
@@ -125,7 +127,7 @@ public class PCPlayerPositionRotationPacketTranslator implements PCPacketTransla
         // send the confirmation
         ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());
         ((PCDownstreamSession)session.getDownstream()).send(confirm);
-        
+
         return new PEPacket[]{pk};
     }
 }

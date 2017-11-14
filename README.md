@@ -5,13 +5,14 @@ DragonProxy
 - Currently supporting 1.2.x
 - Chat supported
 - Chunk supported
+- Movement supported
 - Inventory WIP
 
 A proxy for **Minecraft Bedrock** connecting to **Minecraft - Java Edition** servers.
 
 Video by **[@MrPowerGamerBR](https://github.com/MrPowerGamerBR)** (On an older version): https://www.youtube.com/watch?v=oRSKQMzZYDE
 
-![Screenshot](https://raw.githubusercontent.com/DragonetMC/DragonProxy/master/screenshots/TheArchon.png)
+![Screenshot](https://raw.githubusercontent.com/DragonetMC/DragonProxy/master/screenshots/MCPE1.2.3.png)
 
 Wanna donate to help us? Go to http://dragonet.org/donate.php
 
