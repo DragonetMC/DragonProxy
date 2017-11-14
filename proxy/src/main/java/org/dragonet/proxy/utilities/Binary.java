@@ -3,7 +3,6 @@ package org.dragonet.proxy.utilities;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -11,6 +10,30 @@ import java.util.UUID;
  * Nukkit Project
  */
 public class Binary {
+
+    public static int signByte(int value) {
+        return value << 56 >> 56;
+    }
+
+    public static int unsignByte(int value) {
+        return value & 0xff;
+    }
+
+    public static int signShort(int value) {
+        return value << 48 >> 48;
+    }
+
+    public int unsignShort(int value) {
+        return value & 0xffff;
+    }
+
+    public static int signInt(int value) {
+        return value << 32 >> 32;
+    }
+
+    public static int unsignInt(int value) {
+        return value;
+    }
 
     //Triad: {0x00,0x00,0x01}<=>1
     public static int readTriad(byte[] bytes) {
@@ -49,7 +72,7 @@ public class Binary {
     }
 
     public static UUID readUUID(byte[] bytes) {
-        return new UUID(readLong(bytes), readLong(new byte[]{
+        return new UUID(readLLong(bytes), readLLong(new byte[]{
                 bytes[8],
                 bytes[9],
                 bytes[10],
@@ -62,7 +85,7 @@ public class Binary {
     }
 
     public static byte[] writeUUID(UUID uuid) {
-        return appendBytes(writeLong(uuid.getMostSignificantBits()), writeLong(uuid.getLeastSignificantBits()));
+        return appendBytes(writeLLong(uuid.getMostSignificantBits()), writeLLong(uuid.getLeastSignificantBits()));
     }
 
     public static boolean readBool(byte b) {

@@ -115,6 +115,7 @@ public class UpstreamSession {
     }
 
     public void sendPacket(PEPacket packet, boolean immediate) {
+        if(packet == null) return;
         System.out.println("Sending [" + packet.getClass().getSimpleName() + "] ");
 
         packet.encode();
@@ -439,6 +440,7 @@ public class UpstreamSession {
     }
 
     public void putCachePacket(PEPacket p) {
+        if(p == null) return;
         if(spawned || cachedPackets == null) {
             System.out.println("Not caching since already spawned! ");
             sendPacket(p);
@@ -451,9 +453,7 @@ public class UpstreamSession {
         spawned = true;
 
         if(cachedPackets != null) {
-            for(PEPacket p : cachedPackets) {
-                sendPacket(p);
-            }
+            cachedPackets.forEach(this::sendPacket);
 
             PlayStatusPacket play = new PlayStatusPacket(PlayStatusPacket.PLAYER_SPAWN);
             sendPacket(play);

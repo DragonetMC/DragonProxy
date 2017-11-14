@@ -14,11 +14,10 @@ package org.dragonet.proxy.entity.meta;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.dragonet.proxy.entity.meta.type.ByteArrayMeta;
-import org.dragonet.proxy.entity.meta.type.ByteMeta;
-import org.dragonet.proxy.entity.meta.type.LongMeta;
-import org.dragonet.proxy.entity.meta.type.ShortMeta;
+
+import org.dragonet.proxy.entity.meta.type.*;
 import org.dragonet.proxy.utilities.BinaryStream;
+import org.dragonet.proxy.utilities.BlockPosition;
 
 public class EntityMetaData extends BinaryStream {
 
@@ -64,6 +63,7 @@ public class EntityMetaData extends BinaryStream {
         /* 27 (byte) player-specific flags
          * 28 (int) player "index"?
          * 29 (block coords) bed position */
+        public final static int DATA_BED_POSITION = 29;
         public final static int DATA_FIREBALL_POWER_X = 30; //float
         public final static int DATA_FIREBALL_POWER_Y = 31;
         public final static int DATA_FIREBALL_POWER_Z = 32;
@@ -195,7 +195,7 @@ public class EntityMetaData extends BinaryStream {
         }
         boolean currValue = ((flag >> flagId) & 0b1) > 0;
         if(currValue != value) {
-            flag ^= (1 << flagId);
+            flag ^= (1L << flagId);
         }
         ((LongMeta)map.get(Constants.DATA_FLAGS)).data = flag;
     }
@@ -207,9 +207,14 @@ public class EntityMetaData extends BinaryStream {
 
     public static EntityMetaData createDefault() {
         EntityMetaData data = new EntityMetaData();
-        data.set(Constants.DATA_FLAGS, new LongMeta(1 << Constants.DATA_FLAG_AFFECTED_BY_GRAVITY));
-        data.set(Constants.DATA_AIR, new ShortMeta((short) 300));
-        data.set(Constants.DATA_NAMETAG, new ByteArrayMeta(""));
+        data.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_AFFECTED_BY_GRAVITY, true);
+        data.setGenericFlag(Constants.DATA_FLAG_ONFIRE, true);
+        data.set(Constants.DATA_AIR, new ShortMeta((short) 200));
+        data.set(Constants.DATA_MAX_AIR, new ShortMeta((short) 400));
+        data.set(Constants.DATA_NAMETAG, new ByteArrayMeta("Entity"));
+        // data.set(Constants.DATA_LEAD_HOLDER_EID, new LongMeta(-1L));
+        // data.set(Constants.DATA_SCALE, new FloatMeta(1.0f));
+        // data.set(Constants.DATA_BED_POSITION, new BlockPositionMeta(new BlockPosition(0, 0, 0)));
         return data;
     }
 

@@ -18,12 +18,13 @@ import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.PEPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
 import org.dragonet.proxy.protocol.packets.MovePlayerPacket;
+import org.dragonet.proxy.utilities.Constants;
 
 public class PEMovePlayerPacketTranslator implements PEPacketTranslator<MovePlayerPacket> {
     
     @Override
     public Packet[] translate(UpstreamSession session, MovePlayerPacket packet) {
-        ClientPlayerPositionRotationPacket pk = new ClientPlayerPositionRotationPacket(!packet.onGround, packet.position.x, packet.position.y, packet.position.z, packet.yaw, packet.pitch);
+        ClientPlayerPositionRotationPacket pk = new ClientPlayerPositionRotationPacket(packet.onGround, packet.position.x, packet.position.y - Constants.PLAYER_HEAD_OFFSET, packet.position.z, packet.yaw, packet.pitch);
         CachedEntity cliEntity = session.getEntityCache().getClientEntity();
         cliEntity.x = packet.position.x;
         cliEntity.y = packet.position.y;

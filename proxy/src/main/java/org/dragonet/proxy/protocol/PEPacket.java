@@ -1,17 +1,7 @@
 package org.dragonet.proxy.protocol;
 
 import lombok.Getter;
-import org.dragonet.proxy.nbt.stream.NBTInputStream;
-import org.dragonet.proxy.nbt.stream.NBTOutputStream;
-import org.dragonet.proxy.nbt.tag.CompoundTag;
-import org.dragonet.proxy.nbt.tag.Tag;
-import org.dragonet.proxy.protocol.type.Slot;
 import org.dragonet.proxy.utilities.BinaryStream;
-import org.dragonet.proxy.utilities.BlockPosition;
-import org.dragonet.proxy.utilities.Vector3F;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 
 /**
  * Created on 2017/10/21.
