@@ -13,11 +13,13 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
+import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientTeleportConfirmPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.entity.PEEntityAttribute;
 import org.dragonet.proxy.entity.meta.EntityMetaData;
 import org.dragonet.proxy.network.CacheKey;
+import org.dragonet.proxy.network.PCDownstreamSession;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
@@ -51,7 +53,7 @@ public class PCPlayerPositionRotationPacketTranslator implements PCPacketTransla
             ServerJoinGamePacket restored = (ServerJoinGamePacket) session.getDataCache().remove(CacheKey.PACKET_JOIN_GAME_PACKET);
             StartGamePacket ret = new StartGamePacket();
             ret.rtid = 0;
-            ret.eid = 0; //Use EID 0 for eaisier management
+            ret.eid = 0; //Use EID 0 for easier management
             ret.dimension = 0;
             ret.seed = 0;
             ret.generator = 1;
@@ -97,12 +99,16 @@ public class PCPlayerPositionRotationPacketTranslator implements PCPacketTransla
             session.getEntityCache().getClientEntity().y = packet.getY() + Constants.PLAYER_HEAD_OFFSET;
             session.getEntityCache().getClientEntity().z = packet.getZ();
 
+            // send the confirmation
+            ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());
+            ((PCDownstreamSession)session.getDownstream()).send(confirm);
+
             return null;
         }
 
         MovePlayerPacket pk = new MovePlayerPacket();
         pk.rtid = 0;
-        pk.mode = MovePlayerPacket.MODE_TELEPORT;
+        pk.mode = MovePlayerPacket.MODE_RESET;
         pk.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET, (float) packet.getZ());
         pk.yaw = packet.getYaw();
         pk.pitch = packet.getPitch();
@@ -111,6 +117,15 @@ public class PCPlayerPositionRotationPacketTranslator implements PCPacketTransla
         cliEntity.x = packet.getX();
         cliEntity.y = packet.getY() + Constants.PLAYER_HEAD_OFFSET;
         cliEntity.z= packet.getZ();
+        cliEntity.yaw = packet.getYaw();
+        cliEntity.pitch = packet.getPitch();
+
+        // session.sendChat(String.format("FORCING TO (%.2f, %.2f, %.2f", packet.getX(), packet.getY(), packet.getZ()));
+
+        // send the confirmation
+        ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());
+        ((PCDownstreamSession)session.getDownstream()).send(confirm);
+        
         return new PEPacket[]{pk};
     }
 }

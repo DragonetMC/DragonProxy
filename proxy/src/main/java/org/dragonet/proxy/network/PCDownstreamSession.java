@@ -70,6 +70,8 @@ public class PCDownstreamSession implements DownstreamSession<Packet> {
 
     @Override
     public void send(Packet packet) {
+        if(packet == null) return;
+        System.out.println("UPSTREAMING >> " + packet.getClass().getSimpleName());
         remoteClient.getSession().send(packet);
     }
 

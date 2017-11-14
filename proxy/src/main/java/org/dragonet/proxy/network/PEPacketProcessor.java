@@ -71,12 +71,12 @@ public class PEPacketProcessor implements Runnable {
             return;
         }
 
-        System.out.println("RECEIVED PACKET=" + packet.getClass().getSimpleName());
-        try{
+        // System.out.println("RECEIVED PACKET=" + packet.getClass().getSimpleName());
+        /* try{
             FileOutputStream fos = new FileOutputStream("cap_" + System.currentTimeMillis() + "_" + packet.getClass().getSimpleName() + ".bin");
             fos.write(packet.getBuffer());
             fos.close();
-        }catch(Exception e){}
+        }catch(Exception e){} */
 
         switch (packet.pid()) {
             case ProtocolInfo.LOGIN_PACKET:

@@ -114,7 +114,6 @@ public final class Protocol {
                 PEPacket pk = c.newInstance();
                 pk.setBuffer(buffer);
                 pk.decode();
-                System.out.println(pk.getClass().getSimpleName());
                 return pk;
             } catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException ex) {
                 ex.printStackTrace();

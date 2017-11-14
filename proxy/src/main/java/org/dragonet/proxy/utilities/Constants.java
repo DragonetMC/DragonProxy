@@ -5,6 +5,6 @@ package org.dragonet.proxy.utilities;
  */
 public class Constants {
 
-    public final static float PLAYER_HEAD_OFFSET = 1.68f;
+    public final static float PLAYER_HEAD_OFFSET = 1.62f;
 
 }
