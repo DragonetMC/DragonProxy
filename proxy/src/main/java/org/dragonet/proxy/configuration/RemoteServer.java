@@ -17,34 +17,17 @@ import java.util.Map;
 
 import org.dragonet.configuration.serialization.ConfigurationSerializable;
 
-import lombok.Getter;
-import lombok.Setter;
-
 public abstract class RemoteServer implements ConfigurationSerializable {
-    @Getter
-    @Setter
-    private String remoteAddr;
+	//vars
+    public String remoteAddr;
+    public int remotePort;
     
-    @Getter
-    @Setter
-    private int remotePort;
-    
-    public void setRemote_addr(String remoteAddr) {
-        setRemoteAddr(remoteAddr);
+    //constructor
+    public RemoteServer() {
+    	super();
     }
     
-    public void setRemote_port(int reportPort) {
-        setRemotePort(reportPort);
-    }
-
-    @Override
-    public Map<String, Object> serialize() {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("remote_addr", remoteAddr);
-        map.put("remote_port", remotePort);
-        return map;
-    }
-    
+    //public
     /**
      * Required for deserailization. 
      * @param server 
@@ -56,4 +39,14 @@ public abstract class RemoteServer implements ConfigurationSerializable {
         server.remotePort = ((Number) map.get("remote_port")).intValue();
         return server;
     }
+    
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("remote_addr", remoteAddr);
+        map.put("remote_port", remotePort);
+        return map;
+    }
+    
+    //private
+    
 }

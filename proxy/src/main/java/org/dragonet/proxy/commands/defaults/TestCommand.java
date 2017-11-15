@@ -17,11 +17,14 @@ import java.util.Arrays;
  * Created on 2017/9/13.
  */
 public class TestCommand extends Command {
+	//vars
+	
+	//constructor
     public TestCommand(String name) {
         super(name);
     }
-
-    @Override
+    
+    //public
     public void execute(DragonProxy proxy, String[] args) {
         UpstreamSession player = proxy.getSessionRegister().getAll().values().toArray(new UpstreamSession[1])[0];
         if(args[0].equalsIgnoreCase("status")) {
@@ -31,7 +34,7 @@ public class TestCommand extends Command {
         } else if(args[0].equalsIgnoreCase("res")) {
             player.sendPacket(new ResourcePacksInfoPacket());
         } else if(args[0].equalsIgnoreCase("spawnpos")) {
-            player.sendChat("spawn at: " + player.getEntityCache().getClientEntity().getX() + ", " + player.getEntityCache().getClientEntity().getY() + ", " + player.getEntityCache().getClientEntity().getZ());
+            player.sendChat("spawn at: " + player.getEntityCache().getClientEntity().x + ", " + player.getEntityCache().getClientEntity().y + ", " + player.getEntityCache().getClientEntity().z);
         } else if(args[0].equalsIgnoreCase("tp")) {
             Vector3F dest = new Vector3F(Float.parseFloat(args[1]), Float.parseFloat(args[2]), Float.parseFloat(args[3]));
             MovePlayerPacket m = new MovePlayerPacket();
@@ -58,4 +61,7 @@ public class TestCommand extends Command {
             player.sendPacket(chunk);
         }
     }
+    
+    //private
+    
 }

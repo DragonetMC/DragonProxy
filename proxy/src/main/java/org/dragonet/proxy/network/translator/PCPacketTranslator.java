@@ -15,7 +15,9 @@ package org.dragonet.proxy.network.translator;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.protocol.PEPacket;
 
-public interface PCPacketTranslator<P extends com.github.steveice10.packetlib.packet.Packet> {
+import com.github.steveice10.packetlib.packet.Packet;
+
+public interface PCPacketTranslator<P extends Packet> {
 
     /**
      * Translate a packet from PC version to PE version.

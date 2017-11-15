@@ -14,18 +14,26 @@ package org.dragonet.proxy.utilities.io;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import lombok.Getter;
 
 public class DataIOPair {
-
-    private @Getter
+	//vars
     DataInputStream input;
-
-    private @Getter
     DataOutputStream output;
-
+    
+    //constructor
     public DataIOPair(DataInputStream input, DataOutputStream output) {
         this.input = input;
         this.output = output;
     }
+    
+    //public
+    public DataInputStream getInput() {
+    	return input;
+    }
+    public DataOutputStream getOutput() {
+    	return output;
+    }
+    
+    //private
+    
 }

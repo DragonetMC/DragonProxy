@@ -12,12 +12,9 @@
  */
 package org.dragonet.proxy.network;
 
-import java.io.FileOutputStream;
 import java.net.InetSocketAddress;
 import java.util.*;
 
-import io.netty.buffer.ByteBuf;
-import lombok.Getter;
 import net.marfgamer.jraknet.RakNetPacket;
 import net.marfgamer.jraknet.identifier.MinecraftIdentifier;
 import net.marfgamer.jraknet.server.RakNetServer;
@@ -29,21 +26,18 @@ import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.utilities.Versioning;
 
 public class RaknetInterface implements RakNetServerListener {
-
-    public final static Set<String> IMMEDIATE_PACKETS = new HashSet<>();
-
+	//vars
+	public final static Set<String> IMMEDIATE_PACKETS = new HashSet<>();
+	
+    private final DragonProxy proxy;
+    private final SessionRegister sessions;
+    private final RakNetServer rakServer;
+	
     static {
         IMMEDIATE_PACKETS.add("PlayStatus");
     }
-
-    @Getter
-    private final DragonProxy proxy;
-
-    private final SessionRegister sessions;
-
-    @Getter
-    private final RakNetServer rakServer;
-
+	
+	//constructor
     public RaknetInterface(DragonProxy proxy, String ip, int port) {
         this.proxy = proxy;
         rakServer = new RakNetServer(port, Integer.MAX_VALUE);
@@ -52,41 +46,21 @@ public class RaknetInterface implements RakNetServerListener {
         sessions = this.proxy.getSessionRegister();
         rakServer.startThreaded();
     }
-
-    public void setBroadcastName(String serverName, int players, int maxPlayers) {
-        rakServer.setIdentifier(new MinecraftIdentifier(serverName, Versioning.MINECRAFT_PE_PROTOCOL, Versioning.MINECRAFT_PE_VERSION, players, maxPlayers, new Random().nextLong(), "DragonProxy", "Survival"));
-        if(!rakServer.isBroadcastingEnabled()) {
-            rakServer.setBroadcastingEnabled(true);
-        }
+	
+	//public
+    public DragonProxy getProxy() {
+    	return proxy;
     }
-
+    public RakNetServer getRakServer() {
+    	return rakServer;
+    }
+    
     /* public void onTick() {
     } */
-
-    @Override
+    
     public void handlePing(ServerPing ping) {
         System.out.println("PING " + ping.getSender().toString());
     }
-
-    @Override
-    public void onClientConnect(RakNetClientSession session) {
-        System.out.println("CLIENT CONNECT");
-        String identifier = session.getAddress().toString();
-        UpstreamSession upstream = new UpstreamSession(proxy, identifier, session, session.getAddress());
-        sessions.newSession(upstream);
-    }
-
-    @Override
-    public void onClientDisconnect(RakNetClientSession session, String reason) {
-        System.out.println("CLIENT DISCONNECT");
-        UpstreamSession upstream = sessions.getSession(session.getAddress().toString());
-        if (upstream == null) {
-            return;
-        }
-        upstream.onDisconnect(proxy.getLang().get(Lang.MESSAGE_CLIENT_DISCONNECT)); //It will handle rest of the things.
-    }
-
-    @Override
     public void handleMessage(RakNetClientSession session, RakNetPacket packet, int channel) {
         UpstreamSession upstream = sessions.getSession(session.getAddress().toString());
         if (upstream == null) {
@@ -95,26 +69,46 @@ public class RaknetInterface implements RakNetServerListener {
         // System.out.println("Received RakNet packet: " + packet.getClass().getSimpleName());
         upstream.handlePacketBinary(packet.array());
     }
-
-    @Override
+    
+    public void onClientConnect(RakNetClientSession session) {
+        System.out.println("CLIENT CONNECT");
+        String identifier = session.getAddress().toString();
+        UpstreamSession upstream = new UpstreamSession(proxy, identifier, session, session.getAddress());
+        sessions.newSession(upstream);
+    }
+    public void onClientDisconnect(RakNetClientSession session, String reason) {
+        System.out.println("CLIENT DISCONNECT");
+        UpstreamSession upstream = sessions.getSession(session.getAddress().toString());
+        if (upstream == null) {
+            return;
+        }
+        upstream.onDisconnect(proxy.getLang().get(Lang.MESSAGE_CLIENT_DISCONNECT)); //It will handle rest of the things.
+    }
+    
     public void onThreadException(Throwable throwable) {
         System.out.println("Thread exception: " + throwable.getMessage());
         throwable.printStackTrace();
     }
-
-    @Override
     public void onHandlerException(InetSocketAddress address, Throwable throwable) {
         System.out.println("Handler exception: " + throwable.getMessage());
         throwable.printStackTrace();
     }
-
-    @Override
     public void onSessionException(RakNetClientSession session, Throwable throwable) {
         System.out.println("Session exception: " + throwable.getMessage());
         throwable.printStackTrace();
     }
-
+    
+    public void setBroadcastName(String serverName, int players, int maxPlayers) {
+        rakServer.setIdentifier(new MinecraftIdentifier(serverName, Versioning.MINECRAFT_PE_PROTOCOL, Versioning.MINECRAFT_PE_VERSION, players, maxPlayers, new Random().nextLong(), "DragonProxy", "Survival"));
+        if(!rakServer.isBroadcastingEnabled()) {
+            rakServer.setBroadcastingEnabled(true);
+        }
+    }
+    
     public void shutdown() {
         rakServer.shutdown();
     }
+	
+	//private
+    
 }

@@ -25,7 +25,6 @@ import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import lombok.Getter;
 import net.marfgamer.jraknet.protocol.Reliability;
 import net.marfgamer.jraknet.session.RakNetClientSession;
 import org.dragonet.proxy.DesktopServer;
@@ -47,61 +46,33 @@ import org.dragonet.proxy.utilities.*;
  * clients.
  */
 public class UpstreamSession {
-
-    @Getter
+	//vars
     private final DragonProxy proxy;
-
-    @Getter
     private final String raknetID;
-
-    @Getter
     private final RakNetClientSession raknetClient;
-
-    @Getter
     private boolean loggedIn;
-
-    @Getter
     private boolean spawned;
-
     private List<PEPacket> cachedPackets;
-
-    @Getter
     private final InetSocketAddress remoteAddress;
-
-    @Getter
     private final PEPacketProcessor packetProcessor;
-
     private final ScheduledFuture<?> packetProcessorScheule;
-
-    @Getter
     private LoginChainDecoder profile;
-
-    @Getter
     private String username;
-
-    @Getter
     private DownstreamSession downstream;
 
     /* =======================================================================================================
      * |                                 Caches for Protocol Compatibility                                   |
     /* ======================================================================================================= */
-    @Getter
     private final Map<String, Object> dataCache = Collections.synchronizedMap(new HashMap<String, Object>());
-
-    @Getter
     private final Map<UUID, PlayerListEntry> playerInfoCache = Collections.synchronizedMap(new HashMap<UUID, PlayerListEntry>());
-
-    @Getter
     private final EntityCache entityCache = new EntityCache(this);
-
-    @Getter
     private final WindowCache windowCache = new WindowCache(this);
-
     protected boolean connecting;
     
     /* ======================================================================================================= */
     private MinecraftProtocol protocol;
-
+	
+	//constructor
     public UpstreamSession(DragonProxy proxy, String raknetID, RakNetClientSession raknetClient, InetSocketAddress remoteAddress) {
         this.proxy = proxy;
         this.raknetID = raknetID;
@@ -110,11 +81,55 @@ public class UpstreamSession {
         packetProcessor = new PEPacketProcessor(this);
         packetProcessorScheule = proxy.getGeneralThreadPool().scheduleAtFixedRate(packetProcessor, 10, 50, TimeUnit.MILLISECONDS);
     }
-
+	
+	//public
+    public DragonProxy getProxy() {
+    	return proxy;
+    }
+    public String getRaknetID() {
+    	return raknetID;
+    }
+    public RakNetClientSession getRaknetClient() {
+    	return raknetClient;
+    }
+    public boolean isLoggedIn() {
+    	return loggedIn;
+    }
+    public boolean isSpawned() {
+    	return spawned;
+    }
+    public InetSocketAddress getRemoteAddress() {
+    	return remoteAddress;
+    }
+    public PEPacketProcessor getPacketProcessor() {
+    	return packetProcessor;
+    }
+    public LoginChainDecoder getProfile() {
+    	return profile;
+    }
+    public String getUsername() {
+    	return username;
+    }
+    public DownstreamSession getDownstream() {
+    	return downstream;
+    }
+    
+    public Map<String, Object> getDataCache() {
+    	return dataCache;
+    }
+    public Map<UUID, PlayerListEntry> getPlayerInfoCache() {
+    	return playerInfoCache;
+    }
+    public EntityCache getEntityCache() {
+    	return entityCache;
+    }
+    public WindowCache getWindowCache() {
+    	return windowCache;
+    }
+    
     public void sendPacket(PEPacket packet) {
         sendPacket(packet, false);
     }
-
     public void sendPacket(PEPacket packet, boolean immediate) {
         if(packet == null) return;
         // System.out.println("Sending [" + packet.getClass().getSimpleName() + "] ");
@@ -135,7 +150,6 @@ public class UpstreamSession {
         // handler.sendEncapsulated(identifier, encapsulated, RakNet.FLAG_NEED_ACK | (overridedImmediate ? RakNet.PRIORITY_IMMEDIATE : RakNet.PRIORITY_NORMAL));
         raknetClient.sendMessage(Reliability.RELIABLE_ORDERED, 0, new net.marfgamer.jraknet.Packet(Binary.appendBytes((byte) 0xfe, buffer)));
     }
-
     public void sendAllPackets(PEPacket[] packets, boolean immediate) {
         if (packets.length < 5) {
             for (PEPacket packet : packets) {
@@ -156,13 +170,43 @@ public class UpstreamSession {
             sendPacket(batch, mustImmediate);
         }*/
     }
+    
+    public void connectToServer(RemoteServer server){
+        if(server == null) return;
+        connecting = true;
+        if(downstream != null && downstream.isConnected()){
+            spawned = false;
+            cachedPackets = null;
 
-    public void onTick() {
-        entityCache.onTick();
-        if(downstream != null)
-            downstream.onTick();
+            downstream.disconnect();
+            // TODO: Send chat message about server change.
+
+            // Remove all loaded entities
+            /* BatchPacket batch = new BatchPacket();
+            this.entityCache.getEntities().entrySet().forEach((ent) -> {
+                if(ent.getKey() != 0){
+                    batch.packets.add(new RemoveEntityPacket(ent.getKey()));
+                }
+            });
+            this.entityCache.reset(true);
+            sendPacket(batch, true); */
+            return;
+        }
+        cachedPackets = new LinkedList<>();
+        if(server.getClass().isAssignableFrom(DesktopServer.class)){
+            downstream = new PCDownstreamSession(proxy, this);
+            ((PCDownstreamSession)downstream).protocol = protocol;
+            downstream.connect(server.remoteAddr, server.remotePort);
+        }else{
+            // downstream = new PEDownstreamSession(proxy, this);
+            // ((PEDownstreamSession)downstream).connect((PocketServer) server);
+            disconnect("PE targets not supported yet");
+        }
     }
-
+    public void onConnected() {
+        connecting = false;
+    }
+    
     /**
      * Disconnected from server. 
      * @param reason 
@@ -173,7 +217,6 @@ public class UpstreamSession {
             //RakNet server will call onDisconnect()
         }
     }
-
     /**
      * Called when this client disconnects.
      *
@@ -187,11 +230,34 @@ public class UpstreamSession {
         proxy.getSessionRegister().removeSession(this);
         packetProcessorScheule.cancel(true);
     }
+    
+    public void authenticate(String password) {
+        proxy.getGeneralThreadPool().execute(() -> {
+            try {
+                protocol = new MinecraftProtocol((String) dataCache.get(CacheKey.AUTHENTICATION_EMAIL), password, false);
+            } catch (RequestException ex) {
+                if (ex.getMessage().toLowerCase().contains("invalid")) {
+                    sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_FAILD));
+                    disconnect(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_FAILD));
+                    return;
+                } else {
+                    sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_ERROR));
+                    disconnect(proxy.getLang().get(Lang.MESSAGE_ONLINE_ERROR));
+                    return;
+                }
+            }
 
-    public void handlePacketBinary(byte[] packet) {
-        packetProcessor.putPacket(packet);
+            if (!username.equals(protocol.getProfile().getName())) {
+                username = protocol.getProfile().getName();
+                sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_USERNAME, username));
+            }
+
+            sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_SUCCESS, username));
+
+            proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_SUCCESS_CONSOLE, username, remoteAddress, username));
+            connectToServer(proxy.getConfig().remote_servers.get(proxy.getConfig().default_server));
+        });
     }
-
     public void onLogin(LoginPacket packet) {
         if (username != null) {
             disconnect("Already logged in, this must be an error! ");
@@ -218,7 +284,6 @@ public class UpstreamSession {
 
         // now wait for response
     }
-
     public void postLogin() {
         sendPacket(new ResourcePackStackPacket());
 
@@ -307,12 +372,12 @@ public class UpstreamSession {
             HTTP.performGetRequest("http://api.dragonet.org/cls/update_token.php?" + String.format("username=%s&oldtoken=%s&newtoken=%s", name, obj.get("token").getAsString(), authSvc.getAccessToken()));
             protocol = new MinecraftProtocol(authSvc.getSelectedProfile(), authSvc.getAccessToken());
 
-            proxy.getLogger().debug("Initially joining [" + proxy.getConfig().getDefault_server() + "]... ");
-            connectToServer(proxy.getConfig().getRemote_servers().get(proxy.getConfig().getDefault_server()));
+            proxy.getLogger().debug("Initially joining [" + proxy.getConfig().default_server + "]... ");
+            connectToServer(proxy.getConfig().remote_servers.get(proxy.getConfig().default_server));
         } else {
             protocol = new MinecraftProtocol(username);
 
-            proxy.getLogger().debug("Initially joining [" + proxy.getConfig().getDefault_server() + "]... ");
+            proxy.getLogger().debug("Initially joining [" + proxy.getConfig().default_server + "]... ");
 
             /*// begin test things
             StartGamePacket pkStartGame = new StartGamePacket();
@@ -360,43 +425,29 @@ public class UpstreamSession {
 //            sendPacket(content);
             // end of test things*/
 
-            connectToServer(proxy.getConfig().getRemote_servers().get(proxy.getConfig().getDefault_server()));
+            connectToServer(proxy.getConfig().remote_servers.get(proxy.getConfig().default_server));
         }
     }
     
-    public void connectToServer(RemoteServer server){
-        if(server == null) return;
-        connecting = true;
-        if(downstream != null && downstream.isConnected()){
-            spawned = false;
+    public void setSpawned() {
+        spawned = true;
+
+        if(cachedPackets != null) {
+            cachedPackets.forEach(this::sendPacket);
+
+            PlayStatusPacket play = new PlayStatusPacket(PlayStatusPacket.PLAYER_SPAWN);
+            sendPacket(play);
+
+            SetEntityDataPacket data = new SetEntityDataPacket();
+            data.meta = new EntityMetaData();
+            data.meta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_AFFECTED_BY_GRAVITY, true);
+            data.meta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_SPRINTING, false);
+            data.meta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_CAN_FLY, true);
+            sendPacket(data); // auto use default
+
             cachedPackets = null;
-
-            downstream.disconnect();
-            // TODO: Send chat message about server change.
-
-            // Remove all loaded entities
-            /* BatchPacket batch = new BatchPacket();
-            this.entityCache.getEntities().entrySet().forEach((ent) -> {
-                if(ent.getKey() != 0){
-                    batch.packets.add(new RemoveEntityPacket(ent.getKey()));
-                }
-            });
-            this.entityCache.reset(true);
-            sendPacket(batch, true); */
-            return;
-        }
-        cachedPackets = new LinkedList<>();
-        if(server.getClass().isAssignableFrom(DesktopServer.class)){
-            downstream = new PCDownstreamSession(proxy, this);
-            ((PCDownstreamSession)downstream).setProtocol(protocol);
-            downstream.connect(server.getRemoteAddr(), server.getRemotePort());
-        }else{
-            // downstream = new PEDownstreamSession(proxy, this);
-            // ((PEDownstreamSession)downstream).connect((PocketServer) server);
-            disconnect("PE targets not supported yet");
         }
     }
-
     public void sendChat(String chat) {
         if (chat.contains("\n")) {
             String[] lines = chat.split("\n");
@@ -410,7 +461,6 @@ public class UpstreamSession {
         text.message = chat;
         sendPacket(text, true);
     }
-
     public void sendFakeBlock(int x, int y, int z, int id, int meta) {
         UpdateBlockPacket pkBlock = new UpdateBlockPacket();
         pkBlock.id = id;
@@ -419,39 +469,10 @@ public class UpstreamSession {
         pkBlock.blockPosition = new BlockPosition(x, y, z);
         sendPacket(pkBlock, true);
     }
-
-    public void authenticate(String password) {
-        proxy.getGeneralThreadPool().execute(() -> {
-            try {
-                protocol = new MinecraftProtocol((String) dataCache.get(CacheKey.AUTHENTICATION_EMAIL), password, false);
-            } catch (RequestException ex) {
-                if (ex.getMessage().toLowerCase().contains("invalid")) {
-                    sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_FAILD));
-                    disconnect(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_FAILD));
-                    return;
-                } else {
-                    sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_ERROR));
-                    disconnect(proxy.getLang().get(Lang.MESSAGE_ONLINE_ERROR));
-                    return;
-                }
-            }
-
-            if (!username.equals(protocol.getProfile().getName())) {
-                username = protocol.getProfile().getName();
-                sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_USERNAME, username));
-            }
-
-            sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_SUCCESS, username));
-
-            proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_SUCCESS_CONSOLE, username, remoteAddress, username));
-            connectToServer(proxy.getConfig().getRemote_servers().get(proxy.getConfig().getDefault_server()));
-        });
-    }
     
-    public void onConnected() {
-        connecting = false;
+    public void handlePacketBinary(byte[] packet) {
+        packetProcessor.putPacket(packet);
     }
-
     public void putCachePacket(PEPacket p) {
         if(p == null) return;
         if(spawned || cachedPackets == null) {
@@ -461,6 +482,12 @@ public class UpstreamSession {
         }
         cachedPackets.add(p);
     }
+	
+    public void onTick() {
+        entityCache.onTick();
+        if(downstream != null)
+            downstream.onTick();
+	}
 
     public void setSpawned() {
         spawned = true;
@@ -474,4 +501,7 @@ public class UpstreamSession {
             cachedPackets = null;
         }
     }
+	
+	//private
+    
 }

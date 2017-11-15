@@ -13,11 +13,9 @@
 package org.dragonet;
 
 import java.util.HashMap;
-import lombok.Getter;
-import lombok.Setter;
 
 public class PocketPotionEffect {
-
+	//vars
     public final static int SPEED = 1;
     public final static int SLOWNESS = 2;
     public final static int HASTE = 3;
@@ -44,9 +42,9 @@ public class PocketPotionEffect {
     public final static int HEALTH_BOOST = 21;
 //public final static int  ABSORPTION = 22;
 //public final static int SATURATION = 23;
-
+    
     private final static HashMap<Integer, PocketPotionEffect> EFFECTS = new HashMap<>();
-
+    
     static {
         EFFECTS.put(SPEED, new PocketPotionEffect(SPEED));
         EFFECTS.put(SLOWNESS, new PocketPotionEffect(SLOWNESS));
@@ -68,7 +66,18 @@ public class PocketPotionEffect {
         EFFECTS.put(WITHER, new PocketPotionEffect(WITHER));
         EFFECTS.put(HEALTH_BOOST, new PocketPotionEffect(HEALTH_BOOST));
     }
-
+    
+    public int amplifier;
+    public int duration;
+    public boolean particles;
+    private final int effect;
+    
+    //constructor
+    public PocketPotionEffect(int effect) {
+        this.effect = effect;
+    }
+    
+    //public
     public static PocketPotionEffect getByID(int id) {
         if (EFFECTS.containsKey(id)) {
             return EFFECTS.get((Integer) id).clone();
@@ -76,33 +85,17 @@ public class PocketPotionEffect {
             return null;
         }
     }
-
-    @Getter
-    private final int effect;
-
-    @Getter
-    @Setter
-    private int ampilifier;
-
-    @Getter
-    @Setter
-    private int duration;
-
-    @Getter
-    @Setter
-    private boolean particles;
-
-    public PocketPotionEffect(int effect) {
-        this.effect = effect;
+    
+    public int getEffect() {
+    	return effect;
     }
-
-    @Override
+    
+    //private
     protected PocketPotionEffect clone() {
         PocketPotionEffect eff = new PocketPotionEffect(effect);
-        eff.setAmpilifier(ampilifier);
-        eff.setParticles(particles);
-        eff.setDuration(duration);
+        eff.amplifier = amplifier;
+        eff.particles = particles;
+        eff.duration = duration;
         return eff;
     }
-
 }
