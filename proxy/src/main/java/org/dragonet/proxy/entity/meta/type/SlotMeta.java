@@ -13,25 +13,28 @@
 package org.dragonet.proxy.entity.meta.type;
 
 import org.dragonet.proxy.entity.meta.EntityMetaData;
-import org.dragonet.proxy.entity.meta.EntityMetaDataObject;
+import org.dragonet.proxy.entity.meta.IEntityMetaDataObject;
 import org.dragonet.proxy.protocol.type.Slot;
 import org.dragonet.proxy.utilities.BinaryStream;
 
-public class SlotMeta implements EntityMetaDataObject {
+public class SlotMeta implements IEntityMetaDataObject {
+	// vars
+	public Slot slot;
 
-    public Slot slot;
+	// constructor
+	public SlotMeta(Slot slot) {
+		this.slot = slot;
+	}
 
-    public SlotMeta(Slot slot) {
-        this.slot = slot;
-    }
+	// public
+	public int type() {
+		return EntityMetaData.Constants.DATA_TYPE_SLOT;
+	}
 
-    @Override
-    public int type() {
-        return EntityMetaData.Constants.DATA_TYPE_SLOT;
-    }
+	public void encode(BinaryStream out) {
+		out.putSlot(slot);
+	}
 
-    @Override
-    public void encode(BinaryStream out) {
-        out.putSlot(slot);
-    }
+	// private
+
 }

@@ -13,15 +13,21 @@
 package org.dragonet.proxy.utilities;
 
 public class Versioning {
+	// vars
+	public static final String RELEASE_VERSION = "0.2.0-preR1";
+	public static final String MINECRAFT_PC_VERSION = "1.12.1";
+	// public static final int MINECRAFT_PC_PROTOCOL = 47;
+	// This is STRICT to MCPE binary's definition, DO NOT CHANGE
+	public static final String MINECRAFT_PE_VERSION = "1.2.2";
+	public static final int MINECRAFT_PE_PROTOCOL = 137;
 
-    public final static String RELEASE_VERSION = "0.2.0-preR1";
+	// constructor
+	public Versioning() {
 
-    public final static String MINECRAFT_PC_VERSION = "1.12.1";
-    // public final static int MINECRAFT_PC_PROTOCOL = 47;
+	}
 
-    // This is STRICT to MCPE binary's definition, DO NOT CHANGE
-    public final static String MINECRAFT_PE_VERSION = "1.2.2";
-    
-    public final static int MINECRAFT_PE_PROTOCOL = 137;
+	// public
+
+	// private
 
 }

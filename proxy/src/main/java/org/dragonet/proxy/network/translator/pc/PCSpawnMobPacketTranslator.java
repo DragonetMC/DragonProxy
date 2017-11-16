@@ -15,36 +15,44 @@ package org.dragonet.proxy.network.translator.pc;
 import org.dragonet.proxy.entity.meta.EntityMetaData;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.translator.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.AddEntityPacket;
 import org.dragonet.proxy.utilities.Vector3F;
 
-public class PCSpawnMobPacketTranslator implements PCPacketTranslator<ServerSpawnMobPacket> {
+public class PCSpawnMobPacketTranslator implements IPCPacketTranslator<ServerSpawnMobPacket> {
+	// vars
 
-    @Override
-    public PEPacket[] translate(UpstreamSession session, ServerSpawnMobPacket packet) {
-        try {
-            CachedEntity e = session.getEntityCache().newEntity(packet);
-            if (e == null) {
-                return null;
-            }
+	// constructor
+	public PCSpawnMobPacketTranslator() {
 
-            AddEntityPacket pk = new AddEntityPacket();
-            pk.rtid = e.eid;
-            pk.eid = e.eid;
-            pk.type = e.peType.getPeType();
-            pk.position = new Vector3F((float) e.x, (float) e.y, (float) e.z);
-            pk.motion = new Vector3F((float) e.motionX, (float) e.motionY, (float) e.motionZ);
-            //TODO: Hack for now. ;P 
-            pk.meta = EntityMetaData.createDefault();
+	}
 
-            return new PEPacket[]{pk};
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+	// public
+	public PEPacket[] translate(UpstreamSession session, ServerSpawnMobPacket packet) {
+		try {
+			CachedEntity e = session.getEntityCache().newEntity(packet);
+			if (e == null) {
+				return null;
+			}
+
+			AddEntityPacket pk = new AddEntityPacket();
+			pk.rtid = e.eid;
+			pk.eid = e.eid;
+			pk.type = e.peType.getPeType();
+			pk.position = new Vector3F((float) e.x, (float) e.y, (float) e.z);
+			pk.motion = new Vector3F((float) e.motionX, (float) e.motionY, (float) e.motionZ);
+			// TODO: Hack for now. ;P
+			pk.meta = EntityMetaData.createDefault();
+
+			return new PEPacket[] { pk };
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	// private
 
 }

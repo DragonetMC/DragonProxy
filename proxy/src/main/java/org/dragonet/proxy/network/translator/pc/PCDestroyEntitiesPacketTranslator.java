@@ -15,24 +15,32 @@ package org.dragonet.proxy.network.translator.pc;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityDestroyPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.translator.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.RemoveEntityPacket;
 
-public class PCDestroyEntitiesPacketTranslator implements PCPacketTranslator<ServerEntityDestroyPacket> {
+public class PCDestroyEntitiesPacketTranslator implements IPCPacketTranslator<ServerEntityDestroyPacket> {
+	// vars
 
-    @Override
-    public PEPacket[] translate(UpstreamSession session, ServerEntityDestroyPacket packet) {
-        PEPacket[] ret = new PEPacket[packet.getEntityIds().length];
-        for (int i = 0; i < ret.length; i++) {
-            CachedEntity e = session.getEntityCache().remove(packet.getEntityIds()[i]);
-            if (e == null) {
-                continue;
-            }
-            ret[i] = new RemoveEntityPacket();
-            ((RemoveEntityPacket) ret[i]).eid = e.eid;
-        }
-        return ret;
-    }
+	// constructor
+	public PCDestroyEntitiesPacketTranslator() {
+
+	}
+
+	// public
+	public PEPacket[] translate(UpstreamSession session, ServerEntityDestroyPacket packet) {
+		PEPacket[] ret = new PEPacket[packet.getEntityIds().length];
+		for (int i = 0; i < ret.length; i++) {
+			CachedEntity e = session.getEntityCache().remove(packet.getEntityIds()[i]);
+			if (e == null) {
+				continue;
+			}
+			ret[i] = new RemoveEntityPacket();
+			((RemoveEntityPacket) ret[i]).eid = e.eid;
+		}
+		return ret;
+	}
+
+	// private
 
 }

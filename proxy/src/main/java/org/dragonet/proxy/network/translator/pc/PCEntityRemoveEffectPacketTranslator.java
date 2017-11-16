@@ -17,26 +17,35 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntit
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.translator.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.MobEffectPacket;
 
-public class PCEntityRemoveEffectPacketTranslator implements PCPacketTranslator<ServerEntityRemoveEffectPacket> {
+public class PCEntityRemoveEffectPacketTranslator implements IPCPacketTranslator<ServerEntityRemoveEffectPacket> {
+	// vars
 
-    @Override
-    public PEPacket[] translate(UpstreamSession session, ServerEntityRemoveEffectPacket packet) {
-        CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
-        if (entity == null) {
-            return null;
-        }
-        int effectId = MagicValues.value(Integer.class, packet.getEffect());
-        if (!entity.effects.contains(effectId)) {
-            return null;
-        }
-        MobEffectPacket eff = new MobEffectPacket();
-        eff.rtid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
-        eff.eventId = MobEffectPacket.EVENT_REMOVE;
-        return new PEPacket[]{eff};
-    }
+	// constructor
+	public PCEntityRemoveEffectPacketTranslator() {
+
+	}
+
+	// public
+	public PEPacket[] translate(UpstreamSession session, ServerEntityRemoveEffectPacket packet) {
+		CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
+		if (entity == null) {
+			return null;
+		}
+		int effectId = MagicValues.value(Integer.class, packet.getEffect());
+		if (!entity.effects.contains(effectId)) {
+			return null;
+		}
+		MobEffectPacket eff = new MobEffectPacket();
+		eff.rtid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0
+				: packet.getEntityId();
+		eff.eventId = MobEffectPacket.EVENT_REMOVE;
+		return new PEPacket[] { eff };
+	}
+
+	// private
 
 }

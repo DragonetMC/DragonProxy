@@ -18,33 +18,42 @@ import org.dragonet.PocketPotionEffect;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.translator.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.MobEffectPacket;
 
-public class PCEntityEffectPacketTranslator implements PCPacketTranslator<ServerEntityEffectPacket> {
+public class PCEntityEffectPacketTranslator implements IPCPacketTranslator<ServerEntityEffectPacket> {
+	// vars
 
-    @Override
-    public PEPacket[] translate(UpstreamSession session, ServerEntityEffectPacket packet) {
-        CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
-        if (entity == null) {
-            return null;
-        }
-        int effectId = MagicValues.value(Integer.class, packet.getEffect());
+	// constructor
+	public PCEntityEffectPacketTranslator() {
 
-        MobEffectPacket eff = new MobEffectPacket();
-        eff.rtid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0 : packet.getEntityId();
-        eff.effectId = PocketPotionEffect.getByID(effectId).getEffect();
-        if (entity.effects.contains(effectId)) {
-            eff.eventId = MobEffectPacket.EVENT_MODIFY;
-        } else {
-            eff.eventId = MobEffectPacket.EVENT_ADD;
-            entity.effects.add(effectId);
-        }
-        eff.amplifier = packet.getAmplifier();
-        eff.duration = packet.getDuration();
-        eff.particles = packet.getShowParticles();
-        return new PEPacket[]{eff};
-    }
+	}
+
+	// public
+	public PEPacket[] translate(UpstreamSession session, ServerEntityEffectPacket packet) {
+		CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
+		if (entity == null) {
+			return null;
+		}
+		int effectId = MagicValues.value(Integer.class, packet.getEffect());
+
+		MobEffectPacket eff = new MobEffectPacket();
+		eff.rtid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0
+				: packet.getEntityId();
+		eff.effectId = PocketPotionEffect.getByID(effectId).getEffect();
+		if (entity.effects.contains(effectId)) {
+			eff.eventId = MobEffectPacket.EVENT_MODIFY;
+		} else {
+			eff.eventId = MobEffectPacket.EVENT_ADD;
+			entity.effects.add(effectId);
+		}
+		eff.amplifier = packet.getAmplifier();
+		eff.duration = packet.getDuration();
+		eff.particles = packet.getShowParticles();
+		return new PEPacket[] { eff };
+	}
+
+	// private
 
 }

@@ -3,18 +3,26 @@ package org.dragonet.proxy.network.translator.pe;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
 import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.translator.PEPacketTranslator;
+import org.dragonet.proxy.network.translator.IPEPacketTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.CommandRequestPacket;
 
 /**
  * Created on 2017/11/15.
  */
-public class PECommandRequestPacketTranslator implements PEPacketTranslator {
+public class PECommandRequestPacketTranslator implements IPEPacketTranslator {
+	// vars
 
-    @Override
-    public Packet[] translate(UpstreamSession session, PEPacket packet) {
-        return new Packet[]{new ClientChatPacket(((CommandRequestPacket) packet).command)};
-    }
+	// constructor
+	public PECommandRequestPacketTranslator() {
+
+	}
+
+	// public
+	public Packet[] translate(UpstreamSession session, PEPacket packet) {
+		return new Packet[] { new ClientChatPacket(((CommandRequestPacket) packet).command) };
+	}
+
+	// private
 
 }

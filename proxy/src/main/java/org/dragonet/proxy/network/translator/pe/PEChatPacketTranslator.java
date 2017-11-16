@@ -17,39 +17,47 @@ import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.translator.PEPacketTranslator;
+import org.dragonet.proxy.network.translator.IPEPacketTranslator;
 import org.dragonet.proxy.protocol.packets.TextPacket;
 import org.dragonet.proxy.utilities.PatternChecker;
 
-public class PEChatPacketTranslator implements PEPacketTranslator<TextPacket> {
+public class PEChatPacketTranslator implements IPEPacketTranslator<TextPacket> {
+	// vars
 
-    @Override
-    public Packet[] translate(UpstreamSession session, TextPacket packet) {
-        if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE) != null) {
-            if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE).equals("email")) {
-                if (!PatternChecker.matchEmail(packet.message.trim())) {
-                    session.sendChat(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
-                    session.disconnect(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
-                    return null;
-                }
-                session.getDataCache().put(CacheKey.AUTHENTICATION_EMAIL, packet.message.trim());
-                session.getDataCache().put(CacheKey.AUTHENTICATION_STATE, "password");
-                session.sendChat(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_PASSWORD));
-            } else if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE).equals("password")) {
-                if (session.getDataCache().get(CacheKey.AUTHENTICATION_EMAIL) == null || packet.message.equals(" ")) {
-                    session.sendChat(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
-                    session.disconnect(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
-                    return null;
-                }
-                session.sendChat(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_LOGGIN_IN));
-                session.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
-                session.authenticate(packet.message); //We NEVER cache password for better security. 
-            }
-            return null;
-        }
+	// constructor
+	public PEChatPacketTranslator() {
 
-        ClientChatPacket pk = new ClientChatPacket(packet.message);
-        return new Packet[]{pk};
-    }
+	}
+
+	// public
+	public Packet[] translate(UpstreamSession session, TextPacket packet) {
+		if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE) != null) {
+			if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE).equals("email")) {
+				if (!PatternChecker.matchEmail(packet.message.trim())) {
+					session.sendChat(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
+					session.disconnect(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
+					return null;
+				}
+				session.getDataCache().put(CacheKey.AUTHENTICATION_EMAIL, packet.message.trim());
+				session.getDataCache().put(CacheKey.AUTHENTICATION_STATE, "password");
+				session.sendChat(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_PASSWORD));
+			} else if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE).equals("password")) {
+				if (session.getDataCache().get(CacheKey.AUTHENTICATION_EMAIL) == null || packet.message.equals(" ")) {
+					session.sendChat(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
+					session.disconnect(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
+					return null;
+				}
+				session.sendChat(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_LOGGIN_IN));
+				session.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
+				session.authenticate(packet.message); // We NEVER cache password for better security.
+			}
+			return null;
+		}
+
+		ClientChatPacket pk = new ClientChatPacket(packet.message);
+		return new Packet[] { pk };
+	}
+
+	// private
 
 }

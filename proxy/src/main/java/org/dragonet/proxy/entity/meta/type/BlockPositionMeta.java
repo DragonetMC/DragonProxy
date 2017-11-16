@@ -13,25 +13,28 @@
 package org.dragonet.proxy.entity.meta.type;
 
 import org.dragonet.proxy.entity.meta.EntityMetaData;
-import org.dragonet.proxy.entity.meta.EntityMetaDataObject;
+import org.dragonet.proxy.entity.meta.IEntityMetaDataObject;
 import org.dragonet.proxy.utilities.BinaryStream;
 import org.dragonet.proxy.utilities.BlockPosition;
 
-public class BlockPositionMeta implements EntityMetaDataObject {
+public class BlockPositionMeta implements IEntityMetaDataObject {
+	// vars
+	public BlockPosition position;
 
-    public BlockPosition position;
+	// constructor
+	public BlockPositionMeta(BlockPosition position) {
+		this.position = position;
+	}
 
-    public BlockPositionMeta(BlockPosition position) {
-        this.position = position;
-    }
+	// public
+	public int type() {
+		return EntityMetaData.Constants.DATA_TYPE_POS;
+	}
 
-    @Override
-    public int type() {
-        return EntityMetaData.Constants.DATA_TYPE_POS;
-    }
+	public void encode(BinaryStream out) {
+		out.putSignedBlockPosition(position);
+	}
 
-    @Override
-    public void encode(BinaryStream out) {
-        out.putSignedBlockPosition(position);
-    }
+	// private
+
 }

@@ -13,17 +13,27 @@
 package org.dragonet.proxy.utilities.io;
 
 public class ByteUtility {
+	// vars
 
-    public static String bytesToHexString(byte[] data) {
-        StringBuilder sb = new StringBuilder();
-        String sTemp;
-        for (int i = 0; i < data.length; i++) {
-            sTemp = Integer.toHexString(0xFF & data[i]);
-            if (sTemp.length() < 2) {
-                sb.append(0);
-            }
-            sb.append(sTemp.toUpperCase()).append(", ");
-        }
-        return sb.toString();
-    }
+	// constructor
+	public ByteUtility() {
+
+	}
+
+	// public
+	public static String bytesToHexString(byte[] data) {
+		StringBuilder sb = new StringBuilder();
+		String sTemp;
+		for (int i = 0; i < data.length; i++) {
+			sTemp = Integer.toHexString(0xFF & data[i]);
+			if (sTemp.length() < 2) {
+				sb.append(0);
+			}
+			sb.append(sTemp.toUpperCase()).append(", ");
+		}
+		return sb.toString();
+	}
+
+	// private
+
 }

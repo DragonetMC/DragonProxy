@@ -1,48 +1,50 @@
 package org.dragonet.proxy.protocol.type;
 
-import org.dragonet.proxy.nbt.tag.CompoundTag;
+import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
 
 /**
  * Created on 2017/10/21.
  */
 public class Slot {
-    public final static Slot AIR = new Slot();
+	// vars
+	public static final Slot AIR = new Slot();
+	public int id;
+	public int damage;
+	public int count;
+	public CompoundTag tag;
 
-    public int id;
+	// constructor
+	public Slot() {
 
-    public int damage;
+	}
 
-    public int count;
+	public Slot(int id) {
+		this.id = id;
+	}
 
-    public CompoundTag tag;
+	public Slot(int id, int damage) {
+		this.id = id;
+		this.damage = damage;
+	}
 
-    public Slot() {
-    }
+	public Slot(int id, int damage, int count) {
+		this.id = id;
+		this.damage = damage;
+		this.count = count;
+	}
 
-    public Slot(int id) {
-        this.id = id;
-    }
+	public Slot(int id, int damage, int count, CompoundTag tag) {
+		this.id = id;
+		this.damage = damage;
+		this.count = count;
+		this.tag = tag;
+	}
 
-    public Slot(int id, int damage) {
-        this.id = id;
-        this.damage = damage;
-    }
+	// public
+	public Slot clone() {
+		return new Slot(id, damage, count, tag);
+	}
 
-    public Slot(int id, int damage, int count) {
-        this.id = id;
-        this.damage = damage;
-        this.count = count;
-    }
+	// private
 
-    public Slot(int id, int damage, int count, CompoundTag tag) {
-        this.id = id;
-        this.damage = damage;
-        this.count = count;
-        this.tag = tag;
-    }
-
-    @Override
-    public Slot clone() {
-        return new Slot(id, damage, count, tag);
-    }
 }

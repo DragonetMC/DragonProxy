@@ -15,21 +15,29 @@ package org.dragonet.proxy.network.translator.pc;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.translator.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnObjectPacket;
 import org.dragonet.proxy.protocol.PEPacket;
 
-public class PCSpawnObjectPacketTranslator implements PCPacketTranslator<ServerSpawnObjectPacket> {
+public class PCSpawnObjectPacketTranslator implements IPCPacketTranslator<ServerSpawnObjectPacket> {
+	// vars
 
-    @Override
-    public PEPacket[] translate(UpstreamSession session, ServerSpawnObjectPacket packet) {
-        if(packet.getType() == ObjectType.ITEM){
-            //Currently only handles item data
-            CachedEntity futureEntity = session.getEntityCache().newObject(packet);
-            //This crap needs entity meta to be completed so we have to wait. 
-            return null;
-        }
-        return null;
-    }
+	// constructor
+	public PCSpawnObjectPacketTranslator() {
+
+	}
+
+	// public
+	public PEPacket[] translate(UpstreamSession session, ServerSpawnObjectPacket packet) {
+		if (packet.getType() == ObjectType.ITEM) {
+			// Currently only handles item data
+			CachedEntity futureEntity = session.getEntityCache().newObject(packet);
+			// This crap needs entity meta to be completed so we have to wait.
+			return null;
+		}
+		return null;
+	}
+
+	// private
 
 }

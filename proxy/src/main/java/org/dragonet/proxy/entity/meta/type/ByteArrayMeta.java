@@ -14,28 +14,31 @@ package org.dragonet.proxy.entity.meta.type;
 
 import java.nio.charset.StandardCharsets;
 import org.dragonet.proxy.entity.meta.EntityMetaData;
-import org.dragonet.proxy.entity.meta.EntityMetaDataObject;
+import org.dragonet.proxy.entity.meta.IEntityMetaDataObject;
 import org.dragonet.proxy.utilities.BinaryStream;
 
-public class ByteArrayMeta implements EntityMetaDataObject {
+public class ByteArrayMeta implements IEntityMetaDataObject {
+	// vars
+	public byte[] data;
 
-    public byte[] data;
+	// constructor
+	public ByteArrayMeta(byte[] data) {
+		this.data = data;
+	}
 
-    public ByteArrayMeta(byte[] data) {
-        this.data = data;
-    }
+	public ByteArrayMeta(String data) {
+		this(data.getBytes(StandardCharsets.UTF_8));
+	}
 
-    public ByteArrayMeta(String data) {
-        this(data.getBytes(StandardCharsets.UTF_8));
-    }
+	// public
+	public int type() {
+		return EntityMetaData.Constants.DATA_TYPE_STRING;
+	}
 
-    @Override
-    public int type() {
-        return EntityMetaData.Constants.DATA_TYPE_STRING;
-    }
+	public void encode(BinaryStream out) {
+		out.putByteArray(data);
+	}
 
-    @Override
-    public void encode(BinaryStream out) {
-        out.putByteArray(data);
-    }
+	// private
+
 }

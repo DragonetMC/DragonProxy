@@ -23,122 +23,136 @@ import org.dragonet.proxy.network.PCDownstreamSession;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.translator.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.utilities.BlockPosition;
 import org.dragonet.proxy.utilities.Constants;
 import org.dragonet.proxy.utilities.Vector3F;
 
-public class PCPlayerPositionRotationPacketTranslator implements PCPacketTranslator<ServerPlayerPositionRotationPacket> {
+public class PCPlayerPositionRotationPacketTranslator
+		implements IPCPacketTranslator<ServerPlayerPositionRotationPacket> {
+	// vars
 
-    @Override
-    public PEPacket[] translate(UpstreamSession session, ServerPlayerPositionRotationPacket packet) {
-        if(!session.isSpawned()) {
-            System.out.println("SPAWNED! ");
-            if (session.getDataCache().get(CacheKey.PACKET_JOIN_GAME_PACKET) == null) {
-                session.disconnect(session.getProxy().getLang().get(Lang.MESSAGE_REMOTE_ERROR));
-                return null;
-            }
+	// constructor
+	public PCPlayerPositionRotationPacketTranslator() {
 
-            ServerJoinGamePacket restored = (ServerJoinGamePacket) session.getDataCache().remove(CacheKey.PACKET_JOIN_GAME_PACKET);
-            if(!session.getProxy().getAuthMode().equalsIgnoreCase("online")) {
-                StartGamePacket ret = new StartGamePacket();
-                ret.rtid = 0;
-                ret.eid = 0; //Use EID 0 for easier management
-                ret.dimension = 0;
-                ret.seed = 0;
-                ret.generator = 1;
-                ret.gamemode = restored.getGameMode() == GameMode.CREATIVE ? 1 : 0;
-                ret.spawnPosition = new BlockPosition((int) packet.getX(), (int) packet.getY(), (int) packet.getZ());
-                ret.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET, (float) packet.getZ());
-                ret.levelId = "";
-                ret.worldName = "World";
-                ret.commandsEnabled = true;
-                ret.defaultPlayerPermission = 2;
-                ret.premiumWorldTemplateId = "";
-                session.sendPacket(ret);
-            }
+	}
 
-            UpdateAttributesPacket attr = new UpdateAttributesPacket();
-            attr.rtid = 0L;
-            attr.entries = new PEEntityAttribute[] {
-                    PEEntityAttribute.findAttribute(PEEntityAttribute.ABSORPTION),
-                    PEEntityAttribute.findAttribute(PEEntityAttribute.EXHAUSTION),
-                    PEEntityAttribute.findAttribute(PEEntityAttribute.HUNGER),
-                    PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE_LEVEL),
-                    PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE),
-                    PEEntityAttribute.findAttribute(PEEntityAttribute.MOVEMENT_SPEED),
-            };
-            session.sendPacket(attr);
+	// public
+	public PEPacket[] translate(UpstreamSession session, ServerPlayerPositionRotationPacket packet) {
+		if (!session.isSpawned()) {
+			System.out.println("SPAWNED! ");
+			if (session.getDataCache().get(CacheKey.PACKET_JOIN_GAME_PACKET) == null) {
+				session.disconnect(session.getProxy().getLang().get(Lang.MESSAGE_REMOTE_ERROR));
+				return null;
+			}
 
-            AdventureSettingsPacket adv = new AdventureSettingsPacket();
-            adv.setFlag(AdventureSettingsPacket.WORLD_IMMUTABLE, restored.getGameMode().equals(GameMode.SPECTATOR));
-            // adv.setFlag(AdventureSettingsPacket.ALLOW_FLIGHT, true);
-            adv.setFlag(AdventureSettingsPacket.ATTACK_PLAYERS, true);
-            adv.setFlag(AdventureSettingsPacket.ATTACK_MOBS, true);
-            adv.setFlag(AdventureSettingsPacket.BUILD_AND_MINE, true);
-            // adv.setFlag(AdventureSettingsPacket.NO_CLIP, restored.getGameMode().equals(GameMode.SPECTATOR));
-            adv.commandsPermission = AdventureSettingsPacket.PERMISSION_OPERATOR;
-            adv.playerPermission = 2;
-            adv.setFlag(AdventureSettingsPacket.FLYING, false);
-            session.sendPacket(adv);
+			ServerJoinGamePacket restored = (ServerJoinGamePacket) session.getDataCache()
+					.remove(CacheKey.PACKET_JOIN_GAME_PACKET);
+			if (!session.getProxy().getAuthMode().equalsIgnoreCase("online")) {
+				StartGamePacket ret = new StartGamePacket();
+				ret.rtid = 0;
+				ret.eid = 0; // Use EID 0 for easier management
+				ret.dimension = 0;
+				ret.seed = 0;
+				ret.generator = 1;
+				ret.gamemode = restored.getGameMode() == GameMode.CREATIVE ? 1 : 0;
+				ret.spawnPosition = new BlockPosition((int) packet.getX(), (int) packet.getY(), (int) packet.getZ());
+				ret.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET,
+						(float) packet.getZ());
+				ret.levelId = "";
+				ret.worldName = "World";
+				ret.commandsEnabled = true;
+				ret.defaultPlayerPermission = 2;
+				ret.premiumWorldTemplateId = "";
+				session.sendPacket(ret);
+			}
 
-            SetEntityDataPacket entityData = new SetEntityDataPacket();
-            entityData.meta = EntityMetaData.createDefault();
-            session.sendPacket(entityData);
+			UpdateAttributesPacket attr = new UpdateAttributesPacket();
+			attr.rtid = 0L;
+			attr.entries = new PEEntityAttribute[] { PEEntityAttribute.findAttribute(PEEntityAttribute.ABSORPTION),
+					PEEntityAttribute.findAttribute(PEEntityAttribute.EXHAUSTION),
+					PEEntityAttribute.findAttribute(PEEntityAttribute.HUNGER),
+					PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE_LEVEL),
+					PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE),
+					PEEntityAttribute.findAttribute(PEEntityAttribute.MOVEMENT_SPEED), };
+			session.sendPacket(attr);
 
-            if(session.getProxy().getAuthMode().equalsIgnoreCase("online")) {
-                MovePlayerPacket pk = new MovePlayerPacket();
-                pk.rtid = 0;
-                pk.mode = MovePlayerPacket.MODE_TELEPORT;
-                pk.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET, (float) packet.getZ());
-                pk.yaw = packet.getYaw();
-                pk.pitch = packet.getPitch();
-                pk.headYaw = packet.getYaw();
-                CachedEntity cliEntity = session.getEntityCache().getClientEntity();
-                cliEntity.x = packet.getX();
-                cliEntity.y = packet.getY() + Constants.PLAYER_HEAD_OFFSET;
-                cliEntity.z= packet.getZ();
-                cliEntity.yaw = packet.getYaw();
-                cliEntity.pitch = packet.getPitch();
+			AdventureSettingsPacket adv = new AdventureSettingsPacket();
+			adv.setFlag(AdventureSettingsPacket.WORLD_IMMUTABLE, restored.getGameMode().equals(GameMode.SPECTATOR));
+			// adv.setFlag(AdventureSettingsPacket.ALLOW_FLIGHT, true);
+			adv.setFlag(AdventureSettingsPacket.ATTACK_PLAYERS, true);
+			adv.setFlag(AdventureSettingsPacket.ATTACK_MOBS, true);
+			adv.setFlag(AdventureSettingsPacket.BUILD_AND_MINE, true);
+			// adv.setFlag(AdventureSettingsPacket.NO_CLIP,
+			// restored.getGameMode().equals(GameMode.SPECTATOR));
+			adv.commandsPermission = AdventureSettingsPacket.PERMISSION_OPERATOR;
+			adv.playerPermission = 2;
+			adv.setFlag(AdventureSettingsPacket.FLYING, false);
+			session.sendPacket(adv);
 
-                session.sendChat("spawning at " + pk.position.toString());
-            }
+			SetEntityDataPacket entityData = new SetEntityDataPacket();
+			entityData.meta = EntityMetaData.createDefault();
+			session.sendPacket(entityData);
 
-            session.setSpawned();
+			if (session.getProxy().getAuthMode().equalsIgnoreCase("online")) {
+				MovePlayerPacket pk = new MovePlayerPacket();
+				pk.rtid = 0;
+				pk.mode = MovePlayerPacket.MODE_TELEPORT;
+				pk.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET,
+						(float) packet.getZ());
+				pk.yaw = packet.getYaw();
+				pk.pitch = packet.getPitch();
+				pk.headYaw = packet.getYaw();
+				CachedEntity cliEntity = session.getEntityCache().getClientEntity();
+				cliEntity.x = packet.getX();
+				cliEntity.y = packet.getY() + Constants.PLAYER_HEAD_OFFSET;
+				cliEntity.z = packet.getZ();
+				cliEntity.yaw = packet.getYaw();
+				cliEntity.pitch = packet.getPitch();
 
-            session.getEntityCache().getClientEntity().x = packet.getX();
-            session.getEntityCache().getClientEntity().y = packet.getY() + Constants.PLAYER_HEAD_OFFSET;
-            session.getEntityCache().getClientEntity().z = packet.getZ();
+				session.sendChat("spawning at " + pk.position.toString());
+			}
 
-            // send the confirmation
-            ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());
-            ((PCDownstreamSession)session.getDownstream()).send(confirm);
+			session.setSpawned();
 
-            return null;
-        }
+			session.getEntityCache().getClientEntity().x = packet.getX();
+			session.getEntityCache().getClientEntity().y = packet.getY() + Constants.PLAYER_HEAD_OFFSET;
+			session.getEntityCache().getClientEntity().z = packet.getZ();
 
-        MovePlayerPacket pk = new MovePlayerPacket();
-        pk.rtid = 0;
-        pk.mode = MovePlayerPacket.MODE_TELEPORT;
-        pk.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET, (float) packet.getZ());
-        pk.yaw = packet.getYaw();
-        pk.pitch = packet.getPitch();
-        pk.headYaw = packet.getYaw();
-        CachedEntity cliEntity = session.getEntityCache().getClientEntity();
-        cliEntity.x = packet.getX();
-        cliEntity.y = packet.getY() + Constants.PLAYER_HEAD_OFFSET;
-        cliEntity.z= packet.getZ();
-        cliEntity.yaw = packet.getYaw();
-        cliEntity.pitch = packet.getPitch();
+			// send the confirmation
+			ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());
+			((PCDownstreamSession) session.getDownstream()).send(confirm);
 
-        // session.sendChat(String.format("FORCING TO (%.2f, %.2f, %.2f", packet.getX(), packet.getY(), packet.getZ()));
+			return null;
+		}
 
-        // send the confirmation
-        ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());
-        ((PCDownstreamSession)session.getDownstream()).send(confirm);
+		MovePlayerPacket pk = new MovePlayerPacket();
+		pk.rtid = 0;
+		pk.mode = MovePlayerPacket.MODE_TELEPORT;
+		pk.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET,
+				(float) packet.getZ());
+		pk.yaw = packet.getYaw();
+		pk.pitch = packet.getPitch();
+		pk.headYaw = packet.getYaw();
+		CachedEntity cliEntity = session.getEntityCache().getClientEntity();
+		cliEntity.x = packet.getX();
+		cliEntity.y = packet.getY() + Constants.PLAYER_HEAD_OFFSET;
+		cliEntity.z = packet.getZ();
+		cliEntity.yaw = packet.getYaw();
+		cliEntity.pitch = packet.getPitch();
 
-        return new PEPacket[]{pk};
-    }
+		// session.sendChat(String.format("FORCING TO (%.2f, %.2f, %.2f", packet.getX(),
+		// packet.getY(), packet.getZ()));
+
+		// send the confirmation
+		ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());
+		((PCDownstreamSession) session.getDownstream()).send(confirm);
+
+		return new PEPacket[] { pk };
+	}
+
+	// private
+
 }

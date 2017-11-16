@@ -12,59 +12,48 @@
  */
 package org.dragonet.proxy.commands;
 
-import java.io.IOException;
-
-import jline.console.ConsoleReader;
-
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.utilities.Logger;
 
 public class ConsoleCommandReader {
+	// vars
+	private final Logger logger;
+	private final DragonProxy proxy;
 
-    private final Logger logger;
+	// constructor
+	public ConsoleCommandReader(DragonProxy proxy) {
+		this.proxy = proxy;
+		this.logger = proxy.getLogger();
+	}
 
-    private final DragonProxy proxy;
+	// public
+	public void startConsole() {
+		Thread thread = new Thread(new Runnable() {
+			public void run() {
+				String command = "";
+				while (!proxy.isShuttingDown()) {
+					try {
+						System.out.print(">");
+						command = System.console().readLine();
 
-    private ConsoleReader reader;
+						if (command == null || command.trim().length() == 0) {
+							continue;
+						}
 
-    public ConsoleCommandReader(DragonProxy proxy) {
-        this.proxy = proxy;
-        this.logger = proxy.getLogger();
+						proxy.getCommandRegister().callCommand(command);
+					} catch (Exception ex) {
+						logger.severe("Error while executing command: " + ex);
+						ex.printStackTrace();
+					}
+				}
+			}
+		});
 
-        try {
-            reader = new ConsoleReader();
-        } catch (IOException ex) {
-            logger.severe("Exception initializing console reader: " + ex);
-        }
-    }
+		thread.setName("ConsoleCommandThread");
+		thread.setDaemon(true);
+		thread.start();
+	}
 
-    public void startConsole() {
-        Thread thread = new ConsoleCommandThread();
-        thread.setName("ConsoleCommandThread");
-        thread.setDaemon(true);
-        thread.start();
-    }
+	// private
 
-
-    private class ConsoleCommandThread extends Thread {
-
-        @Override
-        public void run() {
-            String command = "";
-            while (!proxy.isShuttingDown()) {
-                try {
-                    command = reader.readLine(">", null);
-
-                    if (command == null || command.trim().length() == 0) {
-                        continue;
-                    }
-
-                    proxy.getCommandRegister().callCommand(command);
-                } catch (Exception ex) {
-                    logger.severe("Error while executing command: " + ex);
-                    ex.printStackTrace();
-                }
-            }
-        }
-    }
 }

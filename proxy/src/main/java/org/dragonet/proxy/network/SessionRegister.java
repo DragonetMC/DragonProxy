@@ -19,40 +19,45 @@ import java.util.Map;
 import org.dragonet.proxy.DragonProxy;
 
 public class SessionRegister {
+	// vars
+	private final DragonProxy proxy;
+	private final Map<String, UpstreamSession> clients = Collections
+			.synchronizedMap(new HashMap<String, UpstreamSession>());
 
-    private final DragonProxy proxy;
+	// constructor
+	public SessionRegister(DragonProxy proxy) {
+		this.proxy = proxy;
+	}
 
-    private final Map<String, UpstreamSession> clients = Collections.synchronizedMap(new HashMap<String, UpstreamSession>());
+	// public
+	public void onTick() {
+		Iterator<Map.Entry<String, UpstreamSession>> iterator = clients.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Map.Entry<String, UpstreamSession> ent = iterator.next();
+			ent.getValue().onTick();
+		}
+	}
 
-    public SessionRegister(DragonProxy proxy) {
-        this.proxy = proxy;
-    }
+	public void newSession(UpstreamSession session) {
+		clients.put(session.getRaknetID(), session);
+	}
 
-    public void onTick() {
-        Iterator<Map.Entry<String, UpstreamSession>> iterator = clients.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, UpstreamSession> ent = iterator.next();
-            ent.getValue().onTick();
-        }
-    }
+	public void removeSession(UpstreamSession session) {
+		clients.remove(session.getRaknetID());
+	}
 
-    public void newSession(UpstreamSession session) {
-        clients.put(session.getRaknetID(), session);
-    }
+	public UpstreamSession getSession(String identifier) {
+		return clients.get(identifier);
+	}
 
-    public void removeSession(UpstreamSession session) {
-        clients.remove(session.getRaknetID());
-    }
+	public Map<String, UpstreamSession> getAll() {
+		return Collections.unmodifiableMap(clients);
+	}
 
-    public UpstreamSession getSession(String identifier) {
-        return clients.get(identifier);
-    }
+	public int getOnlineCount() {
+		return clients.size();
+	}
 
-    public Map<String, UpstreamSession> getAll() {
-        return Collections.unmodifiableMap(clients);
-    }
+	// private
 
-    public int getOnlineCount() {
-        return clients.size();
-    }
 }

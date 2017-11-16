@@ -15,26 +15,34 @@ package org.dragonet.proxy.network.translator.pc;
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntryAction;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.translator.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPlayerListEntryPacket;
 import org.dragonet.proxy.protocol.PEPacket;
 
-public class PCPlayerListItemPacketTranslator implements PCPacketTranslator<ServerPlayerListEntryPacket> {
+public class PCPlayerListItemPacketTranslator implements IPCPacketTranslator<ServerPlayerListEntryPacket> {
+	// vars
 
-    @Override
-    public PEPacket[] translate(UpstreamSession session, ServerPlayerListEntryPacket packet) {
-        if(packet.getAction() == PlayerListEntryAction.ADD_PLAYER){
-            PlayerListEntry[] entries = packet.getEntries();
-            for (PlayerListEntry entrie : entries) {
-                session.getPlayerInfoCache().put(entrie.getProfile().getId(), entrie);
-            }
-        }else if(packet.getAction() == PlayerListEntryAction.REMOVE_PLAYER){
-            PlayerListEntry[] entries = packet.getEntries();
-            for (PlayerListEntry entrie : entries) {
-                session.getPlayerInfoCache().remove(entrie.getProfile().getId());
-            }
-        }
-        return null;
-    }
+	// constructor
+	public PCPlayerListItemPacketTranslator() {
+
+	}
+
+	// public
+	public PEPacket[] translate(UpstreamSession session, ServerPlayerListEntryPacket packet) {
+		if (packet.getAction() == PlayerListEntryAction.ADD_PLAYER) {
+			PlayerListEntry[] entries = packet.getEntries();
+			for (PlayerListEntry entrie : entries) {
+				session.getPlayerInfoCache().put(entrie.getProfile().getId(), entrie);
+			}
+		} else if (packet.getAction() == PlayerListEntryAction.REMOVE_PLAYER) {
+			PlayerListEntry[] entries = packet.getEntries();
+			for (PlayerListEntry entrie : entries) {
+				session.getPlayerInfoCache().remove(entrie.getProfile().getId());
+			}
+		}
+		return null;
+	}
+
+	// private
 
 }

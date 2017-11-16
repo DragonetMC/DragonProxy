@@ -32,110 +32,125 @@ import java.util.List;
 /**
  * Maintaince the connection between the proxy and remote Minecraft server.
  */
-public class PCDownstreamSession implements DownstreamSession<Packet> {
-	//vars
+public class PCDownstreamSession implements IDownstreamSession<Packet> {
+	// vars
 	public MinecraftProtocol protocol;
-	
-    private final DragonProxy proxy;
-    private final UpstreamSession upstream;
-    private DesktopServer serverInfo;
-    private Client remoteClient;
-	
-	//constructor
-    public PCDownstreamSession(DragonProxy proxy, UpstreamSession upstream) {
-        this.proxy = proxy;
-        this.upstream = upstream;
-    }
-	
-	//public
-    public void connect(DesktopServer serverInfo){
-        this.serverInfo = serverInfo;
-        connect(serverInfo.remoteAddr, serverInfo.remotePort);
-    }
-    public void connect(String addr, int port) {
-        if (this.protocol == null) {
-            upstream.onConnected(); // Clear the flags
-            upstream.disconnect("ERROR! ");
-            return;
-        }
-        remoteClient = new Client(addr, port, protocol, new TcpSessionFactory());
-        remoteClient.getSession().addListener(new SessionAdapter() {
-            public void connected(ConnectedEvent event) {
-                proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_REMOTE_CONNECTED, upstream.getUsername(), upstream.getRemoteAddress()));
-                upstream.onConnected();
-            }
-            public void disconnected(DisconnectedEvent event) {
-                upstream.disconnect(proxy.getLang().get(event.getReason()));
-            }
-            public void packetReceived(PacketReceivedEvent event) {
-                /*if (!event.getPacket().getClass().getSimpleName().toLowerCase().contains("block")
-                        && !event.getPacket().getClass().getSimpleName().toLowerCase().contains("entity")
-                        && !event.getPacket().getClass().getSimpleName().toLowerCase().contains("time")
-                        && !event.getPacket().getClass().getSimpleName().toLowerCase().contains("chunk")) {
-                    String debug_string = event.getPacket().getClass().getSimpleName() + " > " + event.getPacket().toString();
-                    if(debug_string.length() > 128) debug_string = debug_string.substring(0, 128) + "... ";
-                    System.out.println("REMOTE << " + debug_string);
-                }*/
-                //Handle the packet
-                try {
-                    PEPacket[] packets = PacketTranslatorRegister.translateToPE(upstream, event.getPacket());
-                    if (packets == null) {
-                        return;
-                    }
-                    if (packets.length <= 0) {
-                        return;
-                    }
-                    if (packets.length == 1) {
-                        upstream.sendPacket(packets[0]);
-                    } else {
-                        upstream.sendAllPackets(packets, true);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    throw e;
-                }
-            }
-        });
-        remoteClient.getSession().connect();
-    }
-    public void disconnect() {
-        if (remoteClient != null && remoteClient.getSession().isConnected()) {
-            remoteClient.getSession().disconnect("Disconnect");
-        }
-    }
-    
-    public boolean isConnected() {
-        return remoteClient != null && remoteClient.getSession().isConnected();
-    }
-    
-    public void send(Packet... packets) {
-        for (Packet p : packets) {
-            send(p);
-        }
-    }
-    public void send(Packet packet) {
-        if(packet == null) return;
-        System.out.println("UPSTREAMING >> " + packet.getClass().getSimpleName());
-        remoteClient.getSession().send(packet);
-    }
-    public void sendChat(String chat) {
-        remoteClient.getSession().send(new ClientChatPacket(chat));
-    }
-    
-    public void onTick() {
-    	
-    }
-    
-    public DragonProxy getProxy() {
-    	return proxy;
-    }
-    public UpstreamSession getUpstream() {
-    	return upstream;
-    }
-    public DesktopServer getServerInfo() {
-    	return serverInfo;
-    }
-	
-	//private
-    
+
+	private final DragonProxy proxy;
+	private final UpstreamSession upstream;
+	private DesktopServer serverInfo;
+	private Client remoteClient;
+
+	// constructor
+	public PCDownstreamSession(DragonProxy proxy, UpstreamSession upstream) {
+		this.proxy = proxy;
+		this.upstream = upstream;
+	}
+
+	// public
+	public void connect(DesktopServer serverInfo) {
+		this.serverInfo = serverInfo;
+		connect(serverInfo.remote_addr, serverInfo.remote_port);
+	}
+
+	public void connect(String addr, int port) {
+		if (this.protocol == null) {
+			upstream.onConnected(); // Clear the flags
+			upstream.disconnect("ERROR! ");
+			return;
+		}
+		remoteClient = new Client(addr, port, protocol, new TcpSessionFactory());
+		remoteClient.getSession().addListener(new SessionAdapter() {
+			public void connected(ConnectedEvent event) {
+				proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_REMOTE_CONNECTED, upstream.getUsername(),
+						upstream.getRemoteAddress()));
+				upstream.onConnected();
+			}
+
+			public void disconnected(DisconnectedEvent event) {
+				upstream.disconnect(proxy.getLang().get(event.getReason()));
+			}
+
+			public void packetReceived(PacketReceivedEvent event) {
+				/*
+				 * if (!event.getPacket().getClass().getSimpleName().toLowerCase().contains(
+				 * "block") &&
+				 * !event.getPacket().getClass().getSimpleName().toLowerCase().contains(
+				 * "entity") &&
+				 * !event.getPacket().getClass().getSimpleName().toLowerCase().contains("time")
+				 * &&
+				 * !event.getPacket().getClass().getSimpleName().toLowerCase().contains("chunk")
+				 * ) { String debug_string = event.getPacket().getClass().getSimpleName() +
+				 * " > " + event.getPacket().toString(); if(debug_string.length() > 128)
+				 * debug_string = debug_string.substring(0, 128) + "... ";
+				 * System.out.println("REMOTE << " + debug_string); }
+				 */
+				// Handle the packet
+				try {
+					PEPacket[] packets = PacketTranslatorRegister.translateToPE(upstream, event.getPacket());
+					if (packets == null) {
+						return;
+					}
+					if (packets.length <= 0) {
+						return;
+					}
+					if (packets.length == 1) {
+						upstream.sendPacket(packets[0]);
+					} else {
+						upstream.sendAllPackets(packets, true);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					throw e;
+				}
+			}
+		});
+		remoteClient.getSession().connect();
+	}
+
+	public void disconnect() {
+		if (remoteClient != null && remoteClient.getSession().isConnected()) {
+			remoteClient.getSession().disconnect("Disconnect");
+		}
+	}
+
+	public boolean isConnected() {
+		return remoteClient != null && remoteClient.getSession().isConnected();
+	}
+
+	public void send(Packet... packets) {
+		for (Packet p : packets) {
+			send(p);
+		}
+	}
+
+	public void send(Packet packet) {
+		if (packet == null)
+			return;
+		System.out.println("UPSTREAMING >> " + packet.getClass().getSimpleName());
+		remoteClient.getSession().send(packet);
+	}
+
+	public void sendChat(String chat) {
+		remoteClient.getSession().send(new ClientChatPacket(chat));
+	}
+
+	public void onTick() {
+
+	}
+
+	public DragonProxy getProxy() {
+		return proxy;
+	}
+
+	public UpstreamSession getUpstream() {
+		return upstream;
+	}
+
+	public DesktopServer getServerInfo() {
+		return serverInfo;
+	}
+
+	// private
+
 }
