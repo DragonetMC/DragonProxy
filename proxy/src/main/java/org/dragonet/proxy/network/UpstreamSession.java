@@ -211,7 +211,7 @@ public class UpstreamSession {
 		if (server.getClass().isAssignableFrom(DesktopServer.class)) {
 			downstream = new PCDownstreamSession(proxy, this);
 			((PCDownstreamSession) downstream).protocol = protocol;
-			downstream.connect(server.remoteAddr, server.remotePort);
+			downstream.connect(server.remote_addr, server.remote_port);
 		} else {
 			// downstream = new PEDownstreamSession(proxy, this);
 			// ((PEDownstreamSession)downstream).connect((PocketServer) server);

@@ -17,8 +17,8 @@ import java.util.Map;
 
 public abstract class RemoteServer implements IConfigurationSerializable {
 	// vars
-	public String remoteAddr;
-	public int remotePort;
+	public String remote_addr;
+	public int remote_port;
 
 	// constructor
 	public RemoteServer() {
@@ -34,15 +34,15 @@ public abstract class RemoteServer implements IConfigurationSerializable {
 	 * @return
 	 */
 	public static RemoteServer delicatedDeserialize(RemoteServer server, Map<String, Object> map) {
-		server.remoteAddr = (String) map.get("remote_addr");
-		server.remotePort = ((Number) map.get("remote_port")).intValue();
+		server.remote_addr = (String) map.get("remote_addr");
+		server.remote_port = ((Number) map.get("remote_port")).intValue();
 		return server;
 	}
 
 	public Map<String, Object> serialize() {
 		Map<String, Object> map = new LinkedHashMap<>();
-		map.put("remote_addr", remoteAddr);
-		map.put("remote_port", remotePort);
+		map.put("remote_addr", remote_addr);
+		map.put("remote_port", remote_port);
 		return map;
 	}
 

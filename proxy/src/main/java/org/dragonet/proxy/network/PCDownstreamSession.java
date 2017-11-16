@@ -50,7 +50,7 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
 	// public
 	public void connect(DesktopServer serverInfo) {
 		this.serverInfo = serverInfo;
-		connect(serverInfo.remoteAddr, serverInfo.remotePort);
+		connect(serverInfo.remote_addr, serverInfo.remote_port);
 	}
 
 	public void connect(String addr, int port) {
