@@ -20,72 +20,76 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ItemList {
+	// vars
+	private List<ItemStack> items;
 
-    private List<ItemStack> items;
+	// constructor
+	public ItemList() {
+		this.items = new ArrayList<>();
+	}
 
-    public ItemList() {
-        this.items = new ArrayList<>();
-    }
+	public ItemList(ArrayList<ItemStack> items) {
+		this.items = items;
+	}
 
-    public ItemList(ArrayList<ItemStack> items) {
-        this.items = items;
-    }
+	public ItemList(ItemStack[] items) {
+		this.items = Arrays.asList(items);
+	}
 
-    public ItemList(ItemStack[] items) {
-        this.items = Arrays.asList(items);
-    }
+	// public
+	public boolean tryToRemove(ItemStack item) {
+		ArrayList<ItemStack> original = this.cloneList();
+		if (item == null || item.getId() == 0) {
+			return true;
+		}
+		int toRemove = item.getAmount();
+		for (int i = 0; i < items.size(); i++) {
+			if (toRemove == 0) {
+				break;
+			}
+			if (items.get(i) == null) {
+				continue;
+			}
+			int typeID = items.get(i).getId();
+			int damage = items.get(i).getData();
+			int amount = items.get(i).getAmount();
+			CompoundTag nbt = items.get(i).getNBT();
+			if (typeID == item.getId() && damage == item.getData()) {
+				// We found the item
+				if (amount > toRemove) {
+					// SUCCESS
+					items.set(i, new ItemStack(typeID, amount - toRemove, damage, nbt));
+					return true;
+				} else {
+					items.set(i, null);
+					toRemove -= amount;
+				}
+			}
+		}
+		if (toRemove <= 0) {
+			return true;
+		} else {
+			this.items = original;
+			return false;
+		}
+	}
 
-    public boolean tryToRemove(ItemStack item) {
-        ArrayList<ItemStack> original = this.cloneList();
-        if (item == null || item.getId() == 0) {
-            return true;
-        }
-        int toRemove = item.getAmount();
-        for (int i = 0; i < items.size(); i++) {
-            if (toRemove == 0) {
-                break;
-            }
-            if (items.get(i) == null) {
-                continue;
-            }
-            int typeID = items.get(i).getId();
-            int damage = items.get(i).getData();
-            int amount = items.get(i).getAmount();
-            CompoundTag nbt = items.get(i).getNBT();
-            if (typeID == item.getId() && damage == item.getData()) {
-                //We found the item
-                if (amount > toRemove) {
-                    //SUCCESS
-                    items.set(i, new ItemStack(typeID, amount - toRemove, damage, nbt));
-                    return true;
-                } else {
-                    items.set(i, null);
-                    toRemove -= amount;
-                }
-            }
-        }
-        if (toRemove <= 0) {
-            return true;
-        } else {
-            this.items = original;
-            return false;
-        }
-    }
+	public List<ItemStack> getItems() {
+		return items;
+	}
 
-    private ArrayList<ItemStack> cloneList() {
-        ArrayList<ItemStack> cloned = new ArrayList<>();
-        for (ItemStack item : this.items) {
-            cloned.add(new ItemStack(item.getId(), item.getAmount(), item.getData(), item.getNBT()));
-        }
-        return cloned;
-    }
+	public ItemStack[] getContents() {
+		return this.items.toArray(new ItemStack[0]);
+	}
 
-    public List<ItemStack> getItems() {
-        return items;
-    }
+	private ArrayList<ItemStack> cloneList() {
+		ArrayList<ItemStack> cloned = new ArrayList<>();
+		for (ItemStack item : this.items) {
+			cloned.add(new ItemStack(item.getId(), item.getAmount(), item.getData(), item.getNBT()));
+		}
+		return cloned;
+	}
 
-    public ItemStack[] getContents() {
-        return this.items.toArray(new ItemStack[0]);
-    }
+	// private
 
 }

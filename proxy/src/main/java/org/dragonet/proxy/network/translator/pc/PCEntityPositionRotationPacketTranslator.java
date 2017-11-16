@@ -14,33 +14,43 @@ package org.dragonet.proxy.network.translator.pc;
 
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.translator.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityPositionRotationPacket;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.MoveEntityPacket;
 import org.dragonet.proxy.utilities.Vector3F;
 
-public class PCEntityPositionRotationPacketTranslator implements PCPacketTranslator<ServerEntityPositionRotationPacket> {
+public class PCEntityPositionRotationPacketTranslator
+		implements IPCPacketTranslator<ServerEntityPositionRotationPacket> {
+	// vars
 
-    @Override
-    public PEPacket[] translate(UpstreamSession session, ServerEntityPositionRotationPacket packet) {
-        CachedEntity e = session.getEntityCache().get(packet.getEntityId());
-        if (e == null) {
-            return null;
-        }
+	// constructor
+	public PCEntityPositionRotationPacketTranslator() {
 
-        e.relativeMove(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ(), packet.getYaw(), packet.getPitch());
+	}
 
-        MoveEntityPacket pk = new MoveEntityPacket();
-        pk.rtid = e.eid;
-        pk.yaw = (byte) (e.yaw / (360d / 256d));
-        pk.headYaw = (byte) (e.yaw / (360d / 256d));
-        pk.pitch = (byte) (e.pitch / (360d / 256d));
-        pk.position = new Vector3F((float) e.x, (float) e.y, (float) e.z);
-        if(e.player){
-            pk.position.y += 1.62f;
-        }
-        return new PEPacket[]{pk};
-    }
+	// public
+	public PEPacket[] translate(UpstreamSession session, ServerEntityPositionRotationPacket packet) {
+		CachedEntity e = session.getEntityCache().get(packet.getEntityId());
+		if (e == null) {
+			return null;
+		}
+
+		e.relativeMove(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ(), packet.getYaw(),
+				packet.getPitch());
+
+		MoveEntityPacket pk = new MoveEntityPacket();
+		pk.rtid = e.eid;
+		pk.yaw = (byte) (e.yaw / (360d / 256d));
+		pk.headYaw = (byte) (e.yaw / (360d / 256d));
+		pk.pitch = (byte) (e.pitch / (360d / 256d));
+		pk.position = new Vector3F((float) e.x, (float) e.y, (float) e.z);
+		if (e.player) {
+			pk.position.y += 1.62f;
+		}
+		return new PEPacket[] { pk };
+	}
+
+	// private
 
 }

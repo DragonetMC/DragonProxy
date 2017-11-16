@@ -11,29 +11,38 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class SkinDownloader {
+	// vars
 
-    public static byte[] download(String username) {
-        try {
-            URL url = new URL(String.format("http://s3.amazonaws.com/MinecraftSkins/%s.png", username));
+	// constructor
+	public SkinDownloader() {
 
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            DataInputStream in = new DataInputStream(connection.getInputStream());
+	}
 
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
+	// public
+	public static byte[] download(String username) {
+		try {
+			URL url = new URL(String.format("http://s3.amazonaws.com/MinecraftSkins/%s.png", username));
 
-            byte[] buffer = new byte[4096];
-            int count = 0;
-            while ((count = in.read(buffer)) > 0) {
-                out.write(buffer, 0, count);
-            }
-            out.close();
-            in.close();
-            connection.disconnect();
-            return out.toByteArray();
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			DataInputStream in = new DataInputStream(connection.getInputStream());
 
-        } catch (Exception e) {
-            return null;
-        }
-    }
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+			byte[] buffer = new byte[4096];
+			int count = 0;
+			while ((count = in.read(buffer)) > 0) {
+				out.write(buffer, 0, count);
+			}
+			out.close();
+			in.close();
+			connection.disconnect();
+			return out.toByteArray();
+
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	// private
 
 }

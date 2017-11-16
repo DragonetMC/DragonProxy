@@ -20,26 +20,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CachedWindow {
+	// vars
+	public final int windowId;
+	/**
+	 * The type of this window on remote side, -1 for player inventory.
+	 */
+	public final WindowType pcType;
+	public final int size;
+	public String title = "Window";
+	public final Map<Integer, Integer> properties = Collections.synchronizedMap(new HashMap<Integer, Integer>());
+	public ItemStack[] slots;
 
-    public final int windowId;
+	// constructor
+	public CachedWindow(int windowId, WindowType pcType, int size) {
+		this.windowId = windowId;
+		this.pcType = pcType;
+		this.size = size;
+		slots = new ItemStack[this.size];
+	}
 
-    /**
-     * The type of this window on remote side, -1 for player inventory.
-     */
-    public final WindowType pcType;
+	// public
 
-    public final int size;
+	// private
 
-    public String title = "Window";
-
-    public final Map<Integer, Integer> properties = Collections.synchronizedMap(new HashMap<Integer, Integer>());
-
-    public ItemStack[] slots;
-
-    public CachedWindow(int windowId, WindowType pcType, int size) {
-        this.windowId = windowId;
-        this.pcType = pcType;
-        this.size = size;
-        slots = new ItemStack[this.size];
-    }
 }

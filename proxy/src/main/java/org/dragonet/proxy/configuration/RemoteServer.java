@@ -15,38 +15,37 @@ package org.dragonet.proxy.configuration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.dragonet.configuration.serialization.ConfigurationSerializable;
+public abstract class RemoteServer implements IConfigurationSerializable {
+	// vars
+	public String remoteAddr;
+	public int remotePort;
 
-public abstract class RemoteServer implements ConfigurationSerializable {
-	//vars
-    public String remoteAddr;
-    public int remotePort;
-    
-    //constructor
-    public RemoteServer() {
-    	super();
-    }
-    
-    //public
-    /**
-     * Required for deserailization. 
-     * @param server 
-     * @param map
-     * @return 
-     */
-    public static RemoteServer delicatedDeserialize(RemoteServer server, Map<String, Object> map) {
-        server.remoteAddr = (String) map.get("remote_addr");
-        server.remotePort = ((Number) map.get("remote_port")).intValue();
-        return server;
-    }
-    
-    public Map<String, Object> serialize() {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("remote_addr", remoteAddr);
-        map.put("remote_port", remotePort);
-        return map;
-    }
-    
-    //private
-    
+	// constructor
+	public RemoteServer() {
+		super();
+	}
+
+	// public
+	/**
+	 * Required for deserailization.
+	 * 
+	 * @param server
+	 * @param map
+	 * @return
+	 */
+	public static RemoteServer delicatedDeserialize(RemoteServer server, Map<String, Object> map) {
+		server.remoteAddr = (String) map.get("remote_addr");
+		server.remotePort = ((Number) map.get("remote_port")).intValue();
+		return server;
+	}
+
+	public Map<String, Object> serialize() {
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("remote_addr", remoteAddr);
+		map.put("remote_port", remotePort);
+		return map;
+	}
+
+	// private
+
 }

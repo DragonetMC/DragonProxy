@@ -15,18 +15,26 @@ package org.dragonet.proxy.network.translator.pc;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.translator.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 
-public class PCJoinGamePacketTranslator implements PCPacketTranslator<ServerJoinGamePacket> {
+public class PCJoinGamePacketTranslator implements IPCPacketTranslator<ServerJoinGamePacket> {
+	// vars
 
-    @Override
-    public PEPacket[] translate(UpstreamSession session, ServerJoinGamePacket packet) {
-        session.getDataCache().put(CacheKey.PLAYER_EID, packet.getEntityId());  //Stores the real entity ID
+	// constructor
+	public PCJoinGamePacketTranslator() {
 
-        //This packet is not fully useable, we cache it for now.
-        session.getDataCache().put(CacheKey.PACKET_JOIN_GAME_PACKET, packet);
-        return null;
-    }
+	}
+
+	// public
+	public PEPacket[] translate(UpstreamSession session, ServerJoinGamePacket packet) {
+		session.getDataCache().put(CacheKey.PLAYER_EID, packet.getEntityId()); // Stores the real entity ID
+
+		// This packet is not fully useable, we cache it for now.
+		session.getDataCache().put(CacheKey.PACKET_JOIN_GAME_PACKET, packet);
+		return null;
+	}
+
+	// private
 
 }

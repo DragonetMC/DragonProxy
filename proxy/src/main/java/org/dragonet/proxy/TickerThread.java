@@ -14,30 +14,30 @@ package org.dragonet.proxy;
 
 public class TickerThread extends Thread {
 
-    private final DragonProxy proxy;
+	private final DragonProxy proxy;
 
-    public TickerThread(DragonProxy proxy) {
-        this.proxy = proxy;
-        setDaemon(true);
-    }
+	public TickerThread(DragonProxy proxy) {
+		this.proxy = proxy;
+		setDaemon(true);
+	}
 
-    @Override
-    public void run() {
-        long time;
-        while (!proxy.isShuttingDown()) {
-            time = System.currentTimeMillis();
-            proxy.onTick();
-            time = System.currentTimeMillis() - time;
-            if (time >= 50) {
-                continue;
-            } else {
-                try {
-                    Thread.sleep(50 - time);
-                } catch (InterruptedException ex) {
-                    return;
-                }
-            }
-        }
-    }
+	@Override
+	public void run() {
+		long time;
+		while (!proxy.isShuttingDown()) {
+			time = System.currentTimeMillis();
+			proxy.onTick();
+			time = System.currentTimeMillis() - time;
+			if (time >= 50) {
+				continue;
+			} else {
+				try {
+					Thread.sleep(50 - time);
+				} catch (InterruptedException ex) {
+					return;
+				}
+			}
+		}
+	}
 
 }

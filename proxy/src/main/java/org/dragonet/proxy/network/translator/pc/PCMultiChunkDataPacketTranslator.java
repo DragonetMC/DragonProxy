@@ -18,19 +18,24 @@ import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
-import org.dragonet.proxy.network.translator.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.FullChunkDataPacket;
 import org.dragonet.proxy.protocol.type.chunk.ChunkData;
 import org.dragonet.proxy.protocol.type.chunk.Section;
 
-public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<ServerChunkDataPacket> {
+public class PCMultiChunkDataPacketTranslator implements IPCPacketTranslator<ServerChunkDataPacket> {
+	// vars
 
-    @Override
-    public PEPacket[] translate(UpstreamSession session, ServerChunkDataPacket packet) {
+	// constructor
+	public PCMultiChunkDataPacketTranslator() {
 
-        session.getProxy().getGeneralThreadPool().execute(() -> {
-    		try {
+	}
+
+	// public
+	public PEPacket[] translate(UpstreamSession session, ServerChunkDataPacket packet) {
+		session.getProxy().getGeneralThreadPool().execute(() -> {
+			try {
 
 				FullChunkDataPacket pePacket = new FullChunkDataPacket();
 				pePacket.x = packet.getColumn().getX();
@@ -45,32 +50,30 @@ public class PCMultiChunkDataPacketTranslator implements PCPacketTranslator<Serv
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-        }
-		);
+		});
+		return null;
+	}
 
-
-        return null;
-    }
-
-    private void processChunkSection(Chunk[] pc, ChunkData pe) {
-		/*pe.sections = new Section[16];
-		for(int i = 0; i < 16; i++) {
-			pe.sections[i] = new Section();
-			if(i < 2)
-				Arrays.fill(pe.sections[i].blockIds, (byte)1);
-		}*/
+	// private
+	private void processChunkSection(Chunk[] pc, ChunkData pe) {
+		/*
+		 * pe.sections = new Section[16]; for(int i = 0; i < 16; i++) { pe.sections[i] =
+		 * new Section(); if(i < 2) Arrays.fill(pe.sections[i].blockIds, (byte)1); }
+		 */
 		pe.sections = new Section[16];
-		for(int i = 0; i < 16; i++) {
+		for (int i = 0; i < 16; i++) {
 			pe.sections[i] = new Section();
 		}
-		for(int y = 0; y < 256; y++) {
+		for (int y = 0; y < 256; y++) {
 			int cy = y >> 4;
-			if (pc[cy] == null || pc[cy].isEmpty()) continue;
+			if (pc[cy] == null || pc[cy].isEmpty())
+				continue;
 			BlockStorage blocks = pc[cy].getBlocks();
 			for (int x = 0; x < 16; x++) {
 				for (int z = 0; z < 16; z++) {
 					BlockState block = blocks.get(x, y & 0xF, z);
-					pe.sections[cy].blockIds[index(x, y, z)] = (byte) (ItemBlockTranslator.translateToPE(block.getId()) & 0xFF);
+					pe.sections[cy].blockIds[index(x, y,
+							z)] = (byte) (ItemBlockTranslator.translateToPE(block.getId()) & 0xFF);
 				}
 			}
 		}

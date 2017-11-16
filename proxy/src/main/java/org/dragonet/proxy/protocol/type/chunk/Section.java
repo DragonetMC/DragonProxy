@@ -12,18 +12,20 @@ import org.dragonet.proxy.utilities.BinaryStream;
 
 import java.util.Arrays;
 
-
 /**
- * Section of a chunk with informations about blocks and lights. The array of bytes
- * are always ordered `xzy`.
+ * Section of a chunk with informations about blocks and lights. The array of
+ * bytes are always ordered `xzy`.
  */
 public class Section {
-
+	// vars
 	public byte storageVersion = 0;
 	public byte[] blockIds = new byte[4096];
 	public byte[] blockMetas = new byte[2048];
 
-	public Section() {}
+	// constructor
+	public Section() {
+
+	}
 
 	public Section(byte storageVersion, byte[] blockIds, byte[] blockMetas) {
 		this.storageVersion = storageVersion;
@@ -31,6 +33,7 @@ public class Section {
 		this.blockMetas = blockMetas;
 	}
 
+	// public
 	public void encode(BinaryStream out) {
 		out.putByte(storageVersion);
 		out.put(blockIds);
@@ -43,10 +46,11 @@ public class Section {
 		blockMetas = in.get(2048);
 	}
 
-	@Override
 	public String toString() {
-		return "Section(storageVersion: " + this.storageVersion + ", blockIds: " + Arrays.toString(this.blockIds) + ", blockMetas: " + Arrays.toString(this.blockMetas) + ")";
+		return "Section(storageVersion: " + this.storageVersion + ", blockIds: " + Arrays.toString(this.blockIds)
+				+ ", blockMetas: " + Arrays.toString(this.blockMetas) + ")";
 	}
 
+	// private
 
 }

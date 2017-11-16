@@ -15,27 +15,35 @@ package org.dragonet.proxy.network.translator.pc;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityVelocityPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.translator.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.SetEntityMotionPacket;
 import org.dragonet.proxy.utilities.Vector3F;
 
-public class PCEntityVelocityPacketTranslator implements PCPacketTranslator<ServerEntityVelocityPacket> {
+public class PCEntityVelocityPacketTranslator implements IPCPacketTranslator<ServerEntityVelocityPacket> {
+	// vars
 
-    @Override
-    public PEPacket[] translate(UpstreamSession session, ServerEntityVelocityPacket packet) {
-        CachedEntity e = session.getEntityCache().get(packet.getEntityId());
-        if (e == null) {
-            return null;
-        }
-        e.motionX = packet.getMotionX();
-        e.motionY = packet.getMotionY();
-        e.motionZ = packet.getMotionZ();
+	// constructor
+	public PCEntityVelocityPacketTranslator() {
 
-        SetEntityMotionPacket pk = new SetEntityMotionPacket();
-        pk.rtid = packet.getEntityId();
-        pk.motion = new Vector3F((float) packet.getMotionX(), (float) packet.getMotionY(), (float) packet.getMotionZ());
-        return new PEPacket[]{pk};
-    }
+	}
+
+	// public
+	public PEPacket[] translate(UpstreamSession session, ServerEntityVelocityPacket packet) {
+		CachedEntity e = session.getEntityCache().get(packet.getEntityId());
+		if (e == null) {
+			return null;
+		}
+		e.motionX = packet.getMotionX();
+		e.motionY = packet.getMotionY();
+		e.motionZ = packet.getMotionZ();
+
+		SetEntityMotionPacket pk = new SetEntityMotionPacket();
+		pk.rtid = packet.getEntityId();
+		pk.motion = new Vector3F((float) packet.getMotionX(), (float) packet.getMotionY(), (float) packet.getMotionZ());
+		return new PEPacket[] { pk };
+	}
+
+	// private
 
 }

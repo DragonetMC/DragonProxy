@@ -16,8 +16,18 @@ import java.util.Map;
 import org.dragonet.proxy.configuration.RemoteServer;
 
 public class DesktopServer extends RemoteServer {
+	// vars
 
-    public static DesktopServer deserialize(Map<String, Object> map) {
-        return (DesktopServer) delicatedDeserialize(new DesktopServer(), map);
-    }
+	// constructor
+	public DesktopServer() {
+		super();
+	}
+
+	// public
+	public static DesktopServer deserialize(Map<String, Object> map) {
+		return (DesktopServer) delicatedDeserialize(new DesktopServer(), map);
+	}
+
+	// private
+
 }

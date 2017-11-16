@@ -13,24 +13,27 @@
 package org.dragonet.proxy.entity.meta.type;
 
 import org.dragonet.proxy.entity.meta.EntityMetaData;
-import org.dragonet.proxy.entity.meta.EntityMetaDataObject;
+import org.dragonet.proxy.entity.meta.IEntityMetaDataObject;
 import org.dragonet.proxy.utilities.BinaryStream;
 
-public class ByteMeta implements EntityMetaDataObject {
+public class ByteMeta implements IEntityMetaDataObject {
+	// vars
+	public byte data;
 
-    public byte data;
+	// construcor
+	public ByteMeta(byte data) {
+		this.data = data;
+	}
 
-    public ByteMeta(byte data) {
-        this.data = data;
-    }
+	// public
+	public int type() {
+		return EntityMetaData.Constants.DATA_TYPE_BYTE;
+	}
 
-    @Override
-    public int type() {
-        return EntityMetaData.Constants.DATA_TYPE_BYTE;
-    }
+	public void encode(BinaryStream out) {
+		out.putByte(data);
+	}
 
-    @Override
-    public void encode(BinaryStream out) {
-        out.putByte(data);
-    }
+	// private
+
 }

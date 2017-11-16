@@ -22,75 +22,89 @@ import org.dragonet.proxy.entity.EntityType;
 import org.dragonet.proxy.entity.meta.EntityMetaData;
 
 public final class EntityMetaTranslator {
+	// vars
 
-    public static EntityMetaData translateToPE(EntityMetadata[] pcMeta, EntityType type) {
-        /*
-         * Following format was fetched from http://wiki.vg/Entities#Entity_meta_Format
-         */
-        EntityMetaData peMeta = EntityMetaData.createDefault();
-        for (EntityMetadata m : pcMeta) {
-            if (m == null) {
-                continue;
-            }
-            switch (m.getId()) {
-                case 0://Flags
-                    byte pcFlags = ((byte) m.getValue());
-                    long peFlags = peMeta.map.containsKey(EntityMetaData.Constants.DATA_FLAGS) ? ((LongMeta)peMeta.map.get(EntityMetaData.Constants.DATA_FLAGS)).data : 0;
-                    peFlags |= (byte) ((pcFlags & 0x01) > 0 ? EntityMetaData.Constants.DATA_FLAG_ONFIRE : 0);
-                    peFlags |= (pcFlags & 0x02) > 0 ? EntityMetaData.Constants.DATA_FLAG_SNEAKING : 0;
-                    peFlags |= (pcFlags & 0x08) > 0 ? EntityMetaData.Constants.DATA_FLAG_SPRINTING : 0;
-                    peFlags |= (pcFlags & 0x10) > 0 ? EntityMetaData.Constants.DATA_FLAG_ACTION : 0;
-                    peFlags |= (pcFlags & 0x20) > 0 ? EntityMetaData.Constants.DATA_FLAG_INVISIBLE : 0;
-                    peMeta.map.put(EntityMetaData.Constants.DATA_FLAGS, new LongMeta(peFlags));
-                    break;
-                case 1://Air
-                    peMeta.map.put(EntityMetaData.Constants.DATA_AIR, new ShortMeta((short) m.getValue()));
-                    break;
-                case 2://Name tag
-                    peMeta.map.put(EntityMetaData.Constants.DATA_NAMETAG, new ByteArrayMeta((String) m.getValue()));
-                    break;
-                case 3://Always show name tag
-                    byte data;
-                    if(m.getType() == MetadataType.BYTE){
-                        data = (byte) m.getValue();
-                    }else if(m.getType() == MetadataType.INT){
-                        data = (byte)(((int)m.getValue()) & 0xFF);
-                    }else{
-                        data = 1;
-                    }
-                    peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_CAN_SHOW_NAMETAG, data > 0);
-                    break;
-                case 6://Health
-                    //Not supported on MCPE yet
-                    break;
-                case 7://Potion color
-                    peMeta.map.put(EntityMetaData.Constants.DATA_POTION_COLOR, new ByteMeta((byte) ((int) m.getValue() & 0xFF)));
-                    break;
-                case 8://Potion visible, not sure here
-                    peMeta.map.put(EntityMetaData.Constants.DATA_POTION_AMBIENT, new ByteMeta((byte) m.getValue()));
-                    break;
-                case 9://Arrows stick into player's body
-                    //Not supported on MCPE yet
-                    break;
-                case 15://Has no AI
-                    peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_NO_AI, true);
-                    break;
-                case 12://Age
-                    byte age;
-                    if(m.getType() == MetadataType.BYTE){
-                        age = (byte) m.getValue();
-                    }else if(m.getType() == MetadataType.INT){
-                        age = (byte)(((int)m.getValue()) & 0xFF);
-                    }else{
-                        age = 0;
-                    }
-                    peMeta.map.put(EntityMetaData.Constants.DATA_ENTITY_AGE, new ByteMeta((age <= 0 ? (byte)0x1 : (byte)0x0)));
-                    break;
-                case 16:
-                    //Not supported yet
-                    break;
-            }
-        }
-        return peMeta;
-    }
+	// constructor
+	public EntityMetaTranslator() {
+
+	}
+
+	// public
+	public static EntityMetaData translateToPE(EntityMetadata[] pcMeta, EntityType type) {
+		/*
+		 * Following format was fetched from http://wiki.vg/Entities#Entity_meta_Format
+		 */
+		EntityMetaData peMeta = EntityMetaData.createDefault();
+		for (EntityMetadata m : pcMeta) {
+			if (m == null) {
+				continue;
+			}
+			switch (m.getId()) {
+			case 0:// Flags
+				byte pcFlags = ((byte) m.getValue());
+				long peFlags = peMeta.map.containsKey(EntityMetaData.Constants.DATA_FLAGS)
+						? ((LongMeta) peMeta.map.get(EntityMetaData.Constants.DATA_FLAGS)).data
+						: 0;
+				peFlags |= (byte) ((pcFlags & 0x01) > 0 ? EntityMetaData.Constants.DATA_FLAG_ONFIRE : 0);
+				peFlags |= (pcFlags & 0x02) > 0 ? EntityMetaData.Constants.DATA_FLAG_SNEAKING : 0;
+				peFlags |= (pcFlags & 0x08) > 0 ? EntityMetaData.Constants.DATA_FLAG_SPRINTING : 0;
+				peFlags |= (pcFlags & 0x10) > 0 ? EntityMetaData.Constants.DATA_FLAG_ACTION : 0;
+				peFlags |= (pcFlags & 0x20) > 0 ? EntityMetaData.Constants.DATA_FLAG_INVISIBLE : 0;
+				peMeta.map.put(EntityMetaData.Constants.DATA_FLAGS, new LongMeta(peFlags));
+				break;
+			case 1:// Air
+				peMeta.map.put(EntityMetaData.Constants.DATA_AIR, new ShortMeta((short) m.getValue()));
+				break;
+			case 2:// Name tag
+				peMeta.map.put(EntityMetaData.Constants.DATA_NAMETAG, new ByteArrayMeta((String) m.getValue()));
+				break;
+			case 3:// Always show name tag
+				byte data;
+				if (m.getType() == MetadataType.BYTE) {
+					data = (byte) m.getValue();
+				} else if (m.getType() == MetadataType.INT) {
+					data = (byte) (((int) m.getValue()) & 0xFF);
+				} else {
+					data = 1;
+				}
+				peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_CAN_SHOW_NAMETAG, data > 0);
+				break;
+			case 6:// Health
+					// Not supported on MCPE yet
+				break;
+			case 7:// Potion color
+				peMeta.map.put(EntityMetaData.Constants.DATA_POTION_COLOR,
+						new ByteMeta((byte) ((int) m.getValue() & 0xFF)));
+				break;
+			case 8:// Potion visible, not sure here
+				peMeta.map.put(EntityMetaData.Constants.DATA_POTION_AMBIENT, new ByteMeta((byte) m.getValue()));
+				break;
+			case 9:// Arrows stick into player's body
+					// Not supported on MCPE yet
+				break;
+			case 15:// Has no AI
+				peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_NO_AI, true);
+				break;
+			case 12:// Age
+				byte age;
+				if (m.getType() == MetadataType.BYTE) {
+					age = (byte) m.getValue();
+				} else if (m.getType() == MetadataType.INT) {
+					age = (byte) (((int) m.getValue()) & 0xFF);
+				} else {
+					age = 0;
+				}
+				peMeta.map.put(EntityMetaData.Constants.DATA_ENTITY_AGE,
+						new ByteMeta((age <= 0 ? (byte) 0x1 : (byte) 0x0)));
+				break;
+			case 16:
+				// Not supported yet
+				break;
+			}
+		}
+		return peMeta;
+	}
+
+	// private
+
 }

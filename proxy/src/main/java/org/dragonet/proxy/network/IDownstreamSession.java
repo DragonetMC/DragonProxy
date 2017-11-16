@@ -10,13 +10,20 @@
  *
  * @author The Dragonet Team
  */
-package org.dragonet.proxy.entity.meta;
+package org.dragonet.proxy.network;
 
-import org.dragonet.proxy.utilities.BinaryStream;
+public interface IDownstreamSession<PACKET> {
+	public void connect(String addr, int port);
 
-public interface EntityMetaDataObject {
+	public void disconnect();
 
-    int type();
+	public boolean isConnected();
 
-    void encode(BinaryStream out);
+	public void send(PACKET packet);
+
+	public void send(PACKET... packets);
+
+	public void sendChat(String chat);
+
+	public void onTick();
 }

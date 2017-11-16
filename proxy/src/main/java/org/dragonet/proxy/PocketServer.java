@@ -16,8 +16,18 @@ import java.util.Map;
 import org.dragonet.proxy.configuration.RemoteServer;
 
 public class PocketServer extends RemoteServer {
+	// vars
 
-    public static PocketServer deserialize(Map<String, Object> map) {
-        return (PocketServer) delicatedDeserialize(new PocketServer(), map);
-    }
+	// constructor
+	public PocketServer() {
+		super();
+	}
+
+	// public
+	public static PocketServer deserialize(Map<String, Object> map) {
+		return (PocketServer) delicatedDeserialize(new PocketServer(), map);
+	}
+
+	// private
+
 }

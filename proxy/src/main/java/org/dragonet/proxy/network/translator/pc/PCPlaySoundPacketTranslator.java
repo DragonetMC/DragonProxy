@@ -15,38 +15,46 @@ package org.dragonet.proxy.network.translator.pc;
 import com.github.steveice10.mc.protocol.data.game.world.sound.BuiltinSound;
 import com.github.steveice10.mc.protocol.data.game.world.sound.CustomSound;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.translator.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerPlaySoundPacket;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.PlaySoundPacket;
 import org.dragonet.proxy.utilities.BlockPosition;
 
-public class PCPlaySoundPacketTranslator implements PCPacketTranslator<ServerPlaySoundPacket> {
+public class PCPlaySoundPacketTranslator implements IPCPacketTranslator<ServerPlaySoundPacket> {
+	// vars
 
-    @Override
-    public PEPacket[] translate(UpstreamSession session, ServerPlaySoundPacket packet) {
-        try {
-            String soundName;
+	// constructor
+	public PCPlaySoundPacketTranslator() {
 
-            if (BuiltinSound.class.isAssignableFrom(packet.getSound().getClass())) {
-                BuiltinSound sound = (BuiltinSound) packet.getSound();
-                soundName = sound.name();
-            } else {
-                soundName = ((CustomSound) packet.getSound()).getName();
-            }
-            if (soundName == null) {
-                return null;
-            }
-            PlaySoundPacket pk = new PlaySoundPacket();
-            pk.blockPosition = new BlockPosition((int) packet.getX(), (int) packet.getY(), (int) packet.getZ());
-            pk.name = soundName;
-            pk.volume = packet.getVolume();
-            pk.pitch = packet.getPitch();
-            return new PEPacket[]{pk};
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+	}
+
+	// public
+	public PEPacket[] translate(UpstreamSession session, ServerPlaySoundPacket packet) {
+		try {
+			String soundName;
+
+			if (BuiltinSound.class.isAssignableFrom(packet.getSound().getClass())) {
+				BuiltinSound sound = (BuiltinSound) packet.getSound();
+				soundName = sound.name();
+			} else {
+				soundName = ((CustomSound) packet.getSound()).getName();
+			}
+			if (soundName == null) {
+				return null;
+			}
+			PlaySoundPacket pk = new PlaySoundPacket();
+			pk.blockPosition = new BlockPosition((int) packet.getX(), (int) packet.getY(), (int) packet.getZ());
+			pk.name = soundName;
+			pk.volume = packet.getVolume();
+			pk.pitch = packet.getPitch();
+			return new PEPacket[] { pk };
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	// private
 
 }

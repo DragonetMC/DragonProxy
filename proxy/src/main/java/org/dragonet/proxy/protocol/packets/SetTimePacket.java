@@ -7,21 +7,26 @@ import org.dragonet.proxy.protocol.ProtocolInfo;
  * Created on 2017/10/22.
  */
 public class SetTimePacket extends PEPacket {
-
-    public int time;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.SET_TIME_PACKET;
-    }
-
-    @Override
-    public void encodePayload() {
-        putVarInt(time);
-    }
-
-    @Override
-    public void decodePayload() {
-        time = getVarInt();
-    }
+	//vars
+	public int time;
+	
+	//constructor
+	public SetTimePacket() {
+		
+	}
+	
+	//public
+	public int pid() {
+		return ProtocolInfo.SET_TIME_PACKET;
+	}
+	
+	public void encodePayload() {
+		putVarInt(time);
+	}
+	public void decodePayload() {
+		time = getVarInt();
+	}
+	
+	//private
+	
 }

@@ -15,17 +15,25 @@ package org.dragonet.proxy.network.translator.pe;
 import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.network.InventoryTranslatorRegister;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.translator.PEPacketTranslator;
+import org.dragonet.proxy.network.translator.IPEPacketTranslator;
 import org.dragonet.proxy.protocol.packets.ContainerClosePacket;
 
-public class PEWindowClosePacketTranslator implements PEPacketTranslator<ContainerClosePacket> {
+public class PEWindowClosePacketTranslator implements IPEPacketTranslator<ContainerClosePacket> {
+	// vars
 
-    @Override
-    public Packet[] translate(UpstreamSession session, ContainerClosePacket packet) {
-        session.getProxy().getGeneralThreadPool().execute(() -> {
-            InventoryTranslatorRegister.closeOpened(session, false);
-        });
-        return null;
-    }
+	// constructor
+	public PEWindowClosePacketTranslator() {
+
+	}
+
+	// public
+	public Packet[] translate(UpstreamSession session, ContainerClosePacket packet) {
+		session.getProxy().getGeneralThreadPool().execute(() -> {
+			InventoryTranslatorRegister.closeOpened(session, false);
+		});
+		return null;
+	}
+
+	// private
 
 }

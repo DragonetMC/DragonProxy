@@ -8,21 +8,26 @@ import org.dragonet.proxy.utilities.Vector3F;
  * Created on 2017/10/22.
  */
 public class RespawnPacket extends PEPacket {
-
-    public Vector3F position;
-
-    @Override
-    public int pid() {
-        return ProtocolInfo.RESPAWN_PACKET;
-    }
-
-    @Override
-    public void encodePayload() {
-        putVector3F(position);
-    }
-
-    @Override
-    public void decodePayload() {
-        position = getVector3F();
-    }
+	//vars
+	public Vector3F position;
+	
+	//constructor
+	public RespawnPacket() {
+		
+	}
+	
+	//public
+	public int pid() {
+		return ProtocolInfo.RESPAWN_PACKET;
+	}
+	
+	public void encodePayload() {
+		putVector3F(position);
+	}
+	public void decodePayload() {
+		position = getVector3F();
+	}
+	
+	//private
+	
 }

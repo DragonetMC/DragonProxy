@@ -12,19 +12,18 @@
  */
 package org.dragonet.proxy.network.translator;
 
-import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.protocol.PEPacket;
 
-public interface PEPacketTranslator<P extends PEPacket> {
+import com.github.steveice10.packetlib.packet.Packet;
 
-    /**
-     * Translate a packet from PE version to PC version.
-     *
-     * @param session
-     * @param packet
-     * @return
-     */
-    Packet[] translate(UpstreamSession session, P packet);
-
+public interface IPCPacketTranslator<P extends Packet> {
+	/**
+	 * Translate a packet from PC version to PE version.
+	 *
+	 * @param session
+	 * @param packet
+	 * @return
+	 */
+	PEPacket[] translate(UpstreamSession session, P packet);
 }
