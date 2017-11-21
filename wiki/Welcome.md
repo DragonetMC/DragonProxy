@@ -1,12 +1,12 @@
-## Welcome do DragonProxy WIKI
+## Welcome to DragonProxy wiki
 
 ### 1. Presentation
-DragonProxy aim to be the first Minecraft PE <=> PC bridge, based on protocole translation.<br />
+DragonProxy is the only Minecraft: Bedrock Edition <=> Minecraft: Java Edition bridge, based on protocol translation.<br />
 With this proxy, PE players (W10, Android / IOS) can join PC servers.<br />
 This is probably the future of Minecraft servers, as Microsoft does not provide featured PE server publicly !
 
 ### 2. How it works
-Here is a small description of the protocole translator :<br />
+Here is a small description of the protocol translator :<br />
 
 - 1. [JRakNet](https://github.com/JRakNet/JRakNet)<br />
 This is a java based Raknet protocole implementation.
@@ -23,7 +23,7 @@ The packet translator PE <=> PC with caching for later use of the data.
 - 5. [DownStreamSession](../../../blob/master/proxy/src/main/java/org/dragonet/proxy/network/PCDownstreamSession.java)<br />
 This class manage the PC packets listener / sender.
 
-- 6. [MCProtocoleLib](https://github.com/Steveice10/MCProtocolLib)<br />
+- 6. [MCProtocolLib](https://github.com/Steveice10/MCProtocolLib)<br />
 This library is used to create a Minecraft PC client for connecting to PC servers.
 
 ### 3. Features
