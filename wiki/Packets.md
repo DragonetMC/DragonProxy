@@ -14,7 +14,7 @@ Current versions :
 | Resource Packs Info | 0x06 | 6 |  |  |  |  |  |
 | Resource Pack Stack | 0x07 | 7 |  |  |  |  |  |
 | Resource Pack Client Response | 0x08 | 8 |  |  |  |  |  |
-| Text | 0x09 | 9 |  | both | ClientChatPacket | 0x0F |  |
+| Text | 0x09 | 9 |  | both | ClientChat | 0x0F |  |
 | Set Time | 0x0a | 10 |  | S => C | Time Update | 0x48 |  |
 | Start Game | 0x0b | 11 |  | S => C | Join Game | 0x23 |  |
 | Add Player | 0x0c | 12 |  | S => C | Spawn Player | 0x05 |  |
@@ -23,7 +23,7 @@ Current versions :
 | Add Item Entity | 0x0f | 15 |  | S => C | Collect Item | 0x4B |  |
 | Take Item Entity | 0x11 | 17 |  |  |  |  |  |
 | Move Entity | 0x12 | 18 |  | S => C | Entity Relative Move | 0x26 |  |
-| Move Player | 0x13 | 19 |  | S => C | ClientPlayerPositionRotationPacket | 0x2F |  |
+| Move Player | 0x13 | 19 |  | S => C | ClientPlayerPositionRotation | 0x2F |  |
 | Rider Jump | 0x14 | 20 |  |  |  |  |  |
 | Update Block | 0x15 | 21 |  | S => C | Block Change | 0x0B |  |
 | Add Painting | 0x16 | 22 |  | S => C | Spawn Painting | 0x04 |  |
@@ -49,7 +49,7 @@ Current versions :
 | Set Health | 0x2a | 42 |  | S => C | Update Health | 0x41 |  |
 | Set Spawn Position | 0x2b | 43 |  | S => C | Spawn Position | 0x46 |  |
 | Animate | 0x2c | 44 |  | S => C | Animation | 0x06 |  |
-| Respawn | 0x2d | 45 |  | S => C | RespawnPacket | 0x35 |  |
+| Respawn | 0x2d | 45 |  | S => C | Respawn | 0x35 |  |
 | Container Open | 0x2e | 46 |  | S => C | Open Window | 0x13 |  |
 | Container Close | 0x2f | 47 |  | S => C | Close Window | 0x12 |  |
 | Player Hotbar | 0x30 | 48 |  |  |  |  |  |
@@ -65,7 +65,7 @@ Current versions :
 | Full Ch Data | 0x3a | 58 |  | S => C | Chunk Data | 0x20 |  |
 | Set Commands Enabled | 0x3b | 59 |  |  |  |  |  |
 | Set Difficulty | 0x3c | 60 |  | S => C | Server Difficulty | 0x0D |  |
-| Change Dimension | 0x3d | 61 |  | S => C | RespawnPacket | 0x35 |  |
+| Change Dimension | 0x3d | 61 |  | S => C | Respawn | 0x35 |  |
 | Set Player Game Type | 0x3e | 62 |  |  |  |  |  |
 | Player List | 0x3f | 63 |  | S => C | Player List Item | 0x2E |  |
 | Simple Event | 0x40 | 64 |  |  |  |  |  |
