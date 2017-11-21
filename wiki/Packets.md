@@ -1,5 +1,9 @@
 ## Packets translator
 
+Current versions :
+- PC : 1.12.1 (338)
+- PE : 1.2.3 (137)
+
 | PE Packet | ID (hex) | ID (dec) | Cached | Bound | PC Packet | ID (hex) | ID (dec) |
 | --- |--- | --- | --- | --- | --- | --- | --- |
 | Login | 0x01 | 1 |  |  |  |  |  |
