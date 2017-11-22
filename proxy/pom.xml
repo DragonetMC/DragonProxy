@@ -97,6 +97,10 @@
       <id>egg82-ninja</id>
       <url>https://www.myget.org/F/egg82-java/maven/</url>
     </repository>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
   </repositories>
   
   <dependencies>
@@ -107,13 +111,13 @@
     </dependency>
     <dependency>
       <groupId>com.github.Steveice10</groupId>
-      <artifactId>mcprotocollib</artifactId>
-      <version>1.12.2-1-SNAPSHOT</version>
+      <artifactId>MCProtocolLib</artifactId>
+      <version>-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.github.Steveice10</groupId>
-      <artifactId>mcauthlib</artifactId>
-      <version>1.1-SNAPSHOT</version>
+      <artifactId>MCAuthLib</artifactId>
+      <version>-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.yaml</groupId>
