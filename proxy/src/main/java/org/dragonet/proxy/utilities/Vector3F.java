@@ -22,7 +22,7 @@ public class Vector3F {
 
 	// public
 	public String toString() {
-		return String.format("Vector3F (%.2f, %.2f, %.2f", x, y, z);
+		return String.format("Vector3F (%.2f, %.2f, %.2f)", x, y, z);
 	}
 
 	// private

@@ -67,6 +67,13 @@ public class PCPlayerPositionRotationPacketTranslator
 				ret.defaultPlayerPermission = 2;
 				ret.premiumWorldTemplateId = "";
 				session.sendPacket(ret);
+			} else {
+				ChangeDimensionPacket d = new ChangeDimensionPacket();
+				d.dimension = 0;
+				d.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET,
+						(float) packet.getZ());
+				session.sendPacket(d);
+				session.sendPacket(new PlayStatusPacket(PlayStatusPacket.PLAYER_SPAWN));
 			}
 
 			UpdateAttributesPacket attr = new UpdateAttributesPacket();
@@ -76,6 +83,7 @@ public class PCPlayerPositionRotationPacketTranslator
 					PEEntityAttribute.findAttribute(PEEntityAttribute.HUNGER),
 					PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE_LEVEL),
 					PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE),
+					PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE_LEVEL),
 					PEEntityAttribute.findAttribute(PEEntityAttribute.MOVEMENT_SPEED), };
 			session.sendPacket(attr);
 
@@ -85,8 +93,9 @@ public class PCPlayerPositionRotationPacketTranslator
 			adv.setFlag(AdventureSettingsPacket.ATTACK_PLAYERS, true);
 			adv.setFlag(AdventureSettingsPacket.ATTACK_MOBS, true);
 			adv.setFlag(AdventureSettingsPacket.BUILD_AND_MINE, true);
-			// adv.setFlag(AdventureSettingsPacket.NO_CLIP,
-			// restored.getGameMode().equals(GameMode.SPECTATOR));
+			adv.setFlag(AdventureSettingsPacket.OPERATOR, true);
+			adv.setFlag(AdventureSettingsPacket.TELEPORT, true);
+			adv.setFlag(AdventureSettingsPacket.NO_CLIP, restored.getGameMode().equals(GameMode.SPECTATOR));
 			adv.commandsPermission = AdventureSettingsPacket.PERMISSION_OPERATOR;
 			adv.playerPermission = 2;
 			adv.setFlag(AdventureSettingsPacket.FLYING, false);
@@ -105,6 +114,8 @@ public class PCPlayerPositionRotationPacketTranslator
 				pk.yaw = packet.getYaw();
 				pk.pitch = packet.getPitch();
 				pk.headYaw = packet.getYaw();
+				session.sendPacket(pk);
+
 				CachedEntity cliEntity = session.getEntityCache().getClientEntity();
 				cliEntity.x = packet.getX();
 				cliEntity.y = packet.getY() + Constants.PLAYER_HEAD_OFFSET;
@@ -112,7 +123,7 @@ public class PCPlayerPositionRotationPacketTranslator
 				cliEntity.yaw = packet.getYaw();
 				cliEntity.pitch = packet.getPitch();
 
-				session.sendChat("spawning at " + pk.position.toString());
+				System.out.println("spawning at " + pk.position.toString());
 			}
 
 			session.setSpawned();

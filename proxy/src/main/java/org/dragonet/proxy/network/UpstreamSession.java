@@ -33,6 +33,7 @@ import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.RemoteServer;
 import org.dragonet.proxy.entity.meta.EntityMetaData;
 import org.dragonet.proxy.entity.meta.type.ByteMeta;
+import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.cache.EntityCache;
 import org.dragonet.proxy.network.cache.WindowCache;
 import org.dragonet.proxy.protocol.PEPacket;
@@ -337,7 +338,9 @@ public class UpstreamSession {
 			data.sections = new Section[16];
 			for (int cy = 0; cy < 16; cy++) {
 				data.sections[cy] = new Section();
-				Arrays.fill(data.sections[cy].blockIds, (byte) 1);
+				if(cy < 6) {
+					Arrays.fill(data.sections[cy].blockIds, (byte) 1);
+				}
 			}
 			data.encode();
 			sendPacket(new FullChunkDataPacket(0, 0, data.getBuffer()));

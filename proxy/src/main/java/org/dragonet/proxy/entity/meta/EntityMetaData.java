@@ -175,8 +175,10 @@ public class EntityMetaData extends BinaryStream {
 
 	public static EntityMetaData createDefault() {
 		EntityMetaData data = new EntityMetaData();
+		data.setGenericFlag(Constants.DATA_FLAG_BREATHING, true);
 		data.setGenericFlag(Constants.DATA_FLAG_AFFECTED_BY_GRAVITY, true);
 		data.setGenericFlag(Constants.DATA_FLAG_HAS_COLLISION, true);
+		data.setGenericFlag(Constants.DATA_FLAG_CAN_CLIMB, true);
 		data.set(Constants.DATA_AIR, new ShortMeta((short) 200));
 		data.set(Constants.DATA_MAX_AIR, new ShortMeta((short) 400));
 		data.set(Constants.DATA_NAMETAG, new ByteArrayMeta("Entity"));
