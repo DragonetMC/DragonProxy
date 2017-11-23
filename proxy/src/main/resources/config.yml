@@ -40,13 +40,10 @@ remote_servers:
 
 
 # Server Authentication Modes
-# cls     : Use Dragonet CLS (central login system) @ http://auth.dragonet.org
-#           Dragonet CLS will authenticate Minecraft accounts automatically
-#           so you don't have to type in password again and again. 
 # online  : Traditional login screen by DragonProxy, BUGGY.
 # offline : Run the server in offline mode so you can't join premium 
 #           servers like Hypixel. 
-mode: cls
+mode: online
 
 
 # The in-game command prefix for players, by default it's Minecraft command prefix (a slash).
