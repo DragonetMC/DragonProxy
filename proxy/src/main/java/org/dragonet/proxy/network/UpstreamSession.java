@@ -318,7 +318,7 @@ public class UpstreamSession {
 			StartGamePacket pkStartGame = new StartGamePacket();
 			pkStartGame.eid = 0; // Use EID 0 for eaisier management
 			pkStartGame.rtid = 0;
-			pkStartGame.dimension = 0;
+			pkStartGame.dimension = 1;
 			pkStartGame.seed = 0;
 			pkStartGame.generator = 1;
 			pkStartGame.spawnPosition = new BlockPosition(0, 72, 0);

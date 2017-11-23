@@ -67,13 +67,6 @@ public class PCPlayerPositionRotationPacketTranslator
 				ret.defaultPlayerPermission = 2;
 				ret.premiumWorldTemplateId = "";
 				session.sendPacket(ret);
-			} else {
-				ChangeDimensionPacket d = new ChangeDimensionPacket();
-				d.dimension = 0;
-				d.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET,
-						(float) packet.getZ());
-				session.sendPacket(d);
-				session.sendPacket(new PlayStatusPacket(PlayStatusPacket.PLAYER_SPAWN));
 			}
 
 			UpdateAttributesPacket attr = new UpdateAttributesPacket();
@@ -96,9 +89,9 @@ public class PCPlayerPositionRotationPacketTranslator
 			adv.setFlag(AdventureSettingsPacket.OPERATOR, true);
 			adv.setFlag(AdventureSettingsPacket.TELEPORT, true);
 			adv.setFlag(AdventureSettingsPacket.NO_CLIP, restored.getGameMode().equals(GameMode.SPECTATOR));
+			adv.setFlag(AdventureSettingsPacket.FLYING, false);
 			adv.commandsPermission = AdventureSettingsPacket.PERMISSION_OPERATOR;
 			adv.playerPermission = 2;
-			adv.setFlag(AdventureSettingsPacket.FLYING, false);
 			session.sendPacket(adv);
 
 			SetEntityDataPacket entityData = new SetEntityDataPacket();
@@ -122,6 +115,13 @@ public class PCPlayerPositionRotationPacketTranslator
 				cliEntity.z = packet.getZ();
 				cliEntity.yaw = packet.getYaw();
 				cliEntity.pitch = packet.getPitch();
+
+				ChangeDimensionPacket d = new ChangeDimensionPacket();
+				d.dimension = 0;
+				d.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET,
+						(float) packet.getZ());
+				session.sendPacket(d);
+				session.sendPacket(new PlayStatusPacket(PlayStatusPacket.PLAYER_SPAWN));
 
 				System.out.println("spawning at " + pk.position.toString());
 			}
