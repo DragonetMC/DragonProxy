@@ -14,7 +14,7 @@ package org.dragonet.proxy.utilities;
 
 public class Versioning {
 	// vars
-	public static final String RELEASE_VERSION = "0.2.0-preR1";
+	public static final String RELEASE_VERSION = "0.2.0-preR2";
 	public static final String MINECRAFT_PC_VERSION = "1.12.1";
 	// public static final int MINECRAFT_PC_PROTOCOL = 47;
 	// This is STRICT to MCPE binary's definition, DO NOT CHANGE
