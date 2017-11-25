@@ -10,16 +10,16 @@ public class ProtocolInfo {
 	/**
 	 * Actual Minecraft: PE protocol version
 	 */
-	public static final int CURRENT_PROTOCOL = 137;
+	public static final int CURRENT_PROTOCOL = 141;
 	/**
 	 * Current Minecraft PE version reported by the server. This is usually the
 	 * earliest currently supported version.
 	 */
-	public static final String MINECRAFT_VERSION = "v1.2.0.81";
+	public static final String MINECRAFT_VERSION = "v1.2.5";
 	/**
 	 * Version number sent to clients in ping responses.
 	 */
-	public static final String MINECRAFT_VERSION_NETWORK = "1.2.0.81";
+	public static final String MINECRAFT_VERSION_NETWORK = "1.2.5";
 
 	public static final byte LOGIN_PACKET = (byte) 0x01;
 	public static final byte PLAY_STATUS_PACKET = (byte) 0x02;
