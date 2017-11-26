@@ -33,15 +33,15 @@ public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<Ser
 
 	// public
 	public PEPacket[] translate(UpstreamSession session, ServerEntityMetadataPacket packet) {
-		CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
+		CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
 		if (entity == null) {
 			return null;
 		}
 		if (!entity.spawned && entity.objType == ObjectType.ITEM) {
 			entity.spawned = true; // Spawned
 			AddItemEntityPacket pk = new AddItemEntityPacket();
-			pk.eid = packet.getEntityId();
-			pk.rtid = packet.getEntityId();
+			pk.eid = entity.proxyEid;
+			pk.rtid = entity.proxyEid;
 			pk.item = ItemBlockTranslator.translateToPE((ItemStack) packet.getMetadata()[0].getValue());
 			pk.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
 			pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);

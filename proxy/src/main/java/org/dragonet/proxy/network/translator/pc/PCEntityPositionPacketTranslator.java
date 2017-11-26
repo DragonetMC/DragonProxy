@@ -30,7 +30,7 @@ public class PCEntityPositionPacketTranslator implements IPCPacketTranslator<Ser
 
 	// public
 	public PEPacket[] translate(UpstreamSession session, ServerEntityPositionPacket packet) {
-		CachedEntity e = session.getEntityCache().get(packet.getEntityId());
+		CachedEntity e = session.getEntityCache().getByRemoteEID(packet.getEntityId());
 		if (e == null) {
 			return null;
 		}
@@ -38,7 +38,7 @@ public class PCEntityPositionPacketTranslator implements IPCPacketTranslator<Ser
 		e.relativeMove(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ());
 
 		MoveEntityPacket pk = new MoveEntityPacket();
-		pk.rtid = e.eid;
+		pk.rtid = e.proxyEid;
 		pk.yaw = (byte) (e.yaw / (360d / 256d));
 		pk.headYaw = (byte) (e.yaw / (360d / 256d));
 		pk.pitch = (byte) (e.pitch / (360d / 256d));

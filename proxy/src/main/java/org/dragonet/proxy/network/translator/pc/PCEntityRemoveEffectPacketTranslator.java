@@ -31,7 +31,7 @@ public class PCEntityRemoveEffectPacketTranslator implements IPCPacketTranslator
 
 	// public
 	public PEPacket[] translate(UpstreamSession session, ServerEntityRemoveEffectPacket packet) {
-		CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
+		CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
 		if (entity == null) {
 			return null;
 		}
@@ -40,8 +40,8 @@ public class PCEntityRemoveEffectPacketTranslator implements IPCPacketTranslator
 			return null;
 		}
 		MobEffectPacket eff = new MobEffectPacket();
-		eff.rtid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0
-				: packet.getEntityId();
+		eff.rtid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 1L
+				: entity.proxyEid;
 		eff.eventId = MobEffectPacket.EVENT_REMOVE;
 		return new PEPacket[] { eff };
 	}

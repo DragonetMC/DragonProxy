@@ -32,15 +32,15 @@ public class PCEntityEffectPacketTranslator implements IPCPacketTranslator<Serve
 
 	// public
 	public PEPacket[] translate(UpstreamSession session, ServerEntityEffectPacket packet) {
-		CachedEntity entity = session.getEntityCache().get(packet.getEntityId());
+		CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
 		if (entity == null) {
 			return null;
 		}
 		int effectId = MagicValues.value(Integer.class, packet.getEffect());
 
 		MobEffectPacket eff = new MobEffectPacket();
-		eff.rtid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 0
-				: packet.getEntityId();
+		eff.rtid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 1L
+				: entity.proxyEid;
 		eff.effectId = PocketPotionEffect.getByID(effectId).getEffect();
 		if (entity.effects.contains(effectId)) {
 			eff.eventId = MobEffectPacket.EVENT_MODIFY;

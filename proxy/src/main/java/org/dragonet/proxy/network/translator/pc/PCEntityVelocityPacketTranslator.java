@@ -30,16 +30,16 @@ public class PCEntityVelocityPacketTranslator implements IPCPacketTranslator<Ser
 
 	// public
 	public PEPacket[] translate(UpstreamSession session, ServerEntityVelocityPacket packet) {
-		CachedEntity e = session.getEntityCache().get(packet.getEntityId());
-		if (e == null) {
+		CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
+		if (entity == null) {
 			return null;
 		}
-		e.motionX = packet.getMotionX();
-		e.motionY = packet.getMotionY();
-		e.motionZ = packet.getMotionZ();
+		entity.motionX = packet.getMotionX();
+		entity.motionY = packet.getMotionY();
+		entity.motionZ = packet.getMotionZ();
 
 		SetEntityMotionPacket pk = new SetEntityMotionPacket();
-		pk.rtid = packet.getEntityId();
+		pk.rtid = entity.proxyEid;
 		pk.motion = new Vector3F((float) packet.getMotionX(), (float) packet.getMotionY(), (float) packet.getMotionZ());
 		return new PEPacket[] { pk };
 	}

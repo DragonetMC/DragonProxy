@@ -47,6 +47,7 @@ public class TestCommand extends Command {
 			player.sendPacket(packetSetSpawnPosition);
 		} else if (args[0].equalsIgnoreCase("motion")) {
 			SetEntityMotionPacket mot = new SetEntityMotionPacket();
+			mot.rtid = 1L;
 			mot.motion = new Vector3F(0f, 0f, 0f);
 			player.sendPacket(mot);
 		} else if (args[0].equalsIgnoreCase("die")) {
@@ -55,6 +56,7 @@ public class TestCommand extends Command {
 			Vector3F dest = new Vector3F(Float.parseFloat(args[1]), Float.parseFloat(args[2]),
 					Float.parseFloat(args[3]));
 			MovePlayerPacket m = new MovePlayerPacket();
+			m.rtid = 1L;
 			m.mode = (byte) (Integer.parseInt(args[4]) & 0xFF);
 			m.position = dest;
 			player.sendPacket(m);
@@ -63,6 +65,7 @@ public class TestCommand extends Command {
 			Vector3F dest = new Vector3F(Float.parseFloat(args[1]), Float.parseFloat(args[2]),
 					Float.parseFloat(args[3]));
 			MoveEntityPacket m = new MoveEntityPacket();
+			m.rtid = 1L;
 			m.teleported = args[4].equalsIgnoreCase("true");
 			m.position = dest;
 			player.sendPacket(m);

@@ -38,8 +38,8 @@ public class PCSpawnMobPacketTranslator implements IPCPacketTranslator<ServerSpa
 			}
 
 			AddEntityPacket pk = new AddEntityPacket();
-			pk.rtid = e.eid;
-			pk.eid = e.eid;
+			pk.rtid = e.proxyEid;
+			pk.eid = e.proxyEid;
 			pk.type = e.peType.getPeType();
 			pk.position = new Vector3F((float) e.x, (float) e.y, (float) e.z);
 			pk.motion = new Vector3F((float) e.motionX, (float) e.motionY, (float) e.motionZ);

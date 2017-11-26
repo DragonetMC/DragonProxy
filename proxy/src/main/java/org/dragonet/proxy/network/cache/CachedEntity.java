@@ -24,7 +24,8 @@ import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType
 
 public class CachedEntity {
 	// vars
-	public final int eid;
+	public final long eid;
+	public final long proxyEid;
 	public final int pcType;
 	public final EntityType peType;
 	public final ObjectType objType;
@@ -46,11 +47,12 @@ public class CachedEntity {
 	public final Set<Integer> effects = Collections.synchronizedSet(new HashSet<Integer>());
 
 	// constructor
-	public CachedEntity(int eid, int pcType, EntityType peType, ObjectType objType, boolean player,
+	public CachedEntity(long eid, long proxyEid, int pcType, EntityType peType, ObjectType objType, boolean player,
 			UUID playerUniqueId) {
 		super();
 
 		this.eid = eid;
+		this.proxyEid = proxyEid;
 		this.pcType = pcType;
 		this.peType = peType;
 		this.objType = objType;

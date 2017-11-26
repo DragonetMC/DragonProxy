@@ -25,8 +25,8 @@ public class PCSpawnPlayerPacketTranslator implements IPCPacketTranslator<Server
 
 			// TODO: Do we need to register the player here ?
 			AddPlayerPacket pkAddPlayer = new AddPlayerPacket();
-			pkAddPlayer.eid = entity.eid;
-			pkAddPlayer.rtid = entity.eid;
+			pkAddPlayer.eid = entity.proxyEid;
+			pkAddPlayer.rtid = entity.proxyEid;
 
 			for (EntityMetadata meta : packet.getMetadata()) {
 				if (meta.getId() == 2) {
@@ -59,7 +59,7 @@ public class PCSpawnPlayerPacketTranslator implements IPCPacketTranslator<Server
 			 * new PlayerListPacket(); lst.type = PlayerListPacket.TYPE_ADD; lst.entries =
 			 * new PlayerListEntry[] { entry };
 			 */
-			// TODO: get the default skin to work.
+			// TODO: getByRemoteEID the default skin to work.
 			return new PEPacket[] { /* add, */pkAddPlayer };
 		} catch (Exception e) {
 			e.printStackTrace();

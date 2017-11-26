@@ -37,6 +37,7 @@ import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.cache.EntityCache;
 import org.dragonet.proxy.network.cache.WindowCache;
 import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.ProtocolInfo;
 import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.protocol.type.chunk.ChunkData;
 import org.dragonet.proxy.protocol.type.chunk.Section;
@@ -290,7 +291,7 @@ public class UpstreamSession {
 
 		PlayStatusPacket status = new PlayStatusPacket();
 		System.out.println("CLIENT PROTOCOL = " + packet.protocol);
-		if (packet.protocol != Versioning.MINECRAFT_PE_PROTOCOL) {
+		if (packet.protocol != ProtocolInfo.CURRENT_PROTOCOL) {
 			status.status = PlayStatusPacket.LOGIN_FAILED_CLIENT;
 			sendPacket(status, true);
 			disconnect(proxy.getLang().get(Lang.MESSAGE_UNSUPPORTED_CLIENT));
@@ -316,9 +317,9 @@ public class UpstreamSession {
 		proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, username, remoteAddress));
 		if (proxy.getAuthMode().equals("online")) {
 			StartGamePacket pkStartGame = new StartGamePacket();
-			pkStartGame.eid = 0; // Use EID 0 for eaisier management
-			pkStartGame.rtid = 0;
-			pkStartGame.dimension = 1;
+			pkStartGame.eid = 1L; // well we use 1 now
+			pkStartGame.rtid = 1L;
+			pkStartGame.dimension = 0;
 			pkStartGame.seed = 0;
 			pkStartGame.generator = 1;
 			pkStartGame.spawnPosition = new BlockPosition(0, 72, 0);

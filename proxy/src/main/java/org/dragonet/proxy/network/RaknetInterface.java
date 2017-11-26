@@ -23,6 +23,7 @@ import net.marfgamer.jraknet.server.ServerPing;
 import net.marfgamer.jraknet.session.RakNetClientSession;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
+import org.dragonet.proxy.protocol.ProtocolInfo;
 import org.dragonet.proxy.utilities.Versioning;
 
 public class RaknetInterface implements RakNetServerListener {
@@ -108,7 +109,7 @@ public class RaknetInterface implements RakNetServerListener {
 
 	public void setBroadcastName(String serverName, int players, int maxPlayers) {
 		rakServer.setIdentifier(
-				new MinecraftIdentifier(serverName, Versioning.MINECRAFT_PE_PROTOCOL, Versioning.MINECRAFT_PE_VERSION,
+				new MinecraftIdentifier(serverName, ProtocolInfo.CURRENT_PROTOCOL, ProtocolInfo.MINECRAFT_VERSION_NETWORK,
 						players, maxPlayers, new Random().nextLong(), "DragonProxy", "Survival"));
 		if (!rakServer.isBroadcastingEnabled()) {
 			rakServer.setBroadcastingEnabled(true);

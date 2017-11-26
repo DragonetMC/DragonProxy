@@ -31,12 +31,12 @@ public class PCDestroyEntitiesPacketTranslator implements IPCPacketTranslator<Se
 	public PEPacket[] translate(UpstreamSession session, ServerEntityDestroyPacket packet) {
 		PEPacket[] ret = new PEPacket[packet.getEntityIds().length];
 		for (int i = 0; i < ret.length; i++) {
-			CachedEntity e = session.getEntityCache().remove(packet.getEntityIds()[i]);
+			CachedEntity e = session.getEntityCache().removeByRemoteEID(packet.getEntityIds()[i]);
 			if (e == null) {
 				continue;
 			}
 			ret[i] = new RemoveEntityPacket();
-			((RemoveEntityPacket) ret[i]).eid = e.eid;
+			((RemoveEntityPacket) ret[i]).eid = e.proxyEid;
 		}
 		return ret;
 	}

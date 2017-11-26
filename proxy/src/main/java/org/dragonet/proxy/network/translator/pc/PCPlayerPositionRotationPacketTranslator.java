@@ -52,8 +52,8 @@ public class PCPlayerPositionRotationPacketTranslator
 					.remove(CacheKey.PACKET_JOIN_GAME_PACKET);
 			if (!session.getProxy().getAuthMode().equalsIgnoreCase("online")) {
 				StartGamePacket ret = new StartGamePacket();
-				ret.rtid = 0;
-				ret.eid = 0; // Use EID 0 for easier management
+				ret.rtid = 1L;
+				ret.eid = 1L; // Use EID 0 for easier management
 				ret.dimension = 0;
 				ret.seed = 0;
 				ret.generator = 1;
@@ -70,7 +70,7 @@ public class PCPlayerPositionRotationPacketTranslator
 			}
 
 			UpdateAttributesPacket attr = new UpdateAttributesPacket();
-			attr.rtid = 0L;
+			attr.rtid = 1L;
 			attr.entries = new PEEntityAttribute[] { PEEntityAttribute.findAttribute(PEEntityAttribute.ABSORPTION),
 					PEEntityAttribute.findAttribute(PEEntityAttribute.EXHAUSTION),
 					PEEntityAttribute.findAttribute(PEEntityAttribute.HUNGER),
@@ -95,12 +95,13 @@ public class PCPlayerPositionRotationPacketTranslator
 			session.sendPacket(adv);
 
 			SetEntityDataPacket entityData = new SetEntityDataPacket();
+			entityData.rtid = 1L;
 			entityData.meta = EntityMetaData.createDefault();
 			session.sendPacket(entityData);
 
 			if (session.getProxy().getAuthMode().equalsIgnoreCase("online")) {
 				MovePlayerPacket pk = new MovePlayerPacket();
-				pk.rtid = 0;
+				pk.rtid = 1L;
 				pk.mode = MovePlayerPacket.MODE_TELEPORT;
 				pk.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET,
 						(float) packet.getZ());
@@ -116,12 +117,12 @@ public class PCPlayerPositionRotationPacketTranslator
 				cliEntity.yaw = packet.getYaw();
 				cliEntity.pitch = packet.getPitch();
 
-				ChangeDimensionPacket d = new ChangeDimensionPacket();
+				/*ChangeDimensionPacket d = new ChangeDimensionPacket();
 				d.dimension = 0;
 				d.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET,
 						(float) packet.getZ());
 				session.sendPacket(d);
-				session.sendPacket(new PlayStatusPacket(PlayStatusPacket.PLAYER_SPAWN));
+				session.sendPacket(new PlayStatusPacket(PlayStatusPacket.PLAYER_SPAWN));*/
 
 				System.out.println("spawning at " + pk.position.toString());
 			}
@@ -140,7 +141,7 @@ public class PCPlayerPositionRotationPacketTranslator
 		}
 
 		MovePlayerPacket pk = new MovePlayerPacket();
-		pk.rtid = 0;
+		pk.rtid = 1L;
 		pk.mode = MovePlayerPacket.MODE_TELEPORT;
 		pk.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET,
 				(float) packet.getZ());
