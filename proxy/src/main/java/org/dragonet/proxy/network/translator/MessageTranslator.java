@@ -38,7 +38,7 @@ public final class MessageTranslator {
 	}
 
 	public static String toMinecraftColor(ChatColor color) {
-		String base = "§";
+		String base = "\u00a7";
 		switch (color) {
 		case AQUA:
 			base += "b";
