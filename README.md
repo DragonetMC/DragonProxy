@@ -12,14 +12,12 @@ A proxy for **Minecraft Bedrock** connecting to **Minecraft - Java Edition** ser
 
 Video by **[@MrPowerGamerBR](https://github.com/MrPowerGamerBR)** (On an older version): https://www.youtube.com/watch?v=oRSKQMzZYDE
 
-![Screenshot](https://raw.githubusercontent.com/DragonetMC/DragonProxy/master/screenshots/MCPE1.2.3.png)
+![Screenshot](https://github.com/DragonetMC/DragonProxy/raw/master/screenshots/performium-factions.jpg)
 
 Wanna donate to help us? Go to http://dragonet.org/donate.php
 
 ## Installation
-[![Build Status](https://drone.io/github.com/DragonetMC/DragonProxy/status.png)](https://drone.io/github.com/DragonetMC/DragonProxy/file)
-
-[Download](https://drone.io/github.com/DragonetMC/DragonProxy/files)
+[Download](https://github.com/DragonetMC/DragonProxy/releases)
 Once compiled, run `dragonproxy-*.jar` in `proxy/target` where '*' is the version number.
 
 ## Compiling
