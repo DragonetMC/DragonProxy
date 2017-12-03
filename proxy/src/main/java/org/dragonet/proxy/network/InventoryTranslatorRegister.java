@@ -32,8 +32,7 @@ import org.dragonet.proxy.protocol.packets.InventoryContentPacket;
 import org.dragonet.proxy.protocol.type.Slot;
 
 public final class InventoryTranslatorRegister {
-	// vars
-	public static final int[] HOTBAR_CONSTANTS = new int[] { 36, 37, 38, 39, 40, 41, 42, 43, 44 };
+
 	// PC Type => PE Translator
 	private static final Map<WindowType, IInventoryTranslator> TRANSLATORS = new HashMap<>();
 
@@ -49,18 +48,20 @@ public final class InventoryTranslatorRegister {
 		// Translate and send
 		InventoryContentPacket ret = new InventoryContentPacket();
 		ret.windowId = PEWindowConstantID.PLAYER_INVENTORY.getId();
-		ret.items = new Slot[45];
-		for (int i = 9; i < win.slots.length; i++) {
-			// TODO: Add NBT support
-			if (win.slots[i] != null) {
-				ret.items[i - 9] = ItemBlockTranslator.translateToPE(win.slots[i]);
-			}
-		}
+		ret.items = new Slot[40];
+		// hotbar
 		for (int i = 36; i < 45; i++) {
-			ret.items[i] = ret.items[i - 9]; // Duplicate
+			ret.items[i - 36] = ItemBlockTranslator.translateSlotToPE(win.slots[i]);
 		}
-		// ret.hotbar = HOTBAR_CONSTANTS;
-
+		// inventory
+		for (int i = 9; i < 36; i++) {
+			// TODO: Add NBT support
+			ret.items[i] = ItemBlockTranslator.translateSlotToPE(win.slots[i]);
+		}
+		// armors
+		for (int i = 5; i < 9; i++) {
+			ret.items[i + 31] = ItemBlockTranslator.translateSlotToPE(win.slots[i]);
+		}
 		// TODO: Add armor support
 		return new PEPacket[] { ret };
 	}
@@ -120,7 +121,6 @@ public final class InventoryTranslatorRegister {
 						0);
 			}
 			if (byServer) {
-				;
 				session.sendPacket(new ContainerClosePacket((byte) (id & 0xFF)), true);
 			}
 		}

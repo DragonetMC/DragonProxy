@@ -78,7 +78,7 @@ public class ChestWindowTranslator implements IInventoryTranslator {
 		pk.windowId = (byte) (win.windowId & 0xFF);
 		pk.items = new Slot[win.slots.length];
 		for (int i = 0; i < pk.items.length; i++) {
-			pk.items[i] = ItemBlockTranslator.translateToPE(win.slots[i]);
+			pk.items[i] = ItemBlockTranslator.translateSlotToPE(win.slots[i]);
 		}
 		session.sendPacket(pk, true);
 	}

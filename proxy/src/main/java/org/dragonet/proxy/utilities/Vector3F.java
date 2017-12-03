@@ -4,6 +4,9 @@ package org.dragonet.proxy.utilities;
  * Created on 2017/10/21.
  */
 public class Vector3F {
+
+	public final static Vector3F ZERO = new Vector3F(0f, 0f, 0f);
+
 	// vars
 	public float x;
 	public float y;

@@ -1,15 +1,14 @@
 package org.dragonet.proxy.utilities;
 
 import org.dragonet.proxy.entity.PEEntityAttribute;
+import org.dragonet.proxy.nbt.NBTIO;
+import org.dragonet.proxy.nbt.tag.CompoundTag;
 import org.dragonet.proxy.protocol.type.PEEntityLink;
 import org.dragonet.proxy.protocol.type.Slot;
 
-import com.github.steveice10.opennbt.NBTIO;
-import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
-
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -303,15 +302,15 @@ public class BinaryStream {
 		int cnt = auxValue & 0xff;
 
 		int nbtLen = this.getLShort();
-		byte[] nbt = new byte[0];
+		byte[] nbt;
+		CompoundTag tag = null;
 		if (nbtLen > 0) {
 			nbt = this.get(nbtLen);
-		}
-		CompoundTag tag = null;
-		try {
-			tag = (CompoundTag) NBTIO.readTag(new ByteArrayInputStream(nbt));
-		} catch (IOException e) {
-			e.printStackTrace();
+			try {
+				tag = NBTIO.read(nbt, ByteOrder.LITTLE_ENDIAN);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 		// TODO
@@ -344,13 +343,12 @@ public class BinaryStream {
 		this.putVarInt(auxValue);
 		byte[] nbt;
 		if (item.tag != null) {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			try {
-				NBTIO.writeTag(bos, item.tag);
+				nbt = NBTIO.write(item.tag, ByteOrder.LITTLE_ENDIAN);
 			} catch (IOException e) {
 				e.printStackTrace();
+				nbt = new byte[0];
 			}
-			nbt = bos.toByteArray();
 		} else {
 			nbt = new byte[0];
 		}
@@ -439,7 +437,11 @@ public class BinaryStream {
 	}
 
 	public void putVector3F(Vector3F v) {
-		this.putVector3F(v.x, v.y, v.z);
+		if(v == null) {
+			this.putVector3F(0f, 0f, 0f);
+		} else {
+			this.putVector3F(v.x, v.y, v.z);
+		}
 	}
 
 	public void putVector3F(float x, float y, float z) {

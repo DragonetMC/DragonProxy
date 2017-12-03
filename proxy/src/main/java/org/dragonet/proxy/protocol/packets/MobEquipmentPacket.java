@@ -30,7 +30,11 @@ public class MobEquipmentPacket extends PEPacket {
 		putByte((byte) (windowId & 0xFF));
 	}
 	public void decodePayload() {
-
+		rtid = getUnsignedVarLong();
+		item = getSlot();
+		inventorySlot = getByte();
+		hotbarSlot = getByte();
+		windowId = getByte();
 	}
 	
 	//private

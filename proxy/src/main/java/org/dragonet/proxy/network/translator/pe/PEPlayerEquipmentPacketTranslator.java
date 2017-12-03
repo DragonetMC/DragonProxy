@@ -34,9 +34,15 @@ public class PEPlayerEquipmentPacketTranslator implements IPEPacketTranslator<Mo
 
 	// public
 	public Packet[] translate(UpstreamSession session, MobEquipmentPacket packet) {
+		System.out.println(org.dragonet.proxy.utilities.DebugTools.getAllFields(packet));
 		if (packet.hotbarSlot > 8) {
 			return null;
 		}
+		if(packet.windowId == 0) {
+			return new Packet[] {new ClientPlayerChangeHeldItemPacket(packet.hotbarSlot)};
+		}
+		return null;
+		/*
 		if (packet.inventorySlot == 0x28 || packet.inventorySlot == 0 || packet.inventorySlot == 255) {
 			// That thing changed to air
 			// TODO
@@ -80,6 +86,7 @@ public class PEPlayerEquipmentPacketTranslator implements IPEPacketTranslator<Mo
 					ClickItemParam.LEFT_CLICK);
 			return new Packet[] { act1, act2 };
 		}
+		*/
 	}
 
 	// private

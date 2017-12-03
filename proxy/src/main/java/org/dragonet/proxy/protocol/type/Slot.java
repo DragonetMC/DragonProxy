@@ -1,6 +1,7 @@
 package org.dragonet.proxy.protocol.type;
 
-import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
+
+import org.dragonet.proxy.nbt.tag.CompoundTag;
 
 /**
  * Created on 2017/10/21.

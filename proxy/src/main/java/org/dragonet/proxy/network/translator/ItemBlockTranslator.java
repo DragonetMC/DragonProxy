@@ -12,15 +12,12 @@
  */
 package org.dragonet.proxy.network.translator;
 
-import java.util.LinkedHashMap;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.Map;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
 import com.github.steveice10.opennbt.tag.builtin.IntTag;
-import com.github.steveice10.opennbt.tag.builtin.ShortTag;
 import com.github.steveice10.opennbt.tag.builtin.StringTag;
 
 import org.dragonet.proxy.protocol.type.Slot;
@@ -87,59 +84,65 @@ public class ItemBlockTranslator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static CompoundTag translateNBT(int id, CompoundTag pcTag) {
-		CompoundTag peTag = new CompoundTag(null);
+	public static org.dragonet.proxy.nbt.tag.CompoundTag translateNBT(int id, CompoundTag pcTag, org.dragonet.proxy.nbt.tag.CompoundTag target) {
 		if (pcTag != null && pcTag.contains("display")) {
-			Object o = pcTag.get("display").getValue();
-			if (o instanceof CompoundTag) {
-				CompoundTag t = (CompoundTag) o;
-				if (t.contains("Name")) {
-					peTag.put(new CompoundTag("display").put(new StringTag("Name",
-							((CompoundTag) pcTag.get("display").getValue()).get("Name").getValue().toString())));
-				}
+			CompoundTag pcDisplay = pcTag.get("display");
+			org.dragonet.proxy.nbt.tag.CompoundTag peDisplay;
+			if(target.contains("display")) {
+				peDisplay = target.getCompound("display");
 			} else {
-				if (o instanceof LinkedHashMap) {
-					LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) o;
-					Set<String> t = map.keySet();
-					if (t.contains("Name")) {
-						com.github.steveice10.opennbt.tag.builtin.StringTag tag = (com.github.steveice10.opennbt.tag.builtin.StringTag) map
-								.get("Name");
-						peTag.put(new CompoundTag("display").put(new StringTag("Name", tag.getValue().toString())));
-					}
-				}
+				peDisplay = new org.dragonet.proxy.nbt.tag.CompoundTag();
+				target.put("display", peDisplay);
+			}
+			if (pcDisplay.contains("Name")) {
+				peDisplay.put("Name", new org.dragonet.proxy.nbt.tag.StringTag("Name",
+						((StringTag)pcDisplay.get("Name")).getValue()));
 			}
 		} else {
 			if (NAME_OVERRIDES.containsKey(id)) {
-				peTag.put(new CompoundTag("display").put(new StringTag("Name", NAME_OVERRIDES.get(id))));
+				org.dragonet.proxy.nbt.tag.CompoundTag peDisplay;
+				if(target.contains("display")) {
+					peDisplay = target.getCompound("display");
+				} else {
+					peDisplay = new org.dragonet.proxy.nbt.tag.CompoundTag();
+					target.put("display", peDisplay);
+				}
+				target.put("display", peDisplay);
+				peDisplay.put("Name", new org.dragonet.proxy.nbt.tag.StringTag("Name", NAME_OVERRIDES.get(id)));
 			}
 		}
-		return peTag;
+		return target;
 	}
 
-	public static Slot translateToPE(ItemStack item) {
+	public static Slot translateSlotToPE(ItemStack item) {
 		if (item == null || item.getId() == 0)
 			return null;
 		Slot inv = new Slot();
-		inv.id = item.getId();
+		inv.id = translateToPE(item.getId());
 		inv.damage = item.getData();
 		inv.count = (item.getAmount() & 0xff);
-		/*
-		 * CompoundTag d = new CompoundTag(); d.putShort("id", item.getId());
-		 * d.putShort("amount", item.getAmount()); d.putShort("data", item.getData());
-		 */
+		org.dragonet.proxy.nbt.tag.CompoundTag tag = new org.dragonet.proxy.nbt.tag.CompoundTag();
+		tag.putShort("id", item.getId());
+		tag.putShort("amount", item.getAmount());
+		tag.putShort("data", item.getData());
+		org.dragonet.proxy.nbt.tag.CompoundTag rootTag = new org.dragonet.proxy.nbt.tag.CompoundTag();
+		rootTag.put(DRAGONET_COMPOUND, tag);
+		inv.tag = rootTag;
+		translateNBT(item.getId(), item.getNBT(), inv.tag);
 		return inv;
 	}
 
 	public static ItemStack translateToPC(Slot slot) {
 		ItemStack item;
-		CompoundTag tag = slot.tag;
+		org.dragonet.proxy.nbt.tag.CompoundTag tag = slot.tag;
 		if (tag != null && tag.contains(DRAGONET_COMPOUND)) {
-			item = new ItemStack(((ShortTag) ((CompoundTag) tag.get(DRAGONET_COMPOUND)).get("id")).getValue(),
-					((ShortTag) ((CompoundTag) tag.get(DRAGONET_COMPOUND)).get("amount")).getValue(),
-					((ShortTag) ((CompoundTag) tag.get(DRAGONET_COMPOUND)).get("data")).getValue());
+			item = new ItemStack(tag.getCompound(DRAGONET_COMPOUND).getShort("id"),
+					tag.getCompound(DRAGONET_COMPOUND).getShort("amount"),
+					tag.getCompound(DRAGONET_COMPOUND).getShort("data"));
 		} else {
 			item = new ItemStack(translateToPC(slot.id), slot.count, slot.damage);
 		}
+
 		return item;
 	}
 

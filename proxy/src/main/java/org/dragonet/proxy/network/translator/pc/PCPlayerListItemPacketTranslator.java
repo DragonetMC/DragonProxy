@@ -31,13 +31,13 @@ public class PCPlayerListItemPacketTranslator implements IPCPacketTranslator<Ser
 	public PEPacket[] translate(UpstreamSession session, ServerPlayerListEntryPacket packet) {
 		if (packet.getAction() == PlayerListEntryAction.ADD_PLAYER) {
 			PlayerListEntry[] entries = packet.getEntries();
-			for (PlayerListEntry entrie : entries) {
-				session.getPlayerInfoCache().put(entrie.getProfile().getId(), entrie);
+			for (PlayerListEntry entry : entries) {
+				session.getPlayerInfoCache().put(entry.getProfile().getId(), entry);
 			}
 		} else if (packet.getAction() == PlayerListEntryAction.REMOVE_PLAYER) {
 			PlayerListEntry[] entries = packet.getEntries();
-			for (PlayerListEntry entrie : entries) {
-				session.getPlayerInfoCache().remove(entrie.getProfile().getId());
+			for (PlayerListEntry entry : entries) {
+				session.getPlayerInfoCache().remove(entry.getProfile().getId());
 			}
 		}
 		return null;

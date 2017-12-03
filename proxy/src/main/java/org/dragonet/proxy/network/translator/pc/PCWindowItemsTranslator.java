@@ -35,8 +35,8 @@ public class PCWindowItemsTranslator implements IPCPacketTranslator<ServerWindow
 			return null;
 		}
 		CachedWindow win = session.getWindowCache().get(packet.getWindowId());
-		if (win.pcType == null && packet.getWindowId() == 0) {
-			if (packet.getItems().length < 45) {
+		if (packet.getWindowId() == 0) {
+			if (packet.getItems().length < 40) {
 				// Almost impossible to happen either.
 				return null;
 			}

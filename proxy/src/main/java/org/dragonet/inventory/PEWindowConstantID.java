@@ -17,7 +17,7 @@ public enum PEWindowConstantID {
 
 	private final byte id;
 
-	private PEWindowConstantID(int id) {
+	PEWindowConstantID(int id) {
 		this.id = (byte) id;
 	}
 

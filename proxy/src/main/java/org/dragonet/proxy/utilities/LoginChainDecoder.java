@@ -3,6 +3,7 @@ package org.dragonet.proxy.utilities;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import org.dragonet.proxy.protocol.type.Skin;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -20,6 +21,7 @@ public class LoginChainDecoder {
 	public String username;
 	public UUID clientUniqueId;
 	public JsonObject clientData;
+	public Skin skin;
 
 	// constructor
 	public LoginChainDecoder(byte[] chainJWT, byte[] clientDataJWT) {
@@ -55,6 +57,16 @@ public class LoginChainDecoder {
 
 		// client data
 		clientData = decodeToken(new String(clientDataJWT, StandardCharsets.UTF_8));
+
+		skin = new Skin(
+				clientData.get("SkinId").getAsString(),
+				clientData.has("SkinData") ? Base64.getDecoder().decode(clientData.get("SkinData").getAsString().replace("-_", "+/")) : new byte[0],
+				clientData.has("CapeData") ? Base64.getDecoder().decode(clientData.get("CapeData").getAsString().replace("-_", "+/")) : new byte[0],
+				clientData.get("SkinGeometryName").getAsString(),
+				clientData.has("SkinGeometry") ? Base64.getDecoder().decode(clientData.get("SkinGeometry").getAsString().replace("-_", "+/")) : new byte[0]
+
+
+		);
 	}
 
 	// private

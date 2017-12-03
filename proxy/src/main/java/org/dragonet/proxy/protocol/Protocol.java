@@ -63,11 +63,13 @@ public final class Protocol {
 		packets.put(PLAYER_ACTION_PACKET, PlayerActionPacket.class);
 		packets.put(MOB_EQUIPMENT_PACKET, MobEquipmentPacket.class);
 		packets.put(SET_ENTITY_DATA_PACKET, SetEntityDataPacket.class);
+		packets.put(PLAYER_SKIN_PACKET, PlayerSkinPacket.class);
 
 		packets.put(CONTAINER_OPEN_PACKET, ContainerOpenPacket.class);
 		packets.put(CONTAINER_CLOSE_PACKET, ContainerClosePacket.class);
 		packets.put(INVENTORY_CONTENT_PACKET, InventoryContentPacket.class);
 		packets.put(INVENTORY_SLOT_PACKET, InventorySlotPacket.class);
+		packets.put(INVENTORY_TRANSACTION_PACKET, InventoryTransactionPacket.class);
 
 		packets.put(RESOURCE_PACKS_INFO_PACKET, ResourcePacksInfoPacket.class);
 		packets.put(RESOURCE_PACK_CLIENT_RESPONSE_PACKET, ResourcePackClientResponsePacket.class);
