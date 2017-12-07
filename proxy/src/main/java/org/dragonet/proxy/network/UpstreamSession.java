@@ -289,6 +289,8 @@ public class UpstreamSession {
 			return;
 		}
 
+                getDataCache().put(CacheKey.PACKET_LOGIN_PACKET, packet);
+
 		PlayStatusPacket status = new PlayStatusPacket();
 		System.out.println("CLIENT PROTOCOL = " + packet.protocol);
 		if (packet.protocol != ProtocolInfo.CURRENT_PROTOCOL) {

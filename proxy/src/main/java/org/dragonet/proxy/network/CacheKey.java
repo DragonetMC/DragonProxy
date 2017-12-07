@@ -16,6 +16,7 @@ public final class CacheKey {
 	// vars
 	// PEPacket
 	public static final String PACKET_JOIN_GAME_PACKET = "achedJoinGamePacket";
+	public static final String PACKET_LOGIN_PACKET = "achedLoginPacket";
 	// int
 	public static final String PLAYER_EID = "player_entity_id";
 	// int

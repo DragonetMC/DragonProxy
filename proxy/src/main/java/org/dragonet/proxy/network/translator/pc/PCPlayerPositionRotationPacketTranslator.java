@@ -13,6 +13,11 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
+import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
+import com.github.steveice10.mc.protocol.data.game.setting.ChatVisibility;
+import com.github.steveice10.mc.protocol.data.game.setting.SkinPart;
+import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.ClientSettingsPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientTeleportConfirmPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import org.dragonet.proxy.configuration.Lang;
@@ -25,6 +30,8 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.utilities.BlockPosition;
 import org.dragonet.proxy.utilities.Constants;
@@ -68,6 +75,15 @@ public class PCPlayerPositionRotationPacketTranslator
 				ret.premiumWorldTemplateId = "";
 				session.sendPacket(ret);
 			}
+                        
+                        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                        out.writeUTF("DragonProxy");
+                        ClientPluginMessagePacket ClientPluginMessagePacket = new ClientPluginMessagePacket("MC|Brand" , out.toByteArray());
+                        ((PCDownstreamSession) session.getDownstream()).send(ClientPluginMessagePacket);
+
+                        LoginPacket loginpacket = (LoginPacket) session.getDataCache().remove(CacheKey.PACKET_LOGIN_PACKET);
+                        ClientSettingsPacket ClientSettingsPacket = new ClientSettingsPacket(loginpacket.decoded.language, 8, ChatVisibility.FULL, false, new SkinPart[]{}, Hand.MAIN_HAND);
+                        ((PCDownstreamSession) session.getDownstream()).send(ClientSettingsPacket);
 
 			UpdateAttributesPacket attr = new UpdateAttributesPacket();
 			attr.rtid = 1L;
