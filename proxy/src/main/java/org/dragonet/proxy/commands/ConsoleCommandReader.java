@@ -33,6 +33,9 @@ public class ConsoleCommandReader {
 				String command = "";
 				while (!proxy.isShuttingDown()) {
 					try {
+						if (System.console() == null)
+							continue;
+
 						System.out.print(">");
 						command = System.console().readLine();
 
