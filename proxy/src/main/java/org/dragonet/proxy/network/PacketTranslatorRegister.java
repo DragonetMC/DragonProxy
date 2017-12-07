@@ -30,6 +30,8 @@ import org.dragonet.proxy.network.translator.pc.*;
 import org.dragonet.proxy.network.translator.pe.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerChatPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.*;
 
@@ -63,23 +65,19 @@ public final class PacketTranslatorRegister {
 		// PCPlaySoundPacketTranslator());
 		//
 		// // Entity
-		PC_TO_PE_TRANSLATOR.put(ServerPlayerPositionRotationPacket.class,
-				new PCPlayerPositionRotationPacketTranslator());
-		// PC_TO_PE_TRANSLATOR.put(ServerSpawnMobPacket.class, new
-		// PCSpawnMobPacketTranslator());
+		PC_TO_PE_TRANSLATOR.put(ServerPlayerPositionRotationPacket.class, new PCPlayerPositionRotationPacketTranslator());
+		PC_TO_PE_TRANSLATOR.put(ServerSpawnMobPacket.class, new PCSpawnMobPacketTranslator());
 		PC_TO_PE_TRANSLATOR.put(ServerPlayerListEntryPacket.class, new PCPlayerListItemPacketTranslator());
 		PC_TO_PE_TRANSLATOR.put(ServerSpawnPlayerPacket.class, new PCSpawnPlayerPacketTranslator());
 		PC_TO_PE_TRANSLATOR.put(ServerSpawnObjectPacket.class, new PCSpawnObjectPacketTranslator());
 		PC_TO_PE_TRANSLATOR.put(ServerEntityMetadataPacket.class, new PCEntityMetadataPacketTranslator());
 		PC_TO_PE_TRANSLATOR.put(ServerEntityDestroyPacket.class, new PCDestroyEntitiesPacketTranslator());
-		PC_TO_PE_TRANSLATOR.put(ServerEntityPositionRotationPacket.class,
-				new PCEntityPositionRotationPacketTranslator());
+		PC_TO_PE_TRANSLATOR.put(ServerEntityPositionRotationPacket.class,new PCEntityPositionRotationPacketTranslator());
 		PC_TO_PE_TRANSLATOR.put(ServerEntityPositionPacket.class, new PCEntityPositionPacketTranslator());
 		PC_TO_PE_TRANSLATOR.put(ServerEntityVelocityPacket.class, new PCEntityVelocityPacketTranslator());
 		PC_TO_PE_TRANSLATOR.put(ServerEntityEffectPacket.class, new PCEntityEffectPacketTranslator());
 		PC_TO_PE_TRANSLATOR.put(ServerEntityRemoveEffectPacket.class, new PCEntityRemoveEffectPacketTranslator());
-		// PC_TO_PE_TRANSLATOR.put(ServerPlayerHealthPacket.class, new
-		// PCUpdateHealthPacketTranslator());
+		PC_TO_PE_TRANSLATOR.put(ServerPlayerHealthPacket.class, new PCUpdateHealthPacketTranslator());
 		//
 		// //Inventory
 		PC_TO_PE_TRANSLATOR.put(ServerOpenWindowPacket.class, new PCOpenWindowPacketTranslator());
