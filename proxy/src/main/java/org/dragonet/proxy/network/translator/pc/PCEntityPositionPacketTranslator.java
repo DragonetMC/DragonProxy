@@ -18,6 +18,7 @@ import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.MoveEntityPacket;
+import org.dragonet.proxy.utilities.Constants;
 import org.dragonet.proxy.utilities.Vector3F;
 
 public class PCEntityPositionPacketTranslator implements IPCPacketTranslator<ServerEntityPositionPacket> {
@@ -44,7 +45,7 @@ public class PCEntityPositionPacketTranslator implements IPCPacketTranslator<Ser
 		pk.pitch = (byte) (e.pitch / (360d / 256d));
 		pk.position = new Vector3F((float) e.x, (float) e.y, (float) e.z);
 		if (e.player) {
-			pk.position.y += 1.62f;
+			pk.position.y += Constants.PLAYER_HEAD_OFFSET;
 		}
 		return new PEPacket[] { pk };
 	}
