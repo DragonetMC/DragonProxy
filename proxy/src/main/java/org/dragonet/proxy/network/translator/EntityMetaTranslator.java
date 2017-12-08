@@ -53,7 +53,7 @@ public final class EntityMetaTranslator {
 				peMeta.map.put(EntityMetaData.Constants.DATA_FLAGS, new LongMeta(peFlags));
 				break;
 			case 1:// Air
-				peMeta.map.put(EntityMetaData.Constants.DATA_AIR, new ShortMeta((short) m.getValue()));
+//				peMeta.map.put(EntityMetaData.Constants.DATA_AIR, new ShortMeta((short) m.getValue()));
 				break;
 			case 2:// Name tag
 				peMeta.map.put(EntityMetaData.Constants.DATA_NAMETAG, new ByteArrayMeta((String) m.getValue()));
@@ -73,11 +73,11 @@ public final class EntityMetaTranslator {
 					// Not supported on MCPE yet
 				break;
 			case 7:// Potion color
-				peMeta.map.put(EntityMetaData.Constants.DATA_POTION_COLOR,
-						new ByteMeta((byte) ((int) m.getValue() & 0xFF)));
+//				peMeta.map.put(EntityMetaData.Constants.DATA_POTION_COLOR,
+//						new ByteMeta((byte) ((int) m.getValue() & 0xFF)));
 				break;
 			case 8:// Potion visible, not sure here
-				peMeta.map.put(EntityMetaData.Constants.DATA_POTION_AMBIENT, new ByteMeta((byte) m.getValue()));
+//				peMeta.map.put(EntityMetaData.Constants.DATA_POTION_AMBIENT, new ByteMeta((byte) m.getValue()));
 				break;
 			case 9:// Arrows stick into player's body
 					// Not supported on MCPE yet
