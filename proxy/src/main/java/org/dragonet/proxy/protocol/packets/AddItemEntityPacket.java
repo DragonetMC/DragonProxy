@@ -31,6 +31,7 @@ public class AddItemEntityPacket extends PEPacket {
 	public void encodePayload() {
 		putVarLong(rtid);
 		putUnsignedVarLong(eid);
+                putSlot(item);
 		putVector3F(position);
 		putVector3F(position);
 		if (metadata != null) {
