@@ -177,14 +177,34 @@ public class PCPlayerPositionRotationPacketTranslator
                                 session.sendPacket(pkAddPlayer);
                                 session.sendPacket(skin);
                             }
+                            else if (entity.peType != null)
+                            {
+                                AddEntityPacket pk = new AddEntityPacket();
+                                pk.rtid = entity.proxyEid;
+                                pk.eid = entity.proxyEid;
+                                pk.type = entity.peType.getPeType();
+                                pk.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
+                                pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
+                                // TODO: Hack for now. ;P
+                                pk.meta = EntityMetaTranslator.translateToPE(entity.pcMeta, entity.peType);
+                                pk.attributes = new PEEntityAttribute[]{};
+                                session.sendPacket(pk);
+                            }
                             else
                             {
-                                
+                                AddItemEntityPacket pk = new AddItemEntityPacket();
+                                pk.rtid = entity.proxyEid;
+                                pk.eid = entity.proxyEid;
+                                pk.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
+                                pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
+                                // TODO: Hack for now. ;P
+                                pk.metadata = EntityMetaTranslator.translateToPE(entity.pcMeta, EntityType.ITEM);
+                                session.sendPacket(pk);
                             }
                         }
 
-			return null;
-		}
+                    return null;
+                }
 
 		MovePlayerPacket pk = new MovePlayerPacket();
 		pk.rtid = 1L;
