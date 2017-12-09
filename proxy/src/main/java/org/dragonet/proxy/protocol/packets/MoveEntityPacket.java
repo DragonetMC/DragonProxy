@@ -30,18 +30,18 @@ public class MoveEntityPacket extends PEPacket {
 	public void encodePayload() {
 		putUnsignedVarLong(rtid);
 		putVector3F(position);
-		putByteRotation(yaw);
-		putByteRotation(headYaw);
 		putByteRotation(pitch);
+		putByteRotation(headYaw);
+		putByteRotation(yaw);
 		putBoolean(onGround);
 		putBoolean(teleported);
 	}
 	public void decodePayload() {
 		rtid = getUnsignedVarLong();
 		position = getVector3F();
-		yaw = getByteRotation();
-		headYaw = getByteRotation();
 		pitch = getByteRotation();
+		headYaw = getByteRotation();
+		yaw = getByteRotation();
 		onGround = getBoolean();
 		teleported = getBoolean();
 	}
