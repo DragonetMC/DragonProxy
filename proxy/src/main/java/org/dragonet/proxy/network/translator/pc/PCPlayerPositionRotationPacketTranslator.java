@@ -142,7 +142,7 @@ public class PCPlayerPositionRotationPacketTranslator
                         
                         for(CachedEntity entity : session.getEntityCache().getEntities().values())
                         {
-                            if (entity.player && entity.playerUniqueId != null)
+                            if (entity.player && entity.playerUniqueId != null) //PLAYER
                             {
                                 AddPlayerPacket pkAddPlayer = new AddPlayerPacket();
                                 pkAddPlayer.eid = entity.proxyEid;
@@ -177,7 +177,7 @@ public class PCPlayerPositionRotationPacketTranslator
                                 session.sendPacket(pkAddPlayer);
                                 session.sendPacket(skin);
                             }
-                            else if (entity.peType != null)
+                            else if (entity.peType != null) //ENTITY
                             {
                                 AddEntityPacket pk = new AddEntityPacket();
                                 pk.rtid = entity.proxyEid;
@@ -185,21 +185,20 @@ public class PCPlayerPositionRotationPacketTranslator
                                 pk.type = entity.peType.getPeType();
                                 pk.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
                                 pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
-                                // TODO: Hack for now. ;P
                                 pk.meta = EntityMetaTranslator.translateToPE(entity.pcMeta, entity.peType);
+                                // TODO: Hack for now. ;P
                                 pk.attributes = new PEEntityAttribute[]{};
                                 session.sendPacket(pk);
                             }
-                            else
+                            else // ITEM
                             {
                                 AddItemEntityPacket pk = new AddItemEntityPacket();
                                 pk.rtid = entity.proxyEid;
                                 pk.eid = entity.proxyEid;
                                 pk.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
                                 pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
-                                // TODO: Hack for now. ;P
                                 pk.metadata = EntityMetaTranslator.translateToPE(entity.pcMeta, EntityType.ITEM);
-                                session.sendPacket(pk);
+//                                session.sendPacket(pk);//not working for now
                             }
                         }
 
