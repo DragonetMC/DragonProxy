@@ -36,6 +36,8 @@ public final class EntityMetaTranslator {
 		 * Following format was fetched from http://wiki.vg/Entities#Entity_meta_Format
 		 */
 		EntityMetaData peMeta = EntityMetaData.createDefault();
+                if (pcMeta == null)
+                    return peMeta;
 		for (EntityMetadata m : pcMeta) {
 			if (m == null) {
 				continue;
