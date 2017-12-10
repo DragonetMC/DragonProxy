@@ -72,6 +72,10 @@ public final class EntityCache {
 	}
 
 	public CachedEntity removeByRemoteEID(long eid) {
+            if (!mapRemoteToClient.containsKey(eid))
+            {
+                return null;
+            }
 		long proxyEid = mapRemoteToClient.get(eid);
 		CachedEntity e = entities.remove(proxyEid);
 		if (e == null) {
@@ -113,7 +117,7 @@ public final class EntityCache {
 	}
 
 	public CachedEntity newPlayer(ServerSpawnPlayerPacket packet) {
-		CachedEntity e = new CachedEntity(packet.getEntityId(), nextClientEntityId.getAndIncrement(), -1, null, null, true, packet.getUUID());
+		CachedEntity e = new CachedEntity(packet.getEntityId(), nextClientEntityId.getAndIncrement(), -1, EntityType.PLAYER, null, true, packet.getUUID());
 		e.x = packet.getX();
 		e.y = packet.getY();
 		e.z = packet.getZ();
@@ -129,7 +133,7 @@ public final class EntityCache {
 	}
 
 	public CachedEntity newObject(ServerSpawnObjectPacket packet) {
-		CachedEntity e = new CachedEntity(packet.getEntityId(), nextClientEntityId.getAndIncrement(), -1, null, packet.getType(), false, null);
+		CachedEntity e = new CachedEntity(packet.getEntityId(), nextClientEntityId.getAndIncrement(), -1, EntityType.ITEM, packet.getType(), false, null);
 		e.x = packet.getX();
 		e.y = packet.getY();
 		e.z = packet.getZ();
