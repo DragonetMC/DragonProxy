@@ -45,24 +45,27 @@ public final class EntityMetaTranslator {
 			if (m == null) {
 				continue;
 			}
-//                    System.out.println("EntityMetadata : " + m.getId() + ", value : " + m.getValue().toString() + " ( " + m.getValue().getClass() + ")");
+//                    System.out.println("EntityMetadata " + type.name() + " : " + m.getId() + ", value : " + m.getValue().toString() + " ( " + m.getValue().getClass() + ")");
 			switch (m.getId()) {
 			case 0:// Flags
 				byte pcFlags = ((byte) m.getValue());
 				long peFlags = peMeta.map.containsKey(EntityMetaData.Constants.DATA_FLAGS)
-						? ((LongMeta) peMeta.map.get(EntityMetaData.Constants.DATA_FLAGS)).data
-						: 0;
-				peFlags |= (byte) ((pcFlags & 0x01) > 0 ? EntityMetaData.Constants.DATA_FLAG_ONFIRE : 0);
+						? ((LongMeta) peMeta.map.get(EntityMetaData.Constants.DATA_FLAGS)).data : 0;
+				peFlags |= (pcFlags & 0x01) > 0 ? EntityMetaData.Constants.DATA_FLAG_ONFIRE : 0;
 				peFlags |= (pcFlags & 0x02) > 0 ? EntityMetaData.Constants.DATA_FLAG_SNEAKING : 0;
+//				peFlags |= (pcFlags & 0x04) > 0 ? EntityMetaData.Constants.DATA_FLAG_RIDING : 0; //unused
 				peFlags |= (pcFlags & 0x08) > 0 ? EntityMetaData.Constants.DATA_FLAG_SPRINTING : 0;
-				peFlags |= (pcFlags & 0x10) > 0 ? EntityMetaData.Constants.DATA_FLAG_ACTION : 0;
+//				peFlags |= (pcFlags & 0x10) > 0 ? EntityMetaData.Constants.DATA_FLAG_ACTION : 0; //unused
 				peFlags |= (pcFlags & 0x20) > 0 ? EntityMetaData.Constants.DATA_FLAG_INVISIBLE : 0;
+//				peFlags |= (pcFlags & 0x40) > 0 ? EntityMetaData.Constants.DATA_FLAG_GLOWING : 0; //Not implemented
+				peFlags |= (pcFlags & 0x80) > 0 ? EntityMetaData.Constants.DATA_FLAG_GLIDING : 0;
 				peMeta.map.put(EntityMetaData.Constants.DATA_FLAGS, new LongMeta(peFlags));
 				break;
 			case 1:// Air
 				peMeta.map.put(EntityMetaData.Constants.DATA_AIR, new ShortMeta(((Integer) m.getValue()).shortValue()));
 				break;
 			case 2:// Name tag
+                            if ((String) m.getValue() != "")
 				peMeta.map.put(EntityMetaData.Constants.DATA_NAMETAG, new ByteArrayMeta((String) m.getValue()));
 				break;
 			case 3:// Always show name tag
