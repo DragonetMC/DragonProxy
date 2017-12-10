@@ -45,28 +45,24 @@ public final class EntityMetaTranslator {
 			if (m == null) {
 				continue;
 			}
-//                    System.out.println("EntityMetadata " + type.name() + " : " + m.getId() + ", value : " + m.getValue().toString() + " ( " + m.getValue().getClass() + ")");
 			switch (m.getId()) {
 			case 0:// Flags
 				byte pcFlags = ((byte) m.getValue());
-				long peFlags = peMeta.map.containsKey(EntityMetaData.Constants.DATA_FLAGS)
-						? ((LongMeta) peMeta.map.get(EntityMetaData.Constants.DATA_FLAGS)).data : 0;
-				peFlags |= (pcFlags & 0x01) > 0 ? EntityMetaData.Constants.DATA_FLAG_ONFIRE : 0;
-				peFlags |= (pcFlags & 0x02) > 0 ? EntityMetaData.Constants.DATA_FLAG_SNEAKING : 0;
-//				peFlags |= (pcFlags & 0x04) > 0 ? EntityMetaData.Constants.DATA_FLAG_RIDING : 0; //unused
-				peFlags |= (pcFlags & 0x08) > 0 ? EntityMetaData.Constants.DATA_FLAG_SPRINTING : 0;
-//				peFlags |= (pcFlags & 0x10) > 0 ? EntityMetaData.Constants.DATA_FLAG_ACTION : 0; //unused
-				peFlags |= (pcFlags & 0x20) > 0 ? EntityMetaData.Constants.DATA_FLAG_INVISIBLE : 0;
-//				peFlags |= (pcFlags & 0x40) > 0 ? EntityMetaData.Constants.DATA_FLAG_GLOWING : 0; //Not implemented
-				peFlags |= (pcFlags & 0x80) > 0 ? EntityMetaData.Constants.DATA_FLAG_GLIDING : 0;
-				peMeta.map.put(EntityMetaData.Constants.DATA_FLAGS, new LongMeta(peFlags));
+                                peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_ONFIRE, (pcFlags & 0x01) > 0);
+                                peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_SNEAKING, (pcFlags & 0x02) > 0);
+                                peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_RIDING, (pcFlags & 0x04) > 0);
+                                peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_SPRINTING, (pcFlags & 0x08) > 0);
+                                peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_ACTION, (pcFlags & 0x10) > 0);
+                                peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_INVISIBLE, (pcFlags & 0x20) > 0);
+//                                peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_GLOWING, (pcFlags & 0x40) > 0); //Not implemented
+                                peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_GLIDING, (pcFlags & 0x80) > 0);
 				break;
 			case 1:// Air
-				peMeta.map.put(EntityMetaData.Constants.DATA_AIR, new ShortMeta(((Integer) m.getValue()).shortValue()));
+                                peMeta.set(EntityMetaData.Constants.DATA_AIR, new ShortMeta(((Integer) m.getValue()).shortValue()));
 				break;
 			case 2:// Name tag
                             if ((String) m.getValue() != "")
-				peMeta.map.put(EntityMetaData.Constants.DATA_NAMETAG, new ByteArrayMeta((String) m.getValue()));
+				peMeta.set(EntityMetaData.Constants.DATA_NAMETAG, new ByteArrayMeta((String) m.getValue()));
 				break;
 			case 3:// Always show name tag
 				byte data;
@@ -80,10 +76,10 @@ public final class EntityMetaTranslator {
 				peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_CAN_SHOW_NAMETAG, data > 0);
 				break;
 			case 4://Boolean : Is silent
-                            peMeta.map.put(EntityMetaData.Constants.DATA_FLAG_SILENT, new ByteMeta((byte)(((boolean)m.getValue()) ? 0x00 : 0x01)));
+                            peMeta.set(EntityMetaData.Constants.DATA_FLAG_SILENT, new ByteMeta((byte)(((boolean)m.getValue()) ? 0x00 : 0x01)));
 				break;
 			case 5://Boolean : No gravity
-                            peMeta.map.put(EntityMetaData.Constants.DATA_FLAG_AFFECTED_BY_GRAVITY, new ByteMeta((byte)(((boolean)m.getValue()) ? 0x01 : 0x00)));// need !
+                            peMeta.set(EntityMetaData.Constants.DATA_FLAG_AFFECTED_BY_GRAVITY, new ByteMeta((byte)(((boolean)m.getValue()) ? 0x01 : 0x00)));// need !
 				break;
 			case 6:
                             switch(type)
@@ -98,7 +94,7 @@ public final class EntityMetaTranslator {
                                     //peMeta.map.put(EntityMetaData.Constants.DATA_AREA_EFFECT_CLOUD_RADIUS, new FloatMeta((float) m.getValue()));
                                 //case FISHING_HOOK: //VarInt : Hooked entity id + 1, or 0 if there is no hooked entity
                                 case ARROW: //Byte : is critical
-                                    peMeta.map.put(EntityMetaData.Constants.DATA_FLAG_CRITICAL, new ByteMeta((byte) m.getValue()));
+                                    peMeta.set(EntityMetaData.Constants.DATA_FLAG_CRITICAL, new ByteMeta((byte) m.getValue()));
                                     break;
                                 //case TIPPED_ARROW: //VarInt : Color (-1 for no particles)
                                 //case BOAT: //VarInt : Time since last hit
@@ -107,7 +103,7 @@ public final class EntityMetaTranslator {
                                 //case FIREWORKS: //Slot : Firework info
 //                                case ITEM_FRAME: //Slot : Item
                                 case ITEM: //Slot : Item
-                                    peMeta.map.put(EntityMetaData.Constants.DATA_TYPE_SLOT, new SlotMeta((Slot) ItemBlockTranslator.translateSlotToPE((ItemStack) m.getValue())));
+                                    peMeta.set(EntityMetaData.Constants.DATA_TYPE_SLOT, new SlotMeta((Slot) ItemBlockTranslator.translateSlotToPE((ItemStack) m.getValue())));
                                     break;
                                 default: // (all LIVING) Byte : Hand states, used to trigger blocking/eating/drinking animation.
                                     break;
@@ -135,7 +131,7 @@ public final class EntityMetaTranslator {
                                 //case AREA_EFFECT_CLOUD: //Boolean : Ignore radius and show effect as single point, not area
                                 //case BOAT: //Float : Damage taken
                                 default: // (all LIVING) VarInt : Potion effect color (or 0 if there is no effect)
-                                    peMeta.map.put(EntityMetaData.Constants.DATA_POTION_COLOR, new ByteMeta((byte) ((int) m.getValue() & 0xFF)));
+                                    peMeta.set(EntityMetaData.Constants.DATA_POTION_COLOR, new ByteMeta((byte) ((int) m.getValue() & 0xFF)));
                                     break;
                             }
 				break;
@@ -147,7 +143,7 @@ public final class EntityMetaTranslator {
                                     //peMeta.map.put(EntityMetaData.Constants.DATA_AREA_EFFECT_CLOUD_PARTICLE_ID, new IntegerMeta((int) m.getValue()));
                                 //case BOAT: //VarInt : Type (0=oak, 1=spruce, 2=birch, 3=jungle, 4=acacia, 5=dark oak)
                                 default: //(all LIVING) Boolean : Is potion effect ambient: reduces the number of particles generated by potions to 1/5 the normal amount
-                                    peMeta.map.put(EntityMetaData.Constants.DATA_POTION_AMBIENT, new ByteMeta((byte)(((boolean)m.getValue()) ? 0x00 : 0x01)));
+                                    peMeta.set(EntityMetaData.Constants.DATA_POTION_AMBIENT, new ByteMeta((byte)(((boolean)m.getValue()) ? 0x00 : 0x01)));
                                     break;
                             }
 				break;
