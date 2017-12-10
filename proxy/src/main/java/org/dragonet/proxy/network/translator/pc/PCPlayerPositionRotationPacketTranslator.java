@@ -12,6 +12,7 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
 import com.github.steveice10.mc.protocol.data.game.setting.ChatVisibility;
@@ -32,6 +33,8 @@ import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import org.dragonet.proxy.entity.EntityType;
+import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.utilities.BlockPosition;
 import org.dragonet.proxy.utilities.Constants;
@@ -152,9 +155,71 @@ public class PCPlayerPositionRotationPacketTranslator
 			// send the confirmation
 			ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());
 			((PCDownstreamSession) session.getDownstream()).send(confirm);
+                        
+                        for(CachedEntity entity : session.getEntityCache().getEntities().values())
+                        {
+                            if (entity.player && entity.playerUniqueId != null) //PLAYER
+                            {
+                                AddPlayerPacket pkAddPlayer = new AddPlayerPacket();
+                                pkAddPlayer.eid = entity.proxyEid;
+                                pkAddPlayer.rtid = entity.proxyEid;
 
-			return null;
-		}
+                                pkAddPlayer.uuid = entity.playerUniqueId;
+
+                                pkAddPlayer.position = new Vector3F((float) entity.x, (float) entity.y + Constants.PLAYER_HEAD_OFFSET, (float) entity.z);
+                                pkAddPlayer.motion = Vector3F.ZERO;
+                                pkAddPlayer.yaw = entity.yaw;
+                                pkAddPlayer.pitch = entity.pitch;
+                                
+                                for (EntityMetadata meta : entity.pcMeta) {
+                                    if (meta.getId() == 2) {
+                                            pkAddPlayer.username = meta.getValue().toString();
+                                            break;
+                                    }
+                                }
+
+                                if (pkAddPlayer.username == null) {
+                                        if (session.getPlayerInfoCache().containsKey(entity.playerUniqueId)) {
+                                                pkAddPlayer.username = session.getPlayerInfoCache().get(entity.playerUniqueId).getProfile().getName();
+                                        } else {
+                                                return null;
+                                        }
+                                }
+
+                                pkAddPlayer.meta = EntityMetaTranslator.translateToPE(entity.pcMeta, EntityType.PLAYER);
+
+                                PlayerSkinPacket skin = new PlayerSkinPacket(entity.playerUniqueId);
+
+                                session.sendPacket(pkAddPlayer);
+                                session.sendPacket(skin);
+                            }
+                            else if (entity.peType != null) //ENTITY
+                            {
+                                AddEntityPacket pk = new AddEntityPacket();
+                                pk.rtid = entity.proxyEid;
+                                pk.eid = entity.proxyEid;
+                                pk.type = entity.peType.getPeType();
+                                pk.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
+                                pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
+                                pk.meta = EntityMetaTranslator.translateToPE(entity.pcMeta, entity.peType);
+                                // TODO: Hack for now. ;P
+                                pk.attributes = new PEEntityAttribute[]{};
+                                session.sendPacket(pk);
+                            }
+                            else // ITEM
+                            {
+                                AddItemEntityPacket pk = new AddItemEntityPacket();
+                                pk.rtid = entity.proxyEid;
+                                pk.eid = entity.proxyEid;
+                                pk.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
+                                pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
+                                pk.metadata = EntityMetaTranslator.translateToPE(entity.pcMeta, EntityType.ITEM);
+//                                session.sendPacket(pk);//not working for now
+                            }
+                        }
+
+                    return null;
+                }
 
 		MovePlayerPacket pk = new MovePlayerPacket();
 		pk.rtid = 1L;

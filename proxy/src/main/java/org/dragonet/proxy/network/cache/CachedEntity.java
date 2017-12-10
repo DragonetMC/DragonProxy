@@ -76,6 +76,11 @@ public class CachedEntity {
 		z += rz;
 		return this;
 	}
+	public CachedEntity relativeMove(float yaw, float pitch) {
+		this.yaw = yaw;
+		this.pitch = pitch;
+		return this;
+	}
 
 	// private
 

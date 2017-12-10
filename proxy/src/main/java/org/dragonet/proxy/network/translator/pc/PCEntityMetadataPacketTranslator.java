@@ -42,7 +42,7 @@ public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<Ser
 			AddItemEntityPacket pk = new AddItemEntityPacket();
 			pk.eid = entity.proxyEid;
 			pk.rtid = entity.proxyEid;
-			pk.item = ItemBlockTranslator.translateSlotToPE((ItemStack) packet.getMetadata()[0].getValue());
+			pk.item = ItemBlockTranslator.translateSlotToPE((ItemStack) packet.getMetadata()[6].getValue()); //dirty for now
 			pk.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
 			pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
 			return new PEPacket[] { pk };

@@ -458,7 +458,7 @@ public class UpstreamSession {
 		spawned = true;
 
 		if (cachedPackets != null) {
-			cachedPackets.forEach(this::sendPacket);
+			cachedPackets.stream().forEach(this::sendPacket);
 
 			PlayStatusPacket play = new PlayStatusPacket(PlayStatusPacket.PLAYER_SPAWN);
 			sendPacket(play);
