@@ -13,6 +13,7 @@
 package org.dragonet.proxy.network.translator;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.MetadataType;
 import org.dragonet.proxy.entity.meta.type.ByteArrayMeta;
 import org.dragonet.proxy.entity.meta.type.ByteMeta;
@@ -21,6 +22,8 @@ import org.dragonet.proxy.entity.meta.type.ShortMeta;
 import org.dragonet.proxy.entity.EntityType;
 import org.dragonet.proxy.entity.meta.EntityMetaData;
 import org.dragonet.proxy.entity.meta.type.IntegerMeta;
+import org.dragonet.proxy.entity.meta.type.SlotMeta;
+import org.dragonet.proxy.protocol.type.Slot;
 
 public final class EntityMetaTranslator {
 	// vars
@@ -93,13 +96,16 @@ public final class EntityMetaTranslator {
                                 //case FISHING_HOOK: //VarInt : Hooked entity id + 1, or 0 if there is no hooked entity
                                 case ARROW: //Byte : is critical
                                     peMeta.map.put(EntityMetaData.Constants.DATA_FLAG_CRITICAL, new ByteMeta((byte) m.getValue()));
+                                    break;
                                 //case TIPPED_ARROW: //VarInt : Color (-1 for no particles)
                                 //case BOAT: //VarInt : Time since last hit
                                 //case ENDER_CRISTAL: //OptPosition : Beam target
                                 //case WITHER_SKULL: //Boolean Invulnerable
                                 //case FIREWORKS: //Slot : Firework info
-                                //case ITEM_FRAME: //Slot : Item
-                                //case ITEM: //Slot : Item
+//                                case ITEM_FRAME: //Slot : Item
+                                case ITEM: //Slot : Item
+                                    peMeta.map.put(EntityMetaData.Constants.DATA_TYPE_SLOT, new SlotMeta((Slot) ItemBlockTranslator.translateSlotToPE((ItemStack) m.getValue())));
+                                    break;
                                 default: // (all LIVING) Byte : Hand states, used to trigger blocking/eating/drinking animation.
                                     break;
                             }
