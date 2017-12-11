@@ -24,37 +24,52 @@ import org.dragonet.proxy.protocol.type.Slot;
 
 public class ItemBlockTranslator {
 	// vars
-	public static final int UNSUPPORTED_BLOCK_ID = 165;
+	public static final int UNSUPPORTED_BLOCK_ID = 248;
 	public static final String DRAGONET_COMPOUND = "DragonetNBT";
 	public static final Map<Integer, Integer> PC_TO_PE_OVERRIDE = new HashMap<>();
 	public static final Map<Integer, Integer> PE_TO_PC_OVERRIDE = new HashMap<>();
 	public static final Map<Integer, String> NAME_OVERRIDES = new HashMap<>();
 
 	static {
-		swap(125, 157); // Double Slab <-> Activator Rail
-		onewayOverride(126, 158); // Slab <-> NULL
-		onewayOverride(95, 20, "Stained Glass"); // Stained Glass = Glass
-		onewayOverride(160, 102, "Stained Glass Pane"); // Stained Glass Pane = Glass Pane
-		onewayOverride(119, 90); // End portal -> Nether portal
-		onewayOverride(176, 63, "Banner"); // Sign =\_
-		onewayOverride(177, 68, "Banner"); // Wall sign =/ We send banner as sign [Banner]
-		onewayOverride(36, 248);
-		onewayOverride(84, 248);
-		onewayOverride(122, 248);
-		onewayOverride(130, 248);
-		onewayOverride(137, 248);
-		onewayOverride(138, 248);
-		onewayOverride(160, 248);
-		onewayOverride(166, 248);
-		onewayOverride(168, 248);
-		onewayOverride(169, 248);
-		onewayOverride(176, 248);
-		onewayOverride(177, 248);
-		onewayOverride(188, 248);
-		onewayOverride(189, 248);
-		onewayOverride(190, 248);
-		onewayOverride(191, 248);
-		onewayOverride(192, 248);
+		onewayOverride(95, 241); // stained_glass
+		onewayOverride(125, 157); // double_wooden_slab
+		onewayOverride(126, 158); // wooden_slab
+		onewayOverride(157, 28); //detector_rail
+		onewayOverride(166, 95); //barrier -> invisiblebedrock
+		onewayOverride(168, 248); //prismarine -> update_block
+		onewayOverride(169, 248); //prismarine_bricks -> update_block
+		onewayOverride(188, 85); //spruce_fence -> fence
+		onewayOverride(189, 85); //birch_fence ->fence
+		onewayOverride(190, 85); //jungle_fence -> fence
+		onewayOverride(191, 85); //jungle_fence -> fence
+		onewayOverride(192, 85); //acacia_fence -> fence
+		onewayOverride(198, 208); //end_rod
+		onewayOverride(199, 240); //chorus_plant
+		onewayOverride(202, 201); //purpur_pillar -> purpur_block
+		onewayOverride(203, 202); //purpur_stairs
+		onewayOverride(208, 198); //grass_path
+		onewayOverride(218, 251); //observer_block
+		onewayOverride(210, 188); //repeated command block
+		onewayOverride(211, 189); //chained command block
+		onewayOverride(235, 220); //white_glazed_terracotta
+		onewayOverride(236, 221); //orange_glazed_terracotta
+		onewayOverride(237, 222); //magenta_glazed_terracotta
+		onewayOverride(238, 223); //light_blue_glazed_terracotta
+		onewayOverride(239, 224); //yellow_glazed_terracotta
+		onewayOverride(240, 225); //lime_glazed_terracotta
+		onewayOverride(241, 226); //pink_glazed_terracotta
+		onewayOverride(242, 227); //gray_glazed_terracotta
+		onewayOverride(243, 228); //light_gray_glazed_terracotta
+		onewayOverride(244, 229); //cyan_glazed_terracotta
+		onewayOverride(245, 219); //purple_glazed_terracotta
+		onewayOverride(246, 231); //blue_glazed_terracotta
+		onewayOverride(247, 232); //brown_glazed_terracotta
+		onewayOverride(248, 233); //green_glazed_terracotta
+		onewayOverride(249, 234); //red_glazed_terracotta
+		onewayOverride(250, 235); //black_glazed_terracotta
+		onewayOverride(251, 236); //concrete
+		onewayOverride(252, 236); //concretepowder -> concrete
+		onewayOverride(255, 252); //structure_block
 	}
 
 	// constructor
