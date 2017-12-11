@@ -12,10 +12,12 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
+import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMultiBlockChangePacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
+import org.dragonet.proxy.network.translator.ItemBlockTranslator.ItemEntry;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.UpdateBlockPacket;
 import org.dragonet.proxy.utilities.BlockPosition;
@@ -37,10 +39,15 @@ public class PCMultiBlockChangePacketTranslator implements IPCPacketTranslator<S
 			packets[i] = new UpdateBlockPacket();
 			packets[i].blockPosition = new BlockPosition(packet.getRecords()[i].getPosition().getX(),
 					packet.getRecords()[i].getPosition().getY(), packet.getRecords()[i].getPosition().getZ());
-			packets[i].id = (byte) (ItemBlockTranslator.translateToPE(packet.getRecords()[i].getBlock().getId())
+
+
+			BlockState block = packet.getRecords()[i].getBlock();
+			ItemEntry entry = ItemBlockTranslator.translateToPE(block.getId(), block.getData());
+
+			packets[i].id = (byte) (entry.id
 					& 0xFF);
-			packets[i].data = generalFlag;
-			packets[i].flags = packet.getRecords()[i].getBlock().getData();
+			packets[i].flags = generalFlag;
+			packets[i].data = entry.damage;
 		}
 		return packets;
 	}
