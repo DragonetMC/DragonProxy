@@ -67,6 +67,10 @@ public final class EntityCache {
 	}
 
 	public CachedEntity getByRemoteEID(long eid) {
+            if (!mapRemoteToClient.containsKey(eid))
+            {
+                return null;
+            }
 		long proxyEid = mapRemoteToClient.get(eid);
 		return entities.get(proxyEid);
 	}
