@@ -56,7 +56,7 @@ public class PEPlayerActionPacketTranslator implements IPEPacketTranslator<Playe
 		}
 		if (packet.action == PlayerActionPacket.ACTION_STOP_SNEAK) {
 			ClientPlayerStatePacket stat = new ClientPlayerStatePacket(
-					(int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.START_SNEAKING);
+					(int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.STOP_SNEAKING);
 			return new Packet[] { stat };
 		}
 		if (packet.action == PlayerActionPacket.ACTION_STOP_SLEEPING) {
