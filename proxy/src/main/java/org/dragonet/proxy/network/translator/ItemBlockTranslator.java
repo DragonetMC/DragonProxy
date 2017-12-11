@@ -26,35 +26,65 @@ public class ItemBlockTranslator {
 	// vars
 	public static final int UNSUPPORTED_BLOCK_ID = 165;
 	public static final String DRAGONET_COMPOUND = "DragonetNBT";
-	public static final Map<Integer, Integer> PC_TO_PE_OVERRIDE = new HashMap<>();
-	public static final Map<Integer, Integer> PE_TO_PC_OVERRIDE = new HashMap<>();
+	public static final Map<Integer, ItemEntry> PC_TO_PE_OVERRIDE = new HashMap<>();
+	public static final Map<Integer, ItemEntry> PE_TO_PC_OVERRIDE = new HashMap<>();
 	public static final Map<Integer, String> NAME_OVERRIDES = new HashMap<>();
 
 	static {
 		swap(125, 157); // Double Slab <-> Activator Rail
-		onewayOverride(126, 158); // Slab <-> NULL
-		onewayOverride(95, 20, "Stained Glass"); // Stained Glass = Glass
-		onewayOverride(160, 102, "Stained Glass Pane"); // Stained Glass Pane = Glass Pane
-		onewayOverride(119, 90); // End portal -> Nether portal
-		onewayOverride(176, 63, "Banner"); // Sign =\_
-		onewayOverride(177, 68, "Banner"); // Wall sign =/ We send banner as sign [Banner]
-		onewayOverride(36, 248);
-		onewayOverride(84, 248);
-		onewayOverride(122, 248);
-		onewayOverride(130, 248);
-		onewayOverride(137, 248);
-		onewayOverride(138, 248);
-		onewayOverride(160, 248);
-		onewayOverride(166, 248);
-		onewayOverride(168, 248);
-		onewayOverride(169, 248);
-		onewayOverride(176, 248);
-		onewayOverride(177, 248);
-		onewayOverride(188, 248);
-		onewayOverride(189, 248);
-		onewayOverride(190, 248);
-		onewayOverride(191, 248);
-		onewayOverride(192, 248);
+		toPEOverride(126, 158); // Slab <-> NULL
+		toPEOverride(95, 241); // Stained Glass
+		toPEOverride(36, 248);
+		toPEOverride(166, 95); //barrier -> invisible bedrock
+		toPEOverride(188, new ItemEntry(85, 1));
+		toPEOverride(189, new ItemEntry(85, 2));
+		toPEOverride(190, new ItemEntry(85, 3));
+		toPEOverride(191, new ItemEntry(85, 5));
+		toPEOverride(192, new ItemEntry(85, 4));
+		toPEOverride(203, 202); //purpur stairs
+		toPEOverride(205, 248); //purpur slab -> unknown
+
+		toPEOverride(219, new ItemEntry(218, 0)); //shulker boxes
+		toPEOverride(220, new ItemEntry(218,1));
+		toPEOverride(221, new ItemEntry(218, 2));
+		toPEOverride(222, new ItemEntry(218, 3));
+		toPEOverride(223, new ItemEntry(218, 4));
+		toPEOverride(224, new ItemEntry(218, 5));
+		toPEOverride(225, new ItemEntry(218, 6));
+		toPEOverride(226, new ItemEntry(218, 7));
+		toPEOverride(227, new ItemEntry(218, 8));
+		toPEOverride(228, new ItemEntry(218, 9));
+		toPEOverride(229, new ItemEntry(218, 10));
+		toPEOverride(230, new ItemEntry(218, 11));
+		toPEOverride(231, new ItemEntry(218, 12));
+		toPEOverride(232, new ItemEntry(218, 13));
+		toPEOverride(233, new ItemEntry(218, 14));
+		toPEOverride(234, new ItemEntry(218, 15));
+
+		toPEOverride(235, 220); //glazed terracota
+		toPEOverride(236, 221);
+		toPEOverride(237, 222);
+		toPEOverride(238, 223);
+		toPEOverride(239, 224);
+		toPEOverride(240, 225);
+		toPEOverride(241, 226);
+		toPEOverride(242, 227);
+		toPEOverride(243, 228);
+		toPEOverride(244, 229);
+		toPEOverride(245, 230);
+		toPEOverride(246, 231);
+		toPEOverride(247, 232);
+		toPEOverride(248, 233);
+		toPEOverride(249, 234);
+		toPEOverride(250, 235);
+
+		toPEOverride(251, 236); //concrete
+		toPEOverride(252, 237); //concrete powder
+
+		toPEOverride(218, 251); //observer
+		toPEOverride(255, 252); //structure block
+
+		//TODO: replace podzol
 	}
 
 	// constructor
@@ -64,23 +94,34 @@ public class ItemBlockTranslator {
 
 	// public
 	// Query handler
-	public static int translateToPE(int pcItemBlockId) {
+	public static ItemEntry translateToPE(int pcItemBlockId, int damage) {
+		ItemEntry entry = new ItemEntry(pcItemBlockId, damage);
+
 		if (!PC_TO_PE_OVERRIDE.containsKey(pcItemBlockId)) {
-			return pcItemBlockId;
+			return entry;
 		}
-		int ret = PC_TO_PE_OVERRIDE.get(pcItemBlockId);
-		if (pcItemBlockId >= 255 && ret == UNSUPPORTED_BLOCK_ID) {
-			ret = 0; // Unsupported item becomes air
+		entry = PC_TO_PE_OVERRIDE.get(pcItemBlockId);
+		if(entry.damage == null) {
+			entry.damage = damage;
 		}
-		return ret;
+
+		if (pcItemBlockId >= 255 && entry.id == UNSUPPORTED_BLOCK_ID) {
+			entry.id = 0; // Unsupported item becomes air
+			entry.damage = 0;
+		}
+		return entry;
 	}
 
-	public static int translateToPC(int peItemBlockId) {
+	public static ItemEntry translateToPC(int peItemBlockId, int damage) {
+		ItemEntry entry = new ItemEntry(peItemBlockId, damage);
+
 		if (!PE_TO_PC_OVERRIDE.containsKey(peItemBlockId)) {
-			return peItemBlockId;
+			return entry;
 		}
-		int ret = PE_TO_PC_OVERRIDE.get(peItemBlockId);
-		return ret;
+
+		entry = PE_TO_PC_OVERRIDE.get(peItemBlockId);
+
+		return entry;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -118,8 +159,10 @@ public class ItemBlockTranslator {
 		if (item == null || item.getId() == 0)
 			return null;
 		Slot inv = new Slot();
-		inv.id = translateToPE(item.getId());
-		inv.damage = item.getData();
+
+		ItemEntry entry = translateToPE(item.getId(), item.getData());
+		inv.id = entry.id;
+		inv.damage = entry.damage != null ? entry.damage : item.getData();
 		inv.count = (item.getAmount() & 0xff);
 		org.dragonet.proxy.nbt.tag.CompoundTag tag = new org.dragonet.proxy.nbt.tag.CompoundTag();
 		tag.putShort("id", item.getId());
@@ -140,7 +183,8 @@ public class ItemBlockTranslator {
 					tag.getCompound(DRAGONET_COMPOUND).getShort("amount"),
 					tag.getCompound(DRAGONET_COMPOUND).getShort("data"));
 		} else {
-			item = new ItemStack(translateToPC(slot.id), slot.count, slot.damage);
+			ItemEntry entry = translateToPC(slot.id, slot.damage);
+			item = new ItemStack(entry.id, slot.count, entry.damage != null ? entry.damage : slot.damage);
 		}
 
 		return item;
@@ -148,18 +192,22 @@ public class ItemBlockTranslator {
 
 	// private
 	private static void swap(int pcId, int peId) {
-		PC_TO_PE_OVERRIDE.put(pcId, peId);
-		PE_TO_PC_OVERRIDE.put(peId, pcId);
+		PC_TO_PE_OVERRIDE.put(pcId, new ItemEntry(peId));
+		PE_TO_PC_OVERRIDE.put(peId, new ItemEntry(pcId));
 	}
 
-	private static void onewayOverride(int fromPc, int toPe, String nameOverride) {
-		onewayOverride(fromPc, toPe);
+	private static void toPEOverride(int fromPc, int toPe, String nameOverride) {
+		toPEOverride(fromPc, toPe);
 		if (nameOverride != null) {
 			NAME_OVERRIDES.put(fromPc, nameOverride);
 		}
 	}
 
-	private static void onewayOverride(int fromPc, int toPe) {
+	private static void toPEOverride(int fromPc, int toPe) {
+		toPEOverride(fromPc, new ItemEntry(toPe, null));
+	}
+
+	private static void toPEOverride(int fromPc, ItemEntry toPe) {
 		PC_TO_PE_OVERRIDE.put(fromPc, toPe);
 	}
 
@@ -170,5 +218,20 @@ public class ItemBlockTranslator {
 		t.put(new IntTag("y", y));
 		t.put(new IntTag("z", z));
 		return t;
+	}
+
+	public static class ItemEntry {
+
+		public Integer id;
+		public Integer damage;
+
+		public ItemEntry(Integer id) {
+			this(id, null);
+		}
+
+		public ItemEntry(Integer id, Integer damage) {
+			this.id = id;
+			this.damage = damage;
+		}
 	}
 }

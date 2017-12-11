@@ -16,6 +16,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerBlockC
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
+import org.dragonet.proxy.network.translator.ItemBlockTranslator.ItemEntry;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.UpdateBlockPacket;
 import org.dragonet.proxy.utilities.BlockPosition;
@@ -32,8 +33,10 @@ public class PCBlockChangePacketTranslator implements IPCPacketTranslator<Server
 	public PEPacket[] translate(UpstreamSession session, ServerBlockChangePacket packet) {
 		UpdateBlockPacket pk = new UpdateBlockPacket();
 		pk.flags = UpdateBlockPacket.FLAG_NEIGHBORS << 4;
-		pk.data = (packet.getRecord().getBlock().getData() & 0xf);
-		pk.id = (byte) (ItemBlockTranslator.translateToPE(packet.getRecord().getBlock().getId()) & 0xFF);
+		ItemEntry entry = ItemBlockTranslator.translateToPE(packet.getRecord().getBlock().getId(), packet.getRecord().getBlock().getData() & 0xf);
+
+		pk.data = entry.damage;
+		pk.id = (byte) (entry.id & 0xFF);
 		pk.blockPosition = new BlockPosition(packet.getRecord().getPosition().getX(),
 				packet.getRecord().getPosition().getY(), packet.getRecord().getPosition().getZ());
 		return new PEPacket[] { pk };

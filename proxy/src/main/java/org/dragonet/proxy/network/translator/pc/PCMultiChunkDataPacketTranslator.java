@@ -19,6 +19,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkD
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
+import org.dragonet.proxy.network.translator.ItemBlockTranslator.ItemEntry;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.FullChunkDataPacket;
 import org.dragonet.proxy.protocol.type.chunk.ChunkData;
@@ -72,8 +73,14 @@ public class PCMultiChunkDataPacketTranslator implements IPCPacketTranslator<Ser
 			for (int x = 0; x < 16; x++) {
 				for (int z = 0; z < 16; z++) {
 					BlockState block = blocks.get(x, y & 0xF, z);
-					pe.sections[cy].blockIds[index(x, y,
-							z)] = (byte) (ItemBlockTranslator.translateToPE(block.getId()) & 0xFF);
+					ItemEntry entry = ItemBlockTranslator.translateToPE(block.getId(), block.getData());
+
+					Section section = pe.sections[cy];
+					section.blockIds[index(x, y,
+							z)] = (byte) (entry.id & 0xFF);
+
+					section.blockMetas[index(x, y,
+							z)] = entry.damage.byteValue();
 				}
 			}
 		}
