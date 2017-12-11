@@ -34,8 +34,6 @@ public class ItemBlockTranslator {
 		swap(125, 157); // Double Slab <-> Activator Rail
 		toPEOverride(126, 158); // Slab <-> NULL
 		toPEOverride(95, 241); // Stained Glass
-		toPEOverride(176, 63, "Banner"); // Sign =\_
-		toPEOverride(177, 68, "Banner"); // Wall sign =/ We send banner as sign [Banner]
 		toPEOverride(36, 248);
 		toPEOverride(166, 95); //barrier -> invisible bedrock
 		toPEOverride(188, new ItemEntry(85, 1));
