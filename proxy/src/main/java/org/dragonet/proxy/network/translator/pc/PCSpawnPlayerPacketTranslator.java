@@ -1,5 +1,6 @@
 package org.dragonet.proxy.network.translator.pc;
 
+import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import org.dragonet.proxy.entity.meta.EntityMetaData;
 import org.dragonet.proxy.network.UpstreamSession;
@@ -7,6 +8,7 @@ import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
 import org.dragonet.proxy.entity.EntityType;
+import org.dragonet.proxy.entity.meta.type.ByteArrayMeta;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.AddPlayerPacket;
@@ -29,24 +31,11 @@ public class PCSpawnPlayerPacketTranslator implements IPCPacketTranslator<Server
 
                         if (session.isSpawned())
                         {
+                            PlayerListEntry playerListEntry = session.getPlayerInfoCache().get(entity.playerUniqueId);
                             AddPlayerPacket pkAddPlayer = new AddPlayerPacket();
                             pkAddPlayer.eid = entity.proxyEid;
                             pkAddPlayer.rtid = entity.proxyEid;
-
-                            for (EntityMetadata meta : packet.getMetadata()) {
-                                    if (meta.getId() == 2) {
-                                            pkAddPlayer.username = meta.getValue().toString();
-                                            break;
-                                    }
-                            }
-
-                            if (pkAddPlayer.username == null) {
-                                    if (session.getPlayerInfoCache().containsKey(packet.getUUID())) {
-                                            pkAddPlayer.username = session.getPlayerInfoCache().get(packet.getUUID()).getProfile().getName();
-                                    } else {
-                                            return null;
-                                    }
-                            }
+                            pkAddPlayer.username = playerListEntry.getProfile().getName();
 
                             pkAddPlayer.uuid = packet.getUUID();
 
@@ -56,6 +45,7 @@ public class PCSpawnPlayerPacketTranslator implements IPCPacketTranslator<Server
                             pkAddPlayer.pitch = packet.getPitch();
 
                             pkAddPlayer.meta = EntityMetaTranslator.translateToPE(entity.pcMeta, EntityType.PLAYER);
+                            pkAddPlayer.meta.set(EntityMetaData.Constants.DATA_NAMETAG, new ByteArrayMeta(playerListEntry.getProfile().getName())); //hacky for now
 
                             PlayerSkinPacket skin = new PlayerSkinPacket(packet.getUUID());
 

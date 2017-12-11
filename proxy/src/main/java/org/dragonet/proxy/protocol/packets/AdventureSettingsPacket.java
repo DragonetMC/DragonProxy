@@ -8,11 +8,16 @@ import org.dragonet.proxy.protocol.ProtocolInfo;
  */
 public class AdventureSettingsPacket extends PEPacket {
 	//vars
-	public static final int PERMISSION_NORMAL = 0;
-	public static final int PERMISSION_OPERATOR = 1;
-	public static final int PERMISSION_HOST = 2;
-	public static final int PERMISSION_AUTOMATION = 3;
-	public static final int PERMISSION_ADMIN = 4;
+        public static final int PERMISSION_NORMAL = 0;
+        public static final int PERMISSION_OPERATOR = 1;
+        public static final int PERMISSION_HOST = 2;
+        public static final int PERMISSION_AUTOMATION = 3;
+        public static final int PERMISSION_ADMIN = 4;
+    
+	public static final int LEVEL_PERMISSION_VISITOR = 0;
+        public static final int LEVEL_PERMISSION_MEMBER = 1;
+	public static final int LEVEL_ERMISSION_OPERATOR = 2;
+	public static final int LEVEL_PERMISSION_CUSTOM = 3;
 	
 	/**
 	 * This constant is used to identify flags that should be set on the second
@@ -42,8 +47,8 @@ public class AdventureSettingsPacket extends PEPacket {
 	
 	public int flags;
 	public int commandsPermission;
-	public int flags2;
-	public int playerPermission;
+	public int actionPermissions;
+	public int playerPermission; // 0: , 1: , 2: , 3: 
 	public int customFlags;
 	public long eid;
 	
@@ -60,7 +65,7 @@ public class AdventureSettingsPacket extends PEPacket {
 	public void encodePayload() {
 		putUnsignedVarInt(flags);
 		putUnsignedVarInt(commandsPermission);
-		putUnsignedVarInt(flags2);
+		putUnsignedVarInt(actionPermissions);
 		putUnsignedVarInt(playerPermission);
 		putUnsignedVarInt(customFlags);
 		putLLong(eid);
@@ -68,7 +73,7 @@ public class AdventureSettingsPacket extends PEPacket {
 	public void decodePayload() {
 		flags = (int) getUnsignedVarInt();
 		commandsPermission = (int) getUnsignedVarInt();
-		flags2 = (int) getUnsignedVarInt();
+		actionPermissions = (int) getUnsignedVarInt();
 		playerPermission = (int) getUnsignedVarInt();
 		customFlags = (int) getUnsignedVarInt();
 		eid = getLLong();
@@ -76,7 +81,7 @@ public class AdventureSettingsPacket extends PEPacket {
 	
 	public boolean getFlag(int flag) {
 		if ((flag & BITFLAG_SECOND_SET) != 0) {
-			return (this.flags2 & flag) != 0;
+			return (this.actionPermissions & flag) != 0;
 		}
 
 		return (this.flags & flag) != 0;
@@ -85,7 +90,7 @@ public class AdventureSettingsPacket extends PEPacket {
 		int flagSet = 0;
 		boolean second = false;
 		if ((flag & BITFLAG_SECOND_SET) != 0) {
-			flagSet &= this.flags2;
+			flagSet &= this.actionPermissions;
 			second = true;
 		} else {
 			flagSet &= this.flags;
@@ -98,7 +103,7 @@ public class AdventureSettingsPacket extends PEPacket {
 		}
 
 		if (second) {
-			flags2 = flagSet;
+			actionPermissions = flagSet;
 		} else {
 			flags = flagSet;
 		}

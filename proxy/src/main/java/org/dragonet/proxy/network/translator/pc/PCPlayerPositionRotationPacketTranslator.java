@@ -12,7 +12,8 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
+import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
 import com.github.steveice10.mc.protocol.data.game.setting.ChatVisibility;
@@ -33,9 +34,14 @@ import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import java.util.HashSet;
+import java.util.Set;
 import org.dragonet.proxy.entity.EntityType;
+import org.dragonet.proxy.entity.meta.type.ByteArrayMeta;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
+import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.protocol.packets.*;
+import org.dragonet.proxy.protocol.type.Skin;
 import org.dragonet.proxy.utilities.BlockPosition;
 import org.dragonet.proxy.utilities.Constants;
 import org.dragonet.proxy.utilities.Vector3F;
@@ -109,8 +115,8 @@ public class PCPlayerPositionRotationPacketTranslator
 			adv.setFlag(AdventureSettingsPacket.TELEPORT, true);
 			adv.setFlag(AdventureSettingsPacket.NO_CLIP, restored.getGameMode().equals(GameMode.SPECTATOR));
 			adv.setFlag(AdventureSettingsPacket.FLYING, false);
-			adv.commandsPermission = AdventureSettingsPacket.PERMISSION_OPERATOR;
-			adv.playerPermission = 2;
+			adv.commandsPermission = AdventureSettingsPacket.PERMISSION_NORMAL;     //TODO update this with server configiration
+			adv.playerPermission = AdventureSettingsPacket.LEVEL_PERMISSION_MEMBER; //TODO update this with server configiration
 			session.sendPacket(adv);
 
 			SetEntityDataPacket entityData = new SetEntityDataPacket();
@@ -156,10 +162,16 @@ public class PCPlayerPositionRotationPacketTranslator
 			ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());
 			((PCDownstreamSession) session.getDownstream()).send(confirm);
                         
+                        PlayerListPacket playerListPacket = new PlayerListPacket();
+                        Set<org.dragonet.proxy.protocol.type.PlayerListEntry> peEntries = new HashSet();
+                        
                         for(CachedEntity entity : session.getEntityCache().getEntities().values())
                         {
+                            if (entity.eid == 1L) //never send ME (entry 1L)
+                                continue;
                             if (entity.player && entity.playerUniqueId != null) //PLAYER
                             {
+                                PlayerListEntry playerListEntry = session.getPlayerInfoCache().get(entity.playerUniqueId);
                                 AddPlayerPacket pkAddPlayer = new AddPlayerPacket();
                                 pkAddPlayer.eid = entity.proxyEid;
                                 pkAddPlayer.rtid = entity.proxyEid;
@@ -170,25 +182,20 @@ public class PCPlayerPositionRotationPacketTranslator
                                 pkAddPlayer.motion = Vector3F.ZERO;
                                 pkAddPlayer.yaw = entity.yaw;
                                 pkAddPlayer.pitch = entity.pitch;
+                                pkAddPlayer.username = playerListEntry.getProfile().getName();
                                 
-                                for (EntityMetadata meta : entity.pcMeta) {
-                                    if (meta.getId() == 2) {
-                                            pkAddPlayer.username = meta.getValue().toString();
-                                            break;
-                                    }
-                                }
-
-                                if (pkAddPlayer.username == null) {
-                                        if (session.getPlayerInfoCache().containsKey(entity.playerUniqueId)) {
-                                                pkAddPlayer.username = session.getPlayerInfoCache().get(entity.playerUniqueId).getProfile().getName();
-                                        } else {
-                                                return null;
-                                        }
-                                }
-
                                 pkAddPlayer.meta = EntityMetaTranslator.translateToPE(entity.pcMeta, EntityType.PLAYER);
+                                pkAddPlayer.meta.set(EntityMetaData.Constants.DATA_NAMETAG, new ByteArrayMeta(playerListEntry.getProfile().getName())); //hacky for now
 
                                 PlayerSkinPacket skin = new PlayerSkinPacket(entity.playerUniqueId);
+                                
+                                org.dragonet.proxy.protocol.type.PlayerListEntry peEntry = new org.dragonet.proxy.protocol.type.PlayerListEntry();
+                                peEntry.uuid = entity.playerUniqueId;
+                                peEntry.eid = entity.eid;
+                                peEntry.username = playerListEntry.getProfile().getName();
+                                peEntry.skin = Skin.DEFAULT_SKIN;
+                                peEntry.xboxUserId = "null";
+                                peEntries.add(peEntry);
 
                                 session.sendPacket(pkAddPlayer);
                                 session.sendPacket(skin);
@@ -213,11 +220,15 @@ public class PCPlayerPositionRotationPacketTranslator
                                 pk.eid = entity.proxyEid;
                                 pk.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
                                 pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
+                                pk.item = ItemBlockTranslator.translateSlotToPE(new ItemStack(1, 1));
                                 pk.metadata = EntityMetaTranslator.translateToPE(entity.pcMeta, EntityType.ITEM);
-//                                session.sendPacket(pk);//not working for now
+                                session.sendPacket(pk);//not working for now
                             }
                         }
-
+                        
+                        playerListPacket.type = PlayerListPacket.TYPE_ADD;
+                        playerListPacket.entries = (org.dragonet.proxy.protocol.type.PlayerListEntry[])peEntries.toArray(new org.dragonet.proxy.protocol.type.PlayerListEntry[peEntries.size()]);
+                        session.sendPacket(playerListPacket);
                     return null;
                 }
 
