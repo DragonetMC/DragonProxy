@@ -33,6 +33,13 @@ public class ItemBlockTranslator {
 	static {
 		swap(125, 157); // Double Slab <-> Activator Rail
 		toPEOverride(126, 158); // Slab <-> NULL
+		toPEOverride(157, 126); //activator rail
+		toPEOverride(198, 208); //end rod
+		toPEOverride(199, 240); //chorus plant
+		toPEOverride(202, 201); //purpur pillar -> purpu block
+		toPEOverride(208, 198); //grass path
+		toPEOverride(210, 188); //repeating command block
+		toPEOverride(211, 189); //chain command block
 		toPEOverride(95, 241); // Stained Glass
 		toPEOverride(36, 248);
 		toPEOverride(166, 95); //barrier -> invisible bedrock
