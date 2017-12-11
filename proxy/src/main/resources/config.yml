@@ -30,10 +30,9 @@ remote_servers:
   my_pc_server:
     # Next line indicates this is a Desktop(PC/Mac) server. 
     !!org.dragonet.proxy.DesktopServer
-    # Performium Network is a nice server
-    # and DoniBobes and RGA are AWESOME!! 
-    # so I decided to put it here
-    remote_addr: 'mc.performium.net'
+    # Hypixel is a very common server
+    # so let's try it! ;)
+    remote_addr: 'mc.hypixel.net'
     remote_port: 25565
   my_pe_server:
     # Next line indicates this is a Pocket Edition server. 
