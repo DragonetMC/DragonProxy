@@ -29,7 +29,7 @@ public class PCUpdateTimePacketTranslator implements IPCPacketTranslator<ServerU
 	// public
 	public PEPacket[] translate(UpstreamSession session, ServerUpdateTimePacket packet) {
 		SetTimePacket pk = new SetTimePacket();
-		pk.time = (int) packet.getTime();
+		pk.time = (int) Math.abs(packet.getTime());
 		return new PEPacket[] { pk };
 	}
 
