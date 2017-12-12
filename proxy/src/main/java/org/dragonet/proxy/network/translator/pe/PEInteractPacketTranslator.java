@@ -17,23 +17,35 @@ import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.IPEPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerInteractEntityPacket;
+import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.protocol.packets.InteractPacket;
 
 public class PEInteractPacketTranslator implements IPEPacketTranslator<InteractPacket> {
-	// vars
+    // vars
 
-	// constructor
-	public PEInteractPacketTranslator() {
+    // constructor
+    public PEInteractPacketTranslator() {
 
-	}
+    }
 
-	// public
-	public Packet[] translate(UpstreamSession session, InteractPacket packet) {
-		ClientPlayerInteractEntityPacket pk = new ClientPlayerInteractEntityPacket(
-				(int) (packet.targetRtid & 0xFFFFFFFF), InteractAction.ATTACK);
-		return new Packet[] { pk };
-	}
+    // public
+    public Packet[] translate(UpstreamSession session, InteractPacket packet) {
+        CachedEntity e = session.getEntityCache().getByLocalEID(packet.targetRtid);
+        if (e == null) {
+            return null;
+        }
 
-	// private
+        switch (packet.type) {
+            case InteractPacket.ACTION_RIGHT_CLICK:
+                return new Packet[]{new ClientPlayerInteractEntityPacket((int) (e.eid), InteractAction.ATTACK)};
+            case InteractPacket.ACTION_LEFT_CLICK:
+                return new Packet[]{new ClientPlayerInteractEntityPacket((int) (e.eid), InteractAction.INTERACT)};
+        }
 
+        System.out.println("InteractPacket type : " + packet.type + " on " + packet.targetRtid);
+
+        return null;
+    }
+
+    // private
 }
