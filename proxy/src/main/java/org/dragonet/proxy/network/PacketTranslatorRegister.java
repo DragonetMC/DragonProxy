@@ -61,8 +61,7 @@ public final class PacketTranslatorRegister {
 		PC_TO_PE_TRANSLATOR.put(ServerMultiBlockChangePacket.class, new PCMultiBlockChangePacketTranslator());
 		// PC_TO_PE_TRANSLATOR.put(ServerUpdateSignPacket.class, new
 		// PCUpdateSignPacketTranslator());
-		// //PC_TO_PE_TRANSLATOR.put(ServerPlaySoundPacket.class, new
-		// PCPlaySoundPacketTranslator());
+		PC_TO_PE_TRANSLATOR.put(ServerPlaySoundPacket.class, new PCPlaySoundPacketTranslator());
 		//
 		// // Entity
 		PC_TO_PE_TRANSLATOR.put(ServerPlayerPositionRotationPacket.class, new PCPlayerPositionRotationPacketTranslator());
@@ -79,6 +78,7 @@ public final class PacketTranslatorRegister {
 		PC_TO_PE_TRANSLATOR.put(ServerEntityEffectPacket.class, new PCEntityEffectPacketTranslator());
 		PC_TO_PE_TRANSLATOR.put(ServerEntityRemoveEffectPacket.class, new PCEntityRemoveEffectPacketTranslator());
 		PC_TO_PE_TRANSLATOR.put(ServerPlayerHealthPacket.class, new PCUpdateHealthPacketTranslator());
+		PC_TO_PE_TRANSLATOR.put(ServerEntityAnimationPacket.class, new PCAnimationPacketTranslator());
 		//
 		// //Inventory
 		PC_TO_PE_TRANSLATOR.put(ServerOpenWindowPacket.class, new PCOpenWindowPacketTranslator());
@@ -91,6 +91,9 @@ public final class PacketTranslatorRegister {
 	 * PE to PC
 	 */
 	static {
+                // Map
+                PE_TO_PC_TRANSLATOR.put(LevelSoundEventPacket.class, new PESoundEventPacketTranslator());
+            
 		// Chat
 		PE_TO_PC_TRANSLATOR.put(TextPacket.class, new PEChatPacketTranslator());
 		PE_TO_PC_TRANSLATOR.put(CommandRequestPacket.class, new PECommandRequestPacketTranslator());
@@ -105,6 +108,7 @@ public final class PacketTranslatorRegister {
 		PE_TO_PC_TRANSLATOR.put(ContainerClosePacket.class, new PEWindowClosePacketTranslator());
 		PE_TO_PC_TRANSLATOR.put(MobEquipmentPacket.class, new PEPlayerEquipmentPacketTranslator());
 		PE_TO_PC_TRANSLATOR.put(InventoryTransactionPacket.class, new PEInventoryTransactionPacketTranslator());
+		PE_TO_PC_TRANSLATOR.put(BlockPickRequestPacket.class, new PEBlockPickRequestPacketTranslator());
 	}
 
 	// constructor
