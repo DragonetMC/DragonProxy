@@ -16,7 +16,7 @@ public class AdventureSettingsPacket extends PEPacket {
     
 	public static final int LEVEL_PERMISSION_VISITOR = 0;
         public static final int LEVEL_PERMISSION_MEMBER = 1;
-	public static final int LEVEL_ERMISSION_OPERATOR = 2;
+	public static final int LEVEL_PERMISSION_OPERATOR = 2;
 	public static final int LEVEL_PERMISSION_CUSTOM = 3;
 	
 	/**
