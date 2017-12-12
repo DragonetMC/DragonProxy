@@ -9,6 +9,8 @@ import org.dragonet.proxy.utilities.Vector3F;
  */
 public class InteractPacket extends PEPacket {
 	//vars
+	public static final byte ACTION_RIGHT_CLICK = 1;
+	public static final byte ACTION_LEFT_CLICK = 2;
 	public static final byte ACTION_LEAVE_VEHICLE = 3;
 	public static final byte ACTION_MOUSEOVER = 4;
 	public static final byte ACTION_OPEN_INVENTORY = 6;
