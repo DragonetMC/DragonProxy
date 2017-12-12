@@ -102,7 +102,7 @@ public class ItemBlockTranslator {
 	// public
 	// Query handler
 	public static ItemEntry translateToPE(int pcItemBlockId, int damage) {
-		ItemEntry entry = new ItemEntry(pcItemBlockId, damage);
+		ItemEntry entry = new ItemEntry(pcItemBlockId & 0xFF, damage & 0xf);
 
 		if (!PC_TO_PE_OVERRIDE.containsKey(pcItemBlockId)) {
 			return entry;

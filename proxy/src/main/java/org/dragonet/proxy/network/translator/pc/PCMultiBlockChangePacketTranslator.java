@@ -44,8 +44,7 @@ public class PCMultiBlockChangePacketTranslator implements IPCPacketTranslator<S
 			BlockState block = packet.getRecords()[i].getBlock();
 			ItemEntry entry = ItemBlockTranslator.translateToPE(block.getId(), block.getData());
 
-			packets[i].id = (byte) (entry.id
-					& 0xFF);
+			packets[i].id = entry.id;
 			packets[i].flags = generalFlag;
 			packets[i].data = entry.damage;
 		}

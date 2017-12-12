@@ -77,7 +77,7 @@ public class PCMultiChunkDataPacketTranslator implements IPCPacketTranslator<Ser
 
 					Section section = pe.sections[cy];
 					section.blockIds[index(x, y,
-							z)] = (byte) (entry.id & 0xFF);
+							z)] = entry.id.byteValue();
 
 //					section.blockMetas[index(x, y,
 //							z)] = entry.damage.byteValue();

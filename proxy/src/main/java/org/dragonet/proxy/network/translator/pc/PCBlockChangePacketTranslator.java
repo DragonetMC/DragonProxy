@@ -33,10 +33,10 @@ public class PCBlockChangePacketTranslator implements IPCPacketTranslator<Server
 	public PEPacket[] translate(UpstreamSession session, ServerBlockChangePacket packet) {
 		UpdateBlockPacket pk = new UpdateBlockPacket();
 		pk.flags = UpdateBlockPacket.FLAG_NEIGHBORS << 4;
-		ItemEntry entry = ItemBlockTranslator.translateToPE(packet.getRecord().getBlock().getId(), packet.getRecord().getBlock().getData() & 0xf);
+		ItemEntry entry = ItemBlockTranslator.translateToPE(packet.getRecord().getBlock().getId(), packet.getRecord().getBlock().getData());
 
 		pk.data = entry.damage;
-		pk.id = (byte) (entry.id & 0xFF);
+		pk.id = entry.id;
 		pk.blockPosition = new BlockPosition(packet.getRecord().getPosition().getX(),
 				packet.getRecord().getPosition().getY(), packet.getRecord().getPosition().getZ());
 		return new PEPacket[] { pk };
