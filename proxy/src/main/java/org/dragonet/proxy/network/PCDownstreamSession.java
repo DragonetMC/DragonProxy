@@ -127,7 +127,7 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
 	public void send(Packet packet) {
 		if (packet == null)
 			return;
-		System.out.println("UPSTREAMING >> " + packet.getClass().getSimpleName());
+//		System.out.println("UPSTREAMING >> " + packet.getClass().getSimpleName());
 		remoteClient.getSession().send(packet);
 	}
 
