@@ -49,6 +49,9 @@ public final class Protocol {
 		packets.put(SET_ENTITY_MOTION_PACKET, SetEntityMotionPacket.class);
 		packets.put(SET_PLAYER_GAME_TYPE_PACKET, SetPlayerGameTypePacket.class);
 		packets.put(ADVENTURE_SETTINGS_PACKET, AdventureSettingsPacket.class);
+                packets.put(ANIMATE_PACKET, AnimatePacket.class);
+                packets.put(LEVEL_SOUND_EVENT_PACKET, LevelSoundEventPacket.class);
+                packets.put(BLOCK_PICK_REQUEST_PACKET, BlockPickRequestPacket.class);
 		packets.put(SET_SPAWN_POSITION_PACKET, SetSpawnPositionPacket.class);
 		packets.put(LEVEL_EVENT_PACKET, LevelEventPacket.class);
 		packets.put(PLAY_SOUND_PACKET, PlaySoundPacket.class);
@@ -113,12 +116,12 @@ public final class Protocol {
 
 	// private
 	private static PEPacket decodeSingle(byte[] buffer) {
-		try {
-			FileOutputStream fos = new FileOutputStream("raw_" + System.currentTimeMillis() + ".bin");
-			fos.write(buffer);
-			fos.close();
-		} catch (Exception e) {
-		}
+//		try {
+//			FileOutputStream fos = new FileOutputStream("raw_" + System.currentTimeMillis() + ".bin");
+//			fos.write(buffer);
+//			fos.close();
+//		} catch (Exception e) {
+//		}
 		byte pid = (byte) new BinaryStream(buffer).getUnsignedVarInt();
 		if (packets.containsKey(pid)) {
 			Class<? extends PEPacket> c = packets.get(pid);
