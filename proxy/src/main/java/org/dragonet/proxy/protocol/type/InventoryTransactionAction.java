@@ -85,7 +85,7 @@ public class InventoryTransactionAction {
 			switch (action.containerId) {
 			case SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
 			case SOURCE_TYPE_CRAFTING_RESULT:
-				packet.craftingPart = true;
+//				packet.craftingPart = true;
 				break;
 			}
 			break;
