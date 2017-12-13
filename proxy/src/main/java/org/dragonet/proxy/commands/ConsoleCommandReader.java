@@ -28,7 +28,7 @@ public class ConsoleCommandReader {
 
 	// public
 	public void startConsole() {
-		/*Thread thread = new Thread(new Runnable() {
+		Thread thread = new Thread(new Runnable() {
 			public void run() {
 				String command = "";
 				while (!proxy.isShuttingDown()) {
@@ -51,7 +51,7 @@ public class ConsoleCommandReader {
 
 		thread.setName("ConsoleCommandThread");
 		thread.setDaemon(true);
-		thread.start();*/
+		thread.start();
 	}
 
 	// private
