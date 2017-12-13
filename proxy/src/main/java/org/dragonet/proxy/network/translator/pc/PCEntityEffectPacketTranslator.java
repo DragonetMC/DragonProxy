@@ -37,6 +37,7 @@ public class PCEntityEffectPacketTranslator implements IPCPacketTranslator<Serve
 			return null;
 		}
 		int effectId = MagicValues.value(Integer.class, packet.getEffect());
+		if(PocketPotionEffect.getByID(effectId) == null) return null;
 
 		MobEffectPacket eff = new MobEffectPacket();
 		eff.rtid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 1L
