@@ -38,7 +38,7 @@ public class AdventureSettingsPacket extends PEPacket {
     public static final int FLYING = 0x200;
     public static final int MUTED = 0x400;
 
-    //custom flags
+    //custom flags (not necessary when using LEVEL_PERMISSION_*)
     public static final int BUILD_AND_MINE = 0x01 | BITFLAG_SECOND_SET;
     public static final int DOORS_AND_SWITCHES = 0x02 | BITFLAG_SECOND_SET;
     public static final int OPEN_CONTAINERS = 0x04 | BITFLAG_SECOND_SET;

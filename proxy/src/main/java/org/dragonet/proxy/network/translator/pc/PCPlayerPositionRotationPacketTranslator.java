@@ -62,14 +62,16 @@ public class PCPlayerPositionRotationPacketTranslator
 			if (!session.getProxy().getAuthMode().equalsIgnoreCase("online")) {
 				StartGamePacket ret = new StartGamePacket();
 				ret.rtid = 1L;
-				ret.eid = 1L; // Use EID 0 for easier management
-				ret.dimension = 0;
+				ret.eid = 1L;
+				ret.dimension = restored.getDimension();
 				ret.seed = 0;
 				ret.generator = 1;
 				ret.gamemode = restored.getGameMode() == GameMode.CREATIVE ? 1 : 0;
 				ret.spawnPosition = new BlockPosition((int) packet.getX(), (int) packet.getY(), (int) packet.getZ());
 				ret.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET,
 						(float) packet.getZ());
+                                ret.yaw = packet.getYaw();
+                                ret.pitch = packet.getPitch();
 				ret.levelId = "";
 				ret.worldName = "World";
 				ret.commandsEnabled = true;
@@ -90,15 +92,24 @@ public class PCPlayerPositionRotationPacketTranslator
 			session.sendPacket(attr);
 
 			AdventureSettingsPacket adv = new AdventureSettingsPacket();
-			adv.setFlag(AdventureSettingsPacket.WORLD_IMMUTABLE, restored.getGameMode().equals(GameMode.SPECTATOR));
-			// adv.setFlag(AdventureSettingsPacket.ALLOW_FLIGHT, true);
-			adv.setFlag(AdventureSettingsPacket.ATTACK_PLAYERS, true);
-			adv.setFlag(AdventureSettingsPacket.ATTACK_MOBS, true);
-			adv.setFlag(AdventureSettingsPacket.BUILD_AND_MINE, true);
-			adv.setFlag(AdventureSettingsPacket.OPERATOR, true);
-			adv.setFlag(AdventureSettingsPacket.TELEPORT, true);
+                        //flags
+			adv.setFlag(AdventureSettingsPacket.WORLD_IMMUTABLE, restored.getGameMode().equals(GameMode.ADVENTURE));
+//			adv.setFlag(AdventureSettingsPacket.NO_PVP, true);
+//			adv.setFlag(AdventureSettingsPacket.AUTO_JUMP, true);
+			adv.setFlag(AdventureSettingsPacket.ALLOW_FLIGHT, restored.getGameMode().equals(GameMode.CREATIVE) || restored.getGameMode().equals(GameMode.SPECTATOR));
 			adv.setFlag(AdventureSettingsPacket.NO_CLIP, restored.getGameMode().equals(GameMode.SPECTATOR));
+			adv.setFlag(AdventureSettingsPacket.WORLD_BUILDER, !restored.getGameMode().equals(GameMode.SPECTATOR) || !restored.getGameMode().equals(GameMode.ADVENTURE));
 			adv.setFlag(AdventureSettingsPacket.FLYING, false);
+			adv.setFlag(AdventureSettingsPacket.MUTED, false);
+                        //custom permission flags (not necessary for now when using LEVEL_PERMISSION setting)
+//			adv.setFlag(AdventureSettingsPacket.BUILD_AND_MINE, true);
+//			adv.setFlag(AdventureSettingsPacket.DOORS_AND_SWITCHES, true);
+//			adv.setFlag(AdventureSettingsPacket.OPEN_CONTAINERS, true);
+//			adv.setFlag(AdventureSettingsPacket.ATTACK_PLAYERS, true);
+//			adv.setFlag(AdventureSettingsPacket.ATTACK_MOBS, true);
+//			adv.setFlag(AdventureSettingsPacket.OPERATOR, true);
+//			adv.setFlag(AdventureSettingsPacket.TELEPORT, true);
+			adv.eid = 1L;
 			adv.commandsPermission = AdventureSettingsPacket.PERMISSION_NORMAL;     //TODO update this with server configiration
 			adv.playerPermission = AdventureSettingsPacket.LEVEL_PERMISSION_MEMBER; //TODO update this with server configiration
 			session.sendPacket(adv);
