@@ -21,6 +21,7 @@ public class LoginChainDecoder {
 	public String username;
 	public UUID clientUniqueId;
 	public JsonObject clientData;
+        public String language;
 	public Skin skin;
 
 	// constructor
@@ -57,6 +58,8 @@ public class LoginChainDecoder {
 
 		// client data
 		clientData = decodeToken(new String(clientDataJWT, StandardCharsets.UTF_8));
+                
+                language = clientData.has("LanguageCode") ? clientData.get("LanguageCode").getAsString() : "en_US";
 
 		skin = new Skin(
 				clientData.get("SkinId").getAsString(),
