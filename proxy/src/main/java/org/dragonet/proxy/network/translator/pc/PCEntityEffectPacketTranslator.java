@@ -21,6 +21,7 @@ import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.MobEffectPacket;
+import org.dragonet.proxy.utilities.Logger;
 
 public class PCEntityEffectPacketTranslator implements IPCPacketTranslator<ServerEntityEffectPacket> {
 	// vars
@@ -38,10 +39,16 @@ public class PCEntityEffectPacketTranslator implements IPCPacketTranslator<Serve
 		}
 		int effectId = MagicValues.value(Integer.class, packet.getEffect());
 
+		PocketPotionEffect effect = PocketPotionEffect.getByID(effectId);
+		if(effect == null) {
+			System.out.println("Unknown effect ID: "+effectId);
+			return null;
+		}
+
 		MobEffectPacket eff = new MobEffectPacket();
 		eff.rtid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 1L
 				: entity.proxyEid;
-		eff.effectId = PocketPotionEffect.getByID(effectId).getEffect();
+		eff.effectId = effect.getEffect();
 		if (entity.effects.contains(effectId)) {
 			eff.eventId = MobEffectPacket.EVENT_MODIFY;
 		} else {
