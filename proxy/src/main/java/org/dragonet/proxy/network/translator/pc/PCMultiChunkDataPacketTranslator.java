@@ -26,67 +26,82 @@ import org.dragonet.proxy.protocol.type.chunk.ChunkData;
 import org.dragonet.proxy.protocol.type.chunk.Section;
 
 public class PCMultiChunkDataPacketTranslator implements IPCPacketTranslator<ServerChunkDataPacket> {
-	// vars
+    // vars
 
-	// constructor
-	public PCMultiChunkDataPacketTranslator() {
+    // constructor
+    public PCMultiChunkDataPacketTranslator() {
 
-	}
+    }
 
-	// public
-	public PEPacket[] translate(UpstreamSession session, ServerChunkDataPacket packet) {
-		session.getProxy().getGeneralThreadPool().execute(() -> {
-			try {
+    // public
+    public PEPacket[] translate(UpstreamSession session, ServerChunkDataPacket packet) {
+        session.getProxy().getGeneralThreadPool().execute(() -> {
+            try {
 
-				FullChunkDataPacket pePacket = new FullChunkDataPacket();
-				pePacket.x = packet.getColumn().getX();
-				pePacket.z = packet.getColumn().getZ();
+                FullChunkDataPacket pePacket = new FullChunkDataPacket();
+                pePacket.x = packet.getColumn().getX();
+                pePacket.z = packet.getColumn().getZ();
 
-				ChunkData chunk = new ChunkData();
-				processChunkSection(packet.getColumn().getChunks(), chunk);
-				chunk.encode();
-				pePacket.payload = chunk.getBuffer();
+                ChunkData chunk = new ChunkData();
+                processChunkSection(packet.getColumn().getChunks(), chunk);
+                chunk.encode();
+                pePacket.payload = chunk.getBuffer();
 
-				session.putCachePacket(pePacket);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
-		return null;
-	}
+                session.putCachePacket(pePacket);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        return null;
+    }
 
-	// private
-	private void processChunkSection(Chunk[] pc, ChunkData pe) {
-		/*
-		 * pe.sections = new Section[16]; for(int i = 0; i < 16; i++) { pe.sections[i] =
-		 * new Section(); if(i < 2) Arrays.fill(pe.sections[i].blockIds, (byte)1); }
-		 */
-		pe.sections = new Section[16];
-		for (int i = 0; i < 16; i++) {
-			pe.sections[i] = new Section();
-		}
-		for (int y = 0; y < 256; y++) {
-			int cy = y >> 4;
-			if (pc[cy] == null || pc[cy].isEmpty())
-				continue;
-			BlockStorage blocks = pc[cy].getBlocks();
-			for (int x = 0; x < 16; x++) {
-				for (int z = 0; z < 16; z++) {
-					BlockState block = blocks.get(x, y & 0xF, z);
-					ItemEntry entry = ItemBlockTranslator.translateToPE(block.getId(), block.getData());
+    // private
+    private void processChunkSection(Chunk[] pc, ChunkData pe) {
+        /*
+         * pe.sections = new Section[16]; for(int i = 0; i < 16; i++) { pe.sections[i] =
+         * new Section(); if(i < 2) Arrays.fill(pe.sections[i].blockIds, (byte)1); }
+         */
+        pe.sections = new Section[16];
+        for (int i = 0; i < 16; i++) {
+            pe.sections[i] = new Section();
+        }
+        for (int y = 0; y < 256; y++) {
+            int cy = y >> 4;
 
-					Section section = pe.sections[cy];
-					section.blockIds[index(x, y,
-							z)] = (byte) (entry.id & 0xFF);
+            Chunk c = pc[cy];
+            if (c == null || c.isEmpty())
+                continue;
+            BlockStorage blocks = c.getBlocks();
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    BlockState block = blocks.get(x, y & 0xF, z);
+                    ItemEntry entry = ItemBlockTranslator.translateToPE(block.getId(), block.getData());
 
-					section.blockMetas[index(x, y,
-							z)] = entry.damage.byteValue();
-				}
-			}
-		}
-	}
+                    Section section = pe.sections[cy];
+                    section.blockIds[index(x, y,
+                            z)] = (byte) (entry.id & 0xFF);
 
-	private static int index(int x, int y, int z) {
-		return (x << 8) | (z << 4) | (y & 0xF);
-	}
+                    int i = dataIndex(x, y, z);
+                    byte data = section.blockMetas[i];
+                    int newValue = entry.damage.byteValue();
+
+                    if ((y & 1) == 0) {
+                        data = (byte) ((data & 0xf0) | (newValue & 0x0f));
+                    } else {
+                        data = (byte) (((newValue & 0x0f) << 4) | (data & 0x0f));
+                    }
+
+                    section.blockMetas[i] = data;
+                }
+            }
+        }
+    }
+
+    private static int index(int x, int y, int z) {
+        return (x << 8) | (z << 4) | (y & 0xF);
+    }
+
+    private static int dataIndex(int x, int y, int z) {
+        return (x << 7) | (z << 3) | ((y & 0xF) >> 1);
+    }
 }
