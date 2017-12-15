@@ -42,9 +42,9 @@ public class DebugTools {
             if((f.getModifiers() & Modifier.STATIC) > 0) continue;
             try {
                 if (isWrapperType(f.get(obj).getClass()))
-                    data += ": " + f.getName() + " = " + f.get(obj).toString();
-                else
-                    data += ": " + getAllFields(f.get(obj));
+                    data += f.getName() + " = " + f.get(obj).toString();
+                else 
+                    data += f.getName() + " = " + getAllFields(f.get(obj));
             } catch (Exception e) {
                 data += ": " + f.getName() + " = ERROR";
             }
@@ -52,5 +52,4 @@ public class DebugTools {
         }
         return data;
     }
-
 }
