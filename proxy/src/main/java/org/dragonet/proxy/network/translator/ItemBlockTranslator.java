@@ -19,226 +19,270 @@ import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
 import com.github.steveice10.opennbt.tag.builtin.IntTag;
 import com.github.steveice10.opennbt.tag.builtin.StringTag;
+import com.github.steveice10.opennbt.tag.builtin.Tag;
+import org.dragonet.proxy.nbt.tag.ListTag;
+import java.util.List;
 
 import org.dragonet.proxy.protocol.type.Slot;
 
 public class ItemBlockTranslator {
-	// vars
-	public static final int UNSUPPORTED_BLOCK_ID = 165;
-	public static final String DRAGONET_COMPOUND = "DragonetNBT";
-	public static final Map<Integer, ItemEntry> PC_TO_PE_OVERRIDE = new HashMap<>();
-	public static final Map<Integer, ItemEntry> PE_TO_PC_OVERRIDE = new HashMap<>();
-	public static final Map<Integer, String> NAME_OVERRIDES = new HashMap<>();
+    // vars
 
-	static {
-		swap(125, 157); // Double Slab <-> Activator Rail
-		toPEOverride(126, 158); // Slab <-> NULL
-		toPEOverride(157, 126); //activator rail
-		toPEOverride(198, 208); //end rod
-		toPEOverride(199, 240); //chorus plant
-		toPEOverride(202, 201); //purpur pillar -> purpu block
-		toPEOverride(208, 198); //grass path
-		toPEOverride(210, 188); //repeating command block
-		toPEOverride(211, 189); //chain command block
-		toPEOverride(95, 241); // Stained Glass
-		toPEOverride(36, 248);
-		toPEOverride(166, 95); //barrier -> invisible bedrock
-		toPEOverride(188, new ItemEntry(85, 1));
-		toPEOverride(189, new ItemEntry(85, 2));
-		toPEOverride(190, new ItemEntry(85, 3));
-		toPEOverride(191, new ItemEntry(85, 5));
-		toPEOverride(192, new ItemEntry(85, 4));
-		toPEOverride(203, 202); //purpur stairs
-		toPEOverride(205, 248); //purpur slab -> unknown
+    public static final int UNSUPPORTED_BLOCK_ID = 248;
+    public static final String DRAGONET_COMPOUND = "DragonetNBT";
+    public static final Map<Integer, ItemEntry> PC_TO_PE_OVERRIDE = new HashMap<>();
+    public static final Map<Integer, ItemEntry> PE_TO_PC_OVERRIDE = new HashMap<>();
+    public static final Map<Integer, String> NAME_OVERRIDES = new HashMap<>();
 
-		toPEOverride(219, new ItemEntry(218, 0)); //shulker boxes
-		toPEOverride(220, new ItemEntry(218,1));
-		toPEOverride(221, new ItemEntry(218, 2));
-		toPEOverride(222, new ItemEntry(218, 3));
-		toPEOverride(223, new ItemEntry(218, 4));
-		toPEOverride(224, new ItemEntry(218, 5));
-		toPEOverride(225, new ItemEntry(218, 6));
-		toPEOverride(226, new ItemEntry(218, 7));
-		toPEOverride(227, new ItemEntry(218, 8));
-		toPEOverride(228, new ItemEntry(218, 9));
-		toPEOverride(229, new ItemEntry(218, 10));
-		toPEOverride(230, new ItemEntry(218, 11));
-		toPEOverride(231, new ItemEntry(218, 12));
-		toPEOverride(232, new ItemEntry(218, 13));
-		toPEOverride(233, new ItemEntry(218, 14));
-		toPEOverride(234, new ItemEntry(218, 15));
+    static {
+        toPEOverride(36, 248); //unkown block
+        swap(125, 157); // double_wooden_slab
+        swap(126, 158); // wooden_slab
+        swap(157, 126); //activator_rail
+        swap(198, 208); //end_rod
+        swap(199, 240); //chorus_plant
+        swap(202, 201); //purpur_pillar -> purpur_block
+        swap(208, 198); //grass_path
+        swap(210, 188); //repeating_command_block
+        swap(211, 189); //chain_command_block
+        swap(95, 241); //stained_glass
+        swap(158, 125); //dropper
+        swap(160, 248); //stained_glass_pane
+        swap(166, 95); //barrier -> invisiblebedrock
+        swap(188, new ItemEntry(85, 1)); //spruce_fence
+        swap(189, new ItemEntry(85, 2)); //birch_fence
+        swap(190, new ItemEntry(85, 3)); //jungle_fence
+        swap(191, new ItemEntry(85, 5)); //dark_oak_fence
+        swap(192, new ItemEntry(85, 4)); //acacia_fence
+        swap(203, 202); //purpur_stairs
+        swap(205, 248); //purpur_slab -> unknown
 
-		toPEOverride(235, 220); //glazed terracota
-		toPEOverride(236, 221);
-		toPEOverride(237, 222);
-		toPEOverride(238, 223);
-		toPEOverride(239, 224);
-		toPEOverride(240, 225);
-		toPEOverride(241, 226);
-		toPEOverride(242, 227);
-		toPEOverride(243, 228);
-		toPEOverride(244, 229);
-		toPEOverride(245, 230);
-		toPEOverride(246, 231);
-		toPEOverride(247, 232);
-		toPEOverride(248, 233);
-		toPEOverride(249, 234);
-		toPEOverride(250, 235);
+        //shulker_box
+        swap(219, new ItemEntry(218, 0)); //white
+        swap(220, new ItemEntry(218, 1)); //orange
+        swap(221, new ItemEntry(218, 2)); //magenta
+        swap(222, new ItemEntry(218, 3)); //light blue
+        swap(223, new ItemEntry(218, 4)); //yellow
+        swap(224, new ItemEntry(218, 5)); //lime
+        swap(225, new ItemEntry(218, 6)); //pink
+        swap(226, new ItemEntry(218, 7)); //gray
+        swap(227, new ItemEntry(218, 8)); //light gray
+        swap(228, new ItemEntry(218, 9)); //cyan
+        swap(229, new ItemEntry(218, 10)); //purple
+        swap(230, new ItemEntry(218, 11)); //blue
+        swap(231, new ItemEntry(218, 12)); //brown
+        swap(232, new ItemEntry(218, 13)); //green
+        swap(233, new ItemEntry(218, 14)); //red
+        swap(234, new ItemEntry(218, 15)); //black
 
-		toPEOverride(251, 236); //concrete
-		toPEOverride(252, 237); //concrete powder
+        //glazed terracota
+        swap(235, 220); //white
+        swap(236, 221); //orange
+        swap(237, 222); //magenta
+        swap(238, 223); //light blue
+        swap(239, 224); //yellow
+        swap(240, 225); //lime
+        swap(241, 226); //pink
+        swap(242, 227); //gray
+        swap(243, 228); //light gray
+        swap(244, 229); //cyan
+        swap(245, 230); //purple
+        swap(246, 231); //blue
+        swap(247, 232); //brown
+        swap(248, 233); //green
+        swap(249, 234); //red
+        swap(250, 235); //black
 
-		toPEOverride(218, 251); //observer
-		toPEOverride(255, 252); //structure block
+        swap(251, 236); //concrete
+        swap(252, 237); //concretepowder
 
-		//TODO: replace podzol
-	}
+        swap(218, 251); //observer
+        swap(207, 244); //beetroots
+        swap(255, 252); //structure_block
 
-	// constructor
-	public ItemBlockTranslator() {
+        //TODO: replace podzol
+    }
 
-	}
+    // constructor
+    public ItemBlockTranslator() {
 
-	// public
-	// Query handler
-	public static ItemEntry translateToPE(int pcItemBlockId, int damage) {
-		ItemEntry entry = new ItemEntry(pcItemBlockId & 0xFF, damage & 0xf);
+    }
 
-		if (!PC_TO_PE_OVERRIDE.containsKey(pcItemBlockId)) {
-			return entry;
-		}
-		entry = PC_TO_PE_OVERRIDE.get(pcItemBlockId);
-		if(entry.damage == null) {
-			entry.damage = damage;
-		}
+    // public
+    // Query handler
+    public static ItemEntry translateToPE(int pcItemBlockId, int damage) {
+        ItemEntry entry = new ItemEntry(pcItemBlockId & 0xFF, damage & 0xf);
 
-		if (pcItemBlockId >= 255 && entry.id == UNSUPPORTED_BLOCK_ID) {
-			entry.id = 0; // Unsupported item becomes air
-			entry.damage = 0;
-		}
-		return entry;
-	}
+        if (!PC_TO_PE_OVERRIDE.containsKey(pcItemBlockId)) {
+            return entry;
+        }
+        entry = PC_TO_PE_OVERRIDE.get(pcItemBlockId);
+        if (entry.damage == null) {
+            entry.damage = damage;
+        }
 
-	public static ItemEntry translateToPC(int peItemBlockId, int damage) {
-		ItemEntry entry = new ItemEntry(peItemBlockId, damage);
+        if (pcItemBlockId >= 255 && entry.id == UNSUPPORTED_BLOCK_ID) {
+            entry.id = UNSUPPORTED_BLOCK_ID; // Unsupported item becomes air
+            entry.damage = 0;
+        }
+        return entry;
+    }
 
-		if (!PE_TO_PC_OVERRIDE.containsKey(peItemBlockId)) {
-			return entry;
-		}
+    public static ItemEntry translateToPC(int peItemBlockId, int damage) {
+        ItemEntry entry = new ItemEntry(peItemBlockId, damage);
 
-		entry = PE_TO_PC_OVERRIDE.get(peItemBlockId);
+        if (!PE_TO_PC_OVERRIDE.containsKey(peItemBlockId)) {
+            return entry;
+        }
 
-		return entry;
-	}
+        entry = PE_TO_PC_OVERRIDE.get(peItemBlockId);
 
-	@SuppressWarnings("unchecked")
-	public static org.dragonet.proxy.nbt.tag.CompoundTag translateNBT(int id, CompoundTag pcTag, org.dragonet.proxy.nbt.tag.CompoundTag target) {
-		if (pcTag != null && pcTag.contains("display")) {
-			CompoundTag pcDisplay = pcTag.get("display");
-			org.dragonet.proxy.nbt.tag.CompoundTag peDisplay;
-			if(target.contains("display")) {
-				peDisplay = target.getCompound("display");
-			} else {
-				peDisplay = new org.dragonet.proxy.nbt.tag.CompoundTag();
-				target.put("display", peDisplay);
-			}
-			if (pcDisplay.contains("Name")) {
-				peDisplay.put("Name", new org.dragonet.proxy.nbt.tag.StringTag("Name",
-						((StringTag)pcDisplay.get("Name")).getValue()));
-			}
-		} else {
-			if (NAME_OVERRIDES.containsKey(id)) {
-				org.dragonet.proxy.nbt.tag.CompoundTag peDisplay;
-				if(target.contains("display")) {
-					peDisplay = target.getCompound("display");
-				} else {
-					peDisplay = new org.dragonet.proxy.nbt.tag.CompoundTag();
-					target.put("display", peDisplay);
-				}
-				target.put("display", peDisplay);
-				peDisplay.put("Name", new org.dragonet.proxy.nbt.tag.StringTag("Name", NAME_OVERRIDES.get(id)));
-			}
-		}
-		return target;
-	}
+        return entry;
+    }
 
-	public static Slot translateSlotToPE(ItemStack item) {
-		if (item == null || item.getId() == 0)
-			return null;
-		Slot inv = new Slot();
+    @SuppressWarnings("unchecked")
+    public static org.dragonet.proxy.nbt.tag.CompoundTag translateNBT(int id, Tag pcTag, org.dragonet.proxy.nbt.tag.CompoundTag target) {
+        if (pcTag != null)
+        {
+            String name = pcTag.getName() != null ? pcTag.getName() : "";
+            if (target == null)
+            {
+                target = new org.dragonet.proxy.nbt.tag.CompoundTag(name);
+            }
+            switch(pcTag.getClass().getSimpleName())
+            {
+                case "ByteArrayTag":
+                    target.putByteArray(name, (byte[])pcTag.getValue());
+                    break;
+                case "ByteTag":
+                    target.putByte(name, (byte)pcTag.getValue());
+                    break;
+                case "DoubleTag":
+                    target.putDouble(name, (double)pcTag.getValue());
+                    break;
+                case "FloatTag":
+                    target.putFloat(name, (float)pcTag.getValue());
+                    break;
+                case "IntArrayTag":
+                    target.putIntArray(name, (int[])pcTag.getValue());
+                    break;
+                case "IntTag":
+                    target.putInt(name, (int)pcTag.getValue());
+                    break;
+                case "LongTag":
+                    target.putLong(name, (long)pcTag.getValue());
+                    break;
+                case "ShortTag":
+                    target.putShort(name, (short)pcTag.getValue());
+                    break;
+                case "StringTag":
+                    target.putString(name, (String)pcTag.getValue());
+                    break;
+                case "CompoundTag":
+                    for(String subName : ((CompoundTag)pcTag).getValue().keySet())
+                    {
+                        translateNBT(0, ((CompoundTag)pcTag).getValue().get(subName), target);
+                    }
+                    break;
+                case "ListTag":
+                    ListTag listTag = new ListTag();
+                    for(Tag subTag : (List<Tag>)pcTag.getValue())
+                    {
+                        listTag.add(translateNBT(0, subTag, new org.dragonet.proxy.nbt.tag.CompoundTag()));
+                    }
+                    target.putList(listTag);
+                    break;
+                default:
+                    System.out.println("TAG not implemented : " + pcTag.getClass().getSimpleName());
+                    break;
+            }
+        }
+        return target;
+    }
 
-		ItemEntry entry = translateToPE(item.getId(), item.getData());
-		inv.id = entry.id;
-		inv.damage = entry.damage != null ? entry.damage : item.getData();
-		inv.count = (item.getAmount() & 0xff);
-		org.dragonet.proxy.nbt.tag.CompoundTag tag = new org.dragonet.proxy.nbt.tag.CompoundTag();
-		tag.putShort("id", item.getId());
-		tag.putShort("amount", item.getAmount());
-		tag.putShort("data", item.getData());
-		org.dragonet.proxy.nbt.tag.CompoundTag rootTag = new org.dragonet.proxy.nbt.tag.CompoundTag();
-		rootTag.put(DRAGONET_COMPOUND, tag);
-		inv.tag = rootTag;
-		translateNBT(item.getId(), item.getNBT(), inv.tag);
-		return inv;
-	}
+    public static Slot translateSlotToPE(ItemStack item) {
+        if (item == null || item.getId() == 0) {
+            return null;
+        }
+        Slot inv = new Slot();
 
-	public static ItemStack translateToPC(Slot slot) {
-		ItemStack item;
-		org.dragonet.proxy.nbt.tag.CompoundTag tag = slot.tag;
-		if (tag != null && tag.contains(DRAGONET_COMPOUND)) {
-			item = new ItemStack(tag.getCompound(DRAGONET_COMPOUND).getShort("id"),
-					tag.getCompound(DRAGONET_COMPOUND).getShort("amount"),
-					tag.getCompound(DRAGONET_COMPOUND).getShort("data"));
-		} else {
-			ItemEntry entry = translateToPC(slot.id, slot.damage);
-			item = new ItemStack(entry.id, slot.count, entry.damage != null ? entry.damage : slot.damage);
-		}
+        ItemEntry entry = translateToPE(item.getId(), item.getData());
+        inv.id = entry.id;
+        inv.damage = entry.damage != null ? entry.damage : item.getData();
+        inv.count = (item.getAmount() & 0xff);
+        org.dragonet.proxy.nbt.tag.CompoundTag tag = new org.dragonet.proxy.nbt.tag.CompoundTag();
+        tag.putShort("id", item.getId());
+        tag.putShort("amount", item.getAmount());
+        tag.putShort("data", item.getData());
+        org.dragonet.proxy.nbt.tag.CompoundTag rootTag = new org.dragonet.proxy.nbt.tag.CompoundTag();
+        rootTag.put(DRAGONET_COMPOUND, tag);
+        inv.tag = rootTag;
+        translateNBT(item.getId(), item.getNBT(), inv.tag);
+        return inv;
+    }
 
-		return item;
-	}
+    public static ItemStack translateToPC(Slot slot) {
+        ItemStack item;
+        org.dragonet.proxy.nbt.tag.CompoundTag tag = slot.tag;
+        if (tag != null && tag.contains(DRAGONET_COMPOUND)) {
+            item = new ItemStack(tag.getCompound(DRAGONET_COMPOUND).getShort("id"),
+                    tag.getCompound(DRAGONET_COMPOUND).getShort("amount"),
+                    tag.getCompound(DRAGONET_COMPOUND).getShort("data"));
+        } else {
+            ItemEntry entry = translateToPC(slot.id, slot.damage);
+            item = new ItemStack(entry.id, slot.count, entry.damage != null ? entry.damage : slot.damage);
+        }
 
-	// private
-	private static void swap(int pcId, int peId) {
-		PC_TO_PE_OVERRIDE.put(pcId, new ItemEntry(peId));
-		PE_TO_PC_OVERRIDE.put(peId, new ItemEntry(pcId));
-	}
+        return item;
+    }
 
-	private static void toPEOverride(int fromPc, int toPe, String nameOverride) {
-		toPEOverride(fromPc, toPe);
-		if (nameOverride != null) {
-			NAME_OVERRIDES.put(fromPc, nameOverride);
-		}
-	}
+    // private
+    private static void swap(int pcId, int peId) {
+        PC_TO_PE_OVERRIDE.put(pcId, new ItemEntry(peId));
+        PE_TO_PC_OVERRIDE.put(peId, new ItemEntry(pcId));
+    }
 
-	private static void toPEOverride(int fromPc, int toPe) {
-		toPEOverride(fromPc, new ItemEntry(toPe, null));
-	}
+    private static void swap(int pcId, ItemEntry toPe) {
+        PC_TO_PE_OVERRIDE.put(pcId, toPe);
+        PE_TO_PC_OVERRIDE.put(toPe.id, new ItemEntry(pcId));
+    }
 
-	private static void toPEOverride(int fromPc, ItemEntry toPe) {
-		PC_TO_PE_OVERRIDE.put(fromPc, toPe);
-	}
+    private static void toPEOverride(int fromPc, int toPe, String nameOverride) {
+        toPEOverride(fromPc, toPe);
+        if (nameOverride != null) {
+            NAME_OVERRIDES.put(fromPc, nameOverride);
+        }
+    }
 
-	public static CompoundTag newTileTag(String id, int x, int y, int z) {
-		CompoundTag t = new CompoundTag(null);
-		t.put(new StringTag("id", id));
-		t.put(new IntTag("x", x));
-		t.put(new IntTag("y", y));
-		t.put(new IntTag("z", z));
-		return t;
-	}
+    private static void toPEOverride(int fromPc, int toPe) {
+        toPEOverride(fromPc, new ItemEntry(toPe, null));
+    }
 
-	public static class ItemEntry {
+    private static void toPEOverride(int fromPc, ItemEntry toPe) {
+        PC_TO_PE_OVERRIDE.put(fromPc, toPe);
+    }
 
-		public Integer id;
-		public Integer damage;
+    public static CompoundTag newTileTag(String id, int x, int y, int z) {
+        CompoundTag t = new CompoundTag(null);
+        t.put(new StringTag("id", id));
+        t.put(new IntTag("x", x));
+        t.put(new IntTag("y", y));
+        t.put(new IntTag("z", z));
+        return t;
+    }
 
-		public ItemEntry(Integer id) {
-			this(id, null);
-		}
+    public static class ItemEntry {
 
-		public ItemEntry(Integer id, Integer damage) {
-			this.id = id;
-			this.damage = damage;
-		}
-	}
+        public Integer id;
+        public Integer damage;
+
+        public ItemEntry(Integer id) {
+            this(id, null);
+        }
+
+        public ItemEntry(Integer id, Integer damage) {
+            this.id = id;
+            this.damage = damage;
+        }
+    }
 }
