@@ -41,10 +41,11 @@ public class LongTag extends NumberTag<Long> {
     public byte getId() {
         return TAG_Long;
     }
-
+    
     @Override
-    public String toString() {
-        return "LongTag" + this.getName() + " (data:" + data + ")";
+    public Object getValue()
+    {
+        return this.data;
     }
 
     @Override

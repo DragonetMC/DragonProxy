@@ -5,6 +5,7 @@ import org.dragonet.proxy.nbt.stream.NBTOutputStream;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.Array;
 
 public abstract class Tag {
     public static final byte TAG_End = 0;
@@ -26,7 +27,7 @@ public abstract class Tag {
 
     abstract void load(NBTInputStream dis) throws IOException;
 
-    public abstract String toString();
+    public abstract Object getValue();
 
     public abstract byte getId();
 
@@ -155,6 +156,31 @@ public abstract class Tag {
                 return "TAG_Compound";
         }
         return "UNKNOWN";
+    }
+    
+    @Override
+    public String toString() {
+        String name = this.getName() != null && !this.getName().equals("") ? "(" + this.getName() + ")" : "";
+        String value = "";
+        if(this.getValue() != null) {
+            value = this.getValue().toString();
+            if(this.getValue().getClass().isArray()) {
+                StringBuilder build = new StringBuilder();
+                build.append("[");
+                for(int index = 0; index < Array.getLength(this.getValue()); index++) {
+                    if(index > 0) {
+                        build.append(", ");
+                    }
+
+                    build.append(Array.get(this.getValue(), index));
+                }
+
+                build.append("]");
+                value = build.toString();
+            }
+        }
+
+        return this.getClass().getSimpleName() + name + " { " + value + " }";
     }
 
     public abstract Tag copy();

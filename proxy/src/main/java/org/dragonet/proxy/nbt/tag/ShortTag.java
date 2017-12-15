@@ -41,10 +41,11 @@ public class ShortTag extends NumberTag<Integer> {
     public byte getId() {
         return TAG_Short;
     }
-
+    
     @Override
-    public String toString() {
-        return "" + data;
+    public Object getValue()
+    {
+        return this.data;
     }
 
     @Override

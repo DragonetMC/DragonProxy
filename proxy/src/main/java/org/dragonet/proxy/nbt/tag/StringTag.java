@@ -32,10 +32,11 @@ public class StringTag extends Tag {
     public byte getId() {
         return TAG_String;
     }
-
+    
     @Override
-    public String toString() {
-        return "StringTag " + this.getName() + " (data: " + data + ")";
+    public Object getValue()
+    {
+        return this.data;
     }
 
     @Override

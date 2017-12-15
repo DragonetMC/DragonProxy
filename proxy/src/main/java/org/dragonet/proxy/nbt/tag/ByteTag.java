@@ -41,14 +41,11 @@ public class ByteTag extends NumberTag<Integer> {
     public byte getId() {
         return TAG_Byte;
     }
-
+    
     @Override
-    public String toString() {
-        String hex = Integer.toHexString(this.data);
-        if (hex.length() < 2) {
-            hex = "0" + hex;
-        }
-        return "ByteTag " + this.getName() + " (data: 0x" + hex + ")";
+    public Object getValue()
+    {
+        return this.data;
     }
 
     @Override

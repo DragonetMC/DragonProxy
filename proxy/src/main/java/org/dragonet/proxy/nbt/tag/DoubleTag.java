@@ -41,10 +41,11 @@ public class DoubleTag extends NumberTag<Double> {
     public byte getId() {
         return TAG_Double;
     }
-
+    
     @Override
-    public String toString() {
-        return "DoubleTag " + this.getName() + " (data: " + data + ")";
+    public Object getValue()
+    {
+        return this.data;
     }
 
     @Override

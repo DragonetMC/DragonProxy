@@ -23,10 +23,11 @@ public class EndTag extends Tag {
     public byte getId() {
         return TAG_End;
     }
-
+    
     @Override
-    public String toString() {
-        return "EndTag";
+    public Object getValue()
+    {
+        return null;
     }
 
     @Override

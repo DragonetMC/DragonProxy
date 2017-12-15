@@ -39,10 +39,11 @@ public class IntArrayTag extends Tag {
     public byte getId() {
         return TAG_Int_Array;
     }
-
+    
     @Override
-    public String toString() {
-        return "IntArrayTag " + this.getName() + " [" + data.length + " bytes]";
+    public Object getValue()
+    {
+        return this.data;
     }
 
     @Override

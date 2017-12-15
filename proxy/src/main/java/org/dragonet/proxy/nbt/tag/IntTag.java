@@ -41,10 +41,11 @@ public class IntTag extends NumberTag<Integer> {
     public byte getId() {
         return TAG_Int;
     }
-
+    
     @Override
-    public String toString() {
-        return "IntTag" + this.getName() + "(data: " + data + ")";
+    public Object getValue()
+    {
+        return this.data;
     }
 
     @Override

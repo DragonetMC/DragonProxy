@@ -40,10 +40,11 @@ public class ByteArrayTag extends Tag {
     public byte getId() {
         return TAG_Byte_Array;
     }
-
+    
     @Override
-    public String toString() {
-        return "ByteArrayTag " + this.getName() + " (data: 0x" + Binary.bytesToHexString(data, true) + " [" + data.length + " bytes])";
+    public Object getValue()
+    {
+        return this.data;
     }
 
     @Override

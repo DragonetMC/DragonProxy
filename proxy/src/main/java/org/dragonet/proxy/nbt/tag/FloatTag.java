@@ -41,10 +41,11 @@ public class FloatTag extends NumberTag<Float> {
     public byte getId() {
         return TAG_Float;
     }
-
+    
     @Override
-    public String toString() {
-        return "FloatTag " + this.getName() + " (data: " + data + ")";
+    public Object getValue()
+    {
+        return this.data;
     }
 
     @Override

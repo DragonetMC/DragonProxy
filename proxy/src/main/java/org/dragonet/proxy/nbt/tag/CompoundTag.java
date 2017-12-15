@@ -199,9 +199,11 @@ public class CompoundTag extends Tag implements Cloneable {
     public boolean getBoolean(String name) {
         return getByte(name) != 0;
     }
-
-    public String toString() {
-        return "CompoundTag " + this.getName() + " (" + tags.size() + " entries)";
+    
+    @Override
+    public Object getValue()
+    {
+        return this.tags;
     }
 
     public void print(String prefix, PrintStream out) {

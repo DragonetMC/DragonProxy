@@ -51,10 +51,11 @@ public class ListTag<T extends Tag> extends Tag {
     public byte getId() {
         return TAG_List;
     }
-
+    
     @Override
-    public String toString() {
-        return "ListTag " + this.getName() + " [" + list.size() + " entries of type " + Tag.getTagName(type) + "]";
+    public Object getValue()
+    {
+        return this.list;
     }
 
     public void print(String prefix, PrintStream out) {
