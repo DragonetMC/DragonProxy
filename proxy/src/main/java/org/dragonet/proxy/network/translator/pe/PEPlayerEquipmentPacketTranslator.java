@@ -34,7 +34,7 @@ public class PEPlayerEquipmentPacketTranslator implements IPEPacketTranslator<Mo
 
 	// public
 	public Packet[] translate(UpstreamSession session, MobEquipmentPacket packet) {
-		System.out.println(org.dragonet.proxy.utilities.DebugTools.getAllFields(packet));
+//		System.out.println(org.dragonet.proxy.utilities.DebugTools.getAllFields(packet));
 		if (packet.hotbarSlot > 8) {
 			return null;
 		}
