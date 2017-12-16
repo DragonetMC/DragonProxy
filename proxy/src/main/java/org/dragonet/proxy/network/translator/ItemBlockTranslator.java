@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
+import com.github.steveice10.mc.protocol.data.game.world.block.BlockFace;
 import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
 import com.github.steveice10.opennbt.tag.builtin.IntTag;
 import com.github.steveice10.opennbt.tag.builtin.StringTag;
@@ -321,6 +322,11 @@ public class ItemBlockTranslator {
         }
 
         return item;
+    }
+    
+    public static BlockFace translateToPC(int face)
+    {
+        return BlockFace.values()[Math.abs(face % 6)];
     }
 
     // private
