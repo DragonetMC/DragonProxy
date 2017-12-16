@@ -108,7 +108,7 @@ public class PCMultiChunkDataPacketTranslator implements IPCPacketTranslator<Ser
             pe.blockEntities = new byte[pc.getTileEntities().length];
             for (int i = 0; i < pc.getTileEntities().length; i++)
             {
-                org.dragonet.proxy.nbt.tag.CompoundTag peTag = ItemBlockTranslator.translateNBT(0, pc.getTileEntities()[i], null);
+                org.dragonet.proxy.nbt.tag.CompoundTag peTag = ItemBlockTranslator.translateBlockEntityToPE(pc.getTileEntities()[i]);
                 pe.blockEntities = NBTIO.write(peTag);
             }
         }
