@@ -20,8 +20,8 @@ import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
 import com.github.steveice10.opennbt.tag.builtin.IntTag;
 import com.github.steveice10.opennbt.tag.builtin.StringTag;
 import com.github.steveice10.opennbt.tag.builtin.Tag;
-import org.dragonet.proxy.nbt.tag.ListTag;
 import java.util.List;
+import org.dragonet.proxy.nbt.tag.ListTag;
 
 import org.dragonet.proxy.protocol.type.Slot;
 
@@ -140,8 +140,30 @@ public class ItemBlockTranslator {
         return entry;
     }
 
+    public static Slot translateSlotToPE(ItemStack item) {
+        if (item == null || item.getId() == 0) {
+            return null;
+        }
+        Slot slot = new Slot();
+
+        ItemEntry entry = translateToPE(item.getId(), item.getData());
+        slot.id = entry.id;
+        slot.damage = entry.damage != null ? entry.damage : item.getData();
+        slot.count = (item.getAmount() & 0xff);
+        org.dragonet.proxy.nbt.tag.CompoundTag tag = new org.dragonet.proxy.nbt.tag.CompoundTag();
+        tag.putShort("id", item.getId());
+        tag.putShort("amount", item.getAmount());
+        tag.putShort("data", item.getData());
+        org.dragonet.proxy.nbt.tag.CompoundTag rootTag = new org.dragonet.proxy.nbt.tag.CompoundTag();
+        rootTag.put(DRAGONET_COMPOUND, tag);
+        slot.tag = rootTag;
+        translateRawNBT(item.getId(), item.getNBT(), slot.tag);
+        return slot;
+    }
+
     @SuppressWarnings("unchecked")
-    public static org.dragonet.proxy.nbt.tag.CompoundTag translateNBT(int id, Tag pcTag, org.dragonet.proxy.nbt.tag.CompoundTag target) {
+    public static org.dragonet.proxy.nbt.tag.CompoundTag translateRawNBT(int id, Tag pcTag, org.dragonet.proxy.nbt.tag.CompoundTag target)
+    {
         if (pcTag != null)
         {
             String name = pcTag.getName() != null ? pcTag.getName() : "";
@@ -181,14 +203,14 @@ public class ItemBlockTranslator {
                 case "CompoundTag":
                     for(String subName : ((CompoundTag)pcTag).getValue().keySet())
                     {
-                        translateNBT(0, ((CompoundTag)pcTag).getValue().get(subName), target);
+                        translateRawNBT(0, ((CompoundTag)pcTag).getValue().get(subName), target);
                     }
                     break;
                 case "ListTag":
                     ListTag listTag = new ListTag();
                     for(Tag subTag : (List<Tag>)pcTag.getValue())
                     {
-                        listTag.add(translateNBT(0, subTag, new org.dragonet.proxy.nbt.tag.CompoundTag()));
+                        listTag.add(translateRawNBT(0, subTag, new org.dragonet.proxy.nbt.tag.CompoundTag()));
                     }
                     target.putList(listTag);
                     break;
@@ -199,26 +221,91 @@ public class ItemBlockTranslator {
         }
         return target;
     }
-
-    public static Slot translateSlotToPE(ItemStack item) {
-        if (item == null || item.getId() == 0) {
+    
+    //WIP
+    public static org.dragonet.proxy.nbt.tag.CompoundTag translateBlockEntityToPE(com.github.steveice10.opennbt.tag.builtin.CompoundTag input) {
+        if (input == null) {
             return null;
         }
-        Slot inv = new Slot();
-
-        ItemEntry entry = translateToPE(item.getId(), item.getData());
-        inv.id = entry.id;
-        inv.damage = entry.damage != null ? entry.damage : item.getData();
-        inv.count = (item.getAmount() & 0xff);
-        org.dragonet.proxy.nbt.tag.CompoundTag tag = new org.dragonet.proxy.nbt.tag.CompoundTag();
-        tag.putShort("id", item.getId());
-        tag.putShort("amount", item.getAmount());
-        tag.putShort("data", item.getData());
-        org.dragonet.proxy.nbt.tag.CompoundTag rootTag = new org.dragonet.proxy.nbt.tag.CompoundTag();
-        rootTag.put(DRAGONET_COMPOUND, tag);
-        inv.tag = rootTag;
-        translateNBT(item.getId(), item.getNBT(), inv.tag);
-        return inv;
+        org.dragonet.proxy.nbt.tag.CompoundTag output = translateRawNBT(0, input, null);
+        if (output.contains("id"))
+        {
+            switch(output.getString("id"))
+            {
+                case "minecraft:bed":
+                    output.putString("id", "Bed");
+                    output.putByte("color", output.getInt("color")); //TODO check colors
+                    break;
+                case "minecraft:chest":
+                    output.putString("id", "Chest");
+                    break;
+                case "minecraft:ender_chest":
+                    output.putString("id", "EnderChest");
+                    break;
+                case "minecraft:command_block":
+                    output.putString("id", "CommandBlock");
+                    break;
+                case "minecraft:sign":
+                    output.putString("id", "Sign");
+                    break;
+                case "minecraft:flower_pot":
+                    output.putString("id", "FlowerPot");
+                    break;
+                case "minecraft:hopper":
+                    output.putString("id", "Hopper");
+                    break;
+                case "minecraft:dropper":
+                    output.putString("id", "Dropper");
+                    break;
+                case "minecraft:dispenser":
+                    output.putString("id", "Dispenser");
+                    break;
+                case "minecraft:daylight_detector":
+                    output.putString("id", "DaylightDetector");
+                    break;
+                case "minecraft:shulker_box":
+                    output.putString("id", "ShulkerBox");
+                    break;
+                case "minecraft:furnace":
+                    output.putString("id", "Furnace");
+                    break;
+                case "minecraft:structure_block":
+                    output.putString("id", "StructureBlock");
+                    break;
+                case "minecraft:end_gateway":
+                    output.putString("id", "EndGateway");
+                    break;
+                case "minecraft:beacon":
+                    output.putString("id", "Beacon");
+                    break;
+                case "minecraft:end_portal":
+                    output.putString("id", "EndPortal");
+                    break;
+                case "minecraft:mob_spawner":
+                    output.putString("id", "MobSpawner");
+                    break;
+                case "minecraft:skull":
+                    output.putString("id", "Skull");
+                    break;
+                case "minecraft:banner":
+                    output.putString("id", "Banner");
+                    break;
+                case "minecraft:comparator":
+                    output.putString("id", "Comparator");
+                    break;
+                case "minecraft:item_frame":
+                    output.putString("id", "ItemFrame");
+                    break;
+                case "minecraft:jukebox":
+                    output.putString("id", "Jukebox");
+                    break;
+                case "minecraft:piston":
+                    output.putString("id", "PistonArm");
+                    break;
+            }
+        }
+        output.putBoolean("isMovable", false);
+        return output;
     }
 
     public static ItemStack translateToPC(Slot slot) {
