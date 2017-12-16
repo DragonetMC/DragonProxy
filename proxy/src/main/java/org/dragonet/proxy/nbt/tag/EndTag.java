@@ -25,8 +25,7 @@ public class EndTag extends Tag {
     }
     
     @Override
-    public Object getValue()
-    {
+    public Object getValue() {
         return null;
     }
 

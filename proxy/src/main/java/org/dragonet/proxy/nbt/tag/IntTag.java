@@ -43,8 +43,7 @@ public class IntTag extends NumberTag<Integer> {
     }
     
     @Override
-    public Object getValue()
-    {
+    public Object getValue() {
         return this.data;
     }
 

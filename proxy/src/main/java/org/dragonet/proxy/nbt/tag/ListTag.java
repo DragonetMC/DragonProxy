@@ -53,8 +53,7 @@ public class ListTag<T extends Tag> extends Tag {
     }
     
     @Override
-    public Object getValue()
-    {
+    public Object getValue() {
         return this.list;
     }
 

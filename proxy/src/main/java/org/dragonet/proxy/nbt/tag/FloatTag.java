@@ -43,8 +43,7 @@ public class FloatTag extends NumberTag<Float> {
     }
     
     @Override
-    public Object getValue()
-    {
+    public Object getValue() {
         return this.data;
     }
 

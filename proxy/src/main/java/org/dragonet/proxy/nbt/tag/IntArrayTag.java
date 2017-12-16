@@ -41,8 +41,7 @@ public class IntArrayTag extends Tag {
     }
     
     @Override
-    public Object getValue()
-    {
+    public Object getValue() {
         return this.data;
     }
 

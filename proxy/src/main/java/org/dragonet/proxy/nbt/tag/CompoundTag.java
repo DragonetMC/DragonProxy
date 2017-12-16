@@ -201,8 +201,7 @@ public class CompoundTag extends Tag implements Cloneable {
     }
     
     @Override
-    public Object getValue()
-    {
+    public Object getValue() {
         return this.tags;
     }
 

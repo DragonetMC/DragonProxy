@@ -43,8 +43,7 @@ public class DoubleTag extends NumberTag<Double> {
     }
     
     @Override
-    public Object getValue()
-    {
+    public Object getValue() {
         return this.data;
     }
 

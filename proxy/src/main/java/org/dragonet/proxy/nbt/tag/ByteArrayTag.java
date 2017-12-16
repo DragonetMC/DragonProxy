@@ -42,8 +42,7 @@ public class ByteArrayTag extends Tag {
     }
     
     @Override
-    public Object getValue()
-    {
+    public Object getValue() {
         return this.data;
     }
 
