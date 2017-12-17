@@ -13,6 +13,7 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntitySetPassengersPacket;
+import java.util.Arrays;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
@@ -24,46 +25,70 @@ import org.dragonet.proxy.utilities.DebugTools;
 public class PCEntitySetPassengerPacketTranslator implements IPCPacketTranslator<ServerEntitySetPassengersPacket> {
 
     public PEPacket[] translate(UpstreamSession session, ServerEntitySetPassengersPacket packet) {
-        CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
-        if (entity == null) {
-            if (packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID)) {
-                entity = session.getEntityCache().getClientEntity();
-            } else {
-                return null;
+//        for (int id : packet.getPassengerIds()) {
+//            System.out.println("ServerEntitySetPassengersPacket entity " + packet.getEntityId() + " rider " + id);
+//        }
+
+        CachedEntity vehicle = session.getEntityCache().getByRemoteEID(packet.getEntityId());
+        if (vehicle == null) {
+            return null;
+        }
+
+        // process not passenger (dismount)
+        for (long id : vehicle.passengers) {
+            CachedEntity rider = session.getEntityCache().getByLocalEID(id);
+
+            if (rider == null) {
+                continue;
+            }
+            if (!Arrays.asList(packet.getPassengerIds()).contains(rider.eid)) {
+
+                SetEntityLinkPacket pk = new SetEntityLinkPacket();
+                pk.riding = vehicle.proxyEid;
+                pk.rider = rider.proxyEid;
+                pk.type = SetEntityLinkPacket.TYPE_REMOVE;
+                pk.unknownByte = 0x00;
+                session.sendPacket(pk);
+                
+                rider.riding = 0;
+                System.out.println("DISMOUNT\n" + DebugTools.getAllFields(pk));
             }
         }
 
-        SetEntityLinkPacket pk = new SetEntityLinkPacket();
-        pk.rider = entity.proxyEid;
+        //clean cache
+        vehicle.passengers.clear();
 
-        if (packet.getPassengerIds().length == 0) //dismount
-        {
-            pk.riding = 0;
-            pk.type = 0;
+        //process mount action
+        boolean piloteSet = false;
+        for (int id : packet.getPassengerIds()) {
+
+            CachedEntity rider = session.getEntityCache().getByRemoteEID(id);
+            if (id == (int) session.getDataCache().get(CacheKey.PLAYER_EID)) {
+                rider = session.getEntityCache().getClientEntity();
+            }
+
+            if (rider == null) {
+                continue;
+            }
+
+            SetEntityLinkPacket pk = new SetEntityLinkPacket();
+            pk.riding = vehicle.proxyEid;
+            pk.rider = rider.proxyEid;
+            
+            if (!piloteSet) {
+                pk.type = SetEntityLinkPacket.TYPE_RIDE;
+                piloteSet = true;
+            } else {
+                pk.type = SetEntityLinkPacket.TYPE_PASSENGER;
+            }
+
             pk.unknownByte = 0x00;
             session.sendPacket(pk);
-        } else //mount
-        {
-            boolean piloteSet = false;
-            for (int id : packet.getPassengerIds()) {
-                CachedEntity riding = session.getEntityCache().getByRemoteEID(id);
+            
+            vehicle.passengers.add(rider.proxyEid);
+            rider.riding = vehicle.proxyEid;
+            System.out.println("MOUNT\n" + DebugTools.getAllFields(pk));
 
-                if (riding == null) {
-                    continue;
-                }
-
-                pk.riding = riding.proxyEid;
-
-                if (!piloteSet) {
-                    pk.type = 1;
-                    piloteSet = true;
-                } else {
-                    pk.type = 2;
-                }
-
-                pk.unknownByte = 0x00;
-                session.sendPacket(pk);
-            }
         }
         return null;
     }
