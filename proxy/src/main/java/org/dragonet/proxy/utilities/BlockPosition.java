@@ -1,5 +1,7 @@
 package org.dragonet.proxy.utilities;
 
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
+
 /**
  * Created on 2017/10/21.
  */
@@ -17,6 +19,13 @@ public class BlockPosition {
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+    
+    public BlockPosition(Position pos)
+    {
+        this.x = pos.getX();
+        this.y = pos.getY();
+        this.z = pos.getZ();
     }
 
     @Override
