@@ -68,6 +68,7 @@ public final class Protocol {
 		packets.put(SET_ENTITY_DATA_PACKET, SetEntityDataPacket.class);
 		packets.put(PLAYER_SKIN_PACKET, PlayerSkinPacket.class);
 		packets.put(PLAYER_HOTBAR_PACKET, PlayerHotbarPacket.class);
+		packets.put(SET_ENTITY_LINK_PACKET, SetEntityLinkPacket.class);
 
 		packets.put(CONTAINER_OPEN_PACKET, ContainerOpenPacket.class);
 		packets.put(CONTAINER_CLOSE_PACKET, ContainerClosePacket.class);
