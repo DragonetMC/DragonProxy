@@ -23,65 +23,65 @@ import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadat
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
 
 public class CachedEntity {
-	// vars
-	public final long eid;
-	public final long proxyEid;
-	public final int pcType;
-	public final EntityType peType;
-	public final ObjectType objType;
 
-	public final boolean player;
-	public final UUID playerUniqueId;
+    public final long eid;
+    public final long proxyEid;
+    public final int pcType;
+    public final EntityType peType;
+    public final ObjectType objType;
 
-	public double x;
-	public double y;
-	public double z;
-	public double motionX;
-	public double motionY;
-	public double motionZ;
-	public float yaw;
-	public float pitch;
+    public final boolean player;
+    public final UUID playerUniqueId;
 
-	public EntityMetadata[] pcMeta;
-	public boolean spawned;
-	public final Set<Integer> effects = Collections.synchronizedSet(new HashSet<Integer>());
+    public double x;
+    public double y;
+    public double z;
+    public double motionX;
+    public double motionY;
+    public double motionZ;
+    public float yaw;
+    public float pitch;
 
-	// constructor
-	public CachedEntity(long eid, long proxyEid, int pcType, EntityType peType, ObjectType objType, boolean player,
-			UUID playerUniqueId) {
-		super();
+    // cache riding datas for dismount
+    public long riding;
+    public Set<Long> passengers = new HashSet();
 
-		this.eid = eid;
-		this.proxyEid = proxyEid;
-		this.pcType = pcType;
-		this.peType = peType;
-		this.objType = objType;
-		this.player = player;
-		this.playerUniqueId = playerUniqueId;
-	}
+    public EntityMetadata[] pcMeta;
+    public boolean spawned;
+    public final Set<Integer> effects = Collections.synchronizedSet(new HashSet<Integer>());
 
-	// public
-	public CachedEntity relativeMove(double rx, double ry, double rz, float yaw, float pitch) {
-		x += rx;
-		y += ry;
-		z += rz;
-		this.yaw = yaw;
-		this.pitch = pitch;
-		return this;
-	}
+    public CachedEntity(long eid, long proxyEid, int pcType, EntityType peType, ObjectType objType, boolean player,
+            UUID playerUniqueId) {
+        super();
 
-	public CachedEntity relativeMove(double rx, double ry, double rz) {
-		x += rx;
-		y += ry;
-		z += rz;
-		return this;
-	}
-	public CachedEntity relativeMove(float yaw, float pitch) {
-		this.yaw = yaw;
-		this.pitch = pitch;
-		return this;
-	}
+        this.eid = eid;
+        this.proxyEid = proxyEid;
+        this.pcType = pcType;
+        this.peType = peType;
+        this.objType = objType;
+        this.player = player;
+        this.playerUniqueId = playerUniqueId;
+    }
 
-	// private
+    public CachedEntity relativeMove(double rx, double ry, double rz, float yaw, float pitch) {
+        x += rx;
+        y += ry;
+        z += rz;
+        this.yaw = yaw;
+        this.pitch = pitch;
+        return this;
+    }
 
+    public CachedEntity relativeMove(double rx, double ry, double rz) {
+        x += rx;
+        y += ry;
+        z += rz;
+        return this;
+    }
+
+    public CachedEntity relativeMove(float yaw, float pitch) {
+        this.yaw = yaw;
+        this.pitch = pitch;
+        return this;
+    }
 }
