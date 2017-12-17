@@ -38,10 +38,13 @@ import java.util.HashSet;
 import java.util.Set;
 import org.dragonet.proxy.entity.EntityType;
 import org.dragonet.proxy.entity.meta.type.ByteArrayMeta;
+import org.dragonet.proxy.entity.meta.type.SlotMeta;
+import org.dragonet.proxy.nbt.tag.CompoundTag;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.protocol.type.Skin;
+import org.dragonet.proxy.protocol.type.Slot;
 import org.dragonet.proxy.utilities.BlockPosition;
 import org.dragonet.proxy.utilities.Constants;
 import org.dragonet.proxy.utilities.Vector3F;
@@ -229,11 +232,12 @@ public class PCPlayerPositionRotationPacketTranslator
                                 AddItemEntityPacket pk = new AddItemEntityPacket();
                                 pk.rtid = entity.proxyEid;
                                 pk.eid = entity.proxyEid;
+                                pk.metadata = EntityMetaTranslator.translateToPE(entity.pcMeta, entity.peType);
+                                pk.item = ((SlotMeta)pk.metadata.map.get(EntityMetaData.Constants.DATA_TYPE_SLOT)).slot;
                                 pk.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
                                 pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
-                                pk.item = ItemBlockTranslator.translateSlotToPE(new ItemStack(1, 1));
-                                pk.metadata = EntityMetaTranslator.translateToPE(entity.pcMeta, EntityType.ITEM);
-                                session.sendPacket(pk);//not working for now
+                                entity.spawned = true;
+                                session.sendPacket(pk);
                             }
                         }
                         
