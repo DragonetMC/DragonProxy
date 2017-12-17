@@ -105,6 +105,7 @@ public final class PacketTranslatorRegister {
         PE_TO_PC_TRANSLATOR.put(PlayerActionPacket.class, new PEPlayerActionPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(InteractPacket.class, new PEInteractPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(AdventureSettingsPacket.class, new PEAdventureSettingsPacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(PlayerInputPacket.class, new PEPlayerInputPacketTranslator());
 
         // Inventory
         PE_TO_PC_TRANSLATOR.put(ContainerClosePacket.class, new PEWindowClosePacketTranslator());
