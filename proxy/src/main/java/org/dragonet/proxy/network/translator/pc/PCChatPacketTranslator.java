@@ -12,6 +12,7 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
+import com.github.steveice10.mc.protocol.data.message.TranslationMessage;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerChatPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.MessageTranslator;
@@ -38,8 +39,16 @@ public class PCChatPacketTranslator implements IPCPacketTranslator<ServerChatPac
 	// public
 	public PEPacket[] translate(UpstreamSession session, ServerChatPacket packet) {
 		TextPacket pe = new TextPacket();
-		pe.type = TYPE_RAW;
-		pe.message = MessageTranslator.translate(packet.getMessage());
+                if (packet.getMessage() instanceof TranslationMessage)
+                {
+                    pe.type = TYPE_TRANSLATION;
+                    pe.message = pe.message = MessageTranslator.translate(packet.getMessage());
+                }
+                else
+                {
+                    pe.type = TYPE_RAW;
+                    pe.message = pe.message = MessageTranslator.translate(packet.getMessage());
+                }
 
 		return new PEPacket[] { pe };
 
