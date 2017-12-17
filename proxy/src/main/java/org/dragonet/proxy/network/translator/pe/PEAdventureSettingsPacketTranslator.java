@@ -19,19 +19,14 @@ import org.dragonet.proxy.protocol.packets.AdventureSettingsPacket;
 import org.dragonet.proxy.utilities.DebugTools;
 
 public class PEAdventureSettingsPacketTranslator implements IPEPacketTranslator<AdventureSettingsPacket> {
-    // vars
 
-    // constructor
     public PEAdventureSettingsPacketTranslator() {
 
     }
 
-    // public
     public Packet[] translate(UpstreamSession session, AdventureSettingsPacket packet) {
         System.out.println(DebugTools.getAllFields(packet));
-        
+
         return null;
     }
-
-    // private
 }

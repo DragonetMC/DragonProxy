@@ -20,27 +20,21 @@ import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.AnimatePacket;
 
 public class PCAnimationPacketTranslator implements IPCPacketTranslator<ServerEntityAnimationPacket> {
-	// vars
 
-	// constructor
-	public PCAnimationPacketTranslator() {
+    public PCAnimationPacketTranslator() {
 
-	}
+    }
 
-	// public
-	public PEPacket[] translate(UpstreamSession session, ServerEntityAnimationPacket packet) {
-            
-            CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
-		if (entity == null) {
-			return null;
-		}
-		AnimatePacket pk = new AnimatePacket();
-                pk.action = packet.getAnimation().ordinal();
-                pk.eid = entity.proxyEid;
-                System.out.println(packet.getAnimation().name());
-		return new PEPacket[] { pk };
-	}
+    public PEPacket[] translate(UpstreamSession session, ServerEntityAnimationPacket packet) {
 
-	// private
-
+        CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
+        if (entity == null) {
+            return null;
+        }
+        AnimatePacket pk = new AnimatePacket();
+        pk.action = packet.getAnimation().ordinal();
+        pk.eid = entity.proxyEid;
+        System.out.println(packet.getAnimation().name());
+        return new PEPacket[]{pk};
+    }
 }

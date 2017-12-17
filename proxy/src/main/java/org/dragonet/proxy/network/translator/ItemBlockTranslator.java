@@ -163,54 +163,48 @@ public class ItemBlockTranslator {
     }
 
     @SuppressWarnings("unchecked")
-    public static org.dragonet.proxy.nbt.tag.CompoundTag translateRawNBT(int id, Tag pcTag, org.dragonet.proxy.nbt.tag.CompoundTag target)
-    {
-        if (pcTag != null)
-        {
+    public static org.dragonet.proxy.nbt.tag.CompoundTag translateRawNBT(int id, Tag pcTag, org.dragonet.proxy.nbt.tag.CompoundTag target) {
+        if (pcTag != null) {
             String name = pcTag.getName() != null ? pcTag.getName() : "";
-            if (target == null)
-            {
+            if (target == null) {
                 target = new org.dragonet.proxy.nbt.tag.CompoundTag(name);
             }
-            switch(pcTag.getClass().getSimpleName())
-            {
+            switch (pcTag.getClass().getSimpleName()) {
                 case "ByteArrayTag":
-                    target.putByteArray(name, (byte[])pcTag.getValue());
+                    target.putByteArray(name, (byte[]) pcTag.getValue());
                     break;
                 case "ByteTag":
-                    target.putByte(name, (byte)pcTag.getValue());
+                    target.putByte(name, (byte) pcTag.getValue());
                     break;
                 case "DoubleTag":
-                    target.putDouble(name, (double)pcTag.getValue());
+                    target.putDouble(name, (double) pcTag.getValue());
                     break;
                 case "FloatTag":
-                    target.putFloat(name, (float)pcTag.getValue());
+                    target.putFloat(name, (float) pcTag.getValue());
                     break;
                 case "IntArrayTag":
-                    target.putIntArray(name, (int[])pcTag.getValue());
+                    target.putIntArray(name, (int[]) pcTag.getValue());
                     break;
                 case "IntTag":
-                    target.putInt(name, (int)pcTag.getValue());
+                    target.putInt(name, (int) pcTag.getValue());
                     break;
                 case "LongTag":
-                    target.putLong(name, (long)pcTag.getValue());
+                    target.putLong(name, (long) pcTag.getValue());
                     break;
                 case "ShortTag":
-                    target.putShort(name, (short)pcTag.getValue());
+                    target.putShort(name, (short) pcTag.getValue());
                     break;
                 case "StringTag":
-                    target.putString(name, (String)pcTag.getValue());
+                    target.putString(name, (String) pcTag.getValue());
                     break;
                 case "CompoundTag":
-                    for(String subName : ((CompoundTag)pcTag).getValue().keySet())
-                    {
-                        translateRawNBT(0, ((CompoundTag)pcTag).getValue().get(subName), target);
+                    for (String subName : ((CompoundTag) pcTag).getValue().keySet()) {
+                        translateRawNBT(0, ((CompoundTag) pcTag).getValue().get(subName), target);
                     }
                     break;
                 case "ListTag":
                     ListTag listTag = new ListTag();
-                    for(Tag subTag : (List<Tag>)pcTag.getValue())
-                    {
+                    for (Tag subTag : (List<Tag>) pcTag.getValue()) {
                         listTag.add(translateRawNBT(0, subTag, new org.dragonet.proxy.nbt.tag.CompoundTag()));
                     }
                     target.putList(listTag);
@@ -222,17 +216,15 @@ public class ItemBlockTranslator {
         }
         return target;
     }
-    
+
     //WIP
     public static org.dragonet.proxy.nbt.tag.CompoundTag translateBlockEntityToPE(com.github.steveice10.opennbt.tag.builtin.CompoundTag input) {
         if (input == null) {
             return null;
         }
         org.dragonet.proxy.nbt.tag.CompoundTag output = translateRawNBT(0, input, null);
-        if (output.contains("id"))
-        {
-            switch(output.getString("id"))
-            {
+        if (output.contains("id")) {
+            switch (output.getString("id")) {
                 case "minecraft:bed":
                     output.putString("id", "Bed");
                     output.putByte("color", output.getInt("color")); //TODO check colors
@@ -323,9 +315,8 @@ public class ItemBlockTranslator {
 
         return item;
     }
-    
-    public static BlockFace translateToPC(int face)
-    {
+
+    public static BlockFace translateToPC(int face) {
         return BlockFace.values()[Math.abs(face % 6)];
     }
 

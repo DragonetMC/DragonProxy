@@ -22,34 +22,28 @@ import org.dragonet.proxy.utilities.Constants;
 import org.dragonet.proxy.utilities.Vector3F;
 
 public class PCEntityPositionPacketTranslator implements IPCPacketTranslator<ServerEntityPositionPacket> {
-	// vars
 
-	// constructor
-	public PCEntityPositionPacketTranslator() {
+    public PCEntityPositionPacketTranslator() {
 
-	}
+    }
 
-	// public
-	public PEPacket[] translate(UpstreamSession session, ServerEntityPositionPacket packet) {
-		CachedEntity e = session.getEntityCache().getByRemoteEID(packet.getEntityId());
-		if (e == null) {
-			return null;
-		}
+    public PEPacket[] translate(UpstreamSession session, ServerEntityPositionPacket packet) {
+        CachedEntity e = session.getEntityCache().getByRemoteEID(packet.getEntityId());
+        if (e == null) {
+            return null;
+        }
 
-		e.relativeMove(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ());
+        e.relativeMove(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ());
 
-		MoveEntityPacket pk = new MoveEntityPacket();
-		pk.rtid = e.proxyEid;
-		pk.yaw = (byte) (e.yaw / (360d / 256d));
-		pk.headYaw = (byte) (e.yaw / (360d / 256d));
-		pk.pitch = (byte) (e.pitch / (360d / 256d));
-		pk.position = new Vector3F((float) e.x, (float) e.y, (float) e.z);
-		if (e.player) {
-			pk.position.y += Constants.PLAYER_HEAD_OFFSET;
-		}
-		return new PEPacket[] { pk };
-	}
-
-	// private
-
+        MoveEntityPacket pk = new MoveEntityPacket();
+        pk.rtid = e.proxyEid;
+        pk.yaw = (byte) (e.yaw / (360d / 256d));
+        pk.headYaw = (byte) (e.yaw / (360d / 256d));
+        pk.pitch = (byte) (e.pitch / (360d / 256d));
+        pk.position = new Vector3F((float) e.x, (float) e.y, (float) e.z);
+        if (e.player) {
+            pk.position.y += Constants.PLAYER_HEAD_OFFSET;
+        }
+        return new PEPacket[]{pk};
+    }
 }

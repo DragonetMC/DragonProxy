@@ -20,20 +20,16 @@ import org.dragonet.proxy.protocol.packets.LevelSoundEventPacket;
 import org.dragonet.proxy.utilities.Vector3F;
 
 public class PCSoundEventPacketTranslator implements IPCPacketTranslator<ServerPlayBuiltinSoundPacket> {
-    // vars
 
-    // constructor
     public PCSoundEventPacketTranslator() {
 
     }
 
-    // public
     public PEPacket[] translate(UpstreamSession session, ServerPlayBuiltinSoundPacket packet) {
         LevelSoundEventPacket pk = new LevelSoundEventPacket();
-        pk.position = new Vector3F((float)packet.getX(), (float)packet.getY(), (float)packet.getZ());
-        pk.pitch = (int)packet.getPitch();
-        switch(packet.getSound())
-        {
+        pk.position = new Vector3F((float) packet.getX(), (float) packet.getY(), (float) packet.getZ());
+        pk.pitch = (int) packet.getPitch();
+        switch (packet.getSound()) {
             case BLOCK_GRASS_BREAK:
                 pk.sound = LevelSoundEventPacket.SOUND_BREAK;
                 break;
@@ -59,6 +55,4 @@ public class PCSoundEventPacketTranslator implements IPCPacketTranslator<ServerP
         pk.offset = 0;
         return new PEPacket[]{pk};
     }
-
-    // private
 }

@@ -21,14 +21,11 @@ import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.protocol.packets.InteractPacket;
 
 public class PEInteractPacketTranslator implements IPEPacketTranslator<InteractPacket> {
-    // vars
 
-    // constructor
     public PEInteractPacketTranslator() {
 
     }
 
-    // public
     public Packet[] translate(UpstreamSession session, InteractPacket packet) {
         CachedEntity e = session.getEntityCache().getByLocalEID(packet.targetRtid);
         if (e == null) {
@@ -46,6 +43,4 @@ public class PEInteractPacketTranslator implements IPEPacketTranslator<InteractP
 
         return null;
     }
-
-    // private
 }

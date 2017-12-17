@@ -21,27 +21,19 @@ import org.dragonet.proxy.protocol.packets.MovePlayerPacket;
 import org.dragonet.proxy.utilities.Constants;
 
 public class PEMovePlayerPacketTranslator implements IPEPacketTranslator<MovePlayerPacket> {
-	// vars
 
-	// constructor
-	public PEMovePlayerPacketTranslator() {
+    public PEMovePlayerPacketTranslator() {
 
-	}
+    }
 
-	// public
-	public Packet[] translate(UpstreamSession session, MovePlayerPacket packet) {
-		ClientPlayerPositionRotationPacket pk = new ClientPlayerPositionRotationPacket(packet.onGround,
-				packet.position.x, packet.position.y - Constants.PLAYER_HEAD_OFFSET, packet.position.z, packet.headYaw,
-				packet.pitch);
-		CachedEntity cliEntity = session.getEntityCache().getClientEntity();
-		// session.sendChat(String.format("moving to (%.2f, %.2f, %.2f)", packet.position.x,
-		//		packet.position.y - Constants.PLAYER_HEAD_OFFSET, packet.position.z));
-		cliEntity.x = packet.position.x;
-		cliEntity.y = packet.position.y - Constants.PLAYER_HEAD_OFFSET;
-		cliEntity.z = packet.position.z;
-		return new Packet[] { pk };
-	}
-
-	// private
-
+    public Packet[] translate(UpstreamSession session, MovePlayerPacket packet) {
+        ClientPlayerPositionRotationPacket pk = new ClientPlayerPositionRotationPacket(packet.onGround,
+                packet.position.x, packet.position.y - Constants.PLAYER_HEAD_OFFSET, packet.position.z, packet.headYaw,
+                packet.pitch);
+        CachedEntity cliEntity = session.getEntityCache().getClientEntity();
+        cliEntity.x = packet.position.x;
+        cliEntity.y = packet.position.y - Constants.PLAYER_HEAD_OFFSET;
+        cliEntity.z = packet.position.z;
+        return new Packet[]{pk};
+    }
 }

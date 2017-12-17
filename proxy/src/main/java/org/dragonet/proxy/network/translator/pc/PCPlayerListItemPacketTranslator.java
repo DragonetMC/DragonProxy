@@ -24,50 +24,45 @@ import org.dragonet.proxy.protocol.packets.PlayerListPacket;
 import org.dragonet.proxy.protocol.type.Skin;
 
 public class PCPlayerListItemPacketTranslator implements IPCPacketTranslator<ServerPlayerListEntryPacket> {
-	// vars
 
-	// constructor
-	public PCPlayerListItemPacketTranslator() {
+    public PCPlayerListItemPacketTranslator() {
 
-	}
+    }
 
-	// public
-	public PEPacket[] translate(UpstreamSession session, ServerPlayerListEntryPacket packet) {
-                PlayerListPacket pk = new PlayerListPacket();
-		if (packet.getAction() == PlayerListEntryAction.ADD_PLAYER) {
-			PlayerListEntry[] entries = packet.getEntries();
-                        Set<org.dragonet.proxy.protocol.type.PlayerListEntry> peEntries = new HashSet();
-			for (PlayerListEntry entry : entries) {
-				session.getPlayerInfoCache().put(entry.getProfile().getId(), entry);
-                                org.dragonet.proxy.protocol.type.PlayerListEntry peEntry = new org.dragonet.proxy.protocol.type.PlayerListEntry();
-                                peEntry.uuid = entry.getProfile().getId();
-                                peEntry.eid = 1;
-                                peEntry.username = entry.getProfile().getName();
-                                peEntry.skin = Skin.DEFAULT_SKIN;
-                                peEntry.xboxUserId = entry.getProfile().getId().toString();
-                                peEntries.add(peEntry);
-			}
-                        pk.type = PlayerListPacket.TYPE_ADD;
-                        pk.entries = (org.dragonet.proxy.protocol.type.PlayerListEntry[])peEntries.toArray(new org.dragonet.proxy.protocol.type.PlayerListEntry[peEntries.size()]);
-		} else if (packet.getAction() == PlayerListEntryAction.REMOVE_PLAYER) {
-			PlayerListEntry[] entries = packet.getEntries();
-                        Set<org.dragonet.proxy.protocol.type.PlayerListEntry> peEntries = new HashSet();
-			for (PlayerListEntry entry : entries) {
-				session.getPlayerInfoCache().remove(entry.getProfile().getId());
-                                org.dragonet.proxy.protocol.type.PlayerListEntry peEntry = new org.dragonet.proxy.protocol.type.PlayerListEntry();
-                                peEntry.uuid = entry.getProfile().getId();
-                                peEntry.eid = 1;
-                                peEntry.username = entry.getProfile().getName();
-                                peEntry.skin = Skin.DEFAULT_SKIN;
-                                peEntry.xboxUserId = entry.getProfile().getId().toString();
-                                peEntries.add(peEntry);
-			}
-                        pk.type = PlayerListPacket.TYPE_REMOVE;
-                        pk.entries = (org.dragonet.proxy.protocol.type.PlayerListEntry[])peEntries.toArray(new org.dragonet.proxy.protocol.type.PlayerListEntry[peEntries.size()]);
-		}
-		return new PEPacket[] { pk };
-	}
-
-	// private
+    public PEPacket[] translate(UpstreamSession session, ServerPlayerListEntryPacket packet) {
+        PlayerListPacket pk = new PlayerListPacket();
+        if (packet.getAction() == PlayerListEntryAction.ADD_PLAYER) {
+            PlayerListEntry[] entries = packet.getEntries();
+            Set<org.dragonet.proxy.protocol.type.PlayerListEntry> peEntries = new HashSet();
+            for (PlayerListEntry entry : entries) {
+                session.getPlayerInfoCache().put(entry.getProfile().getId(), entry);
+                org.dragonet.proxy.protocol.type.PlayerListEntry peEntry = new org.dragonet.proxy.protocol.type.PlayerListEntry();
+                peEntry.uuid = entry.getProfile().getId();
+                peEntry.eid = 1;
+                peEntry.username = entry.getProfile().getName();
+                peEntry.skin = Skin.DEFAULT_SKIN;
+                peEntry.xboxUserId = entry.getProfile().getId().toString();
+                peEntries.add(peEntry);
+            }
+            pk.type = PlayerListPacket.TYPE_ADD;
+            pk.entries = (org.dragonet.proxy.protocol.type.PlayerListEntry[]) peEntries.toArray(new org.dragonet.proxy.protocol.type.PlayerListEntry[peEntries.size()]);
+        } else if (packet.getAction() == PlayerListEntryAction.REMOVE_PLAYER) {
+            PlayerListEntry[] entries = packet.getEntries();
+            Set<org.dragonet.proxy.protocol.type.PlayerListEntry> peEntries = new HashSet();
+            for (PlayerListEntry entry : entries) {
+                session.getPlayerInfoCache().remove(entry.getProfile().getId());
+                org.dragonet.proxy.protocol.type.PlayerListEntry peEntry = new org.dragonet.proxy.protocol.type.PlayerListEntry();
+                peEntry.uuid = entry.getProfile().getId();
+                peEntry.eid = 1;
+                peEntry.username = entry.getProfile().getName();
+                peEntry.skin = Skin.DEFAULT_SKIN;
+                peEntry.xboxUserId = entry.getProfile().getId().toString();
+                peEntries.add(peEntry);
+            }
+            pk.type = PlayerListPacket.TYPE_REMOVE;
+            pk.entries = (org.dragonet.proxy.protocol.type.PlayerListEntry[]) peEntries.toArray(new org.dragonet.proxy.protocol.type.PlayerListEntry[peEntries.size()]);
+        }
+        return new PEPacket[]{pk};
+    }
 
 }

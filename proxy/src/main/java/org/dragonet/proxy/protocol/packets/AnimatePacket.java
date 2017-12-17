@@ -4,8 +4,7 @@ import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.ProtocolInfo;
 
 public class AnimatePacket extends PEPacket {
-    //vars
-    
+
     public static int ANIMATION_SWING_ARM = 1;
     public static int ACTION_LEFT_CLICK = 2;
     public static int ANIMATION_LEAVE_BED = 3;
@@ -15,12 +14,10 @@ public class AnimatePacket extends PEPacket {
     public long eid;
     public float unknown;
 
-    //constructor
     public AnimatePacket() {
 
     }
 
-    //public
     public int pid() {
         return ProtocolInfo.ANIMATE_PACKET;
     }
@@ -42,6 +39,4 @@ public class AnimatePacket extends PEPacket {
             this.putLFloat(this.unknown);
         }
     }
-
-    //private
 }

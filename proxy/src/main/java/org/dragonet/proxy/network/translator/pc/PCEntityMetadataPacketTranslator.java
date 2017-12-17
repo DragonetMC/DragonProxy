@@ -17,6 +17,7 @@ import org.dragonet.proxy.entity.EntityType;
 import org.dragonet.proxy.entity.PEEntityAttribute;
 import org.dragonet.proxy.entity.meta.EntityMetaData;
 import org.dragonet.proxy.entity.meta.type.SlotMeta;
+import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
@@ -35,35 +36,33 @@ public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<Ser
 
     public PEPacket[] translate(UpstreamSession session, ServerEntityMetadataPacket packet) {
         CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
-//        System.out.println("ServerEntityMetadataPacket entity " + packet.getEntityId() + " update ");
-        if (entity == null)
-        {
+        System.out.println("ServerEntityMetadataPacket entity " + packet.getEntityId() + " update ");
+        if (entity == null) {
+            if (packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID)) {
+                entity = session.getEntityCache().getClientEntity();
+            } else {
+                return null;
+            }
             return null;
         }
         entity.pcMeta = packet.getMetadata();
-        if (entity.spawned)
-        {
+        if (entity.spawned) {
             SetEntityDataPacket pk = new SetEntityDataPacket();
             pk.rtid = entity.proxyEid;
             pk.meta = EntityMetaTranslator.translateToPE(packet.getMetadata(), entity.peType);
             session.sendPacket(pk);
-        }
-        else
-        {
-            if (entity.peType == EntityType.ITEM)
-            {
+        } else {
+            if (entity.peType == EntityType.ITEM) {
                 AddItemEntityPacket pk = new AddItemEntityPacket();
                 pk.rtid = entity.proxyEid;
                 pk.eid = entity.proxyEid;
                 pk.metadata = EntityMetaTranslator.translateToPE(packet.getMetadata(), entity.peType);
-                pk.item = ((SlotMeta)pk.metadata.map.get(EntityMetaData.Constants.DATA_TYPE_SLOT)).slot;
+                pk.item = ((SlotMeta) pk.metadata.map.get(EntityMetaData.Constants.DATA_TYPE_SLOT)).slot;
                 pk.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
                 pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
                 entity.spawned = true;
                 session.sendPacket(pk);
-            }
-            else
-            {
+            } else {
                 AddEntityPacket pk = new AddEntityPacket();
                 pk.rtid = entity.proxyEid;
                 pk.eid = entity.proxyEid;
