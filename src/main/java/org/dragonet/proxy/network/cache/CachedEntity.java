@@ -43,7 +43,7 @@ public class CachedEntity {
     public float pitch;
 
     // cache riding datas for dismount
-    public long riding;
+    public long riding = 0;
     public Set<Long> passengers = new HashSet();
 
     public EntityMetadata[] pcMeta;
