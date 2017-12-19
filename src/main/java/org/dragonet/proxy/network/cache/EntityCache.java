@@ -24,6 +24,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.Serve
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnObjectPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
+import org.dragonet.proxy.utilities.Constants;
 
 public final class EntityCache {
     // vars
@@ -61,7 +62,7 @@ public final class EntityCache {
             mapRemoteToClient.clear();
             mapClientToRemote.clear();
         }
-        CachedEntity clientEntity = new CachedEntity(1L, 1L, -1, null, null, true, null);
+        CachedEntity clientEntity = new CachedEntity(1L, 1L, -1, EntityType.PLAYER, null, true, null);
         entities.put(1L, clientEntity);
     }
 
@@ -112,14 +113,10 @@ public final class EntityCache {
 
         CachedEntity e = new CachedEntity(packet.getEntityId(), nextClientEntityId.getAndIncrement(), MagicValues.value(Integer.class, packet.getType()),
                 peType, null, false, null);
-        e.x = packet.getX();
-        e.y = packet.getY();
-        e.z = packet.getZ();
+        e.absoluteMove(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch());
         e.motionX = packet.getMotionX();
         e.motionY = packet.getMotionY();
         e.motionZ = packet.getMotionZ();
-        e.yaw = packet.getYaw();
-        e.pitch = packet.getPitch();
         e.pcMeta = packet.getMetadata();
         e.spawned = false;
         entities.put(e.proxyEid, e);
@@ -130,11 +127,7 @@ public final class EntityCache {
 
     public CachedEntity newPlayer(ServerSpawnPlayerPacket packet) {
         CachedEntity e = new CachedEntity(packet.getEntityId(), nextClientEntityId.getAndIncrement(), -1, EntityType.PLAYER, null, true, packet.getUUID());
-        e.x = packet.getX();
-        e.y = packet.getY();
-        e.z = packet.getZ();
-        e.yaw = packet.getYaw();
-        e.pitch = packet.getPitch();
+        e.absoluteMove(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch());
         e.pcMeta = packet.getMetadata();
         e.spawned = true;
         entities.put(e.proxyEid, e);
@@ -147,14 +140,10 @@ public final class EntityCache {
     public CachedEntity newObject(ServerSpawnObjectPacket packet) {
         CachedEntity e = new CachedEntity(packet.getEntityId(), nextClientEntityId.getAndIncrement(), -1, EntityType.ITEM, packet.getType(),
                 false, null);
-        e.x = packet.getX();
-        e.y = packet.getY();
-        e.z = packet.getZ();
+        e.absoluteMove(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch());
         e.motionX = packet.getMotionX();
         e.motionY = packet.getMotionY();
         e.motionZ = packet.getMotionZ();
-        e.yaw = packet.getYaw();
-        e.pitch = packet.getPitch();
         e.spawned = false; // Server will update its data then we can send it.
         entities.put(e.proxyEid, e);
         mapClientToRemote.put(e.proxyEid, e.eid);
@@ -167,14 +156,10 @@ public final class EntityCache {
         EntityType peType = EntityMetaTranslator.translateToPE(packet.getType());
         CachedEntity e = new CachedEntity(packet.getEntityId(), nextClientEntityId.getAndIncrement(), MagicValues.value(Integer.class, packet.getType()),
                 peType, packet.getType(), false, null);
-        e.x = packet.getX();
-        e.y = packet.getY();
-        e.z = packet.getZ();
+        e.absoluteMove(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch());
         e.motionX = packet.getMotionX();
         e.motionY = packet.getMotionY();
         e.motionZ = packet.getMotionZ();
-        e.yaw = packet.getYaw();
-        e.pitch = packet.getPitch();
         e.spawned = false; // Server will update its data then we can send it.
         entities.put(e.proxyEid, e);
         mapClientToRemote.put(e.proxyEid, e.eid);
