@@ -12,7 +12,6 @@ import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.AddPlayerPacket;
 import org.dragonet.proxy.protocol.packets.PlayerSkinPacket;
-import org.dragonet.proxy.utilities.Constants;
 import org.dragonet.proxy.utilities.Vector3F;
 
 public class PCSpawnPlayerPacketTranslator implements IPCPacketTranslator<ServerSpawnPlayerPacket> {
@@ -30,7 +29,7 @@ public class PCSpawnPlayerPacketTranslator implements IPCPacketTranslator<Server
 
                 pkAddPlayer.uuid = packet.getUUID();
 
-                pkAddPlayer.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET, (float) packet.getZ());
+                pkAddPlayer.position = new Vector3F((float) packet.getX(), (float) packet.getY(), (float) packet.getZ());
                 pkAddPlayer.motion = Vector3F.ZERO;
                 pkAddPlayer.yaw = packet.getYaw();
                 pkAddPlayer.pitch = packet.getPitch();

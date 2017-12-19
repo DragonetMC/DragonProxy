@@ -30,11 +30,9 @@ public class PEPlayerInputPacketTranslator implements IPEPacketTranslator<Player
         {
             return null;
         }
-        CachedEntity vehicle = session.getEntityCache().getByLocalEID(rider.riding);
-        
-        vehicle.relativeMove(packet.motionX, 0, packet.motionY);
 
-        ClientVehicleMovePacket pk = new ClientVehicleMovePacket(vehicle.x, vehicle.y, vehicle.z, vehicle.yaw, vehicle.pitch);
+        //Only for minecart
+
         return null;
     }
 

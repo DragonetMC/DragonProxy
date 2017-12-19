@@ -17,19 +17,40 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPEPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientVehicleMovePacket;
 import org.dragonet.proxy.protocol.packets.MovePlayerPacket;
 import org.dragonet.proxy.utilities.Constants;
+import org.dragonet.proxy.utilities.DebugTools;
 
 public class PEMovePlayerPacketTranslator implements IPEPacketTranslator<MovePlayerPacket> {
 
     public Packet[] translate(UpstreamSession session, MovePlayerPacket packet) {
-        ClientPlayerPositionRotationPacket pk = new ClientPlayerPositionRotationPacket(packet.onGround,
-                packet.position.x, packet.position.y - Constants.PLAYER_HEAD_OFFSET, packet.position.z, packet.headYaw,
-                packet.pitch);
         CachedEntity cliEntity = session.getEntityCache().getClientEntity();
-        cliEntity.x = packet.position.x;
-        cliEntity.y = packet.position.y - Constants.PLAYER_HEAD_OFFSET;
-        cliEntity.z = packet.position.z;
-        return new Packet[]{pk};
+
+        //Riding case
+        if (cliEntity.riding != 0 && packet.ridingRuntimeId != 0) {
+            System.out.println("MovePlayerPacket Vehicle" + DebugTools.getAllFields(packet));
+            ClientVehicleMovePacket pk = new ClientVehicleMovePacket(
+                    packet.position.x,
+                    packet.position.y,
+                    packet.position.z,
+                    packet.headYaw,
+                    packet.pitch);
+            session.getDownstream().send(pk);
+        } else { //not riding
+            cliEntity.x = packet.position.x;
+            cliEntity.y = packet.position.y - Constants.PLAYER_HEAD_OFFSET;
+            cliEntity.z = packet.position.z;
+
+            ClientPlayerPositionRotationPacket pk = new ClientPlayerPositionRotationPacket(
+                    packet.onGround,
+                    packet.position.x,
+                    packet.position.y - Constants.PLAYER_HEAD_OFFSET,
+                    packet.position.z,
+                    packet.headYaw,
+                    packet.pitch);
+            session.getDownstream().send(pk);
+        }
+        return null;
     }
 }

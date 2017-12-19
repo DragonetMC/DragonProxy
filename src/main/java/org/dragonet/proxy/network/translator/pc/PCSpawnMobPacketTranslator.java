@@ -38,8 +38,10 @@ public class PCSpawnMobPacketTranslator implements IPCPacketTranslator<ServerSpa
             pk.rtid = e.proxyEid;
             pk.eid = e.proxyEid;
             pk.type = e.peType.getPeType();
-            pk.position = new Vector3F((float) e.x, (float) e.y, (float) e.z);
+            pk.position = new Vector3F((float) e.x, (float) e.y - e.peType.getOffset(), (float) e.z);
             pk.motion = new Vector3F((float) e.motionX, (float) e.motionY, (float) e.motionZ);
+            pk.yaw = e.yaw + 90;
+            pk.pitch = e.pitch;
             pk.meta = EntityMetaTranslator.translateToPE(e.pcMeta, e.peType);
             // TODO: Hack for now. ;P
             pk.attributes = new PEEntityAttribute[]{};

@@ -127,6 +127,8 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             session.sendPacket(entityData);
 
             if (session.getProxy().getAuthMode().equalsIgnoreCase("online")) {
+                CachedEntity cliEntity = session.getEntityCache().getClientEntity();
+
                 MovePlayerPacket pk = new MovePlayerPacket();
                 pk.rtid = 1L;
                 pk.mode = MovePlayerPacket.MODE_TELEPORT;
@@ -135,9 +137,15 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 pk.yaw = packet.getYaw();
                 pk.pitch = packet.getPitch();
                 pk.headYaw = packet.getYaw();
+
+                if (cliEntity.riding != 0) {
+                    CachedEntity vehicle = session.getEntityCache().getByLocalEID(cliEntity.riding);
+                    if (vehicle != null) {
+                        pk.ridingRuntimeId = vehicle.eid;
+                    }
+                }
                 session.sendPacket(pk);
 
-                CachedEntity cliEntity = session.getEntityCache().getClientEntity();
                 cliEntity.x = packet.getX();
                 cliEntity.y = packet.getY() + Constants.PLAYER_HEAD_OFFSET;
                 cliEntity.z = packet.getZ();
@@ -156,7 +164,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             session.setSpawned();
 
             session.getEntityCache().getClientEntity().x = packet.getX();
-            session.getEntityCache().getClientEntity().y = packet.getY() + Constants.PLAYER_HEAD_OFFSET;
+            session.getEntityCache().getClientEntity().y = packet.getY();
             session.getEntityCache().getClientEntity().z = packet.getZ();
 
             // send the confirmation
@@ -180,7 +188,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
 
                     pkAddPlayer.uuid = entity.playerUniqueId;
 
-                    pkAddPlayer.position = new Vector3F((float) entity.x, (float) entity.y + Constants.PLAYER_HEAD_OFFSET, (float) entity.z);
+                    pkAddPlayer.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
                     pkAddPlayer.motion = Vector3F.ZERO;
                     pkAddPlayer.yaw = entity.yaw;
                     pkAddPlayer.pitch = entity.pitch;
@@ -209,6 +217,8 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                     pk.type = entity.peType.getPeType();
                     pk.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
                     pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
+                    pk.yaw = entity.yaw;
+                    pk.pitch = entity.pitch;
                     pk.meta = EntityMetaTranslator.translateToPE(entity.pcMeta, entity.peType);
                     // TODO: Hack for now. ;P
                     pk.attributes = new PEEntityAttribute[]{};
@@ -233,6 +243,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             return null;
         }
 
+        CachedEntity cliEntity = session.getEntityCache().getClientEntity();
         MovePlayerPacket pk = new MovePlayerPacket();
         pk.rtid = 1L;
         pk.mode = MovePlayerPacket.MODE_TELEPORT;
@@ -241,7 +252,14 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
         pk.yaw = packet.getYaw();
         pk.pitch = packet.getPitch();
         pk.headYaw = packet.getYaw();
-        CachedEntity cliEntity = session.getEntityCache().getClientEntity();
+
+        if (cliEntity.riding != 0) {
+            CachedEntity vehicle = session.getEntityCache().getByLocalEID(cliEntity.riding);
+            if (vehicle != null) {
+                pk.ridingRuntimeId = vehicle.eid;
+            }
+        }
+
         cliEntity.x = packet.getX();
         cliEntity.y = packet.getY() + Constants.PLAYER_HEAD_OFFSET;
         cliEntity.z = packet.getZ();
