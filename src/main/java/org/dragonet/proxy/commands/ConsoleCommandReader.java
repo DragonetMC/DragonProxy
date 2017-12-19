@@ -15,6 +15,8 @@ package org.dragonet.proxy.commands;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.utilities.Logger;
 
+import java.util.Scanner;
+
 public class ConsoleCommandReader {
 	// vars
 	private final Logger logger;
@@ -34,7 +36,7 @@ public class ConsoleCommandReader {
 				while (!proxy.isShuttingDown()) {
 					try {
 						System.out.print(">");
-						command = System.console().readLine();
+						command = new Scanner(System.in).nextLine();
 
 						if (command == null || command.trim().length() == 0) {
 							continue;
