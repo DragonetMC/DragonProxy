@@ -1,20 +1,18 @@
 DragonProxy
 ===========
+A proxy for to allow **Minecraft: Bedrock** clients to connect to **Minecraft: Java Edition** servers.
 
 ## WE ARE BACK
 - Currently supporting 1.2.x
 - Chat supported
-- Chunk supported
+- Chunks supported
 - Movement supported
 - Inventory WIP
-
-A proxy for **Minecraft Bedrock** connecting to **Minecraft - Java Edition** servers.
 
 Video by **[@MrPowerGamerBR](https://github.com/MrPowerGamerBR)** (On an older version): https://www.youtube.com/watch?v=oRSKQMzZYDE
 
 ![Screenshot](https://github.com/DragonetMC/DragonProxy/raw/master/screenshots/performium-factions.jpg)
 
-Wanna donate to help us? Go to http://dragonet.org/donate.php
 
 ## Installation
 [Download](https://github.com/DragonetMC/DragonProxy/releases)
@@ -26,11 +24,7 @@ See the tutorial in the [wiki](https://github.com/DragonetMC/DragonProxy/wiki).
 #### Supported Remote Server Types
 - For Java Edition Servers: `Bukkit`/`Spigot`/`Glowstone`/`SpongeVanilla`/`BungeeCord`
 - For Bedrock Servers: `MiNET`, `Nukkit`, `PocketMine-MP (and all forks)`
-- Not listed is **NOT** mean unsupported, just **untested**.
-
-## Community
-**Website:** [http://dragonet.org](http://dragonet.org)  
-**Forums:** [http://forums.dragonet.org](http://forums.dragonet.org)
+- Not listed does **NOT** mean unsupported, just **untested**.
 
 ## Libraries Used
 * JRakNet by the MarfGamer @ [Link](https://github.com/JRakNet/JRakNet)
