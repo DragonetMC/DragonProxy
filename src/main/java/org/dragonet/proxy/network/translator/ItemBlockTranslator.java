@@ -12,6 +12,7 @@
  */
 package org.dragonet.proxy.network.translator;
 
+import com.github.steveice10.mc.protocol.data.MagicValues;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -104,7 +105,9 @@ public class ItemBlockTranslator {
     }
 
     public static ItemEntry translateToPE(int pcItemBlockId, int damage) {
-        ItemEntry entry = new ItemEntry(pcItemBlockId & 0xFF, damage & 0xf);
+        ItemEntry entry = new ItemEntry(pcItemBlockId, damage);
+        
+        //here translate item data value (color / facing ....) need another translator items specific
 
         if (!PC_TO_PE_OVERRIDE.containsKey(pcItemBlockId)) {
             return entry;
