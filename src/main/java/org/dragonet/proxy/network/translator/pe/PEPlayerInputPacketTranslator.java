@@ -23,18 +23,8 @@ import org.dragonet.proxy.utilities.DebugTools;
 public class PEPlayerInputPacketTranslator implements IPEPacketTranslator<PlayerInputPacket> {
 
     public Packet[] translate(UpstreamSession session, PlayerInputPacket packet) {
-//        System.out.println("PlayerInputPacket" + DebugTools.getAllFields(packet));
 
-        CachedEntity rider = session.getEntityCache().getClientEntity();
-        if (rider.riding == 0)
-        {
-            return null;
-        }
-        CachedEntity vehicle = session.getEntityCache().getByLocalEID(rider.riding);
-        
-        vehicle.relativeMove(packet.motionX, 0, packet.motionY);
-
-        ClientVehicleMovePacket pk = new ClientVehicleMovePacket(vehicle.x, vehicle.y, vehicle.z, vehicle.yaw, vehicle.pitch);
+        //unused for now
         return null;
     }
 
