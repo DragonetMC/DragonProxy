@@ -41,7 +41,7 @@ public class PEInteractPacketTranslator implements IPEPacketTranslator<InteractP
                         (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.START_SNEAKING)};
         }
 
-        System.out.println("InteractPacket type : " + packet.type + " on " + packet.targetRtid);
+//        System.out.println("InteractPacket type : " + packet.type + " on " + packet.targetRtid);
 
         return null;
     }

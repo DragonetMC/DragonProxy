@@ -23,16 +23,8 @@ import org.dragonet.proxy.utilities.DebugTools;
 public class PEPlayerInputPacketTranslator implements IPEPacketTranslator<PlayerInputPacket> {
 
     public Packet[] translate(UpstreamSession session, PlayerInputPacket packet) {
-//        System.out.println("PlayerInputPacket" + DebugTools.getAllFields(packet));
 
-        CachedEntity rider = session.getEntityCache().getClientEntity();
-        if (rider.riding == 0)
-        {
-            return null;
-        }
-
-        //Only for minecart
-
+        //unused for now
         return null;
     }
 

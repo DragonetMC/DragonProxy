@@ -15,45 +15,42 @@ package org.dragonet.proxy.commands;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.utilities.Logger;
 
+import java.util.Scanner;
+
 public class ConsoleCommandReader {
-	// vars
-	private final Logger logger;
-	private final DragonProxy proxy;
 
-	// constructor
-	public ConsoleCommandReader(DragonProxy proxy) {
-		this.proxy = proxy;
-		this.logger = proxy.getLogger();
-	}
+    private final Logger logger;
+    private final DragonProxy proxy;
 
-	// public
-	public void startConsole() {
-		Thread thread = new Thread(new Runnable() {
-			public void run() {
-				String command = "";
-				while (!proxy.isShuttingDown()) {
-					try {
-						System.out.print(">");
-						command = System.console().readLine();
+    public ConsoleCommandReader(DragonProxy proxy) {
+        this.proxy = proxy;
+        this.logger = proxy.getLogger();
+    }
 
-						if (command == null || command.trim().length() == 0) {
-							continue;
-						}
+    public void startConsole() {
+        Thread thread = new Thread(new Runnable() {
+            public void run() {
+                String command = "";
+                while (!proxy.isShuttingDown()) {
+                    try {
+                        System.out.print(">");
+                        command = new Scanner(System.in).nextLine();
 
-						proxy.getCommandRegister().callCommand(command);
-					} catch (Exception ex) {
-						logger.severe("Error while executing command: " + ex);
-						ex.printStackTrace();
-					}
-				}
-			}
-		});
+                        if (command == null || command.trim().length() == 0) {
+                            continue;
+                        }
 
-		thread.setName("ConsoleCommandThread");
-		thread.setDaemon(true);
-		thread.start();
-	}
+                        proxy.getCommandRegister().callCommand(command);
+                    } catch (Exception ex) {
+                        logger.severe("Error while executing command: " + ex);
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
 
-	// private
-
+        thread.setName("ConsoleCommandThread");
+        thread.setDaemon(true);
+        thread.start();
+    }
 }
