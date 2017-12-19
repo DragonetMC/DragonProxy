@@ -30,7 +30,6 @@ public class PCAnimationPacketTranslator implements IPCPacketTranslator<ServerEn
         AnimatePacket pk = new AnimatePacket();
         pk.action = packet.getAnimation().ordinal();
         pk.eid = entity.proxyEid;
-        System.out.println(packet.getAnimation().name());
         return new PEPacket[]{pk};
     }
 }

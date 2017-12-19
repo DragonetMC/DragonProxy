@@ -21,7 +21,7 @@ import org.dragonet.proxy.utilities.DebugTools;
 public class PESoundEventPacketTranslator implements IPEPacketTranslator<LevelSoundEventPacket> {
 
     public Packet[] translate(UpstreamSession session, LevelSoundEventPacket packet) {
-        System.out.println("LevelSoundEventPacket" + DebugTools.getAllFields(packet));
+//        System.out.println("LevelSoundEventPacket" + DebugTools.getAllFields(packet));
         return null;
     }
 }

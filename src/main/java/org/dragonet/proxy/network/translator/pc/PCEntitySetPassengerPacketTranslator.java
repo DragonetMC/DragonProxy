@@ -51,7 +51,7 @@ public class PCEntitySetPassengerPacketTranslator implements IPCPacketTranslator
                 session.sendPacket(pk);
                 
                 rider.riding = 0;
-                System.out.println("DISMOUNT\n" + DebugTools.getAllFields(pk));
+//                System.out.println("DISMOUNT\n" + DebugTools.getAllFields(pk));
             }
         }
 
@@ -87,7 +87,7 @@ public class PCEntitySetPassengerPacketTranslator implements IPCPacketTranslator
             
             vehicle.passengers.add(rider.proxyEid);
             rider.riding = vehicle.proxyEid;
-            System.out.println("MOUNT\n" + DebugTools.getAllFields(pk));
+//            System.out.println("MOUNT\n" + DebugTools.getAllFields(pk));
 
         }
         return null;
