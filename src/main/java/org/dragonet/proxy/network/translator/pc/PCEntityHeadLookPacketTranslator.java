@@ -12,7 +12,7 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityRotationPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityHeadLookPacket;
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
@@ -22,27 +22,23 @@ import org.dragonet.proxy.protocol.packets.MoveEntityPacket;
 import org.dragonet.proxy.utilities.Constants;
 import org.dragonet.proxy.utilities.Vector3F;
 
-public class PCEntityRotationPacketTranslator implements IPCPacketTranslator<ServerEntityRotationPacket> {
+public class PCEntityHeadLookPacketTranslator implements IPCPacketTranslator<ServerEntityHeadLookPacket> {
 
-    public PEPacket[] translate(UpstreamSession session, ServerEntityRotationPacket packet) {
+    public PEPacket[] translate(UpstreamSession session, ServerEntityHeadLookPacket packet) {
         CachedEntity e = session.getEntityCache().getByRemoteEID(packet.getEntityId());
         if (e == null) {
             return null;
         }
 
-        e.relativeMove(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ(), packet.getYaw(), packet.getPitch());
+        e.headYaw = packet.getHeadYaw();
 
-        if (e.shouldMove) {
-            MoveEntityPacket pk = new MoveEntityPacket();
-            pk.rtid = e.proxyEid;
-            pk.yaw = (byte) (e.yaw / (360d / 256d));
-            pk.headYaw = (byte) (e.headYaw / (360d / 256d));
-            pk.pitch = (byte) (e.pitch / (360d / 256d));
-            pk.position = new Vector3F((float) e.x, (float) e.y + e.peType.getOffset(), (float) e.z);
-            pk.onGround = packet.isOnGround();
-            e.shouldMove = false;
-            return new PEPacket[]{pk};
-        }
-        return null;
+        MoveEntityPacket pk = new MoveEntityPacket();
+        pk.rtid = e.proxyEid;
+        pk.yaw = (byte) (e.yaw / (360d / 256d));
+        pk.headYaw = (byte) (e.headYaw / (360d / 256d));
+        pk.pitch = (byte) (e.pitch / (360d / 256d));
+        pk.position = new Vector3F((float) e.x, (float) e.y + e.peType.getOffset(), (float) e.z);
+        pk.onGround = true;
+        return new PEPacket[]{pk};
     }
 }

@@ -80,6 +80,8 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerPlayerHealthPacket.class, new PCUpdateHealthPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityAnimationPacket.class, new PCAnimationPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntitySetPassengersPacket.class, new PCEntitySetPassengerPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerEntityHeadLookPacket.class, new PCEntityHeadLookPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerEntityTeleportPacket.class, new PCEntityTeleportPacketTranslator());
         //
         // //Inventory
         PC_TO_PE_TRANSLATOR.put(ServerOpenWindowPacket.class, new PCOpenWindowPacketTranslator());

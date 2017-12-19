@@ -20,6 +20,7 @@ import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.MoveEntityPacket;
 import org.dragonet.proxy.utilities.Constants;
+import org.dragonet.proxy.utilities.DebugTools;
 import org.dragonet.proxy.utilities.Vector3F;
 
 public class PCEntityPositionRotationPacketTranslator implements IPCPacketTranslator<ServerEntityPositionRotationPacket> {
@@ -29,24 +30,21 @@ public class PCEntityPositionRotationPacketTranslator implements IPCPacketTransl
         if (e == null) {
             return null;
         }
-
-        e.relativeMove(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ(), packet.getYaw(),
-                packet.getPitch());
         
-        if (e.player && e.riding != 0) {
-            System.out.println("ServerEntityRotationPacket player " + e.eid + " in vehicle move");
-        }
-        if (e.peType == EntityType.BOAT) {
-            System.out.println("ServerEntityRotationPacket boat " + e.eid + " in vehicle move");
-        }
+        e.relativeMove(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ(), packet.getYaw(), packet.getPitch());
 
-        MoveEntityPacket pk = new MoveEntityPacket();
-        pk.rtid = e.proxyEid;
-        pk.yaw = (byte) (e.yaw / (360d / 256d));
-        pk.headYaw = (byte) (e.yaw / (360d / 256d));
-        pk.pitch = (byte) (e.pitch / (360d / 256d));
-        pk.position = new Vector3F((float) e.x, (float) e.y + e.peType.getOffset(), (float) e.z);
-        pk.onGround = packet.isOnGround();
-        return new PEPacket[]{pk};
+        if (e.shouldMove)
+        {
+            MoveEntityPacket pk = new MoveEntityPacket();
+            pk.rtid = e.proxyEid;
+            pk.yaw = (byte) (e.yaw / (360d / 256d));
+            pk.headYaw = (byte) (e.headYaw / (360d / 256d));
+            pk.pitch = (byte) (e.pitch / (360d / 256d));
+            pk.position = new Vector3F((float) e.x, (float) e.y + e.peType.getOffset(), (float) e.z);
+            pk.onGround = packet.isOnGround();
+            e.shouldMove = false;
+            return new PEPacket[]{pk};
+        }
+        return null;
     }
 }

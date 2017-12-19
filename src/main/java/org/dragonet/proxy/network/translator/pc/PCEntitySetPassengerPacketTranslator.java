@@ -60,7 +60,7 @@ public class PCEntitySetPassengerPacketTranslator implements IPCPacketTranslator
                 pk.unknownByte = 0x00;
                 session.sendPacket(pk);
 
-                vehicle.passengers.remove(id);
+                itr.remove();
                 rider.riding = 0;
 //                System.out.println("DISMOUNT\n" + DebugTools.getAllFields(pk));
             }

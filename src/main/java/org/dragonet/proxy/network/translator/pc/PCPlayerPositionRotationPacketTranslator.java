@@ -66,7 +66,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 ret.generator = 1;
                 ret.gamemode = restored.getGameMode() == GameMode.CREATIVE ? 1 : 0;
                 ret.spawnPosition = new BlockPosition((int) packet.getX(), (int) packet.getY(), (int) packet.getZ());
-                ret.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET,
+                ret.position = new Vector3F((float) packet.getX(), (float) packet.getY() + EntityType.PLAYER.getOffset(),
                         (float) packet.getZ());
                 ret.yaw = packet.getYaw();
                 ret.pitch = packet.getPitch();
@@ -146,11 +146,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 }
                 session.sendPacket(pk);
 
-                cliEntity.x = packet.getX();
-                cliEntity.y = packet.getY() + Constants.PLAYER_HEAD_OFFSET;
-                cliEntity.z = packet.getZ();
-                cliEntity.yaw = packet.getYaw();
-                cliEntity.pitch = packet.getPitch();
+                cliEntity.absoluteMove(packet.getX(), packet.getY() + cliEntity.peType.getOffset(), packet.getZ(), packet.getYaw(), packet.getPitch());
 
                 /*ChangeDimensionPacket d = new ChangeDimensionPacket();
 				d.dimension = 0;
@@ -260,11 +256,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             }
         }
 
-        cliEntity.x = packet.getX();
-        cliEntity.y = packet.getY() + Constants.PLAYER_HEAD_OFFSET;
-        cliEntity.z = packet.getZ();
-        cliEntity.yaw = packet.getYaw();
-        cliEntity.pitch = packet.getPitch();
+        cliEntity.absoluteMove(packet.getX(), packet.getY() + cliEntity.peType.getOffset(), packet.getZ(), packet.getYaw(), packet.getPitch());
 
         // send the confirmation
         ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());
