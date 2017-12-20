@@ -34,24 +34,31 @@ public class PCChatPacketTranslator implements IPCPacketTranslator<ServerChatPac
 
     public PEPacket[] translate(UpstreamSession session, ServerChatPacket packet) {
         TextPacket pe = new TextPacket();
-        if (packet.getMessage() instanceof TranslationMessage) {
-            pe.type = TYPE_TRANSLATION;
-            pe.message = pe.message = MessageTranslator.translate(packet.getMessage());
-        } else {
-            pe.type = TYPE_RAW;
-            pe.message = pe.message = MessageTranslator.translate(packet.getMessage());
+        pe.message = pe.message = MessageTranslator.translate(packet.getMessage());
+        switch(packet.getType())
+        {
+        	case NOTIFICATION:
+        		pe.type = TYPE_POPUP;
+        		break;
+        	case CHAT:
+        		if (packet.getMessage() instanceof TranslationMessage) {
+        		pe.type = TYPE_TRANSLATION;
+        		}else {
+        		pe.type = TYPE_RAW;
+        		}
+        		break;
+        	case SYSTEM:
+        		if (packet.getMessage() instanceof TranslationMessage) {
+        		pe.type = TYPE_TRANSLATION;
+        		}else {
+        		pe.type = TYPE_RAW;
+        		}
+        		break;
+        		
         }
+
 
         return new PEPacket[]{pe};
 
-        // TODO: Detect type
-        /*
-		 * Reset the chat message so we can parse the JSON again (if needed)
-         */
- /*
-		 * switch (packet.getType()) { case CHAT: ret.type = ChatPacket.TextType.CHAT;
-		 * break; case NOTIFICATION: case SYSTEM: default: ret.type =
-		 * ChatPacket.TextType.CHAT; break; } return new PEPacket[]{ret};
-         */
     }
 }
