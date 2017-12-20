@@ -11,6 +11,7 @@ target/
 !.gitmodules
 !.mailmap
 !.gitattributes
+!.travis.yml
 worlds
 logs
 console.log
