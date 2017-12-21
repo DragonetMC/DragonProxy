@@ -23,10 +23,12 @@ import org.dragonet.proxy.utilities.Vector3F;
 public class PCEntityVelocityPacketTranslator implements IPCPacketTranslator<ServerEntityVelocityPacket> {
 
     public PEPacket[] translate(UpstreamSession session, ServerEntityVelocityPacket packet) {
+
         CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
         if (entity == null) {
             return null;
         }
+
         entity.motionX = packet.getMotionX();
         entity.motionY = packet.getMotionY();
         entity.motionZ = packet.getMotionZ();
