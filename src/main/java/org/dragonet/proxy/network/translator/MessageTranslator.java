@@ -15,20 +15,70 @@ package org.dragonet.proxy.network.translator;
 import com.github.steveice10.mc.protocol.data.message.ChatColor;
 import com.github.steveice10.mc.protocol.data.message.ChatFormat;
 import com.github.steveice10.mc.protocol.data.message.Message;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.util.List;
 
 public final class MessageTranslator {
 
     public static String translate(Message message) {
+        JsonParser parser = new JsonParser();
+        if(isMessage(message.getText())){
+            JsonObject o = parser.parse(message.getText()).getAsJsonObject();
+            editJson(o);
+            message = Message.fromJson((JsonElement) o);
+        }
         StringBuilder build = new StringBuilder(message.getText());
         for (Message msg : message.getExtra()) {
             build.append(toMinecraftColor(msg.getStyle().getColor()));
             build.append(toMinecraftFormat(msg.getStyle().getFormats()));
-            build.append(msg.getFullText());
+            if(!(msg.getText()==null)){
+                build.append(translate(msg));
+            }
         }
         return build.toString();
+
     }
+    
+    public static boolean isMessage(String text) {
+        JsonParser parser = new JsonParser();
+        try{
+                JsonObject o = parser.parse(text).getAsJsonObject();
+                editJson(o);
+                try{
+                        Message.fromJson((JsonElement) o);
+                }catch(Exception e){
+                        return false;
+                }
+        }catch(Exception e){
+                return false;
+        }
+        return true;
+    }
+    
+    public static void editJson(JsonObject o) {
+        if(o.has("hoverEvent")) {
+            JsonObject sub = (JsonObject) o.get("hoverEvent");
+            JsonElement e = sub.get("value");
+            if(e instanceof JsonArray){
+                JsonObject newobj = new JsonObject();
+                newobj.add("extra", e);
+                newobj.addProperty("text", "");
+                sub.remove("value");
+                sub.add("value", newobj);
+            }
+        }
+        if(o.has("extra")) {
+            JsonArray a = o.getAsJsonArray("extra");
+            for(int i = 0; i<a.size();i++) {
+                editJson((JsonObject)a.get(i));
+            }
+        }
+    }
+    
 
     public static String toMinecraftColor(ChatColor color) {
         String base = "\u00a7";

@@ -18,6 +18,7 @@ import com.github.steveice10.mc.protocol.data.game.chunk.Column;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.dragonet.proxy.data.nbt.NBTIO;
@@ -100,7 +101,7 @@ public class PCMultiChunkDataPacketTranslator implements IPCPacketTranslator<Ser
             pe.blockEntities = new byte[pc.getTileEntities().length];
             for (int i = 0; i < pc.getTileEntities().length; i++) {
                 org.dragonet.proxy.data.nbt.tag.CompoundTag peTag = ItemBlockTranslator.translateBlockEntityToPE(pc.getTileEntities()[i]);
-                pe.blockEntities = NBTIO.write(peTag);
+                pe.blockEntities = NBTIO.write(peTag, ByteOrder.LITTLE_ENDIAN);
             }
         } catch (IOException ex) {
             Logger.getLogger(PCMultiChunkDataPacketTranslator.class.getName()).log(Level.SEVERE, null, ex);
