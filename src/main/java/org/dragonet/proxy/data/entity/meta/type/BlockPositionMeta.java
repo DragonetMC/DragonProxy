@@ -18,23 +18,24 @@ import org.dragonet.proxy.utilities.BinaryStream;
 import org.dragonet.proxy.utilities.BlockPosition;
 
 public class BlockPositionMeta implements IEntityMetaDataObject {
-	// vars
-	public BlockPosition position;
 
-	// constructor
-	public BlockPositionMeta(BlockPosition position) {
-		this.position = position;
-	}
+    public BlockPosition position;
 
-	// public
-	public int type() {
-		return EntityMetaData.Constants.DATA_TYPE_POS;
-	}
+    public BlockPositionMeta(BlockPosition position) {
+        this.position = position;
+    }
 
-	public void encode(BinaryStream out) {
-		out.putSignedBlockPosition(position);
-	}
+    public int type() {
+        return EntityMetaData.Constants.DATA_TYPE_POS;
+    }
 
-	// private
+    public void encode(BinaryStream out) {
+        out.putSignedBlockPosition(position);
+    }
+    
+    @Override
+    public String toString() {
+        return "BlockPosition{" + position.toString() + "}";
+    }
 
 }

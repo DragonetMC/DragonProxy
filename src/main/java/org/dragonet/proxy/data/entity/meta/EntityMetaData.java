@@ -221,5 +221,13 @@ public class EntityMetaData extends BinaryStream {
         ((LongMeta) map.get(Constants.DATA_FLAGS)).data = flag;
     }
 
-    // private
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("EntityMetaData\n");
+        for (Map.Entry<Integer, IEntityMetaDataObject> entry : this.map.entrySet()) {
+            builder.append("- ID: " + entry.getKey() + " " + entry.getValue() + "\n");
+        }
+        return builder.toString();
+    }
 }

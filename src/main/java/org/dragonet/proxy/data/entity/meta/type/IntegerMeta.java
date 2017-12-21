@@ -17,23 +17,23 @@ import org.dragonet.proxy.data.entity.meta.IEntityMetaDataObject;
 import org.dragonet.proxy.utilities.BinaryStream;
 
 public class IntegerMeta implements IEntityMetaDataObject {
-	// vars
-	public int data;
 
-	// constructor
-	public IntegerMeta(int data) {
-		this.data = data;
-	}
+    public int data;
 
-	// public
-	public int type() {
-		return EntityMetaData.Constants.DATA_TYPE_INT;
-	}
+    public IntegerMeta(int data) {
+        this.data = data;
+    }
 
-	public void encode(BinaryStream out) {
-		out.putVarInt(data);
-	}
+    public int type() {
+        return EntityMetaData.Constants.DATA_TYPE_INT;
+    }
 
-	// private
+    public void encode(BinaryStream out) {
+        out.putVarInt(data);
+    }
 
+    @Override
+    public String toString() {
+        return "IntegerMeta{" + data + "}";
+    }
 }
