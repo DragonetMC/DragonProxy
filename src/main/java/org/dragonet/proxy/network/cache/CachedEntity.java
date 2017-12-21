@@ -21,6 +21,7 @@ import org.dragonet.proxy.data.entity.EntityType;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
+import org.dragonet.proxy.utilities.BlockPosition;
 
 public class CachedEntity {
 
@@ -43,6 +44,8 @@ public class CachedEntity {
     public float headYaw;
     public float pitch;
     public boolean shouldMove = false;
+    
+    public BlockPosition spawnPosition;
 
     // cache riding datas for dismount
     public long riding = 0;

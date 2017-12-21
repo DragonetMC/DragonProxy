@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.steveice10.mc.protocol.data.MagicValues;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnExpOrbPacket;
 
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.UpstreamSession;
@@ -161,6 +162,17 @@ public final class EntityCache {
         e.motionY = packet.getMotionY();
         e.motionZ = packet.getMotionZ();
         e.spawned = false; // Server will update its data then we can send it.
+        entities.put(e.proxyEid, e);
+        mapClientToRemote.put(e.proxyEid, e.eid);
+        mapRemoteToClient.put(e.eid, e.proxyEid);
+        return e;
+    }
+
+    //special for exp orbs
+    public CachedEntity newEntity(ServerSpawnExpOrbPacket packet) {
+        CachedEntity e = new CachedEntity(packet.getEntityId(), nextClientEntityId.getAndIncrement(), 0, EntityType.EXP_ORB, ObjectType.EXP_BOTTLE, false, null);
+        e.absoluteMove(packet.getX(), packet.getY(), packet.getZ(),0 ,0);
+        e.spawned = false;
         entities.put(e.proxyEid, e);
         mapClientToRemote.put(e.proxyEid, e.eid);
         mapRemoteToClient.put(e.eid, e.proxyEid);
