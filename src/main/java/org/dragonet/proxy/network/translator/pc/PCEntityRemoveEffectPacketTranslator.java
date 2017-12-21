@@ -24,10 +24,12 @@ import org.dragonet.proxy.protocol.packets.MobEffectPacket;
 public class PCEntityRemoveEffectPacketTranslator implements IPCPacketTranslator<ServerEntityRemoveEffectPacket> {
 
     public PEPacket[] translate(UpstreamSession session, ServerEntityRemoveEffectPacket packet) {
+
         CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
         if (entity == null) {
             return null;
         }
+
         int effectId = MagicValues.value(Integer.class, packet.getEffect());
         if (!entity.effects.contains(effectId)) {
             return null;
