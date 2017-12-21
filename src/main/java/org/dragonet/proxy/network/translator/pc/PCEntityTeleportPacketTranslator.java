@@ -16,11 +16,8 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityTeleportPacket;
-import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.MoveEntityPacket;
-import org.dragonet.proxy.utilities.Constants;
-import org.dragonet.proxy.utilities.DebugTools;
 import org.dragonet.proxy.utilities.Vector3F;
 
 public class PCEntityTeleportPacketTranslator implements IPCPacketTranslator<ServerEntityTeleportPacket> {
@@ -30,8 +27,6 @@ public class PCEntityTeleportPacketTranslator implements IPCPacketTranslator<Ser
         if (e == null) {
             return null;
         }
-        if (e.peType == EntityType.PLAYER)
-            System.out.println(DebugTools.getAllFields(packet));
         
         e.absoluteMove(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch());
 
