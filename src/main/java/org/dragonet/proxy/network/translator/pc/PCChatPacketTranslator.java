@@ -35,29 +35,25 @@ public class PCChatPacketTranslator implements IPCPacketTranslator<ServerChatPac
     public PEPacket[] translate(UpstreamSession session, ServerChatPacket packet) {
         TextPacket pe = new TextPacket();
         pe.message = pe.message = MessageTranslator.translate(packet.getMessage());
-        switch(packet.getType())
-        {
-        	case NOTIFICATION:
-        		pe.type = TYPE_POPUP;
-        		break;
-        	case CHAT:
-        		if (packet.getMessage() instanceof TranslationMessage) {
-        		pe.type = TYPE_TRANSLATION;
-        		}else {
-        		pe.type = TYPE_RAW;
-        		}
-        		break;
-        	case SYSTEM:
-        		if (packet.getMessage() instanceof TranslationMessage) {
-        		pe.type = TYPE_TRANSLATION;
-        		}else {
-        		pe.type = TYPE_RAW;
-        		}
-        		break;
-        		
+        switch(packet.getType()) {
+            case NOTIFICATION:
+                pe.type = TYPE_POPUP;
+                break;
+            case CHAT:
+                if (packet.getMessage() instanceof TranslationMessage) {
+                    pe.type = TYPE_TRANSLATION;
+                } else {
+                    pe.type = TYPE_RAW;
+                }
+                break;
+            case SYSTEM:
+                if (packet.getMessage() instanceof TranslationMessage) {
+                    pe.type = TYPE_TRANSLATION;
+                } else {
+                    pe.type = TYPE_RAW;
+                }
+                break;
         }
-
-
         return new PEPacket[]{pe};
 
     }
