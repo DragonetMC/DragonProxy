@@ -24,6 +24,7 @@ public class PCSetExperiencePacketTranslator implements IPCPacketTranslator<Serv
     public PEPacket[] translate(UpstreamSession session, ServerPlayerSetExperiencePacket packet) {
 
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
+        pk.entries = new PEEntityAttribute[2];
         pk.entries[0] = new PEEntityAttribute(PEEntityAttribute.EXPERIENCE_LEVEL, "minecraft:player.level", 0.00f, 24791.00f, 0.00f, packet.getLevel());
         pk.entries[1] = new PEEntityAttribute(PEEntityAttribute.EXPERIENCE, "minecraft:player.experience", 0.00f, 1.00f, 0.00f, packet.getSlot());//weird
         return new PEPacket[]{pk};
