@@ -22,6 +22,7 @@ public class PCJoinGamePacketTranslator implements IPCPacketTranslator<ServerJoi
 
     public PEPacket[] translate(UpstreamSession session, ServerJoinGamePacket packet) {
         session.getDataCache().put(CacheKey.PLAYER_EID, packet.getEntityId()); // Stores the real entity ID
+        session.getEntityCache().getClientEntity().eid = packet.getEntityId();
 
         // This packet is not fully useable, we cache it for now.
         session.getDataCache().put(CacheKey.PACKET_JOIN_GAME_PACKET, packet);

@@ -17,23 +17,24 @@ import org.dragonet.proxy.data.entity.meta.IEntityMetaDataObject;
 import org.dragonet.proxy.utilities.BinaryStream;
 
 public class ShortMeta implements IEntityMetaDataObject {
-	// vars
-	public short data;
 
-	// constructor
-	public ShortMeta(short data) {
-		this.data = data;
-	}
+    public short data;
 
-	// public
-	public int type() {
-		return EntityMetaData.Constants.DATA_TYPE_SHORT;
-	}
+    public ShortMeta(short data) {
+        this.data = data;
+    }
 
-	public void encode(BinaryStream out) {
-		out.putLShort(data);
-	}
+    public int type() {
+        return EntityMetaData.Constants.DATA_TYPE_SHORT;
+    }
 
-	// private
+    public void encode(BinaryStream out) {
+        out.putLShort(data);
+    }
+
+    @Override
+    public String toString() {
+        return "ShortMeta{" + data + "}";
+    }
 
 }

@@ -17,23 +17,24 @@ import org.dragonet.proxy.data.entity.meta.IEntityMetaDataObject;
 import org.dragonet.proxy.utilities.BinaryStream;
 
 public class FloatMeta implements IEntityMetaDataObject {
-	// vars
-	public float data;
 
-	// constructor
-	public FloatMeta(float data) {
-		this.data = data;
-	}
+    public float data;
 
-	// public
-	public int type() {
-		return EntityMetaData.Constants.DATA_TYPE_FLOAT;
-	}
+    public FloatMeta(float data) {
+        this.data = data;
+    }
 
-	public void encode(BinaryStream out) {
-		out.putLFloat(data);
-	}
+    public int type() {
+        return EntityMetaData.Constants.DATA_TYPE_FLOAT;
+    }
 
-	// private
+    public void encode(BinaryStream out) {
+        out.putLFloat(data);
+    }
+
+    @Override
+    public String toString() {
+        return "FloatMeta{" + data + "}";
+    }
 
 }

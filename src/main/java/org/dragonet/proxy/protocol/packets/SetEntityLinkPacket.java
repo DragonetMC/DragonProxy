@@ -8,9 +8,9 @@ import org.dragonet.proxy.protocol.ProtocolInfo;
  */
 public class SetEntityLinkPacket extends PEPacket {
 
-    public static final byte TYPE_REMOVE = 3;
-    public static final byte TYPE_RIDE = 2;
-    public static final byte TYPE_PASSENGER = 0;
+    public static final byte TYPE_REMOVE = 0;
+    public static final byte TYPE_RIDE = 1;
+    public static final byte TYPE_PASSENGER = 2;
 
     public long riding;
     public long rider;

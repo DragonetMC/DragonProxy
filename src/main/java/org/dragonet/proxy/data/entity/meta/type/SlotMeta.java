@@ -18,23 +18,24 @@ import org.dragonet.proxy.protocol.type.Slot;
 import org.dragonet.proxy.utilities.BinaryStream;
 
 public class SlotMeta implements IEntityMetaDataObject {
-	// vars
-	public Slot slot;
 
-	// constructor
-	public SlotMeta(Slot slot) {
-		this.slot = slot;
-	}
+    public Slot slot;
 
-	// public
-	public int type() {
-		return EntityMetaData.Constants.DATA_TYPE_SLOT;
-	}
+    public SlotMeta(Slot slot) {
+        this.slot = slot;
+    }
 
-	public void encode(BinaryStream out) {
-		out.putSlot(slot);
-	}
+    public int type() {
+        return EntityMetaData.Constants.DATA_TYPE_SLOT;
+    }
 
-	// private
+    public void encode(BinaryStream out) {
+        out.putSlot(slot);
+    }
+
+    @Override
+    public String toString() {
+        return "SlotMeta{" + slot.toString() + "}";
+    }
 
 }

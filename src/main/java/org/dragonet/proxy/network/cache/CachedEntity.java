@@ -21,10 +21,11 @@ import org.dragonet.proxy.data.entity.EntityType;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
+import org.dragonet.proxy.utilities.BlockPosition;
 
 public class CachedEntity {
 
-    public final long eid;
+    public long eid;
     public final long proxyEid;
     public final int pcType;
     public final EntityType peType;
@@ -40,10 +41,14 @@ public class CachedEntity {
     public double motionY;
     public double motionZ;
     public float yaw;
+    public float headYaw;
     public float pitch;
+    public boolean shouldMove = false;
+    
+    public BlockPosition spawnPosition;
 
     // cache riding datas for dismount
-    public long riding;
+    public long riding = 0;
     public Set<Long> passengers = new HashSet();
 
     public EntityMetadata[] pcMeta;
@@ -64,24 +69,38 @@ public class CachedEntity {
     }
 
     public CachedEntity relativeMove(double rx, double ry, double rz, float yaw, float pitch) {
-        x += rx;
-        y += ry;
-        z += rz;
-        this.yaw = yaw;
-        this.pitch = pitch;
+        if (rx != 0 || ry != 0 || rz != 0 || yaw != 0 || pitch != 0)
+        {
+            this.x += rx;
+            this.y += ry;
+            this.z += rz;
+            this.yaw = yaw;
+            this.pitch = pitch;
+            this.shouldMove = true;
+        }
+        return this;
+    }
+
+    public CachedEntity absoluteMove(double x, double y, double z, float yaw, float pitch) {
+        if (x != 0 || y != 0 || z != 0 || yaw != 0 || pitch != 0)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.yaw = yaw;
+            this.pitch = pitch;
+            this.shouldMove = true;
+        }
         return this;
     }
 
     public CachedEntity relativeMove(double rx, double ry, double rz) {
-        x += rx;
-        y += ry;
-        z += rz;
+        this.relativeMove(rx, ry, rz, 0, 0);
         return this;
     }
 
     public CachedEntity relativeMove(float yaw, float pitch) {
-        this.yaw = yaw;
-        this.pitch = pitch;
+        this.relativeMove(yaw, pitch);
         return this;
     }
 }

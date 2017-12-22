@@ -113,6 +113,7 @@ public class EntityMetaData extends BinaryStream {
         /*
 		 * 77 (int) 78 (int)
          */
+        //Generic flags (Boolean)
         public static final int DATA_FLAG_ONFIRE = 0;
         public static final int DATA_FLAG_SNEAKING = 1;
         public static final int DATA_FLAG_RIDING = 2;
@@ -221,5 +222,14 @@ public class EntityMetaData extends BinaryStream {
         ((LongMeta) map.get(Constants.DATA_FLAGS)).data = flag;
     }
 
-    // private
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("EntityMetaData [\n");
+        for (Map.Entry<Integer, IEntityMetaDataObject> entry : this.map.entrySet()) {
+            builder.append("\t- ID: " + entry.getKey() + " " + entry.getValue() + "\n");
+        }
+        builder.append("]");
+        return builder.toString();
+    }
 }

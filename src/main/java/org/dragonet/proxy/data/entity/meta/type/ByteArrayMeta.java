@@ -18,27 +18,35 @@ import org.dragonet.proxy.data.entity.meta.IEntityMetaDataObject;
 import org.dragonet.proxy.utilities.BinaryStream;
 
 public class ByteArrayMeta implements IEntityMetaDataObject {
-	// vars
-	public byte[] data;
 
-	// constructor
-	public ByteArrayMeta(byte[] data) {
-		this.data = data;
-	}
+    public byte[] data;
 
-	public ByteArrayMeta(String data) {
-		this(data.getBytes(StandardCharsets.UTF_8));
-	}
+    public ByteArrayMeta(byte[] data) {
+        this.data = data;
+    }
 
-	// public
-	public int type() {
-		return EntityMetaData.Constants.DATA_TYPE_STRING;
-	}
+    public ByteArrayMeta(String data) {
+        this(data.getBytes(StandardCharsets.UTF_8));
+    }
 
-	public void encode(BinaryStream out) {
-		out.putByteArray(data);
-	}
+    public int type() {
+        return EntityMetaData.Constants.DATA_TYPE_STRING;
+    }
 
-	// private
+    public void encode(BinaryStream out) {
+        out.putByteArray(data);
+    }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("[");
+        for (int i = 0; i < data.length; i++) {
+            builder.append(data[i]);
+            if (i != data.length)
+              builder.append(", ");
+        }
+        builder.append("] = " + new String(data, StandardCharsets.UTF_8));
+        return "ByteArrayMeta{" + builder.toString() + "}";
+    }
 }

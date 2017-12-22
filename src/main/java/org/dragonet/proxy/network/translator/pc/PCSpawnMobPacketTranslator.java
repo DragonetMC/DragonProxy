@@ -28,22 +28,23 @@ public class PCSpawnMobPacketTranslator implements IPCPacketTranslator<ServerSpa
 
     public PEPacket[] translate(UpstreamSession session, ServerSpawnMobPacket packet) {
         try {
-            CachedEntity e = session.getEntityCache().newEntity(packet);
-//            System.out.println("ServerSpawnObjectPacket register " + packet.getEntityId() + " entity " + (packet.getMetadata().length > 0 ? "has meta" : "no meta"));
-            if (e == null) {
+            CachedEntity entity = session.getEntityCache().newEntity(packet);
+            if (entity == null) {
                 return null;
             }
 
             AddEntityPacket pk = new AddEntityPacket();
-            pk.rtid = e.proxyEid;
-            pk.eid = e.proxyEid;
-            pk.type = e.peType.getPeType();
-            pk.position = new Vector3F((float) e.x, (float) e.y, (float) e.z);
-            pk.motion = new Vector3F((float) e.motionX, (float) e.motionY, (float) e.motionZ);
-            pk.meta = EntityMetaTranslator.translateToPE(e.pcMeta, e.peType);
+            pk.rtid = entity.proxyEid;
+            pk.eid = entity.proxyEid;
+            pk.type = entity.peType.getPeType();
+            pk.position = new Vector3F((float) entity.x, (float) entity.y - entity.peType.getOffset(), (float) entity.z);
+            pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
+            pk.yaw = entity.yaw + 90;
+            pk.pitch = entity.pitch;
+            pk.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, entity.peType);
             // TODO: Hack for now. ;P
             pk.attributes = new PEEntityAttribute[]{};
-            e.spawned = true;
+            entity.spawned = true;
             return new PEPacket[]{pk};
         } catch (Exception e) {
             e.printStackTrace();

@@ -30,7 +30,9 @@ import org.dragonet.proxy.network.translator.pc.*;
 import org.dragonet.proxy.network.translator.pe.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerChatPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerRespawnPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerSetExperiencePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.*;
@@ -80,6 +82,11 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerPlayerHealthPacket.class, new PCUpdateHealthPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityAnimationPacket.class, new PCAnimationPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntitySetPassengersPacket.class, new PCEntitySetPassengerPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerEntityHeadLookPacket.class, new PCEntityHeadLookPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerEntityTeleportPacket.class, new PCEntityTeleportPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerRespawnPacket.class, new PCRespawnPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerSpawnPositionPacket.class, new PCSpawnPositionPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerPlayerSetExperiencePacket.class, new PCSetExperiencePacketTranslator());
         //
         // //Inventory
         PC_TO_PE_TRANSLATOR.put(ServerOpenWindowPacket.class, new PCOpenWindowPacketTranslator());
