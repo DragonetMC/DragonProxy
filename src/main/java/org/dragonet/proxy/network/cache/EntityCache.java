@@ -72,6 +72,14 @@ public final class EntityCache {
     public CachedEntity getClientEntity() {
         return entities.get(1L);
     }
+    
+    public void updateClientEntityEID(long eid)
+    {
+        CachedEntity clientEntity = entities.get(1L);
+        clientEntity.eid = eid;
+        mapClientToRemote.put(clientEntity.proxyEid, clientEntity.eid);
+        mapRemoteToClient.put(clientEntity.eid, clientEntity.proxyEid);
+    }
 
     public CachedEntity getByRemoteEID(long eid) {
         if (!mapRemoteToClient.containsKey(eid)) {
