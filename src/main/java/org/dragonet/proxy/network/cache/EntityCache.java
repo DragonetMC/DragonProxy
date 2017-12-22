@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.steveice10.mc.protocol.data.MagicValues;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnExpOrbPacket;
 
 import org.dragonet.proxy.data.entity.EntityType;
@@ -24,6 +25,7 @@ import org.dragonet.proxy.network.UpstreamSession;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnObjectPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
+import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.utilities.Constants;
 
@@ -171,7 +173,7 @@ public final class EntityCache {
     //special for exp orbs
     public CachedEntity newEntity(ServerSpawnExpOrbPacket packet) {
         CachedEntity e = new CachedEntity(packet.getEntityId(), nextClientEntityId.getAndIncrement(), 0, EntityType.EXP_ORB, ObjectType.EXP_BOTTLE, false, null);
-        e.absoluteMove(packet.getX(), packet.getY(), packet.getZ(),0 ,0);
+        e.absoluteMove(packet.getX(), packet.getY(), packet.getZ(), 0, 0);
         e.spawned = false;
         entities.put(e.proxyEid, e);
         mapClientToRemote.put(e.proxyEid, e.eid);

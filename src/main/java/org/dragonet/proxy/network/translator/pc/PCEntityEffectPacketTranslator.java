@@ -41,8 +41,7 @@ public class PCEntityEffectPacketTranslator implements IPCPacketTranslator<Serve
         }
 
         MobEffectPacket eff = new MobEffectPacket();
-        eff.rtid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 1L
-                : entity.proxyEid;
+        eff.rtid = entity.proxyEid;
         eff.effectId = effect.getEffect();
         if (entity.effects.contains(effectId)) {
             eff.eventId = MobEffectPacket.EVENT_MODIFY;

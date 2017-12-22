@@ -25,10 +25,10 @@ import org.dragonet.proxy.utilities.DebugTools;
 public class PEMovePlayerPacketTranslator implements IPEPacketTranslator<MovePlayerPacket> {
 
     public Packet[] translate(UpstreamSession session, MovePlayerPacket packet) {
-        CachedEntity cliEntity = session.getEntityCache().getClientEntity();
+        CachedEntity entity = session.getEntityCache().getClientEntity();
 
         //Riding case
-        if (cliEntity.riding != 0 && packet.ridingRuntimeId != 0) {
+        if (entity.riding != 0 && packet.ridingRuntimeId != 0) {
 //            System.out.println("MovePlayerPacket Vehicle" + DebugTools.getAllFields(packet));
             ClientVehicleMovePacket pk = new ClientVehicleMovePacket(
                     packet.position.x,

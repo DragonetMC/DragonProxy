@@ -25,7 +25,7 @@ import org.dragonet.proxy.utilities.BlockPosition;
 
 public class CachedEntity {
 
-    public final long eid;
+    public long eid;
     public final long proxyEid;
     public final int pcType;
     public final EntityType peType;

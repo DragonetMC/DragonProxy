@@ -34,9 +34,9 @@ public class PCSpawnPlayerPacketTranslator implements IPCPacketTranslator<Server
                 pkAddPlayer.yaw = packet.getYaw();
                 pkAddPlayer.pitch = packet.getPitch();
 
-                pkAddPlayer.meta = EntityMetaTranslator.translateToPE(entity.pcMeta, EntityType.PLAYER);
+                pkAddPlayer.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, EntityType.PLAYER);
                 pkAddPlayer.meta.set(EntityMetaData.Constants.DATA_NAMETAG, new ByteArrayMeta(playerListEntry.getProfile().getName())); //hacky for now
-
+                entity.spawned = true;
                 PlayerSkinPacket skin = new PlayerSkinPacket(packet.getUUID());
 
                 return new PEPacket[]{pkAddPlayer, skin};
