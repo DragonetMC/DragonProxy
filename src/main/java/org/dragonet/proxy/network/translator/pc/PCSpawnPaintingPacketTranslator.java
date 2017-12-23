@@ -28,8 +28,7 @@ public class PCSpawnPaintingPacketTranslator implements IPCPacketTranslator<Serv
             return null;
         }
 
-//        if (session.isLoggedIn())
-//        {
+//        if (session.isLoggedIn()) {
 //            AddPaintingPacket pk = new AddPaintingPacket();
 //            pk.rtid = entity.proxyEid;
 //            pk.eid = entity.proxyEid;

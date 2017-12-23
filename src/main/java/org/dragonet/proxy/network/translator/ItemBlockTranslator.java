@@ -259,11 +259,13 @@ public class ItemBlockTranslator {
                     break;
                 case "minecraft:sign":
                     output.putString("id", "Sign");
-                    output.putString("Text",
-                            "\n" + MessageTranslator.translate(Message.fromString(output.getString("Text1")))
-                            + "\n" + MessageTranslator.translate(Message.fromString(output.getString("Text2")))
-                            + "\n" + MessageTranslator.translate(Message.fromString(output.getString("Text3")))
-                            + "\n" + MessageTranslator.translate(Message.fromString(output.getString("Text4"))));
+                    if (!output.contains("Text")) {
+                        output.putString("Text",
+                                Message.fromString(output.getString("Text1")).getFullText()
+                                + "\n" + Message.fromString(output.getString("Text2")).getFullText()
+                                + "\n" + Message.fromString(output.getString("Text3")).getFullText()
+                                + "\n" + Message.fromString(output.getString("Text4")).getFullText());
+                    }
                     output.remove("Text1");
                     output.remove("Text2");
                     output.remove("Text3");
@@ -329,7 +331,8 @@ public class ItemBlockTranslator {
                     break;
             }
         }
-        System.out.println("translateBlockEntityToPE " + output.toString());
+        if (output.getString("id") == "ShulkerBox" || output.getString("id") == "Bed" || output.getString("id") == "Chest")
+            System.out.println("translateBlockEntityToPE " + output.toString());
         return output;
     }
 

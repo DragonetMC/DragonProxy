@@ -40,10 +40,6 @@ public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<Ser
             return null;
         }
 
-        if (entity.peType == EntityType.PAINTING) {
-            System.out.println("PAINTING !");
-        }
-
         entity.pcMeta = packet.getMetadata();
         if (entity.spawned) {
             SetEntityDataPacket pk = new SetEntityDataPacket();
