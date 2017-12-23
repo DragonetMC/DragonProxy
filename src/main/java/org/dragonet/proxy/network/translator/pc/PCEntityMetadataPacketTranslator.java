@@ -25,7 +25,9 @@ import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.AddEntityPacket;
 import org.dragonet.proxy.protocol.packets.AddItemEntityPacket;
+import org.dragonet.proxy.protocol.packets.AddPaintingPacket;
 import org.dragonet.proxy.protocol.packets.SetEntityDataPacket;
+import org.dragonet.proxy.utilities.BlockPosition;
 import org.dragonet.proxy.utilities.DebugTools;
 import org.dragonet.proxy.utilities.Vector3F;
 
@@ -36,6 +38,10 @@ public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<Ser
 
         if (entity == null) {
             return null;
+        }
+
+        if (entity.peType == EntityType.PAINTING) {
+            System.out.println("PAINTING !");
         }
 
         entity.pcMeta = packet.getMetadata();
@@ -55,6 +61,15 @@ public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<Ser
                 pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
                 entity.spawned = true;
                 session.sendPacket(pk);
+            } else if (entity.peType == EntityType.PAINTING) {
+//                AddPaintingPacket pk = new AddPaintingPacket();
+//                pk.rtid = entity.proxyEid;
+//                pk.eid = entity.proxyEid;
+//                pk.pos = new BlockPosition((int) entity.x, (int) entity.y, (int) entity.z);
+//                pk.direction = 1;
+//                pk.title = "Kebab";
+//                entity.spawned = true;
+//                session.sendPacket(pk);
             } else {
                 AddEntityPacket pk = new AddEntityPacket();
                 pk.rtid = entity.proxyEid;
@@ -62,16 +77,11 @@ public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<Ser
                 pk.type = entity.peType.getPeType();
                 pk.position = new Vector3F((float) entity.x, (float) entity.y + entity.peType.getOffset(), (float) entity.z);
                 pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
-                pk.yaw = (byte) entity.yaw;
+                pk.yaw = (byte) (entity.yaw + 90 / (360d / 256d));
                 pk.pitch = entity.pitch;
                 pk.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, entity.peType);
                 entity.spawned = true;
                 // TODO: Hack for now. ;P
-                if (entity.peType == EntityType.PLAYER) {
-                    System.out.println("Player meta sent");
-                    System.out.println(entity.pcMeta.toString());
-                    System.out.println(pk.meta.toString());
-                }
                 pk.attributes = new PEEntityAttribute[]{};
                 session.sendPacket(pk);
             }
