@@ -37,10 +37,6 @@ public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<Ser
         if (entity == null) {
             return null;
         }
-        
-        if (entity.peType == EntityType.PLAYER) {
-            System.out.println();
-        }
 
         entity.pcMeta = packet.getMetadata();
         if (entity.spawned) {
@@ -77,7 +73,7 @@ public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<Ser
                     System.out.println(pk.meta.toString());
                 }
                 pk.attributes = new PEEntityAttribute[]{};
-//                session.sendPacket(pk);
+                session.sendPacket(pk);
             }
         }
         return null;
