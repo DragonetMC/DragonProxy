@@ -34,6 +34,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.ServerRespawnPacke
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerSetExperiencePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPaintingPacket;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.*;
 
@@ -87,6 +88,7 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerRespawnPacket.class, new PCRespawnPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerSpawnPositionPacket.class, new PCSpawnPositionPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayerSetExperiencePacket.class, new PCSetExperiencePacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerSpawnPaintingPacket.class, new PCSpawnPaintingPacketTranslator());
         //
         // //Inventory
         PC_TO_PE_TRANSLATOR.put(ServerOpenWindowPacket.class, new PCOpenWindowPacketTranslator());
