@@ -17,20 +17,17 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.steveice10.mc.protocol.data.MagicValues;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
-import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnExpOrbPacket;
 
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.UpstreamSession;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnObjectPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPaintingPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
-import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
-import org.dragonet.proxy.utilities.Constants;
 
 public final class EntityCache {
-    // vars
 
     private final UpstreamSession upstream;
     // proxy eid -> entity
@@ -44,13 +41,11 @@ public final class EntityCache {
     private final Map<Long, Long> mapRemoteToClient = Collections.synchronizedMap(new HashMap<>());
     private final Map<Long, Long> mapClientToRemote = Collections.synchronizedMap(new HashMap<>());
 
-    // constructor
     public EntityCache(UpstreamSession upstream) {
         this.upstream = upstream;
         reset(false);
     }
 
-    // public
     public UpstreamSession getUpstream() {
         return upstream;
     }
@@ -72,9 +67,8 @@ public final class EntityCache {
     public CachedEntity getClientEntity() {
         return entities.get(1L);
     }
-    
-    public void updateClientEntityEID(long eid)
-    {
+
+    public void updateClientEntityEID(long eid) {
         CachedEntity clientEntity = entities.get(1L);
         clientEntity.eid = eid;
         mapClientToRemote.put(clientEntity.proxyEid, clientEntity.eid);
@@ -129,6 +123,16 @@ public final class EntityCache {
         e.motionY = packet.getMotionY();
         e.motionZ = packet.getMotionZ();
         e.pcMeta = packet.getMetadata();
+        e.spawned = false;
+        entities.put(e.proxyEid, e);
+        mapClientToRemote.put(e.proxyEid, e.eid);
+        mapRemoteToClient.put(e.eid, e.proxyEid);
+        return e;
+    }
+
+    public CachedEntity newEntity(ServerSpawnPaintingPacket packet) {
+        CachedEntity e = new CachedEntity(packet.getEntityId(), nextClientEntityId.getAndIncrement(), -1, EntityType.PAINTING, null, false, null);
+        e.absoluteMove(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ(), 0, 0);
         e.spawned = false;
         entities.put(e.proxyEid, e);
         mapClientToRemote.put(e.proxyEid, e.eid);
@@ -201,6 +205,4 @@ public final class EntityCache {
 		 * e.z += e.motionZ; return e; });
          */
     }
-
-    // private
 }
