@@ -18,6 +18,7 @@ import java.util.Map;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockFace;
+import com.github.steveice10.mc.protocol.data.message.Message;
 import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
 import com.github.steveice10.opennbt.tag.builtin.IntTag;
 import com.github.steveice10.opennbt.tag.builtin.StringTag;
@@ -245,7 +246,7 @@ public class ItemBlockTranslator {
             switch (output.getString("id")) {
                 case "minecraft:bed":
                     output.putString("id", "Bed");
-                    output.putByte("color", output.getInt("color")); //TODO check colors
+                    output.putByte("color", 0); //TODO check colors
                     break;
                 case "minecraft:chest":
                     output.putString("id", "Chest");
@@ -258,9 +259,22 @@ public class ItemBlockTranslator {
                     break;
                 case "minecraft:sign":
                     output.putString("id", "Sign");
+                    output.putString("Text",
+                            "\n" + MessageTranslator.translate(Message.fromString(output.getString("Text1")))
+                            + "\n" + MessageTranslator.translate(Message.fromString(output.getString("Text2")))
+                            + "\n" + MessageTranslator.translate(Message.fromString(output.getString("Text3")))
+                            + "\n" + MessageTranslator.translate(Message.fromString(output.getString("Text4"))));
+                    output.remove("Text1");
+                    output.remove("Text2");
+                    output.remove("Text3");
+                    output.remove("Text4");
                     break;
                 case "minecraft:flower_pot":
                     output.putString("id", "FlowerPot");
+                    output.putInt("data", output.getInt("Data"));
+                    output.remove("Data");
+                    output.putShort("item", 0);
+                    output.remove("Item");
                     break;
                 case "minecraft:hopper":
                     output.putString("id", "Hopper");
@@ -315,8 +329,7 @@ public class ItemBlockTranslator {
                     break;
             }
         }
-        output.putBoolean("isMovable", false);
-
+        System.out.println("translateBlockEntityToPE " + output.toString());
         return output;
     }
 

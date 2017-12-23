@@ -21,6 +21,9 @@ import org.dragonet.proxy.data.entity.EntityType;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
+import java.util.HashMap;
+import java.util.Map;
+import org.dragonet.proxy.data.entity.PEEntityAttribute;
 import org.dragonet.proxy.utilities.BlockPosition;
 
 public class CachedEntity {
@@ -54,6 +57,7 @@ public class CachedEntity {
     public EntityMetadata[] pcMeta;
     public boolean spawned;
     public final Set<Integer> effects = Collections.synchronizedSet(new HashSet<Integer>());
+    public Map<Integer, PEEntityAttribute> attributes = Collections.synchronizedMap(new HashMap());
 
     public CachedEntity(long eid, long proxyEid, int pcType, EntityType peType, ObjectType objType, boolean player,
             UUID playerUniqueId) {

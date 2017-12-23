@@ -1,5 +1,8 @@
 package org.dragonet.proxy.protocol.packets;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import org.dragonet.proxy.data.entity.PEEntityAttribute;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.ProtocolInfo;
@@ -10,20 +13,22 @@ import org.dragonet.proxy.protocol.ProtocolInfo;
 public class UpdateAttributesPacket extends PEPacket {
 
     public long rtid;
-    public PEEntityAttribute[] entries;
+    public Collection<PEEntityAttribute> entries;
 
     public UpdateAttributesPacket() {
 
     }
 
+    @Override
     public int pid() {
         return ProtocolInfo.UPDATE_ATTRIBUTES_PACKET;
     }
 
+    @Override
     public void encodePayload() {
         putUnsignedVarLong(rtid);
-        if (entries != null && entries.length > 0) {
-            putUnsignedVarInt(entries.length);
+        if (entries != null && entries.size() > 0) {
+            putUnsignedVarInt(entries.size());
             for (PEEntityAttribute attr : entries) {
                 putLFloat(attr.min);
                 putLFloat(attr.max);
@@ -36,6 +41,7 @@ public class UpdateAttributesPacket extends PEPacket {
         }
     }
 
+    @Override
     public void decodePayload() {
 
     }

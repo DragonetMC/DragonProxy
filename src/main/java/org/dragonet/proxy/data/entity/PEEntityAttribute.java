@@ -87,6 +87,12 @@ public class PEEntityAttribute {
         this.defaultValue = defaultValue;
         this.currentValue = currentValue;
     }
+    
+    public PEEntityAttribute setValue(float currentValue)
+    {
+        this.currentValue = currentValue;
+        return this;
+    }
 
     public PEEntityAttribute clone() {
         return new PEEntityAttribute(id, name, min, max, defaultValue, currentValue);

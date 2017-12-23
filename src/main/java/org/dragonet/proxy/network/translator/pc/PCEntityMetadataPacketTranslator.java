@@ -82,7 +82,7 @@ public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<Ser
                 pk.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, entity.peType);
                 entity.spawned = true;
                 // TODO: Hack for now. ;P
-                pk.attributes = new PEEntityAttribute[]{};
+                pk.attributes = entity.attributes.values();
                 session.sendPacket(pk);
             }
         }

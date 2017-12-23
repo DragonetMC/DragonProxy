@@ -16,7 +16,6 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
-import org.dragonet.proxy.data.entity.PEEntityAttribute;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.AddEntityPacket;
@@ -41,7 +40,7 @@ public class PCSpawnMobPacketTranslator implements IPCPacketTranslator<ServerSpa
             pk.pitch = entity.pitch;
             pk.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, entity.peType);
             // TODO: Hack for now. ;P
-            pk.attributes = new PEEntityAttribute[]{};
+            pk.attributes = entity.attributes.values();
             entity.spawned = true;
             return new PEPacket[]{pk};
         } catch (Exception e) {

@@ -1,5 +1,6 @@
 package org.dragonet.proxy.protocol.packets;
 
+import java.util.Collection;
 import org.dragonet.proxy.data.entity.PEEntityAttribute;
 import org.dragonet.proxy.data.entity.meta.EntityMetaData;
 import org.dragonet.proxy.protocol.PEPacket;
@@ -20,7 +21,7 @@ public class AddEntityPacket extends PEPacket {
     public float pitch;
     public float yaw;
     public EntityMetaData meta;
-    public PEEntityAttribute[] attributes;
+    public Collection<PEEntityAttribute> attributes;
     public PEEntityLink[] links;
 
     public AddEntityPacket() {
@@ -42,8 +43,8 @@ public class AddEntityPacket extends PEPacket {
         putLFloat(pitch);
         putLFloat(yaw);
 
-        if (attributes.length > 0) {
-            putUnsignedVarInt(attributes.length);
+        if (attributes!= null && attributes.size() > 0) {
+            putUnsignedVarInt(attributes.size());
             for (PEEntityAttribute attr : attributes) {
                 putString(attr.name);
                 putLFloat(attr.min);
@@ -85,21 +86,22 @@ public class AddEntityPacket extends PEPacket {
         yaw = getLFloat();
 
         int lenAttr = (int) getUnsignedVarInt();
-        attributes = new PEEntityAttribute[lenAttr];
-        if (lenAttr > 0) {
-            for (int i = 0; i < lenAttr; i++) {
-                String name = getString();
-                float min = getLFloat();
-                float current = getLFloat();
-                float max = getLFloat();
-                attributes[i] = PEEntityAttribute.findAttribute(name);
-                if (attributes[i] != null) {
-                    attributes[i].min = min;
-                    attributes[i].max = max;
-                    attributes[i].currentValue = current;
-                }
-            }
-        }
+        
+//        attributes = new PEEntityAttribute[lenAttr];
+//        if (lenAttr > 0) {
+//            for (int i = 0; i < lenAttr; i++) {
+//                String name = getString();
+//                float min = getLFloat();
+//                float current = getLFloat();
+//                float max = getLFloat();
+//                attributes[i] = PEEntityAttribute.findAttribute(name);
+//                if (attributes[i] != null) {
+//                    attributes[i].min = min;
+//                    attributes[i].max = max;
+//                    attributes[i].currentValue = current;
+//                }
+//            }
+//        }
 
         // TODO: read meta!!
         int lenLinks = (int) getUnsignedVarInt();

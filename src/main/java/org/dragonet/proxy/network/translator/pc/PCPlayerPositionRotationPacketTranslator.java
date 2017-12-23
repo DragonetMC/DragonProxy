@@ -33,6 +33,7 @@ import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import org.dragonet.proxy.data.entity.EntityType;
@@ -93,13 +94,21 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
 
             UpdateAttributesPacket attr = new UpdateAttributesPacket();
             attr.rtid = entityPlayer.proxyEid;
-            attr.entries = new PEEntityAttribute[]{PEEntityAttribute.findAttribute(PEEntityAttribute.ABSORPTION),
-                PEEntityAttribute.findAttribute(PEEntityAttribute.EXHAUSTION),
-                PEEntityAttribute.findAttribute(PEEntityAttribute.HUNGER),
-                PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE_LEVEL),
-                PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE),
-                PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE_LEVEL),
-                PEEntityAttribute.findAttribute(PEEntityAttribute.MOVEMENT_SPEED),};
+            if (entityPlayer.attributes.isEmpty())
+            {
+                attr.entries = new ArrayList();
+                attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.ABSORPTION));
+                attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.EXHAUSTION));
+                attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.HUNGER));
+                attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE_LEVEL));
+                attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE));
+                attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE_LEVEL));
+                attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.MOVEMENT_SPEED));
+            }
+            else
+            {
+                attr.entries = entityPlayer.attributes.values();
+            }
             session.sendPacket(attr);
 
             AdventureSettingsPacket adv = new AdventureSettingsPacket();
@@ -235,7 +244,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                     pk.pitch = entity.pitch;
                     pk.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, entity.peType);
                     // TODO: Hack for now. ;P
-                    pk.attributes = new PEEntityAttribute[]{};
+                    pk.attributes = entity.attributes.values();
                     session.sendPacket(pk);
                 }
             }
