@@ -8,7 +8,6 @@ import org.dragonet.proxy.protocol.type.Slot;
  */
 public abstract class InventoryAction {
 
-
     private long creationTime;
 
     protected Slot sourceItem;
