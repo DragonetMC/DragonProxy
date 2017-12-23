@@ -42,6 +42,16 @@ public class PEPlayerActionPacketTranslator implements IPEPacketTranslator<Playe
                     (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.STOP_SPRINTING);
             return new Packet[]{stat};
         }
+        if (packet.action == PlayerActionPacket.ACTION_START_GLIDE) {
+            ClientPlayerStatePacket stat = new ClientPlayerStatePacket(
+                    (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.START_ELYTRA_FLYING);
+            return new Packet[]{stat};
+        }
+        if (packet.action == PlayerActionPacket.ACTION_STOP_GLIDE) {
+            ClientPlayerStatePacket stat = new ClientPlayerStatePacket(
+                    (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.START_ELYTRA_FLYING);
+            return new Packet[]{stat};
+        }
         if (packet.action == PlayerActionPacket.ACTION_START_SNEAK) {
             ClientPlayerStatePacket stat = new ClientPlayerStatePacket(
                     (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.START_SNEAKING);

@@ -12,24 +12,24 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityPositionPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityTeleportPacket;
+import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.MoveEntityPacket;
 import org.dragonet.proxy.utilities.Vector3F;
 
-public class PCEntityPositionPacketTranslator implements IPCPacketTranslator<ServerEntityPositionPacket> {
+public class PCEntityTeleportPacketTranslator implements IPCPacketTranslator<ServerEntityTeleportPacket> {
 
-    public PEPacket[] translate(UpstreamSession session, ServerEntityPositionPacket packet) {
-
+    public PEPacket[] translate(UpstreamSession session, ServerEntityTeleportPacket packet) {
         CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
         if (entity == null) {
             return null;
         }
 
-        entity.relativeMove(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ(), packet.getYaw(), packet.getPitch());
+        entity.absoluteMove(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch());
 
         if (entity.shouldMove) {
             MoveEntityPacket pk = new MoveEntityPacket();

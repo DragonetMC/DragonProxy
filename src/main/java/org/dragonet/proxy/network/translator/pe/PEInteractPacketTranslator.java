@@ -26,23 +26,22 @@ import org.dragonet.proxy.protocol.packets.InteractPacket;
 public class PEInteractPacketTranslator implements IPEPacketTranslator<InteractPacket> {
 
     public Packet[] translate(UpstreamSession session, InteractPacket packet) {
-        CachedEntity e = session.getEntityCache().getByLocalEID(packet.targetRtid);
-        if (e == null) {
+
+        CachedEntity entity = session.getEntityCache().getByLocalEID(packet.targetRtid);
+        if (entity == null) {
             return null;
         }
 
         switch (packet.type) {
             case InteractPacket.ACTION_RIGHT_CLICK:
-                return new Packet[]{new ClientPlayerInteractEntityPacket((int) (e.eid), InteractAction.ATTACK)};
+                return new Packet[]{new ClientPlayerInteractEntityPacket((int) (entity.eid), InteractAction.ATTACK)};
             case InteractPacket.ACTION_LEFT_CLICK:
-                return new Packet[]{new ClientPlayerInteractEntityPacket((int) (e.eid), InteractAction.INTERACT)};
+                return new Packet[]{new ClientPlayerInteractEntityPacket((int) (entity.eid), InteractAction.INTERACT)};
             case InteractPacket.ACTION_LEAVE_VEHICLE:
-                return new Packet[]{new ClientPlayerStatePacket(
-                        (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.START_SNEAKING)};
+                return new Packet[]{new ClientPlayerStatePacket((int) (entity.eid), PlayerState.START_SNEAKING)};
         }
 
 //        System.out.println("InteractPacket type : " + packet.type + " on " + packet.targetRtid);
-
         return null;
     }
 }

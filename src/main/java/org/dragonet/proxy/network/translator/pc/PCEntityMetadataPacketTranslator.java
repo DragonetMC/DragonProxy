@@ -26,35 +26,36 @@ import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.AddEntityPacket;
 import org.dragonet.proxy.protocol.packets.AddItemEntityPacket;
 import org.dragonet.proxy.protocol.packets.SetEntityDataPacket;
+import org.dragonet.proxy.utilities.DebugTools;
 import org.dragonet.proxy.utilities.Vector3F;
 
 public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<ServerEntityMetadataPacket> {
 
     public PEPacket[] translate(UpstreamSession session, ServerEntityMetadataPacket packet) {
         CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
-//        System.out.println("ServerEntityMetadataPacket entity " + packet.getEntityId() + " update ");
+
         if (entity == null) {
-            if (packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID)) {
-                entity = session.getEntityCache().getClientEntity();
-            } else {
-                return null;
-            }
             return null;
         }
+        
+        if (entity.peType == EntityType.PLAYER) {
+            System.out.println();
+        }
+
         entity.pcMeta = packet.getMetadata();
         if (entity.spawned) {
             SetEntityDataPacket pk = new SetEntityDataPacket();
             pk.rtid = entity.proxyEid;
-            pk.meta = EntityMetaTranslator.translateToPE(packet.getMetadata(), entity.peType);
+            pk.meta = EntityMetaTranslator.translateToPE(session, packet.getMetadata(), entity.peType);
             session.sendPacket(pk);
         } else {
             if (entity.peType == EntityType.ITEM) {
                 AddItemEntityPacket pk = new AddItemEntityPacket();
                 pk.rtid = entity.proxyEid;
                 pk.eid = entity.proxyEid;
-                pk.metadata = EntityMetaTranslator.translateToPE(packet.getMetadata(), entity.peType);
+                pk.metadata = EntityMetaTranslator.translateToPE(session, packet.getMetadata(), entity.peType);
                 pk.item = ((SlotMeta) pk.metadata.map.get(EntityMetaData.Constants.DATA_TYPE_SLOT)).slot;
-                pk.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
+                pk.position = new Vector3F((float) entity.x, (float) entity.y + entity.peType.getOffset(), (float) entity.z);
                 pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
                 entity.spawned = true;
                 session.sendPacket(pk);
@@ -63,12 +64,20 @@ public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<Ser
                 pk.rtid = entity.proxyEid;
                 pk.eid = entity.proxyEid;
                 pk.type = entity.peType.getPeType();
-                pk.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
+                pk.position = new Vector3F((float) entity.x, (float) entity.y + entity.peType.getOffset(), (float) entity.z);
                 pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
-                pk.meta = EntityMetaTranslator.translateToPE(entity.pcMeta, entity.peType);
+                pk.yaw = (byte) entity.yaw;
+                pk.pitch = entity.pitch;
+                pk.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, entity.peType);
+                entity.spawned = true;
                 // TODO: Hack for now. ;P
+                if (entity.peType == EntityType.PLAYER) {
+                    System.out.println("Player meta sent");
+                    System.out.println(entity.pcMeta.toString());
+                    System.out.println(pk.meta.toString());
+                }
                 pk.attributes = new PEEntityAttribute[]{};
-                session.sendPacket(pk);
+//                session.sendPacket(pk);
             }
         }
         return null;

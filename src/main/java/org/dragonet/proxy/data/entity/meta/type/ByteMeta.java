@@ -17,23 +17,24 @@ import org.dragonet.proxy.data.entity.meta.IEntityMetaDataObject;
 import org.dragonet.proxy.utilities.BinaryStream;
 
 public class ByteMeta implements IEntityMetaDataObject {
-	// vars
-	public byte data;
 
-	// construcor
-	public ByteMeta(byte data) {
-		this.data = data;
-	}
+    public byte data;
 
-	// public
-	public int type() {
-		return EntityMetaData.Constants.DATA_TYPE_BYTE;
-	}
+    public ByteMeta(byte data) {
+        this.data = data;
+    }
 
-	public void encode(BinaryStream out) {
-		out.putByte(data);
-	}
+    public int type() {
+        return EntityMetaData.Constants.DATA_TYPE_BYTE;
+    }
 
-	// private
+    public void encode(BinaryStream out) {
+        out.putByte(data);
+    }
+
+    @Override
+    public String toString() {
+        return "ByteMeta{" + new Integer(data) + "}";
+    }
 
 }

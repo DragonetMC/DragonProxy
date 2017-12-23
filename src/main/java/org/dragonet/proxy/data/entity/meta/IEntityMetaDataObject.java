@@ -15,7 +15,8 @@ package org.dragonet.proxy.data.entity.meta;
 import org.dragonet.proxy.utilities.BinaryStream;
 
 public interface IEntityMetaDataObject {
-	int type();
 
-	void encode(BinaryStream out);
+    int type();
+
+    void encode(BinaryStream out);
 }

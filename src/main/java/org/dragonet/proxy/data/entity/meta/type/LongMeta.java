@@ -17,23 +17,24 @@ import org.dragonet.proxy.data.entity.meta.IEntityMetaDataObject;
 import org.dragonet.proxy.utilities.BinaryStream;
 
 public class LongMeta implements IEntityMetaDataObject {
-	// vars
-	public long data;
 
-	// constructor
-	public LongMeta(long data) {
-		this.data = data;
-	}
+    public long data;
 
-	// public
-	public int type() {
-		return EntityMetaData.Constants.DATA_TYPE_LONG;
-	}
+    public LongMeta(long data) {
+        this.data = data;
+    }
 
-	public void encode(BinaryStream out) {
-		out.putVarLong(data);
-	}
+    public int type() {
+        return EntityMetaData.Constants.DATA_TYPE_LONG;
+    }
 
-	// private
+    public void encode(BinaryStream out) {
+        out.putVarLong(data);
+    }
+
+    @Override
+    public String toString() {
+        return "LongMeta{" + data + "}";
+    }
 
 }
