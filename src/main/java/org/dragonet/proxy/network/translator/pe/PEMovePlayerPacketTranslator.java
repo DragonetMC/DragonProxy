@@ -18,8 +18,8 @@ import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPEPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientVehicleMovePacket;
+import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.protocol.packets.MovePlayerPacket;
-import org.dragonet.proxy.utilities.Constants;
 import org.dragonet.proxy.utilities.DebugTools;
 
 public class PEMovePlayerPacketTranslator implements IPEPacketTranslator<MovePlayerPacket> {
@@ -27,12 +27,11 @@ public class PEMovePlayerPacketTranslator implements IPEPacketTranslator<MovePla
     public Packet[] translate(UpstreamSession session, MovePlayerPacket packet) {
         CachedEntity entity = session.getEntityCache().getClientEntity();
 
-        //Riding case
-        if (entity.riding != 0 && packet.ridingRuntimeId != 0) {
+        if (entity.riding != 0 && packet.ridingRuntimeId != 0) { //Riding case
 //            System.out.println("MovePlayerPacket Vehicle" + DebugTools.getAllFields(packet));
             ClientVehicleMovePacket pk = new ClientVehicleMovePacket(
                     packet.position.x,
-                    packet.position.y - Constants.PLAYER_HEAD_OFFSET,
+                    packet.position.y - EntityType.PLAYER.getOffset(),
                     packet.position.z,
                     packet.yaw,
                     packet.pitch);
@@ -41,7 +40,7 @@ public class PEMovePlayerPacketTranslator implements IPEPacketTranslator<MovePla
             ClientPlayerPositionRotationPacket pk = new ClientPlayerPositionRotationPacket(
                     packet.onGround,
                     packet.position.x,
-                    packet.position.y - Constants.PLAYER_HEAD_OFFSET,
+                    packet.position.y - EntityType.PLAYER.getOffset(),
                     packet.position.z,
                     packet.yaw,
                     packet.pitch);

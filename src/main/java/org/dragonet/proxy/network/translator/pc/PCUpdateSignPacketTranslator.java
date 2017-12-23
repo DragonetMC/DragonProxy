@@ -20,8 +20,10 @@ import com.github.steveice10.opennbt.tag.builtin.StringTag;
 
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
+import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.BlockEntityDataPacket;
+import org.dragonet.proxy.utilities.BlockPosition;
 
 public class PCUpdateSignPacketTranslator implements IPCPacketTranslator<ServerUpdateTileEntityPacket> {
 
@@ -32,15 +34,14 @@ public class PCUpdateSignPacketTranslator implements IPCPacketTranslator<ServerU
             root.put(new IntTag("x", packet.getPosition().getX()));
             root.put(new IntTag("y", packet.getPosition().getY()));
             root.put(new IntTag("z", packet.getPosition().getZ()));
-            root.put(new StringTag("Text1", (String) packet.getNBT().get("Text1").getValue()));
-            root.put(new StringTag("Text2", (String) packet.getNBT().get("Text2").getValue()));
-            root.put(new StringTag("Text3", (String) packet.getNBT().get("Text3").getValue()));
-            root.put(new StringTag("Text4", (String) packet.getNBT().get("Text4").getValue()));
+            root.put(new StringTag("Text", (String) packet.getNBT().get("Text1").getValue()
+                + (String) packet.getNBT().get("Text2").getValue()
+                + (String) packet.getNBT().get("Text3").getValue()
+                + (String) packet.getNBT().get("Text4").getValue()));
 
             BlockEntityDataPacket data = new BlockEntityDataPacket();
-            data.tag = root;
-            // packet.getPosition().getX(), packet.getPosition().getY(),
-            // packet.getPosition().getZ(), root
+            data.tag = ItemBlockTranslator.translateBlockEntityToPE(root);
+            data.blockPosition = new BlockPosition(packet.getPosition());
             return new PEPacket[]{data};
         } else {
             return null;

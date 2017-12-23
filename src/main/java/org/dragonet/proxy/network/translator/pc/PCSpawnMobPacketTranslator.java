@@ -12,12 +12,10 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.data.entity.meta.EntityMetaData;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
-import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.data.entity.PEEntityAttribute;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
@@ -39,7 +37,7 @@ public class PCSpawnMobPacketTranslator implements IPCPacketTranslator<ServerSpa
             pk.type = entity.peType.getPeType();
             pk.position = new Vector3F((float) entity.x, (float) entity.y - entity.peType.getOffset(), (float) entity.z);
             pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
-            pk.yaw = entity.yaw + 90;
+            pk.yaw = entity.yaw;
             pk.pitch = entity.pitch;
             pk.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, entity.peType);
             // TODO: Hack for now. ;P

@@ -77,7 +77,7 @@ public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<Ser
                 pk.type = entity.peType.getPeType();
                 pk.position = new Vector3F((float) entity.x, (float) entity.y + entity.peType.getOffset(), (float) entity.z);
                 pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
-                pk.yaw = (byte) (entity.yaw + 90 / (360d / 256d));
+                pk.yaw = entity.yaw;
                 pk.pitch = entity.pitch;
                 pk.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, entity.peType);
                 entity.spawned = true;
