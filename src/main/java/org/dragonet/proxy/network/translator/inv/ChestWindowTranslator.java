@@ -12,12 +12,10 @@
  */
 package org.dragonet.proxy.network.translator.inv;
 
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
-import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
-import com.github.steveice10.opennbt.tag.builtin.IntTag;
-import com.github.steveice10.opennbt.tag.builtin.StringTag;
-
 import org.dragonet.proxy.data.inventory.InventoryType;
+import org.dragonet.proxy.data.nbt.tag.CompoundTag;
+import org.dragonet.proxy.data.nbt.tag.IntTag;
+import org.dragonet.proxy.data.nbt.tag.StringTag;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedWindow;
@@ -32,28 +30,28 @@ import org.dragonet.proxy.utilities.BlockPosition;
 public class ChestWindowTranslator implements IInventoryTranslator {
 
     public boolean open(UpstreamSession session, CachedWindow window) {
-        Position pos = new Position((int) session.getEntityCache().getClientEntity().x,
+        BlockPosition pos = new BlockPosition((int) session.getEntityCache().getClientEntity().x,
                 (int) session.getEntityCache().getClientEntity().y - 4,
                 (int) session.getEntityCache().getClientEntity().z);
         session.getDataCache().put(CacheKey.WINDOW_OPENED_ID, window.windowId);
-        session.getDataCache().put(CacheKey.WINDOW_BLOCK_POSITION, pos);
-        session.sendFakeBlock(pos.getX(), pos.getY(), pos.getZ(), 54, 0);
-        CompoundTag tag = new CompoundTag(null);
-        tag.put(new StringTag("id", "Chest"));
-        tag.put(new IntTag("x", pos.getX()));
-        tag.put(new IntTag("y", pos.getY()));
-        tag.put(new IntTag("z", pos.getZ()));
-        BlockEntityDataPacket blockEntityData = new BlockEntityDataPacket();
-        blockEntityData.blockPosition = new BlockPosition(pos.getX(), pos.getY(), pos.getZ());
-        blockEntityData.tag = tag;
-        session.sendPacket(blockEntityData);
+//        session.getDataCache().put(CacheKey.WINDOW_BLOCK_POSITION, pos);
+//        session.sendFakeBlock(pos.x, pos.y, pos.z, 54, 0);
+//        CompoundTag tag = new CompoundTag(null);
+//        tag.putString("id", "Chest");
+//        tag.putInt("x", pos.x);
+//        tag.putInt("y", pos.y);
+//        tag.putInt("z", pos.z);
+//        BlockEntityDataPacket blockEntityData = new BlockEntityDataPacket();
+//        blockEntityData.blockPosition = new BlockPosition(pos.x, pos.y, pos.z);
+//        blockEntityData.tag = tag;
+//        session.sendPacket(blockEntityData);
 
         ContainerOpenPacket pk = new ContainerOpenPacket();
         pk.windowId = window.windowId;
         // pk. = window.size <= 27 ? (short)(InventoryType.SlotSize.CHEST & 0xFFFF) :
         // (short)(InventoryType.SlotSize.DOUBLE_CHEST & 0xFFFF);
         pk.type = window.size <= 27 ? InventoryType.PEInventory.CHEST : InventoryType.PEInventory.DOUBLE_CHEST;
-        pk.position = new BlockPosition(pos.getX(), pos.getY(), pos.getZ());
+        pk.position = new BlockPosition(pos.x, pos.y, pos.z);
         session.sendPacket(pk);
         return true;
     }
