@@ -32,7 +32,7 @@ public class BlockEntityDataPacket extends PEPacket {
         if (tag != null) {
             byte[] bytes = new byte[]{};
             try {
-                bytes = NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN);
+                bytes = NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN, true);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -44,7 +44,7 @@ public class BlockEntityDataPacket extends PEPacket {
     public void decodePayload() {
         blockPosition = getBlockPosition();
         try {
-            tag = (CompoundTag) NBTIO.read(new ByteArrayInputStream(get(getBuffer().length - offset)), ByteOrder.LITTLE_ENDIAN);
+            tag = (CompoundTag) NBTIO.read(get(), ByteOrder.LITTLE_ENDIAN, true);
         } catch (Exception e) {
             e.printStackTrace();
         }
