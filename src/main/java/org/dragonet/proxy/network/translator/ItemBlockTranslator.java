@@ -36,6 +36,7 @@ public class ItemBlockTranslator {
     public static final Map<Integer, String> NAME_OVERRIDES = new HashMap<>();
 
     static {
+        //BLOCKS
         toPEOverride(36, 248); //unkown block
         swap(125, 157); // double_wooden_slab
         swap(126, 158); // wooden_slab
@@ -57,7 +58,6 @@ public class ItemBlockTranslator {
         swap(192, new ItemEntry(85, 4)); //acacia_fence
         swap(203, 202); //purpur_stairs
         swap(205, 248); //purpur_slab -> unknown
-
         //shulker_box
         swap(219, new ItemEntry(218, 0)); //white
         swap(220, new ItemEntry(218, 1)); //orange
@@ -75,7 +75,6 @@ public class ItemBlockTranslator {
         swap(232, new ItemEntry(218, 13)); //green
         swap(233, new ItemEntry(218, 14)); //red
         swap(234, new ItemEntry(218, 15)); //black
-
         //glazed terracota
         swap(235, 220); //white
         swap(236, 221); //orange
@@ -93,22 +92,46 @@ public class ItemBlockTranslator {
         swap(248, 233); //green
         swap(249, 234); //red
         swap(250, 235); //black
-
         swap(251, 236); //concrete
         swap(252, 237); //concretepowder
-
         swap(218, 251); //observer
         swap(207, 244); //beetroots
         swap(255, 252); //structure_block
+
+        //ITEMS
+        swap(416, 425); //armor_stand horsearmorleather
+        toPCOverride(425, 417); //horsearmorleather horsearmoriron (unavailable on PC)
+
+        swap(443, 444); //elytra
+
+        swap(444, new ItemEntry(333, 1)); //spruce_boat
+        swap(445, new ItemEntry(333, 2)); //birch_boat
+        swap(446, new ItemEntry(333, 3)); //jungle_boat
+        swap(447, new ItemEntry(333, 4)); //acacia_boat
+        swap(448, new ItemEntry(333, 5)); //dark_oak_boat
+
+        swap(449, 450); //totem shulker_shell
+
+        swap(2256, 500); //record_13
+        swap(2257, 501); //record_cat
+        swap(2258, 502); //record_blocks
+        swap(2259, 503); //record_chirp
+        swap(2260, 504); //record_far
+        swap(2261, 505); //record_far
+        swap(2262, 506); //record_mellohi
+        swap(2263, 507); //record_stal
+        swap(2264, 508); //record_strad
+        swap(2265, 509); //record_ward
+        swap(2265, 510); //record_11
+        swap(2265, 511); //record_wait
 
         //TODO: replace podzol
     }
 
     public static ItemEntry translateToPE(int pcItemBlockId, int damage) {
         ItemEntry entry = new ItemEntry(pcItemBlockId, damage);
-        
-        //here translate item data value (color / facing ....) need another translator items specific
 
+        //here translate item data value (color / facing ....) need another translator items specific
         if (!PC_TO_PE_OVERRIDE.containsKey(pcItemBlockId)) {
             return entry;
         }
@@ -293,6 +316,7 @@ public class ItemBlockTranslator {
             }
         }
         output.putBoolean("isMovable", false);
+
         return output;
     }
 
@@ -338,6 +362,14 @@ public class ItemBlockTranslator {
 
     private static void toPEOverride(int fromPc, ItemEntry toPe) {
         PC_TO_PE_OVERRIDE.put(fromPc, toPe);
+    }
+
+    private static void toPCOverride(int fromEc, int toPc) {
+        PE_TO_PC_OVERRIDE.put(fromEc, new ItemEntry(toPc));
+    }
+
+    private static void toPCOverride(int fromPc, ItemEntry toPe) {
+        PE_TO_PC_OVERRIDE.put(fromPc, toPe);
     }
 
     public static CompoundTag newTileTag(String id, int x, int y, int z) {
