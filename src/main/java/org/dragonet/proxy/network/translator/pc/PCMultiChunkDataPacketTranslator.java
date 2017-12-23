@@ -100,7 +100,7 @@ public class PCMultiChunkDataPacketTranslator implements IPCPacketTranslator<Ser
         try {
             pe.blockEntities = new byte[pc.getTileEntities().length];
             for (int i = 0; i < pc.getTileEntities().length; i++) {
-                pe.blockEntities = NBTIO.write(ItemBlockTranslator.translateBlockEntityToPE(pc.getTileEntities()[i]), ByteOrder.BIG_ENDIAN, true);
+                pe.blockEntities = NBTIO.write(ItemBlockTranslator.translateBlockEntityToPE(pc.getTileEntities()[i]), ByteOrder.LITTLE_ENDIAN, true);
             }
         } catch (IOException ex) {
             Logger.getLogger(PCMultiChunkDataPacketTranslator.class.getName()).log(Level.SEVERE, null, ex);
