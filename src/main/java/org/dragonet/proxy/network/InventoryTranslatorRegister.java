@@ -70,8 +70,7 @@ public final class InventoryTranslatorRegister {
             session.getWindowCache().cacheWindow(cached);
             TRANSLATORS.get(win.getType()).open(session, cached);
 
-            com.github.steveice10.packetlib.packet.Packet[] items = session.getWindowCache()
-                    .getCachedPackets(win.getWindowId());
+            com.github.steveice10.packetlib.packet.Packet[] items = session.getWindowCache().getCachedPackets(win.getWindowId());
             for (com.github.steveice10.packetlib.packet.Packet item : items) {
                 if (item != null) {
                     if (ServerWindowItemsPacket.class.isAssignableFrom(item.getClass())) {
