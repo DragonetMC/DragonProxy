@@ -6,6 +6,7 @@ import org.dragonet.proxy.data.nbt.stream.NBTOutputStream;
 import java.io.IOException;
 
 public class FloatTag extends NumberTag<Float> {
+
     public float data;
 
     @Override
@@ -41,7 +42,7 @@ public class FloatTag extends NumberTag<Float> {
     public byte getId() {
         return TAG_Float;
     }
-    
+
     @Override
     public Object getValue() {
         return this.data;

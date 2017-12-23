@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class IntArrayTag extends Tag {
+
     public int[] data;
 
     public IntArrayTag(String name) {
@@ -39,7 +40,7 @@ public class IntArrayTag extends Tag {
     public byte getId() {
         return TAG_Int_Array;
     }
-    
+
     @Override
     public Object getValue() {
         return this.data;

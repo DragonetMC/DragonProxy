@@ -26,161 +26,156 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class PEBinaryWriter implements Flushable, Closeable {
-	// vars
-	private static final BigInteger UNSIGNED_LONG_MAX_VALUE = new BigInteger("FFFFFFFFFFFFFFFF", 16);
-	protected OutputStream os;
-	protected boolean endianness;
 
-	// constructor
-	public PEBinaryWriter(OutputStream os) {
-		this(os, PEBinaryUtils.BIG_ENDIAN);
-	}
+    private static final BigInteger UNSIGNED_LONG_MAX_VALUE = new BigInteger("FFFFFFFFFFFFFFFF", 16);
+    protected OutputStream os;
+    protected boolean endianness;
 
-	public PEBinaryWriter(OutputStream os, boolean endianness) {
-		this.os = os;
-		this.endianness = endianness;
-	}
+    public PEBinaryWriter(OutputStream os) {
+        this(os, PEBinaryUtils.BIG_ENDIAN);
+    }
 
-	// public
-	public boolean switchEndianness() {
-		this.endianness = !this.endianness;
-		return this.endianness;
-	}
+    public PEBinaryWriter(OutputStream os, boolean endianness) {
+        this.os = os;
+        this.endianness = endianness;
+    }
 
-	public boolean getEndianness() {
-		return this.endianness;
-	}
+    public boolean switchEndianness() {
+        this.endianness = !this.endianness;
+        return this.endianness;
+    }
 
-	public void flush() throws IOException {
-		os.flush();
-	}
+    public boolean getEndianness() {
+        return this.endianness;
+    }
 
-	public void close() throws IOException {
-		os.close();
-	}
+    public void flush() throws IOException {
+        os.flush();
+    }
 
-	public void writeVarInt(int value) throws IOException {
-		writeUnsignedVarInt(VarInt.encodeZigZag32(value));
-	}
+    public void close() throws IOException {
+        os.close();
+    }
 
-	public void writeUnsignedVarInt(long value) throws IOException {
-		writeVar(BigInteger.valueOf(value));
-	}
+    public void writeVarInt(int value) throws IOException {
+        writeUnsignedVarInt(VarInt.encodeZigZag32(value));
+    }
 
-	public void writeVarLong(long value) throws IOException {
-		writeUnsignedVarLong(BigInteger.valueOf(VarInt.encodeZigZag64(value)));
-	}
+    public void writeUnsignedVarInt(long value) throws IOException {
+        writeVar(BigInteger.valueOf(value));
+    }
 
-	public void writeUnsignedVarLong(BigInteger value) throws IOException {
-		writeVar(value);
-	}
+    public void writeVarLong(long value) throws IOException {
+        writeUnsignedVarLong(BigInteger.valueOf(VarInt.encodeZigZag64(value)));
+    }
 
-	public void writeVar(BigInteger v) throws IOException {
-		v = v.and(UNSIGNED_LONG_MAX_VALUE);
-		BigInteger i = BigInteger.valueOf(-128);
-		BigInteger BIX7F = BigInteger.valueOf(0x7f);
-		BigInteger BIX80 = BigInteger.valueOf(0x80);
-		while (!v.and(i).equals(BigInteger.ZERO)) {
-			writeByte(v.and(BIX7F).or(BIX80).byteValue());
-			v = v.shiftRight(7);
-		}
+    public void writeUnsignedVarLong(BigInteger value) throws IOException {
+        writeVar(value);
+    }
 
-		writeByte(v.byteValue());
-	}
+    public void writeVar(BigInteger v) throws IOException {
+        v = v.and(UNSIGNED_LONG_MAX_VALUE);
+        BigInteger i = BigInteger.valueOf(-128);
+        BigInteger BIX7F = BigInteger.valueOf(0x7f);
+        BigInteger BIX80 = BigInteger.valueOf(0x80);
+        while (!v.and(i).equals(BigInteger.ZERO)) {
+            writeByte(v.and(BIX7F).or(BIX80).byteValue());
+            v = v.shiftRight(7);
+        }
 
-	public void writeVector3f(float x, float y, float z) throws IOException {
-		// FORCED to use LITTLE-ENDIAN
-		if (endianness != PEBinaryUtils.LITTLE_ENDIAN) {
-			switchEndianness();
-			writeVector3f(x, y, z);
-			switchEndianness();
-		} else {
-			writeFloat(x);
-			writeFloat(y);
-			writeFloat(z);
-		}
-	}
+        writeByte(v.byteValue());
+    }
 
-	public void writeBlockCoords(int x, int y, int z) throws IOException {
-		writeVarInt(x);
-		writeUnsignedVarInt(y);
-		writeVarInt(z);
-	}
+    public void writeVector3f(float x, float y, float z) throws IOException {
+        // FORCED to use LITTLE-ENDIAN
+        if (endianness != PEBinaryUtils.LITTLE_ENDIAN) {
+            switchEndianness();
+            writeVector3f(x, y, z);
+            switchEndianness();
+        } else {
+            writeFloat(x);
+            writeFloat(y);
+            writeFloat(z);
+        }
+    }
 
-	public void writeUUID(UUID uuid) throws IOException {
-		writeLong(uuid.getMostSignificantBits());
-		writeLong(uuid.getLeastSignificantBits());
-	}
+    public void writeBlockCoords(int x, int y, int z) throws IOException {
+        writeVarInt(x);
+        writeUnsignedVarInt(y);
+        writeVarInt(z);
+    }
 
-	public void writeString(String string) throws IOException {
-		byte[] data = string.getBytes(StandardCharsets.UTF_8);
-		writeUnsignedVarInt(data.length);
-		write(data);
-	}
+    public void writeUUID(UUID uuid) throws IOException {
+        writeLong(uuid.getMostSignificantBits());
+        writeLong(uuid.getLeastSignificantBits());
+    }
 
-	public void writeAddress(InetAddress addr, short port) throws IOException {
-		if (addr instanceof Inet4Address) {
-			writeByte((byte) 4);
-			writeInt((addr.getAddress()[0] << 24) | (addr.getAddress()[1] << 16) | (addr.getAddress()[2] << 8)
-					| addr.getAddress()[3]);
-			writeShort(port);
-		} else {
-			// IPv6? Nah, we do this later.
-			writeByte((byte) 6);
-			writeLong(0L);
-		}
-	}
+    public void writeString(String string) throws IOException {
+        byte[] data = string.getBytes(StandardCharsets.UTF_8);
+        writeUnsignedVarInt(data.length);
+        write(data);
+    }
 
-	public void writeByte(byte b) throws IOException {
-		os.write(b);
-	}
+    public void writeAddress(InetAddress addr, short port) throws IOException {
+        if (addr instanceof Inet4Address) {
+            writeByte((byte) 4);
+            writeInt((addr.getAddress()[0] << 24) | (addr.getAddress()[1] << 16) | (addr.getAddress()[2] << 8)
+                    | addr.getAddress()[3]);
+            writeShort(port);
+        } else {
+            // IPv6? Nah, we do this later.
+            writeByte((byte) 6);
+            writeLong(0L);
+        }
+    }
 
-	public void writeBoolean(boolean b) throws IOException {
-		writeByte(b ? (byte) 0x01 : (byte) 0x00);
-	}
+    public void writeByte(byte b) throws IOException {
+        os.write(b);
+    }
 
-	public void writeShort(short s) throws IOException {
-		write(s, 2);
-	}
+    public void writeBoolean(boolean b) throws IOException {
+        writeByte(b ? (byte) 0x01 : (byte) 0x00);
+    }
 
-	public void writeTriad(int t) throws IOException {
-		this.endianness = !this.endianness;
-		write(t, 3);
-		this.endianness = !this.endianness;
-	}
+    public void writeShort(short s) throws IOException {
+        write(s, 2);
+    }
 
-	public void writeInt(int i) throws IOException {
-		write(i, 4);
-	}
+    public void writeTriad(int t) throws IOException {
+        this.endianness = !this.endianness;
+        write(t, 3);
+        this.endianness = !this.endianness;
+    }
 
-	public void writeLong(long l) throws IOException {
-		write(l, 8);
-	}
+    public void writeInt(int i) throws IOException {
+        write(i, 4);
+    }
 
-	public void writeFloat(float f) throws IOException {
-		ByteBuffer bb = ByteBuffer.allocate(4);
-		bb.putFloat(f);
-		os.write(bb.array());
-	}
+    public void writeLong(long l) throws IOException {
+        write(l, 8);
+    }
 
-	public void writeDouble(double d) throws IOException {
-		ByteBuffer bb = ByteBuffer.allocate(8);
-		bb.putDouble(d);
-		os.write(bb.array());
-	}
+    public void writeFloat(float f) throws IOException {
+        ByteBuffer bb = ByteBuffer.allocate(4);
+        bb.putFloat(f);
+        os.write(bb.array());
+    }
 
-	public void write(long x, int len) throws IOException {
-		os.write(PEBinaryUtils.write(x, len, endianness));
-	}
+    public void writeDouble(double d) throws IOException {
+        ByteBuffer bb = ByteBuffer.allocate(8);
+        bb.putDouble(d);
+        os.write(bb.array());
+    }
 
-	public void write(byte[] bytes) throws IOException {
-		os.write(bytes);
-	}
+    public void write(long x, int len) throws IOException {
+        os.write(PEBinaryUtils.write(x, len, endianness));
+    }
 
-	public void writeNat(int oneByte) throws IOException {
-		os.write(oneByte);
-	}
+    public void write(byte[] bytes) throws IOException {
+        os.write(bytes);
+    }
 
-	// private
-
+    public void writeNat(int oneByte) throws IOException {
+        os.write(oneByte);
+    }
 }

@@ -16,36 +16,31 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public abstract class RemoteServer implements IConfigurationSerializable {
-	// vars
-	public String remote_addr;
-	public int remote_port;
 
-	// constructor
-	public RemoteServer() {
-		super();
-	}
+    public String remote_addr;
+    public int remote_port;
 
-	// public
-	/**
-	 * Required for deserailization.
-	 * 
-	 * @param server
-	 * @param map
-	 * @return
-	 */
-	public static RemoteServer delicatedDeserialize(RemoteServer server, Map<String, Object> map) {
-		server.remote_addr = (String) map.get("remote_addr");
-		server.remote_port = ((Number) map.get("remote_port")).intValue();
-		return server;
-	}
+    public RemoteServer() {
+        super();
+    }
 
-	public Map<String, Object> serialize() {
-		Map<String, Object> map = new LinkedHashMap<>();
-		map.put("remote_addr", remote_addr);
-		map.put("remote_port", remote_port);
-		return map;
-	}
+    /**
+     * Required for deserailization.
+     *
+     * @param server
+     * @param map
+     * @return
+     */
+    public static RemoteServer delicatedDeserialize(RemoteServer server, Map<String, Object> map) {
+        server.remote_addr = (String) map.get("remote_addr");
+        server.remote_port = ((Number) map.get("remote_port")).intValue();
+        return server;
+    }
 
-	// private
-
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("remote_addr", remote_addr);
+        map.put("remote_port", remote_port);
+        return map;
+    }
 }

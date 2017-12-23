@@ -20,9 +20,8 @@ public class BlockPosition {
         this.y = y;
         this.z = z;
     }
-    
-    public BlockPosition(Position pos)
-    {
+
+    public BlockPosition(Position pos) {
         this.x = pos.getX();
         this.y = pos.getY();
         this.z = pos.getZ();

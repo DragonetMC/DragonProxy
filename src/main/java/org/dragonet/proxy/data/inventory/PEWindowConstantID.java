@@ -13,15 +13,17 @@
 package org.dragonet.proxy.data.inventory;
 
 public enum PEWindowConstantID {
-	PLAYER_INVENTORY(0x00), PLAYER_ARMOR(0x78), PLAYER_CREATIVE(0x79);
+    PLAYER_INVENTORY(0x00),
+    PLAYER_ARMOR(0x78),
+    PLAYER_CREATIVE(0x79);
 
-	private final byte id;
+    private final byte id;
 
-	PEWindowConstantID(int id) {
-		this.id = (byte) id;
-	}
+    PEWindowConstantID(int id) {
+        this.id = (byte) id;
+    }
 
-	public byte getId() {
-		return id;
-	}
+    public byte getId() {
+        return id;
+    }
 }

@@ -23,7 +23,7 @@ public class EndTag extends Tag {
     public byte getId() {
         return TAG_End;
     }
-    
+
     @Override
     public Object getValue() {
         return null;

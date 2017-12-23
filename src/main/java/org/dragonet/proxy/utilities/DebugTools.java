@@ -9,16 +9,14 @@ import java.util.Set;
  * Created on 2017/12/3.
  */
 public class DebugTools {
-    
+
     private static final Set<Class<?>> WRAPPER_TYPES = getWrapperTypes();
 
-    public static boolean isWrapperType(Class<?> clazz)
-    {
+    public static boolean isWrapperType(Class<?> clazz) {
         return WRAPPER_TYPES.contains(clazz);
     }
 
-    private static Set<Class<?>> getWrapperTypes()
-    {
+    private static Set<Class<?>> getWrapperTypes() {
         Set<Class<?>> ret = new HashSet<Class<?>>();
         ret.add(Boolean.class);
         ret.add(Character.class);
@@ -33,29 +31,27 @@ public class DebugTools {
     }
 
     public static String getAllFields(Object obj) {
-        if(obj == null) {
+        if (obj == null) {
             return "NULL";
         }
         Field[] fields = obj.getClass().getDeclaredFields();
         String data = "INSTANCE OF " + obj.getClass().getName() + "\n";
-        if (obj instanceof com.github.steveice10.opennbt.tag.builtin.CompoundTag)
-        {
-            data += ((com.github.steveice10.opennbt.tag.builtin.CompoundTag)obj).toString() + "\n";
-        }
-        else if (obj instanceof org.dragonet.proxy.data.nbt.tag.CompoundTag)
-        {
-            data += ((org.dragonet.proxy.data.nbt.tag.CompoundTag)obj).toString() + "\n";
-        }
-        else
-        {
-            for(Field f : fields) {
+        if (obj instanceof com.github.steveice10.opennbt.tag.builtin.CompoundTag) {
+            data += ((com.github.steveice10.opennbt.tag.builtin.CompoundTag) obj).toString() + "\n";
+        } else if (obj instanceof org.dragonet.proxy.data.nbt.tag.CompoundTag) {
+            data += ((org.dragonet.proxy.data.nbt.tag.CompoundTag) obj).toString() + "\n";
+        } else {
+            for (Field f : fields) {
                 f.setAccessible(true);
-                if((f.getModifiers() & Modifier.STATIC) > 0) continue;
+                if ((f.getModifiers() & Modifier.STATIC) > 0) {
+                    continue;
+                }
                 try {
-                    if (isWrapperType(f.get(obj).getClass()))
+                    if (isWrapperType(f.get(obj).getClass())) {
                         data += f.getName() + " = " + f.get(obj).toString();
-                    else 
+                    } else {
                         data += f.getName() + " = " + getAllFields(f.get(obj));
+                    }
                 } catch (Exception e) {
                     data += ": " + f.getName() + " = ERROR";
                 }

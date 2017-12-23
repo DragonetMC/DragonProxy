@@ -18,9 +18,7 @@ import org.dragonet.proxy.data.entity.meta.type.ByteArrayMeta;
 import org.dragonet.proxy.data.entity.meta.type.FloatMeta;
 import org.dragonet.proxy.data.entity.meta.type.LongMeta;
 import org.dragonet.proxy.data.entity.meta.type.ShortMeta;
-
 import org.dragonet.proxy.utilities.BinaryStream;
-import org.dragonet.proxy.utilities.BlockPosition;
 
 public class EntityMetaData extends BinaryStream {
 
