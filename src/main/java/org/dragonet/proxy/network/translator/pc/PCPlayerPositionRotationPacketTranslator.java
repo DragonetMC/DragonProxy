@@ -42,7 +42,6 @@ import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.protocol.type.Skin;
 import org.dragonet.proxy.utilities.BlockPosition;
-import org.dragonet.proxy.utilities.Constants;
 import org.dragonet.proxy.utilities.Vector3F;
 
 public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTranslator<ServerPlayerPositionRotationPacket> {
@@ -55,7 +54,6 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
         }
 
         if (!session.isSpawned()) {
-            System.out.println("SPAWNED! ");
             if (session.getDataCache().get(CacheKey.PACKET_JOIN_GAME_PACKET) == null) {
                 session.disconnect(session.getProxy().getLang().get(Lang.MESSAGE_REMOTE_ERROR));
                 return null;
@@ -137,8 +135,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 MovePlayerPacket pk = new MovePlayerPacket();
                 pk.rtid = entityPlayer.proxyEid;
                 pk.mode = MovePlayerPacket.MODE_TELEPORT;
-                pk.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET,
-                        (float) packet.getZ());
+                pk.position = new Vector3F((float) packet.getX(), (float) packet.getY() + EntityType.PLAYER.getOffset(), (float) packet.getZ());
                 pk.yaw = packet.getYaw();
                 pk.pitch = packet.getPitch();
                 pk.headYaw = packet.getYaw();
@@ -241,14 +238,15 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             playerListPacket.type = PlayerListPacket.TYPE_ADD;
             playerListPacket.entries = (org.dragonet.proxy.protocol.type.PlayerListEntry[]) peEntries.toArray(new org.dragonet.proxy.protocol.type.PlayerListEntry[peEntries.size()]);
             session.sendPacket(playerListPacket);
+            entityPlayer.spawned = true;
+            System.out.println("SPAWNED !");
             return null;
         }
 
         MovePlayerPacket pk = new MovePlayerPacket();
         pk.rtid = entityPlayer.proxyEid;
         pk.mode = MovePlayerPacket.MODE_TELEPORT;
-        pk.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET,
-                (float) packet.getZ());
+        pk.position = new Vector3F((float) packet.getX(), (float) packet.getY() + EntityType.PLAYER.getOffset(), (float) packet.getZ());
         pk.yaw = packet.getYaw();
         pk.pitch = packet.getPitch();
         pk.headYaw = packet.getYaw();
