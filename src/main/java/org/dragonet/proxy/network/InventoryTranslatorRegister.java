@@ -66,7 +66,7 @@ public final class InventoryTranslatorRegister {
     public static void open(UpstreamSession session, ServerOpenWindowPacket win) {
         closeOpened(session, true);
         if (TRANSLATORS.containsKey(win.getType())) {
-            CachedWindow cached = new CachedWindow(win.getWindowId(), win.getType(), win.getSlots());
+            CachedWindow cached = new CachedWindow(win.getWindowId(), win.getType(), win.getSlots() + 36/* player inventory */);
             session.getWindowCache().cacheWindow(cached);
             TRANSLATORS.get(win.getType()).open(session, cached);
             com.github.steveice10.packetlib.packet.Packet[] items = session.getWindowCache().getCachedPackets(win.getWindowId());

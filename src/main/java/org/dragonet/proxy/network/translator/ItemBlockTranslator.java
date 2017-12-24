@@ -112,8 +112,8 @@ public class ItemBlockTranslator {
         swap(447, new ItemEntry(333, 4)); //acacia_boat
         swap(448, new ItemEntry(333, 5)); //dark_oak_boat
 
-        toPEOverride(449, 450); //totem
-        toPEOverride(450, 445); //shulker_shell
+        swap(449, 450); //totem
+        swap(450, 445); //shulker_shell
 
         swap(2256, 500); //record_13
         swap(2257, 501); //record_cat
@@ -340,18 +340,8 @@ public class ItemBlockTranslator {
     }
 
     public static ItemStack translateToPC(Slot slot) {
-        ItemStack item;
-        org.dragonet.proxy.data.nbt.tag.CompoundTag tag = slot.tag;
-        if (tag != null && tag.contains(DRAGONET_COMPOUND)) {
-            item = new ItemStack(tag.getCompound(DRAGONET_COMPOUND).getShort("id"),
-                    tag.getCompound(DRAGONET_COMPOUND).getShort("amount"),
-                    tag.getCompound(DRAGONET_COMPOUND).getShort("data"));
-        } else {
-            ItemEntry entry = translateToPC(slot.id, slot.damage);
-            item = new ItemStack(entry.id, slot.count, entry.damage != null ? entry.damage : slot.damage);
-        }
-
-        return item;
+        ItemEntry entry = translateToPC(slot.id, slot.damage);
+        return new ItemStack(entry.id, slot.count, entry.damage != null ? entry.damage : slot.damage); //TODO NBT
     }
 
     public static BlockFace translateToPC(int face) {
@@ -383,8 +373,8 @@ public class ItemBlockTranslator {
         PC_TO_PE_OVERRIDE.put(fromPc, toPe);
     }
 
-    private static void toPCOverride(int fromEc, int toPc) {
-        PE_TO_PC_OVERRIDE.put(fromEc, new ItemEntry(toPc));
+    private static void toPCOverride(int fromPc, int toPc) {
+        PE_TO_PC_OVERRIDE.put(fromPc, new ItemEntry(toPc));
     }
 
     private static void toPCOverride(int fromPc, ItemEntry toPe) {

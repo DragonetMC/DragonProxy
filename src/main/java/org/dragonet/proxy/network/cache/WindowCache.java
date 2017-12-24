@@ -19,71 +19,70 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.steveice10.packetlib.packet.Packet;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.dragonet.proxy.network.UpstreamSession;
 
 public final class WindowCache {
-	// vars
-	private final UpstreamSession upstream;
-	private final Map<Integer, CachedWindow> windows = Collections
-			.synchronizedMap(new HashMap<Integer, CachedWindow>());
-	private final Map<Integer, List<Packet>> cachedItems = Collections
-			.synchronizedMap(new HashMap<Integer, List<Packet>>());
 
-	// constructor
-	public WindowCache(UpstreamSession upstream) {
-		this.upstream = upstream;
+    private final UpstreamSession upstream;
+    private final Map<Integer, CachedWindow> windows = Collections
+            .synchronizedMap(new HashMap<Integer, CachedWindow>());
+    private final Map<Integer, List<Packet>> cachedItems = Collections
+            .synchronizedMap(new HashMap<Integer, List<Packet>>());
+    
+    public AtomicInteger currentTransactionId = new AtomicInteger();
 
-		CachedWindow inv = new CachedWindow(0, null, 45);
-		windows.put(0, inv);
-	}
+    public WindowCache(UpstreamSession upstream) {
+        this.upstream = upstream;
 
-	// public
-	public UpstreamSession getUpstream() {
-		return upstream;
-	}
+        CachedWindow inv = new CachedWindow(0, null, 45);
+        windows.put(0, inv);
+    }
 
-	public CachedWindow getPlayerInventory() {
-		return windows.get(0);
-	}
+    // public
+    public UpstreamSession getUpstream() {
+        return upstream;
+    }
 
-	// We do not do translations here, do it in InventoryTranslatorRegister
-	public void cacheWindow(CachedWindow win) {
-		windows.put(win.windowId, win);
-	}
+    public CachedWindow getPlayerInventory() {
+        return windows.get(0);
+    }
 
-	public CachedWindow removeWindow(int id) {
-		return windows.remove(id);
-	}
+    // We do not do translations here, do it in InventoryTranslatorRegister
+    public void cacheWindow(CachedWindow win) {
+        windows.put(win.windowId, win);
+    }
 
-	public CachedWindow get(int id) {
-		return windows.get(id);
-	}
+    public CachedWindow removeWindow(int id) {
+        return windows.remove(id);
+    }
 
-	public boolean hasWindow(int id) {
-		return windows.containsKey(id);
-	}
+    public CachedWindow get(int id) {
+        return windows.get(id);
+    }
 
-	public void newCachedPacket(int windowId, Packet packet) {
-		List<Packet> packets = null;
-		synchronized (cachedItems) {
-			packets = cachedItems.get(windowId);
-			if (packets == null) {
-				packets = new ArrayList<>();
-				cachedItems.put(windowId, packets);
-			}
-		}
-		packets.add(packet);
-	}
+    public boolean hasWindow(int id) {
+        return windows.containsKey(id);
+    }
 
-	public Packet[] getCachedPackets(int windowId) {
-		List<Packet> packets = null;
-		packets = cachedItems.remove(windowId);
-		if (packets == null) {
-			return null;
-		}
-		return packets.toArray(new Packet[0]);
-	}
+    public void newCachedPacket(int windowId, Packet packet) {
+        List<Packet> packets = null;
+        synchronized (cachedItems) {
+            packets = cachedItems.get(windowId);
+            if (packets == null) {
+                packets = new ArrayList<>();
+                cachedItems.put(windowId, packets);
+            }
+        }
+        packets.add(packet);
+    }
 
-	// private
-
+    public Packet[] getCachedPackets(int windowId) {
+        List<Packet> packets = null;
+        packets = cachedItems.remove(windowId);
+        if (packets == null) {
+            return null;
+        }
+        return packets.toArray(new Packet[0]);
+    }
 }

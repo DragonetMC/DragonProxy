@@ -42,4 +42,16 @@ public class Slot {
     public Slot clone() {
         return new Slot(id, damage, count, tag);
     }
+    
+    public String toString()
+    {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("Slot{");
+        buffer.append("id=" + id);
+        buffer.append(", damage=" + damage);
+        buffer.append(", count=" + count);
+        buffer.append(", tag=" + tag);
+        buffer.append("}");
+        return buffer.toString();
+    }
 }
