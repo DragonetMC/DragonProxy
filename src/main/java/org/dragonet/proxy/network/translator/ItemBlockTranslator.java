@@ -331,8 +331,8 @@ public class ItemBlockTranslator {
                     break;
             }
         }
-        if (output.getString("id") == "ShulkerBox" || output.getString("id") == "Bed" || output.getString("id") == "Chest")
-            System.out.println("translateBlockEntityToPE " + output.toString());
+//        if (output.getString("id") == "ShulkerBox" || output.getString("id") == "Bed" || output.getString("id") == "Chest")
+//            System.out.println("translateBlockEntityToPE " + output.toString());
         return output;
     }
 
