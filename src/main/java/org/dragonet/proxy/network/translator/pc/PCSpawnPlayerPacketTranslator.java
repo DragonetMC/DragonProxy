@@ -29,10 +29,10 @@ public class PCSpawnPlayerPacketTranslator implements IPCPacketTranslator<Server
 
                 pkAddPlayer.uuid = packet.getUUID();
 
-                pkAddPlayer.position = new Vector3F((float) packet.getX(), (float) packet.getY(), (float) packet.getZ());
+                pkAddPlayer.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
                 pkAddPlayer.motion = Vector3F.ZERO;
-                pkAddPlayer.yaw = packet.getYaw();
-                pkAddPlayer.pitch = packet.getPitch();
+                pkAddPlayer.yaw = entity.yaw;
+                pkAddPlayer.pitch = entity.pitch;
 
                 pkAddPlayer.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, EntityType.PLAYER);
                 pkAddPlayer.meta.set(EntityMetaData.Constants.DATA_NAMETAG, new ByteArrayMeta(playerListEntry.getProfile().getName())); //hacky for now

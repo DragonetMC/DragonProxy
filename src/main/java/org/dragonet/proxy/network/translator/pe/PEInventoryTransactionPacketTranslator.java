@@ -44,39 +44,40 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
     @Override
     public Packet[] translate(UpstreamSession session, InventoryTransactionPacket packet) {
         //debug
-		System.out.println(">>>>============================");
+        System.out.println(">>>>============================");
         System.out.println("InventoryTransactionPacket type: \n" + DebugTools.getAllFields(packet));
-		System.out.println("-------------");
-        for(InventoryTransactionAction action : packet.actions) {
+        System.out.println("-------------");
+        for (InventoryTransactionAction action : packet.actions) {
             System.out.println(DebugTools.getAllFields(action));
         }
         System.out.println("<<<<============================");
 
         switch (packet.transactionType) {
             case TYPE_NORMAL: //0
-				if (packet.actions.length <= 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_WORLD) //main inventory
-				{
-					// drop item
-					ClientPlayerActionPacket act = new ClientPlayerActionPacket(
-						com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.DROP_ITEM,
-						new Position(0, 0, 0),
-						BlockFace.DOWN);
-					return new Packet[] {act};
-				}
-				if(packet.actions.length == 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_CONTAINER && packet.actions[1].containerId == ContainerId.CURSOR.getId()) {
-					// desktop version: click on an item (maybe pick/place/merge/swap)
-				}
-				// after the previous one, we can detect SHIFT click or move items on mobile devices
-				if(packet.actions.length == 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_CONTAINER && packet.actions[2].sourceType == InventoryTransactionAction.SOURCE_CONTAINER) {
-					// mobile version: move item
-					// desktop version: SHIFT-click item
-				}
+                System.out.println("TYPE_NORMAL");
+                if (packet.actions.length <= 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_WORLD) //main inventory
+                {
+                    // drop item
+                    ClientPlayerActionPacket act = new ClientPlayerActionPacket(
+                            com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.DROP_ITEM,
+                            new Position(0, 0, 0),
+                            BlockFace.DOWN);
+                    return new Packet[]{act};
+                }
+                if (packet.actions.length == 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_CONTAINER && packet.actions[1].containerId == ContainerId.CURSOR.getId()) {
+                    // desktop version: click on an item (maybe pick/place/merge/swap)
+                }
+                // after the previous one, we can detect SHIFT click or move items on mobile devices
+                if (packet.actions.length == 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_CONTAINER && packet.actions[2].sourceType == InventoryTransactionAction.SOURCE_CONTAINER) {
+                    // mobile version: move item
+                    // desktop version: SHIFT-click item
+                }
                 return null; // it's okay to return null
             case TYPE_MISMATCH: //1
-//                System.out.println("TYPE_MISMATCH");
+                System.out.println("TYPE_MISMATCH");
                 break;
             case TYPE_USE_ITEM: //2
-//                System.out.println("TYPE_USE_ITEM");
+                System.out.println("TYPE_USE_ITEM");
                 UseItemData useItemData = (UseItemData) packet.transactionData;
                 if (useItemData.blockPos.equals(new BlockPosition(0, 0, 0))) {
                     return null;
@@ -107,7 +108,7 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
 
                 }
             case TYPE_USE_ITEM_ON_ENTITY: //3
-//                System.out.println("TYPE_USE_ITEM_ON_ENTITY");
+                System.out.println("TYPE_USE_ITEM_ON_ENTITY");
                 UseItemOnEntityData useItemOnEntityData = (UseItemOnEntityData) packet.transactionData;
                 CachedEntity cachedEntity = session.getEntityCache().getByLocalEID(useItemOnEntityData.entityRuntimeId);
                 if (cachedEntity == null) {
@@ -123,7 +124,7 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                 );
                 return new Packet[]{interractPacket};
             case TYPE_RELEASE_ITEM: //4
-//                System.out.println("TYPE_RELEASE_ITEM");
+                System.out.println("TYPE_RELEASE_ITEM");
                 ReleaseItemData releaseItemData = (ReleaseItemData) packet.transactionData;
 //                ClientPlayerActionPacket act = new ClientPlayerActionPacket(
 //                    com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.DROP_ITEM,

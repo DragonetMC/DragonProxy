@@ -23,189 +23,186 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class PEBinaryReader implements Closeable {
-	// vars
-	protected InputStream is;
-	protected boolean endianness;
-	private int totallyRead;
 
-	// constructor
-	public PEBinaryReader(InputStream is) {
-		this(is, PEBinaryUtils.BIG_ENDIAN);
-	}
+    protected InputStream is;
+    protected boolean endianness;
+    private int totallyRead;
 
-	public PEBinaryReader(InputStream is, boolean endianness) {
-		this.is = is;
-		this.endianness = endianness;
-	}
+    public PEBinaryReader(InputStream is) {
+        this(is, PEBinaryUtils.BIG_ENDIAN);
+    }
 
-	// public
-	public boolean switchEndianness() {
-		this.endianness = !this.endianness;
-		return this.endianness;
-	}
+    public PEBinaryReader(InputStream is, boolean endianness) {
+        this.is = is;
+        this.endianness = endianness;
+    }
 
-	public boolean getEndianness() {
-		return this.endianness;
-	}
+    public boolean switchEndianness() {
+        this.endianness = !this.endianness;
+        return this.endianness;
+    }
 
-	public void close() throws IOException {
-		is.close();
-	}
+    public boolean getEndianness() {
+        return this.endianness;
+    }
 
-	public int readVarInt() throws IOException {
-		return VarInt.decodeZigZag32(readUnsignedVarInt());
-	}
+    public void close() throws IOException {
+        is.close();
+    }
 
-	public int readUnsignedVarInt() throws IOException {
-		return readVar(5).intValue();
-	}
+    public int readVarInt() throws IOException {
+        return VarInt.decodeZigZag32(readUnsignedVarInt());
+    }
 
-	public long readVarLong() throws IOException {
-		return VarInt.decodeZigZag64(readUnsignedVarLong().longValue());
-	}
+    public int readUnsignedVarInt() throws IOException {
+        return readVar(5).intValue();
+    }
 
-	public BigInteger readUnsignedVarLong() throws IOException {
-		return readVar(10);
-	}
+    public long readVarLong() throws IOException {
+        return VarInt.decodeZigZag64(readUnsignedVarLong().longValue());
+    }
 
-	public BigInteger readVar(int maxLength) throws IOException {
-		BigInteger result = BigInteger.ZERO;
-		int offset = 0;
-		int b;
+    public BigInteger readUnsignedVarLong() throws IOException {
+        return readVar(10);
+    }
 
-		do {
-			if (offset >= maxLength) {
-				throw new IllegalArgumentException("VarInt overflow");
-			}
+    public BigInteger readVar(int maxLength) throws IOException {
+        BigInteger result = BigInteger.ZERO;
+        int offset = 0;
+        int b;
 
-			b = readByte();
-			result = result.or(BigInteger.valueOf((b & 0x7f) << (offset * 7)));
-			offset++;
-		} while ((b & 0x80) > 0);
+        do {
+            if (offset >= maxLength) {
+                throw new IllegalArgumentException("VarInt overflow");
+            }
 
-		return result;
-	}
+            b = readByte();
+            result = result.or(BigInteger.valueOf((b & 0x7f) << (offset * 7)));
+            offset++;
+        } while ((b & 0x80) > 0);
 
-	public float[] readVector3f() throws IOException {
-		// FORCED to use LITTLE-ENDIAN
-		if (endianness != PEBinaryUtils.LITTLE_ENDIAN) {
-			switchEndianness();
-			float[] r = readVector3f();
-			switchEndianness();
-			return r;
-		} else {
-			float[] r = new float[] { readFloat(), readFloat(), readFloat() };
-			return r;
-		}
-	}
+        return result;
+    }
 
-	public int[] readBlockCoords() throws IOException {
-		return new int[] { readVarInt(), readUnsignedVarInt(), readVarInt() };
-	}
+    public float[] readVector3f() throws IOException {
+        // FORCED to use LITTLE-ENDIAN
+        if (endianness != PEBinaryUtils.LITTLE_ENDIAN) {
+            switchEndianness();
+            float[] r = readVector3f();
+            switchEndianness();
+            return r;
+        } else {
+            float[] r = new float[]{readFloat(), readFloat(), readFloat()};
+            return r;
+        }
+    }
 
-	public BinaryAddress readAddress() throws IOException {
-		BinaryAddress addr = new BinaryAddress();
-		addr.type = readByte();
-		if ((addr.type & 0xFF) == 4) {
-			// IPv4
-			addr.address = read(4);
-		} else {
-			addr.address = read(8);
-		}
-		addr.port = readShort();
-		return addr;
-	}
+    public int[] readBlockCoords() throws IOException {
+        return new int[]{readVarInt(), readUnsignedVarInt(), readVarInt()};
+    }
 
-	public UUID readUUID() throws IOException {
-		long first = readLong();
-		long last = readLong();
-		return new UUID(first, last);
-	}
+    public BinaryAddress readAddress() throws IOException {
+        BinaryAddress addr = new BinaryAddress();
+        addr.type = readByte();
+        if ((addr.type & 0xFF) == 4) {
+            // IPv4
+            addr.address = read(4);
+        } else {
+            addr.address = read(8);
+        }
+        addr.port = readShort();
+        return addr;
+    }
 
-	public String readString() throws IOException {
-		int len = readVarInt();
-		falloc(len);
-		return new String(read(len), StandardCharsets.UTF_8);
-	}
+    public UUID readUUID() throws IOException {
+        long first = readLong();
+        long last = readLong();
+        return new UUID(first, last);
+    }
 
-	public byte readByte() throws IOException {
-		falloc(1);
-		totallyRead += 1;
-		return (byte) is.read();
-	}
+    public String readString() throws IOException {
+        int len = readVarInt();
+        falloc(len);
+        return new String(read(len), StandardCharsets.UTF_8);
+    }
 
-	public short readShort() throws IOException {
-		falloc(2);
-		return (short) (readNat(2) & 0xFFFF);
-	}
+    public byte readByte() throws IOException {
+        falloc(1);
+        totallyRead += 1;
+        return (byte) is.read();
+    }
 
-	public int readTriad() throws IOException {
-		falloc(3);
-		this.endianness = !this.endianness;
-		int triad = (int) (readNat(3) & 0xFFFFFF);
-		this.endianness = !this.endianness;
-		return triad;
-	}
+    public short readShort() throws IOException {
+        falloc(2);
+        return (short) (readNat(2) & 0xFFFF);
+    }
 
-	public int readInt() throws IOException {
-		falloc(4);
-		return (int) (readNat(4) & 0xFFFFFFFF);
-	}
+    public int readTriad() throws IOException {
+        falloc(3);
+        this.endianness = !this.endianness;
+        int triad = (int) (readNat(3) & 0xFFFFFF);
+        this.endianness = !this.endianness;
+        return triad;
+    }
 
-	public long readLong() throws IOException {
-		falloc(8);
-		return readNat(8);
-	}
+    public int readInt() throws IOException {
+        falloc(4);
+        return (int) (readNat(4) & 0xFFFFFFFF);
+    }
 
-	public float readFloat() throws IOException {
-		falloc(4);
-		ByteBuffer bb = ByteBuffer.wrap(read(4));
-		return bb.getFloat();
-	}
+    public long readLong() throws IOException {
+        falloc(8);
+        return readNat(8);
+    }
 
-	public double readDouble() throws IOException {
-		falloc(8);
-		ByteBuffer bb = ByteBuffer.wrap(read(8));
-		return bb.getDouble();
-	}
+    public float readFloat() throws IOException {
+        falloc(4);
+        ByteBuffer bb = ByteBuffer.wrap(read(4));
+        return bb.getFloat();
+    }
 
-	public byte[] read(int length) throws IOException {
-		falloc(length);
-		this.totallyRead += length;
-		byte[] buffer = new byte[length];
-		is.read(buffer, 0, length);
-		return buffer;
-	}
+    public double readDouble() throws IOException {
+        falloc(8);
+        ByteBuffer bb = ByteBuffer.wrap(read(8));
+        return bb.getDouble();
+    }
 
-	public long readNat(int length) throws IOException {
-		falloc(length);
-		return PEBinaryUtils.read(read(length), 0, length, endianness);
-	}
+    public byte[] read(int length) throws IOException {
+        falloc(length);
+        this.totallyRead += length;
+        byte[] buffer = new byte[length];
+        is.read(buffer, 0, length);
+        return buffer;
+    }
 
-	protected void falloc(int l) throws IOException {
-		int lack = l - is.available();
-		if (lack > 0) {
-			throw getUEOFException(lack);
-		}
-	}
+    public long readNat(int length) throws IOException {
+        falloc(length);
+        return PEBinaryUtils.read(read(length), 0, length, endianness);
+    }
 
-	protected IOException getUEOFException(int needed) {
-		return new IOException(String.format("Unexpected end of file: %d more bytes expected", needed));
-	}
+    protected void falloc(int l) throws IOException {
+        int lack = l - is.available();
+        if (lack > 0) {
+            throw getUEOFException(lack);
+        }
+    }
 
-	public int available() throws IOException {
-		return this.is.available();
-	}
+    protected IOException getUEOFException(int needed) {
+        return new IOException(String.format("Unexpected end of file: %d more bytes expected", needed));
+    }
 
-	public int totallyRead() {
-		return this.totallyRead;
-	}
+    public int available() throws IOException {
+        return this.is.available();
+    }
 
-	// private
+    public int totallyRead() {
+        return this.totallyRead;
+    }
 
-	public static class BinaryAddress {
-		public byte type;
-		public byte[] address;
-		public short port;
-	}
+    public static class BinaryAddress {
+
+        public byte type;
+        public byte[] address;
+        public short port;
+    }
 }

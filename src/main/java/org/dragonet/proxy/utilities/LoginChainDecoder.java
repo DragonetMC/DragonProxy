@@ -15,7 +15,6 @@ import java.util.UUID;
  * Created on 2017/9/12.
  */
 public class LoginChainDecoder {
-    // vars
 
     private final byte[] chainJWT;
     private final byte[] clientDataJWT;
@@ -25,13 +24,11 @@ public class LoginChainDecoder {
     public String language;
     public Skin skin;
 
-    // constructor
     public LoginChainDecoder(byte[] chainJWT, byte[] clientDataJWT) {
         this.chainJWT = chainJWT;
         this.clientDataJWT = clientDataJWT;
     }
 
-    // public
     /**
      * decode the chain data in Login packet for MCPE Note: the credit of this
      * function goes to Nukkit development team
@@ -75,7 +72,6 @@ public class LoginChainDecoder {
         );
     }
 
-    // private
     /**
      * Note: the credit of this function goes to Nukkit development team
      *

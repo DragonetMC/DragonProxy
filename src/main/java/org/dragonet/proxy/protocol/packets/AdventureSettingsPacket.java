@@ -7,7 +7,6 @@ import org.dragonet.proxy.protocol.ProtocolInfo;
  * Created on 2017/10/21.
  */
 public class AdventureSettingsPacket extends PEPacket {
-    //vars
 
     public static final int PERMISSION_NORMAL = 0;
     public static final int PERMISSION_OPERATOR = 1;
@@ -28,7 +27,6 @@ public class AdventureSettingsPacket extends PEPacket {
      */
     public static final int BITFLAG_SECOND_SET = 1 << 16;
 
-    //flags
     public static final int WORLD_IMMUTABLE = 0x01;
     public static final int NO_PVP = 0x02;
     public static final int AUTO_JUMP = 0x20;
@@ -54,16 +52,16 @@ public class AdventureSettingsPacket extends PEPacket {
     public int customFlags;
     public long eid;
 
-    //constructor
     public AdventureSettingsPacket() {
 
     }
 
-    //public
+    @Override
     public int pid() {
         return ProtocolInfo.ADVENTURE_SETTINGS_PACKET;
     }
 
+    @Override
     public void encodePayload() {
         putUnsignedVarInt(flags);
         putUnsignedVarInt(commandsPermission);
@@ -73,6 +71,7 @@ public class AdventureSettingsPacket extends PEPacket {
         putLLong(eid);
     }
 
+    @Override
     public void decodePayload() {
         flags = (int) getUnsignedVarInt();
         commandsPermission = (int) getUnsignedVarInt();
@@ -107,6 +106,4 @@ public class AdventureSettingsPacket extends PEPacket {
             }
         }
     }
-
-    //private
 }

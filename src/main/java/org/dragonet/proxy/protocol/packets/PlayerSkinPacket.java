@@ -16,7 +16,6 @@ public class PlayerSkinPacket extends PEPacket {
     public String newSkinName = "";
     public Skin skin;
 
-    // constructor
     public PlayerSkinPacket() {
     }
 
@@ -24,7 +23,6 @@ public class PlayerSkinPacket extends PEPacket {
         this.uuid = uuid;
     }
 
-    // public
     @Override
     public int pid() {
         return ProtocolInfo.PLAYER_SKIN_PACKET;
@@ -33,7 +31,9 @@ public class PlayerSkinPacket extends PEPacket {
     @Override
     public void encodePayload() {
         putUUID(uuid);
-        if (skin == null) skin = Skin.DEFAULT_SKIN;
+        if (skin == null) {
+            skin = Skin.DEFAULT_SKIN;
+        }
         putString(skin.skinId);
         putString(oldSkinName);
         putString(newSkinName);
@@ -48,6 +48,4 @@ public class PlayerSkinPacket extends PEPacket {
     public void decodePayload() {
 
     }
-
-    // private
 }

@@ -13,19 +13,15 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerVehicleMovePacket;
 import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.protocol.packets.MoveEntityPacket;
-import org.dragonet.proxy.utilities.Constants;
 import org.dragonet.proxy.utilities.DebugTools;
-import org.dragonet.proxy.utilities.Vector3F;
 
 public class PCVehicleMovePacketTranslator implements IPCPacketTranslator<ServerVehicleMovePacket> {
 
     public PEPacket[] translate(UpstreamSession session, ServerVehicleMovePacket packet) {
-        System.out.println(DebugTools.getAllFields(packet));
+//        System.out.println(DebugTools.getAllFields(packet));
         return new PEPacket[]{};
     }
 }

@@ -11,8 +11,8 @@ import org.dragonet.proxy.protocol.type.transaction.data.UseItemOnEntityData;
 /**
  * Created on 2017/10/21.
  */
-public class InventoryTransactionPacket extends PEPacket
-{
+public class InventoryTransactionPacket extends PEPacket {
+
     public static final int TYPE_NORMAL = 0;
     public static final int TYPE_MISMATCH = 1;
     public static final int TYPE_USE_ITEM = 2;
@@ -28,7 +28,6 @@ public class InventoryTransactionPacket extends PEPacket
 
     public static final int USE_ITEM_ON_ENTITY_ACTION_INTERACT = 0;
     public static final int USE_ITEM_ON_ENTITY_ACTION_ATTACK = 1;
-
 
     public static final int ACTION_MAGIC_SLOT_DROP_ITEM = 0;
     public static final int ACTION_MAGIC_SLOT_PICKUP_ITEM = 1;
@@ -146,7 +145,4 @@ public class InventoryTransactionPacket extends PEPacket
                 throw new RuntimeException("Unknown transaction type " + this.transactionType);
         }
     }
-	
-	//private
-	
 }

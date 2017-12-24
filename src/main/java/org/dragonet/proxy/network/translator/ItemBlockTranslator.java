@@ -18,6 +18,7 @@ import java.util.Map;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockFace;
+import com.github.steveice10.mc.protocol.data.message.Message;
 import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
 import com.github.steveice10.opennbt.tag.builtin.IntTag;
 import com.github.steveice10.opennbt.tag.builtin.StringTag;
@@ -36,6 +37,7 @@ public class ItemBlockTranslator {
     public static final Map<Integer, String> NAME_OVERRIDES = new HashMap<>();
 
     static {
+        //BLOCKS
         toPEOverride(36, 248); //unkown block
         swap(125, 157); // double_wooden_slab
         swap(126, 158); // wooden_slab
@@ -57,7 +59,6 @@ public class ItemBlockTranslator {
         swap(192, new ItemEntry(85, 4)); //acacia_fence
         swap(203, 202); //purpur_stairs
         swap(205, 248); //purpur_slab -> unknown
-
         //shulker_box
         swap(219, new ItemEntry(218, 0)); //white
         swap(220, new ItemEntry(218, 1)); //orange
@@ -75,7 +76,6 @@ public class ItemBlockTranslator {
         swap(232, new ItemEntry(218, 13)); //green
         swap(233, new ItemEntry(218, 14)); //red
         swap(234, new ItemEntry(218, 15)); //black
-
         //glazed terracota
         swap(235, 220); //white
         swap(236, 221); //orange
@@ -93,22 +93,47 @@ public class ItemBlockTranslator {
         swap(248, 233); //green
         swap(249, 234); //red
         swap(250, 235); //black
-
         swap(251, 236); //concrete
         swap(252, 237); //concretepowder
-
         swap(218, 251); //observer
         swap(207, 244); //beetroots
         swap(255, 252); //structure_block
+
+        //ITEMS
+        swap(416, 425); //armor_stand horsearmorleather
+        toPCOverride(425, 417); //horsearmorleather horsearmoriron (unavailable on PC)
+
+        swap(443, 444); //elytra
+
+        swap(444, new ItemEntry(333, 1)); //spruce_boat
+        swap(445, new ItemEntry(333, 2)); //birch_boat
+        swap(446, new ItemEntry(333, 3)); //jungle_boat
+        swap(447, new ItemEntry(333, 4)); //acacia_boat
+        swap(448, new ItemEntry(333, 5)); //dark_oak_boat
+
+        swap(449, 450); //totem shulker_shell
+
+        swap(2256, 500); //record_13
+        swap(2257, 501); //record_cat
+        swap(2258, 502); //record_blocks
+        swap(2259, 503); //record_chirp
+        swap(2260, 504); //record_far
+        swap(2261, 505); //record_far
+        swap(2262, 506); //record_mellohi
+        swap(2263, 507); //record_stal
+        swap(2264, 508); //record_strad
+        swap(2265, 509); //record_ward
+        swap(2265, 510); //record_11
+        swap(2265, 511); //record_wait
 
         //TODO: replace podzol
     }
 
     public static ItemEntry translateToPE(int pcItemBlockId, int damage) {
         ItemEntry entry = new ItemEntry(pcItemBlockId, damage);
-        
-        //here translate item data value (color / facing ....) need another translator items specific
 
+        //here translate item data value (color / facing ....) need another translator items specific
+        // see https://minecraft.gamepedia.com/Block_states
         if (!PC_TO_PE_OVERRIDE.containsKey(pcItemBlockId)) {
             return entry;
         }
@@ -146,14 +171,14 @@ public class ItemBlockTranslator {
         slot.id = entry.id;
         slot.damage = entry.damage != null ? entry.damage : item.getData();
         slot.count = (item.getAmount() & 0xff);
-        org.dragonet.proxy.data.nbt.tag.CompoundTag tag = new org.dragonet.proxy.data.nbt.tag.CompoundTag();
-        tag.putShort("id", item.getId());
-        tag.putShort("amount", item.getAmount());
-        tag.putShort("data", item.getData());
-        org.dragonet.proxy.data.nbt.tag.CompoundTag rootTag = new org.dragonet.proxy.data.nbt.tag.CompoundTag();
-        rootTag.put(DRAGONET_COMPOUND, tag);
-        slot.tag = rootTag;
-        translateRawNBT(item.getId(), item.getNBT(), slot.tag);
+//        org.dragonet.proxy.data.nbt.tag.CompoundTag tag = new org.dragonet.proxy.data.nbt.tag.CompoundTag();
+//        tag.putShort("id", item.getId());
+//        tag.putShort("amount", item.getAmount());
+//        tag.putShort("data", item.getData());
+//        org.dragonet.proxy.data.nbt.tag.CompoundTag rootTag = new org.dragonet.proxy.data.nbt.tag.CompoundTag();
+//        rootTag.put(DRAGONET_COMPOUND, tag);
+//        slot.tag = rootTag;
+        slot.tag = translateRawNBT(item.getId(), item.getNBT(), null);
         return slot;
     }
 
@@ -222,7 +247,7 @@ public class ItemBlockTranslator {
             switch (output.getString("id")) {
                 case "minecraft:bed":
                     output.putString("id", "Bed");
-                    output.putByte("color", output.getInt("color")); //TODO check colors
+                    output.putByte("color", 0); //TODO check colors
                     break;
                 case "minecraft:chest":
                     output.putString("id", "Chest");
@@ -235,9 +260,24 @@ public class ItemBlockTranslator {
                     break;
                 case "minecraft:sign":
                     output.putString("id", "Sign");
+                    if (!output.contains("Text")) {
+                        output.putString("Text",
+                                Message.fromString(output.getString("Text1")).getFullText()
+                                + "\n" + Message.fromString(output.getString("Text2")).getFullText()
+                                + "\n" + Message.fromString(output.getString("Text3")).getFullText()
+                                + "\n" + Message.fromString(output.getString("Text4")).getFullText());
+                    }
+                    output.remove("Text1");
+                    output.remove("Text2");
+                    output.remove("Text3");
+                    output.remove("Text4");
                     break;
                 case "minecraft:flower_pot":
                     output.putString("id", "FlowerPot");
+                    output.putInt("data", output.getInt("Data"));
+                    output.remove("Data");
+                    output.putShort("item", 0);
+                    output.remove("Item");
                     break;
                 case "minecraft:hopper":
                     output.putString("id", "Hopper");
@@ -292,7 +332,8 @@ public class ItemBlockTranslator {
                     break;
             }
         }
-        output.putBoolean("isMovable", false);
+//        if (output.getString("id") == "ShulkerBox" || output.getString("id") == "Bed" || output.getString("id") == "Chest")
+//            System.out.println("translateBlockEntityToPE " + output.toString());
         return output;
     }
 
@@ -338,6 +379,14 @@ public class ItemBlockTranslator {
 
     private static void toPEOverride(int fromPc, ItemEntry toPe) {
         PC_TO_PE_OVERRIDE.put(fromPc, toPe);
+    }
+
+    private static void toPCOverride(int fromEc, int toPc) {
+        PE_TO_PC_OVERRIDE.put(fromEc, new ItemEntry(toPc));
+    }
+
+    private static void toPCOverride(int fromPc, ItemEntry toPe) {
+        PE_TO_PC_OVERRIDE.put(fromPc, toPe);
     }
 
     public static CompoundTag newTileTag(String id, int x, int y, int z) {

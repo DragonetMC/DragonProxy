@@ -15,26 +15,20 @@ package org.dragonet.proxy.configuration;
 import java.util.Map;
 
 public class ServerConfig {
-	// vars
-	public String lang = "default";
-	public String udp_bind_ip = "0.0.0.0";
-	public int udp_bind_port = 19132;
-	public String motd = "&aServer by DragonProxy";
-	public String default_server = "NONE";
-	public Map<String, RemoteServer> remote_servers;
-	public String mode = "cls";
-	public String command_prefix = "/";
-	public int max_players = -1;
-	public boolean log_console = true;
-	public int thread_pool_size;
 
-	// constructor
-	public ServerConfig() {
+    public String lang = "default";
+    public String udp_bind_ip = "0.0.0.0";
+    public int udp_bind_port = 19132;
+    public String motd = "&aServer by DragonProxy";
+    public String default_server = "NONE";
+    public Map<String, RemoteServer> remote_servers;
+    public String mode = "cls";
+    public String command_prefix = "/";
+    public int max_players = -1;
+    public boolean log_console = true;
+    public int thread_pool_size;
 
-	}
+    public ServerConfig() {
 
-	// public
-
-	// private
-
+    }
 }

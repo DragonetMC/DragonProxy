@@ -20,7 +20,6 @@ import com.github.steveice10.mc.protocol.data.game.entity.type.MobType;
 
 public enum EntityType {
     NONE(0, 0),
-
     CHICKEN(10, 0),
     COW(11, 0),
     PIG(12, 0),
