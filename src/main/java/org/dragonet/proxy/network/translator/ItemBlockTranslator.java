@@ -181,7 +181,6 @@ public class ItemBlockTranslator {
 //        rootTag.put(DRAGONET_COMPOUND, tag);
 //        slot.tag = rootTag;
         slot.tag = translateRawNBT(item.getId(), item.getNBT(), null);
-        System.out.println("translateSlotToPE " + slot.id);
         return slot;
     }
 
