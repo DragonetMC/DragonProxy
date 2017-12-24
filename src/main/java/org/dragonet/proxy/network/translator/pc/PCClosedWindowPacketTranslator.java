@@ -21,6 +21,7 @@ import org.dragonet.proxy.protocol.PEPacket;
 public class PCClosedWindowPacketTranslator implements IPCPacketTranslator<ServerCloseWindowPacket> {
 
     public PEPacket[] translate(UpstreamSession session, ServerCloseWindowPacket packet) {
+        System.out.println("Window " + packet.getWindowId() + " closed from server !");
         session.getProxy().getGeneralThreadPool().execute(() -> {
             InventoryTranslatorRegister.closeOpened(session, true);
         });

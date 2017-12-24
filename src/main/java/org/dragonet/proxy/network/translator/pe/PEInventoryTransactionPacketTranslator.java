@@ -49,7 +49,7 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
 
         switch (packet.transactionType) {
             case TYPE_NORMAL: //0
-//                System.out.println("TYPE_NORMAL");
+                System.out.println("TYPE_NORMAL");
                 List<Packet> packets = new ArrayList();
 
                 for (InventoryTransactionAction action : packet.actions) {
@@ -64,10 +64,10 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                 }
                 return packets.toArray(new Packet[]{});
             case TYPE_MISMATCH: //1
-//                System.out.println("TYPE_MISMATCH");
+                System.out.println("TYPE_MISMATCH");
                 break;
             case TYPE_USE_ITEM: //2
-//                System.out.println("TYPE_USE_ITEM");
+                System.out.println("TYPE_USE_ITEM");
                 UseItemData useItemData = (UseItemData) packet.transactionData;
                 if (useItemData.blockPos.equals(new BlockPosition(0, 0, 0))) {
                     return null;
@@ -98,7 +98,7 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
 
                 }
             case TYPE_USE_ITEM_ON_ENTITY: //3
-//                System.out.println("TYPE_USE_ITEM_ON_ENTITY");
+                System.out.println("TYPE_USE_ITEM_ON_ENTITY");
                 UseItemOnEntityData useItemOnEntityData = (UseItemOnEntityData) packet.transactionData;
                 CachedEntity cachedEntity = session.getEntityCache().getByLocalEID(useItemOnEntityData.entityRuntimeId);
                 if (cachedEntity == null) {
@@ -114,7 +114,7 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                 );
                 return new Packet[]{interractPacket};
             case TYPE_RELEASE_ITEM: //4
-//                System.out.println("TYPE_RELEASE_ITEM");
+                System.out.println("TYPE_RELEASE_ITEM");
                 ReleaseItemData releaseItemData = (ReleaseItemData) packet.transactionData;
 //                ClientPlayerActionPacket act = new ClientPlayerActionPacket(
 //                    com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.DROP_ITEM,

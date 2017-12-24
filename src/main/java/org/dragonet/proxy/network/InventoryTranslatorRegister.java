@@ -66,10 +66,9 @@ public final class InventoryTranslatorRegister {
     public static void open(UpstreamSession session, ServerOpenWindowPacket win) {
         closeOpened(session, true);
         if (TRANSLATORS.containsKey(win.getType())) {
-            CachedWindow cached = new CachedWindow(win.getWindowId(), win.getType(), 36 + win.getSlots());
+            CachedWindow cached = new CachedWindow(win.getWindowId(), win.getType(), win.getSlots());
             session.getWindowCache().cacheWindow(cached);
             TRANSLATORS.get(win.getType()).open(session, cached);
-
             com.github.steveice10.packetlib.packet.Packet[] items = session.getWindowCache().getCachedPackets(win.getWindowId());
             for (com.github.steveice10.packetlib.packet.Packet item : items) {
                 if (item != null) {
@@ -80,6 +79,7 @@ public final class InventoryTranslatorRegister {
                     }
                 }
             }
+            System.out.println("Window " + win.getWindowId() + " opened !");
         } else {
             // Not supported
             session.getDownstream().send(new ClientCloseWindowPacket(win.getWindowId()));
@@ -90,34 +90,19 @@ public final class InventoryTranslatorRegister {
         if (session.getDataCache().containsKey(CacheKey.WINDOW_OPENED_ID)) {
             // There is already a window opened
             int id = (int) session.getDataCache().remove(CacheKey.WINDOW_OPENED_ID);
-            if (!byServer) {
-                session.getDownstream().send(new ContainerClosePacket((byte) (id & 0xFF)));
+            System.out.println("Window " + id + " closed !");
+            if (byServer) {
+                session.sendPacket(new ContainerClosePacket(id), true);
+            } else {
+                session.getDownstream().send(new ClientCloseWindowPacket(id));
             }
             if (session.getDataCache().containsKey(CacheKey.WINDOW_BLOCK_POSITION)) {
                 // Already a block was replaced to Chest, reset it
                 session.sendFakeBlock(((Position) session.getDataCache().get(CacheKey.WINDOW_BLOCK_POSITION)).getX(),
                         ((Position) session.getDataCache().get(CacheKey.WINDOW_BLOCK_POSITION)).getY(),
-                        ((Position) session.getDataCache().remove(CacheKey.WINDOW_BLOCK_POSITION)).getZ(), 1, // Set to
-                        // stone
-                        // since
-                        // we
-                        // don't
-                        // know
-                        // what
-                        // it
-                        // was,
-                        // server
-                        // will
-                        // correct
-                        // it
-                        // once
-                        // client
-                        // interacts
-                        // it
+                        ((Position) session.getDataCache().remove(CacheKey.WINDOW_BLOCK_POSITION)).getZ(), 1,
+                        // Set to stone since we don't know what it was, server will correct it once client interacts it
                         0);
-            }
-            if (byServer) {
-                session.sendPacket(new ContainerClosePacket((byte) (id & 0xFF)), true);
             }
         }
     }

@@ -21,8 +21,8 @@ public class ContainerOpenPacket extends PEPacket {
 
     @Override
     public void encodePayload() {
-        putByte((byte) (windowId & 0xFF));
-        putByte((byte) (type & 0xFF));
+        putByte((byte) (windowId));
+        putByte((byte) (type));
         putBlockPosition(position);
         putVarLong(eid);
     }
