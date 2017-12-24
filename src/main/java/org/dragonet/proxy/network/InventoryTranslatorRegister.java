@@ -21,7 +21,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientClose
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
-import org.dragonet.proxy.data.inventory.PEWindowConstantID;
+import org.dragonet.proxy.data.inventory.ContainerId;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.inv.ChestWindowTranslator;
@@ -44,7 +44,7 @@ public final class InventoryTranslatorRegister {
         CachedWindow win = session.getWindowCache().getPlayerInventory();
         // Translate and send
         InventoryContentPacket ret = new InventoryContentPacket();
-        ret.windowId = PEWindowConstantID.PLAYER_INVENTORY.getId();
+        ret.windowId = ContainerId.INVENTORY.getId();
         ret.items = new Slot[40];
         // hotbar
         for (int i = 36; i < 45; i++) {
@@ -66,7 +66,7 @@ public final class InventoryTranslatorRegister {
     public static void open(UpstreamSession session, ServerOpenWindowPacket win) {
         closeOpened(session, true);
         if (TRANSLATORS.containsKey(win.getType())) {
-            CachedWindow cached = new CachedWindow(win.getWindowId(), win.getType(), win.getSlots());
+            CachedWindow cached = new CachedWindow(win.getWindowId(), win.getType(), win.getSlots() + 36/* player inventory */);
             session.getWindowCache().cacheWindow(cached);
             TRANSLATORS.get(win.getType()).open(session, cached);
             com.github.steveice10.packetlib.packet.Packet[] items = session.getWindowCache().getCachedPackets(win.getWindowId());
@@ -79,7 +79,6 @@ public final class InventoryTranslatorRegister {
                     }
                 }
             }
-            System.out.println("Window " + win.getWindowId() + " opened !");
         } else {
             // Not supported
             session.getDownstream().send(new ClientCloseWindowPacket(win.getWindowId()));
@@ -90,7 +89,6 @@ public final class InventoryTranslatorRegister {
         if (session.getDataCache().containsKey(CacheKey.WINDOW_OPENED_ID)) {
             // There is already a window opened
             int id = (int) session.getDataCache().remove(CacheKey.WINDOW_OPENED_ID);
-            System.out.println("Window " + id + " closed !");
             if (byServer) {
                 session.sendPacket(new ContainerClosePacket(id), true);
             } else {
@@ -150,7 +148,6 @@ public final class InventoryTranslatorRegister {
             return;
         }
         CachedWindow win = session.getWindowCache().get(openedId);
-        System.out.println("WIN=" + win.slots.length + ", REQ_SLOT=" + packet.getSlot());
         if (win.size <= packet.getSlot()) {
             session.getDownstream().send(new ClientCloseWindowPacket(packet.getWindowId()));
             return;

@@ -4,6 +4,7 @@ package org.dragonet.proxy.data.inventory;
  * Created on 2017/10/21.
  */
 public enum ContainerId {
+
     NONE(1),
     INVENTORY(0),
     FIRST(1),

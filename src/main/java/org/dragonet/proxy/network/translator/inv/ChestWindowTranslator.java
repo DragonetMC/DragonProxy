@@ -12,7 +12,6 @@
  */
 package org.dragonet.proxy.network.translator.inv;
 
-import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
 import org.dragonet.proxy.data.inventory.InventoryType;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
@@ -61,8 +60,6 @@ public class ChestWindowTranslator implements IInventoryTranslator {
         pk.slotId = slotIndex;
         pk.windowId = win.windowId;
         session.sendPacket(pk, true);
-        System.out.println("update window " + + win.windowId + " slot " + slotIndex);
-//        sendContent(session, window);// TOO LAZY LOL
     }
 
     private void sendContent(UpstreamSession session, CachedWindow win) {
@@ -73,6 +70,5 @@ public class ChestWindowTranslator implements IInventoryTranslator {
             pk.items[i] = ItemBlockTranslator.translateSlotToPE(win.slots[i]);
         }
         session.sendPacket(pk, true);
-        System.out.println("update window " + + win.windowId + " set all content");
     }
 }
