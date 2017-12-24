@@ -80,6 +80,7 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerEntityRotationPacket.class, new PCEntityRotationPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityVelocityPacket.class, new PCEntityVelocityPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityEffectPacket.class, new PCEntityEffectPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerEntityEquipmentPacket.class, new PCEntityEquipmentPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityRemoveEffectPacket.class, new PCEntityRemoveEffectPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayerHealthPacket.class, new PCUpdateHealthPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityAnimationPacket.class, new PCAnimationPacketTranslator());

@@ -18,7 +18,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.dragonet.proxy.data.entity.EntityType;
+import org.dragonet.proxy.protocol.type.Slot;
 
+import com.github.steveice10.mc.protocol.data.game.entity.EquipmentSlot;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
 import java.util.HashMap;
@@ -46,9 +48,14 @@ public class CachedEntity {
     public float yaw;
     public float headYaw;
     public float pitch;
+
     public boolean shouldMove = false;
-    
     public BlockPosition spawnPosition;
+
+    public Slot helmet;
+    public Slot chestplate;
+    public Slot leggings;
+    public Slot boots;
 
     // cache riding datas for dismount
     public long riding = 0;
