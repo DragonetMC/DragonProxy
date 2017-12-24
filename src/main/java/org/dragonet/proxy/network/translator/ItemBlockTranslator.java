@@ -133,6 +133,7 @@ public class ItemBlockTranslator {
         ItemEntry entry = new ItemEntry(pcItemBlockId, damage);
 
         //here translate item data value (color / facing ....) need another translator items specific
+        // see https://minecraft.gamepedia.com/Block_states
         if (!PC_TO_PE_OVERRIDE.containsKey(pcItemBlockId)) {
             return entry;
         }
@@ -170,14 +171,14 @@ public class ItemBlockTranslator {
         slot.id = entry.id;
         slot.damage = entry.damage != null ? entry.damage : item.getData();
         slot.count = (item.getAmount() & 0xff);
-        org.dragonet.proxy.data.nbt.tag.CompoundTag tag = new org.dragonet.proxy.data.nbt.tag.CompoundTag();
-        tag.putShort("id", item.getId());
-        tag.putShort("amount", item.getAmount());
-        tag.putShort("data", item.getData());
-        org.dragonet.proxy.data.nbt.tag.CompoundTag rootTag = new org.dragonet.proxy.data.nbt.tag.CompoundTag();
-        rootTag.put(DRAGONET_COMPOUND, tag);
-        slot.tag = rootTag;
-        translateRawNBT(item.getId(), item.getNBT(), slot.tag);
+//        org.dragonet.proxy.data.nbt.tag.CompoundTag tag = new org.dragonet.proxy.data.nbt.tag.CompoundTag();
+//        tag.putShort("id", item.getId());
+//        tag.putShort("amount", item.getAmount());
+//        tag.putShort("data", item.getData());
+//        org.dragonet.proxy.data.nbt.tag.CompoundTag rootTag = new org.dragonet.proxy.data.nbt.tag.CompoundTag();
+//        rootTag.put(DRAGONET_COMPOUND, tag);
+//        slot.tag = rootTag;
+        slot.tag = translateRawNBT(item.getId(), item.getNBT(), null);
         return slot;
     }
 
