@@ -38,6 +38,7 @@ public final class Protocol {
         packets.put(CHUNK_RADIUS_UPDATED_PACKET, ChunkRadiusUpdatedPacket.class);
         packets.put(FULL_CHUNK_DATA_PACKET, FullChunkDataPacket.class);
         packets.put(UPDATE_BLOCK_PACKET, UpdateBlockPacket.class);
+        packets.put(BLOCK_EVENT_PACKET, BlockEventPacket.class);
         packets.put(ADD_PAINTING_PACKET, AddPaintingPacket.class);
         packets.put(TEXT_PACKET, TextPacket.class);
         packets.put(COMMAND_REQUEST_PACKET, CommandRequestPacket.class);
