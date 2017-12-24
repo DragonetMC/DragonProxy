@@ -79,7 +79,6 @@ public final class InventoryTranslatorRegister {
                     }
                 }
             }
-            System.out.println("Window " + win.getWindowId() + " opened !");
         } else {
             // Not supported
             session.getDownstream().send(new ClientCloseWindowPacket(win.getWindowId()));
@@ -90,7 +89,6 @@ public final class InventoryTranslatorRegister {
         if (session.getDataCache().containsKey(CacheKey.WINDOW_OPENED_ID)) {
             // There is already a window opened
             int id = (int) session.getDataCache().remove(CacheKey.WINDOW_OPENED_ID);
-            System.out.println("Window " + id + " closed !");
             if (byServer) {
                 session.sendPacket(new ContainerClosePacket(id), true);
             } else {
@@ -150,7 +148,6 @@ public final class InventoryTranslatorRegister {
             return;
         }
         CachedWindow win = session.getWindowCache().get(openedId);
-        System.out.println("WIN=" + win.windowId + ", SIZE=" + win.slots.length + ", REQ_SLOT=" + packet.getSlot());
         if (win.size <= packet.getSlot()) {
             session.getDownstream().send(new ClientCloseWindowPacket(packet.getWindowId()));
             return;
