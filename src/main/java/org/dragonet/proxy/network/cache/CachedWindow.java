@@ -35,7 +35,7 @@ public class CachedWindow {
 	public CachedWindow(int windowId, WindowType pcType, int size) {
 		this.windowId = windowId;
 		this.pcType = pcType;
-		this.size = size;
+		this.size = size + 36; //add player inventory slots
 		slots = new ItemStack[this.size];
 	}
 
