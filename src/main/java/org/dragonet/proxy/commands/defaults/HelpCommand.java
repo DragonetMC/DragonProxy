@@ -20,28 +20,22 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class HelpCommand extends Command {
-	// vars
 
-	// constructor
-	public HelpCommand(String name) {
-		super(name, "Displays commands for DragonProxy");
-	}
+    public HelpCommand(String name) {
+        super(name, "Displays commands for DragonProxy");
+    }
 
-	// public
-	public void execute(DragonProxy proxy, String[] args) {
-		proxy.getLogger().info(MCColor.GREEN + "----[ All commands for DragonProxy ]----");
+    public void execute(DragonProxy proxy, String[] args) {
+        proxy.getLogger().info(MCColor.GREEN + "----[ All commands for DragonProxy ]----");
 
-		Map<String, Command> commands = new TreeMap<>();
-		for (Command cmd : proxy.getCommandRegister().getCommands().values()) {
-			commands.put(cmd.getName(), cmd);
-		}
+        Map<String, Command> commands = new TreeMap<>();
+        for (Command cmd : proxy.getCommandRegister().getCommands().values()) {
+            commands.put(cmd.getName(), cmd);
+        }
 
-		for (Command command1 : commands.values()) {
-			proxy.getLogger()
-					.info(MCColor.DARK_GREEN + command1.getName() + ": " + MCColor.WHITE + command1.getDescription());
-		}
-	}
-
-	// private
-
+        for (Command command1 : commands.values()) {
+            proxy.getLogger()
+                    .info(MCColor.DARK_GREEN + command1.getName() + ": " + MCColor.WHITE + command1.getDescription());
+        }
+    }
 }

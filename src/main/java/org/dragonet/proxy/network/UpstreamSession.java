@@ -29,6 +29,7 @@ import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.RemoteServer;
+import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.cache.EntityCache;
 import org.dragonet.proxy.network.cache.WindowCache;
 import org.dragonet.proxy.protocol.PEPacket;
@@ -320,7 +321,7 @@ public class UpstreamSession {
             pkStartGame.seed = 0;
             pkStartGame.generator = 1;
             pkStartGame.spawnPosition = new BlockPosition(0, 72, 0);
-            pkStartGame.position = new Vector3F(0f, 72f + Constants.PLAYER_HEAD_OFFSET, 0f);
+            pkStartGame.position = new Vector3F(0f, 72f + EntityType.PLAYER.getOffset(), 0f);
             pkStartGame.levelId = "";
             pkStartGame.worldName = "World";
             pkStartGame.defaultPlayerPermission = 2;
@@ -411,39 +412,7 @@ public class UpstreamSession {
             connectToServer(proxy.getConfig().remote_servers.get(proxy.getConfig().default_server));
         } else {
             protocol = new MinecraftProtocol(username);
-
             proxy.getLogger().debug("Initially joining [" + proxy.getConfig().default_server + "]... ");
-
-            /*
-			 * // begin test things StartGamePacket pkStartGame = new StartGamePacket();
-			 * pkStartGame.eid = 0; //Use EID 0 for eaisier management pkStartGame.rtid = 0;
-			 * pkStartGame.dimension = (byte) 0; pkStartGame.seed = 0; pkStartGame.generator
-			 * = 1; pkStartGame.position = new Vector3F(0f, 72f, 0f); pkStartGame.levelId =
-			 * ""; pkStartGame.worldName = "World"; pkStartGame.spawnPosition = new
-			 * BlockPosition(0, 0, 0); pkStartGame.premiumWorldTemplateId = "";
-			 * sendPacket(pkStartGame, true);
-			 * 
-			 * PlayStatusPacket pkStat = new PlayStatusPacket(); pkStat.status =
-			 * PlayStatusPacket.PLAYER_SPAWN; sendPacket(pkStat, true);
-			 * 
-			 * AdventureSettingsPacket adv = new AdventureSettingsPacket();
-			 * adv.setFlag(AdventureSettingsPacket.AUTO_JUMP, true);
-			 * adv.setFlag(AdventureSettingsPacket.ALLOW_FLIGHT, true); sendPacket(adv);
-			 * 
-			 * for(int x = -7; x < 8; x ++) { for(int z = -7; z < 8; z ++) {
-			 * org.dragonet.proxy.protocol.type.chunk.ChunkData c = new ChunkData();
-			 * c.sections = new org.dragonet.proxy.protocol.type.chunk.Section[16]; for(int
-			 * cy = 0; cy < 16; cy++) { c.sections[cy] = new
-			 * org.dragonet.proxy.protocol.type.chunk.Section(); if(cy < 4) {
-			 * Arrays.fill(c.sections[cy].blockIds, (byte)1); } }
-			 * org.dragonet.proxy.protocol.packets.FullChunkDataPacket p = new
-			 * org.dragonet.proxy.protocol.packets.FullChunkDataPacket(); p.x = x; p.z = z;
-			 * c.encode(); p.payload = c.getBuffer(); sendPacket(p); } }
-			 * 
-			 * // InventoryContentPacket content = new InventoryContentPacket(); //
-			 * content.items = new org.dragonet.proxy.protocol.type.Slot[36]; //
-			 * sendPacket(content); // end of test things
-             */
             connectToServer(proxy.getConfig().remote_servers.get(proxy.getConfig().default_server));
         }
     }

@@ -11,35 +11,30 @@ package org.dragonet.proxy.protocol.type.chunk;
 import org.dragonet.proxy.utilities.BinaryStream;
 
 public class ExtraData {
-	// vars
-	public int key;
-	public short value;
 
-	// constructor
-	public ExtraData() {
+    public int key;
+    public short value;
 
-	}
+    public ExtraData() {
 
-	public ExtraData(int key, short value) {
-		this.key = key;
-		this.value = value;
-	}
+    }
 
-	// public
-	public void encode(BinaryStream out) {
-		out.putVarInt(key);
-		out.putLShort(value);
-	}
+    public ExtraData(int key, short value) {
+        this.key = key;
+        this.value = value;
+    }
 
-	public void decode(BinaryStream in) {
-		key = (int) in.getUnsignedVarInt();
-		value = (short) in.getLShort();
-	}
+    public void encode(BinaryStream out) {
+        out.putVarInt(key);
+        out.putLShort(value);
+    }
 
-	public String toString() {
-		return "ExtraData(key: " + this.key + ", value: " + this.value + ")";
-	}
+    public void decode(BinaryStream in) {
+        key = (int) in.getUnsignedVarInt();
+        value = (short) in.getLShort();
+    }
 
-	// private
-
+    public String toString() {
+        return "ExtraData(key: " + this.key + ", value: " + this.value + ")";
+    }
 }

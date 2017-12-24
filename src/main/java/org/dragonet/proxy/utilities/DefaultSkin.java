@@ -15,56 +15,51 @@ package org.dragonet.proxy.utilities;
 import java.io.*;
 
 public class DefaultSkin {
-	// vars
-	protected static String NAME;
-	protected static String SKIN_BASE64_ENCODED;
-	protected static MCPESkin SKIN;
 
-	static {
-		loadSkin();
-	}
+    protected static String NAME;
+    protected static String SKIN_BASE64_ENCODED;
+    protected static MCPESkin SKIN;
 
-	// constructor
-	public DefaultSkin() {
+    static {
+        loadSkin();
+    }
 
-	}
+    public DefaultSkin() {
 
-	// public
-	public static String getDefaultSkinName() {
-		return NAME;
-	}
+    }
 
-	public static String getDefaultSkinBase64Encoded() {
-		return SKIN_BASE64_ENCODED;
-	}
+    public static String getDefaultSkinName() {
+        return NAME;
+    }
 
-	public static MCPESkin getDefaultSkin() {
-		return SKIN;
-	}
+    public static String getDefaultSkinBase64Encoded() {
+        return SKIN_BASE64_ENCODED;
+    }
 
-	private static void loadSkin() {
-		try {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			InputStream ins = DefaultSkin.class.getResourceAsStream("/defaults/SKIN.BIN");
-			int d = -1;
-			while ((d = ins.read()) != -1) {
-				if (d == ':') {
-					NAME = new String(bos.toByteArray(), "UTF-8");
-					bos.reset();
-				} else {
-					bos.write(d);
-				}
+    public static MCPESkin getDefaultSkin() {
+        return SKIN;
+    }
 
-			}
-			ins.close();
-			SKIN_BASE64_ENCODED = new String(bos.toByteArray(), "UTF-8");
+    private static void loadSkin() {
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            InputStream ins = DefaultSkin.class.getResourceAsStream("/defaults/SKIN.BIN");
+            int d = -1;
+            while ((d = ins.read()) != -1) {
+                if (d == ':') {
+                    NAME = new String(bos.toByteArray(), "UTF-8");
+                    bos.reset();
+                } else {
+                    bos.write(d);
+                }
 
-			SKIN = new MCPESkin(SKIN_BASE64_ENCODED, NAME);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+            }
+            ins.close();
+            SKIN_BASE64_ENCODED = new String(bos.toByteArray(), "UTF-8");
 
-	// private
-
+            SKIN = new MCPESkin(SKIN_BASE64_ENCODED, NAME);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

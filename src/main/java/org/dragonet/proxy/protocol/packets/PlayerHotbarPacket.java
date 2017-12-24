@@ -4,7 +4,6 @@ import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.ProtocolInfo;
 import org.dragonet.proxy.utilities.Binary;
 
-
 public class PlayerHotbarPacket extends PEPacket {
 
     public int selectedHotbarSlot;
@@ -41,7 +40,6 @@ public class PlayerHotbarPacket extends PEPacket {
         for (int i : slots) {
             this.putUnsignedVarInt(i);
         }
-
         this.putBoolean(this.selectHotbarSlot);
     }
 }

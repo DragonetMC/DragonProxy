@@ -6,7 +6,6 @@ import java.util.HashMap;
  * Created on 2017/10/21.
  */
 public class PEEntityAttribute {
-    // vars
 
     public static final int ABSORPTION = 0;
     public static final int SATURATION = 1;
@@ -45,7 +44,6 @@ public class PEEntityAttribute {
     public float defaultValue;
     public float currentValue;
 
-    // constructor
     public PEEntityAttribute() {
 
     }
@@ -89,10 +87,14 @@ public class PEEntityAttribute {
         this.defaultValue = defaultValue;
         this.currentValue = currentValue;
     }
+    
+    public PEEntityAttribute setValue(float currentValue)
+    {
+        this.currentValue = currentValue;
+        return this;
+    }
 
     public PEEntityAttribute clone() {
         return new PEEntityAttribute(id, name, min, max, defaultValue, currentValue);
     }
-
-    // private
 }

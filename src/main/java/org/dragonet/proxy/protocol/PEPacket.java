@@ -6,55 +6,51 @@ import org.dragonet.proxy.utilities.BinaryStream;
  * Created on 2017/10/21.
  */
 public abstract class PEPacket extends BinaryStream {
-	// vars
-	private boolean encoded;
-	private boolean decoded;
 
-	// constructor
-	public PEPacket() {
-		super();
-	}
+    private boolean encoded;
+    private boolean decoded;
 
-	// public
-	public boolean isEncoded() {
-		return encoded;
-	}
+    public PEPacket() {
+        super();
+    }
 
-	public boolean isDecoded() {
-		return decoded;
-	}
+    public boolean isEncoded() {
+        return encoded;
+    }
 
-	public final void encode() {
-		reset();
-		encodeHeader();
-		encodePayload();
-		encoded = true;
-	}
+    public boolean isDecoded() {
+        return decoded;
+    }
 
-	public final void decode() {
-		decodeHeader();
-		decodePayload();
-		decoded = true;
-	}
+    public final void encode() {
+        reset();
+        encodeHeader();
+        encodePayload();
+        encoded = true;
+    }
 
-	public void encodeHeader() {
-		// putUnsignedVarInt(pid());
-		putByte((byte)(pid() & 0xFF));
-		putByte((byte) 0x00);
-		putByte((byte) 0x00);
-	}
+    public final void decode() {
+        decodeHeader();
+        decodePayload();
+        decoded = true;
+    }
 
-	public void decodeHeader() {
-		getByte(); // getUnsignedVarInt();
-		get(2);
-	}
+    public void encodeHeader() {
+        // putUnsignedVarInt(pid());
+        putByte((byte) (pid() & 0xFF));
+        putByte((byte) 0x00);
+        putByte((byte) 0x00);
+    }
 
-	public abstract int pid();
+    public void decodeHeader() {
+        getByte(); // getUnsignedVarInt();
+        get(2);
+    }
 
-	public abstract void encodePayload();
+    public abstract int pid();
 
-	public abstract void decodePayload();
+    public abstract void encodePayload();
 
-	// private
+    public abstract void decodePayload();
 
 }

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class ByteArrayTag extends Tag {
+
     public byte[] data;
 
     public ByteArrayTag(String name) {
@@ -40,7 +41,7 @@ public class ByteArrayTag extends Tag {
     public byte getId() {
         return TAG_Byte_Array;
     }
-    
+
     @Override
     public Object getValue() {
         return this.data;

@@ -18,7 +18,6 @@ import java.util.Iterator;
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.data.entity.meta.EntityMetaData;
 import org.dragonet.proxy.data.entity.meta.type.Vector3FMeta;
-import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
@@ -63,17 +62,11 @@ public class PCEntitySetPassengerPacketTranslator implements IPCPacketTranslator
             }
         }
 
-        //clean cache
-//        vehicle.passengers.clear();
-
         //process mount action
         boolean piloteSet = false;
         for (int id : packet.getPassengerIds()) {
 
             CachedEntity rider = session.getEntityCache().getByRemoteEID(id);
-//            if (id == (int) session.getDataCache().get(CacheKey.PLAYER_EID)) {
-//                rider = session.getEntityCache().getClientEntity();
-//            }
 
             if (rider == null) {
                 continue;
@@ -122,7 +115,15 @@ public class PCEntitySetPassengerPacketTranslator implements IPCPacketTranslator
             switch (peType) {
                 case BOAT:
                 case MINECART:
+                    if (seat > 2) {
+                        return null; //DISMOUNT
+                    }
                     return new Vector3F(0 + seat / 2, 0.35F, 0 + seat / 2);
+                case HORSE:
+                    if (seat > 1) {
+                        return null; //DISMOUNT
+                    }
+                    return new Vector3F(0, peType.getOffset(), 0);
             }
         }
         return new Vector3F(0, 0.35F, 0); //default

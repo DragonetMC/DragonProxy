@@ -43,8 +43,9 @@ public class ByteArrayMeta implements IEntityMetaDataObject {
         builder.append("[");
         for (int i = 0; i < data.length; i++) {
             builder.append(data[i]);
-            if (i != data.length)
-              builder.append(", ");
+            if (i != data.length) {
+                builder.append(", ");
+            }
         }
         builder.append("] = " + new String(data, StandardCharsets.UTF_8));
         return "ByteArrayMeta{" + builder.toString() + "}";

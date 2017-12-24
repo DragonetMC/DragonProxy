@@ -16,18 +16,12 @@ import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.commands.Command;
 
 public class StopCommand extends Command {
-	// vars
 
-	// constructor
-	public StopCommand(String name) {
-		super(name, "Stop the proxy");
-	}
+    public StopCommand(String name) {
+        super(name, "Stop the proxy");
+    }
 
-	// public
-	public void execute(DragonProxy proxy, String[] args) {
-		proxy.shutdown();
-	}
-
-	// private
-
+    public void execute(DragonProxy proxy, String[] args) {
+        proxy.shutdown();
+    }
 }

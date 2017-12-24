@@ -32,7 +32,7 @@ public class BlockPositionMeta implements IEntityMetaDataObject {
     public void encode(BinaryStream out) {
         out.putSignedBlockPosition(position);
     }
-    
+
     @Override
     public String toString() {
         return "BlockPosition{" + position.toString() + "}";

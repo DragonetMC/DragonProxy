@@ -18,60 +18,58 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class Logger {
-	// vars
-	private boolean colorful = false;
-	private DragonProxy proxy;
-	private Calendar calender;
-	private SimpleDateFormat consoleDate;
-	public boolean debug = false;
 
-	// constructor
-	public Logger(DragonProxy proxy) {
-		this.proxy = proxy;
-		calender = Calendar.getInstance();
-		consoleDate = new SimpleDateFormat("HH:mm:ss");
-	}
+    private boolean colorful = false;
+    private DragonProxy proxy;
+    private Calendar calender;
+    private SimpleDateFormat consoleDate;
+    public boolean debug = false;
 
-	// public
-	public void info(String message) {
-		log("INFO", message);
-	}
+    public Logger(DragonProxy proxy) {
+        this.proxy = proxy;
+        calender = Calendar.getInstance();
+        consoleDate = new SimpleDateFormat("HH:mm:ss");
+    }
 
-	public void warning(String message) {
-		log(MCColor.YELLOW, "WARNING", message);
-	}
+    public void info(String message) {
+        log("INFO", message);
+    }
 
-	public void severe(String message) {
-		log(MCColor.RED, "SEVERE", message);
-	}
+    public void warning(String message) {
+        log(MCColor.YELLOW, "WARNING", message);
+    }
 
-	public void debug(String message) {
-		if (debug)
-			log(MCColor.GRAY, "DEBUG", message);
-	}
+    public void severe(String message) {
+        log(MCColor.RED, "SEVERE", message);
+    }
 
-	// private
-	private void log(String level, String message) {
-		log(MCColor.WHITE, level, message);
-	}
+    public void debug(String message) {
+        if (debug) {
+            log(MCColor.GRAY, "DEBUG", message);
+        }
+    }
 
-	private void log(String levelColor, String level, String message) {
-		if (colorful) {
-			StringBuilder builder = new StringBuilder();
+    private void log(String level, String message) {
+        log(MCColor.WHITE, level, message);
+    }
 
-			builder.append(MCColor.toANSI(MCColor.AQUA + "[" + consoleDate.format(calender.getTime()) + "] "));
-			builder.append(MCColor.toANSI(levelColor + "[" + level + "] "));
-			builder.append(MCColor.toANSI(message + MCColor.WHITE + MCColor.RESET));
+    private void log(String levelColor, String level, String message) {
+        if (colorful) {
+            StringBuilder builder = new StringBuilder();
 
-			System.out.println(builder.toString());
-		} else {
-			StringBuilder builder = new StringBuilder();
+            builder.append(MCColor.toANSI(MCColor.AQUA + "[" + consoleDate.format(calender.getTime()) + "] "));
+            builder.append(MCColor.toANSI(levelColor + "[" + level + "] "));
+            builder.append(MCColor.toANSI(message + MCColor.WHITE + MCColor.RESET));
 
-			builder.append("[" + consoleDate.format(calender.getTime()) + "] ");
-			builder.append("[" + level + "] ");
-			builder.append(message);
+            System.out.println(builder.toString());
+        } else {
+            StringBuilder builder = new StringBuilder();
 
-			System.out.println(builder.toString());
-		}
-	}
+            builder.append("[" + consoleDate.format(calender.getTime()) + "] ");
+            builder.append("[" + level + "] ");
+            builder.append(message);
+
+            System.out.println(builder.toString());
+        }
+    }
 }

@@ -17,40 +17,35 @@ import java.util.Arrays;
  * bytes are always ordered `xzy`.
  */
 public class Section {
-	// vars
-	public byte storageVersion = 0;
-	public byte[] blockIds = new byte[4096];
-	public byte[] blockMetas = new byte[2048];
 
-	// constructor
-	public Section() {
+    public byte storageVersion = 0;
+    public byte[] blockIds = new byte[4096];
+    public byte[] blockMetas = new byte[2048];
 
-	}
+    public Section() {
 
-	public Section(byte storageVersion, byte[] blockIds, byte[] blockMetas) {
-		this.storageVersion = storageVersion;
-		this.blockIds = blockIds;
-		this.blockMetas = blockMetas;
-	}
+    }
 
-	// public
-	public void encode(BinaryStream out) {
-		out.putByte(storageVersion);
-		out.put(blockIds);
-		out.put(blockMetas);
-	}
+    public Section(byte storageVersion, byte[] blockIds, byte[] blockMetas) {
+        this.storageVersion = storageVersion;
+        this.blockIds = blockIds;
+        this.blockMetas = blockMetas;
+    }
 
-	public void decode(BinaryStream in) {
-		storageVersion = (byte) (in.getByte() & 0xFF);
-		blockIds = in.get(4096);
-		blockMetas = in.get(2048);
-	}
+    public void encode(BinaryStream out) {
+        out.putByte(storageVersion);
+        out.put(blockIds);
+        out.put(blockMetas);
+    }
 
-	public String toString() {
-		return "Section(storageVersion: " + this.storageVersion + ", blockIds: " + Arrays.toString(this.blockIds)
-				+ ", blockMetas: " + Arrays.toString(this.blockMetas) + ")";
-	}
+    public void decode(BinaryStream in) {
+        storageVersion = (byte) (in.getByte() & 0xFF);
+        blockIds = in.get(4096);
+        blockMetas = in.get(2048);
+    }
 
-	// private
-
+    public String toString() {
+        return "Section(storageVersion: " + this.storageVersion + ", blockIds: " + Arrays.toString(this.blockIds)
+                + ", blockMetas: " + Arrays.toString(this.blockMetas) + ")";
+    }
 }

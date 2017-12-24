@@ -20,13 +20,14 @@ public class NBTIO {
     /**
      * A Named Binary Tag library for Nukkit Project
      */
-
     public static CompoundTag read(File file) throws IOException {
         return read(file, ByteOrder.BIG_ENDIAN);
     }
 
     public static CompoundTag read(File file, ByteOrder endianness) throws IOException {
-        if (!file.exists()) return null;
+        if (!file.exists()) {
+            return null;
+        }
         return read(new FileInputStream(file), endianness);
     }
 

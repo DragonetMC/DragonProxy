@@ -16,25 +16,20 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
 public class DataIOPair {
-	// vars
-	DataInputStream input;
-	DataOutputStream output;
 
-	// constructor
-	public DataIOPair(DataInputStream input, DataOutputStream output) {
-		this.input = input;
-		this.output = output;
-	}
+    DataInputStream input;
+    DataOutputStream output;
 
-	// public
-	public DataInputStream getInput() {
-		return input;
-	}
+    public DataIOPair(DataInputStream input, DataOutputStream output) {
+        this.input = input;
+        this.output = output;
+    }
 
-	public DataOutputStream getOutput() {
-		return output;
-	}
+    public DataInputStream getInput() {
+        return input;
+    }
 
-	// private
-
+    public DataOutputStream getOutput() {
+        return output;
+    }
 }
