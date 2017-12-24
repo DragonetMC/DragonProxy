@@ -17,6 +17,8 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientWindo
 import com.github.steveice10.packetlib.packet.Packet;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.dragonet.proxy.data.inventory.ContainerId;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
@@ -42,27 +44,34 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
     @Override
     public Packet[] translate(UpstreamSession session, InventoryTransactionPacket packet) {
         //debug
-//        System.out.println("InventoryTransactionPacket type : " + DebugTools.getAllFields(packet));
-//        for(InventoryTransactionAction action : packet.actions) {
-//            System.out.println(DebugTools.getAllFields(action));
-//        }
+		System.out.println(">>>>============================");
+        System.out.println("InventoryTransactionPacket type: \n" + DebugTools.getAllFields(packet));
+		System.out.println("-------------");
+        for(InventoryTransactionAction action : packet.actions) {
+            System.out.println(DebugTools.getAllFields(action));
+        }
+        System.out.println("<<<<============================");
 
         switch (packet.transactionType) {
             case TYPE_NORMAL: //0
-//                System.out.println("TYPE_NORMAL");
-                List<Packet> packets = new ArrayList();
-
-                for (InventoryTransactionAction action : packet.actions) {
-                    if (action.sourceType == InventoryTransactionAction.SOURCE_WORLD) //main inventory
-                    {
-                        ClientPlayerActionPacket act = new ClientPlayerActionPacket(
-                                com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.DROP_ITEM,
-                                new Position(0, 0, 0),
-                                BlockFace.DOWN);
-                        packets.add(act);
-                    }
-                }
-                return packets.toArray(new Packet[]{});
+				if (packet.actions.length <= 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_WORLD) //main inventory
+				{
+					// drop item
+					ClientPlayerActionPacket act = new ClientPlayerActionPacket(
+						com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.DROP_ITEM,
+						new Position(0, 0, 0),
+						BlockFace.DOWN);
+					return new Packet[] {act};
+				}
+				if(packet.actions.length == 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_CONTAINER && packet.actions[1].containerId == ContainerId.CURSOR.getId()) {
+					// desktop version: click on an item (maybe pick/place/merge/swap)
+				}
+				// after the previous one, we can detect SHIFT click or move items on mobile devices
+				if(packet.actions.length == 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_CONTAINER && packet.actions[2].sourceType == InventoryTransactionAction.SOURCE_CONTAINER) {
+					// mobile version: move item
+					// desktop version: SHIFT-click item
+				}
+                return null; // it's okay to return null
             case TYPE_MISMATCH: //1
 //                System.out.println("TYPE_MISMATCH");
                 break;

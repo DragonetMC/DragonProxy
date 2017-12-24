@@ -21,7 +21,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientClose
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
-import org.dragonet.proxy.data.inventory.PEWindowConstantID;
+import org.dragonet.proxy.data.inventory.ContainerId;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.inv.ChestWindowTranslator;
@@ -44,7 +44,7 @@ public final class InventoryTranslatorRegister {
         CachedWindow win = session.getWindowCache().getPlayerInventory();
         // Translate and send
         InventoryContentPacket ret = new InventoryContentPacket();
-        ret.windowId = PEWindowConstantID.PLAYER_INVENTORY.getId();
+        ret.windowId = ContainerId.INVENTORY.getId();
         ret.items = new Slot[40];
         // hotbar
         for (int i = 36; i < 45; i++) {
