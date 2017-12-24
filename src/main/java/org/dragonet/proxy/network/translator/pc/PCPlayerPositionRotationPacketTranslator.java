@@ -89,7 +89,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             ((PCDownstreamSession) session.getDownstream()).send(ClientPluginMessagePacket);
 
             LoginPacket loginpacket = (LoginPacket) session.getDataCache().remove(CacheKey.PACKET_LOGIN_PACKET);
-            ClientSettingsPacket ClientSettingsPacket = new ClientSettingsPacket(loginpacket.decoded.language, 8, ChatVisibility.FULL, false, new SkinPart[]{}, Hand.MAIN_HAND);
+            ClientSettingsPacket ClientSettingsPacket = new ClientSettingsPacket(loginpacket.decoded.language, 8, ChatVisibility.FULL, false, new SkinPart[]{}, Hand.OFF_HAND);
             ((PCDownstreamSession) session.getDownstream()).send(ClientSettingsPacket);
 
             UpdateAttributesPacket attr = new UpdateAttributesPacket();
