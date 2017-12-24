@@ -100,6 +100,7 @@ public class ItemBlockTranslator {
         swap(255, 252); //structure_block
 
         //ITEMS
+        toPEOverride(343, 342); //minecart_furnace (unavailable on PE)
         swap(416, 425); //armor_stand horsearmorleather
         toPCOverride(425, 417); //horsearmorleather horsearmoriron (unavailable on PC)
 
@@ -111,7 +112,8 @@ public class ItemBlockTranslator {
         swap(447, new ItemEntry(333, 4)); //acacia_boat
         swap(448, new ItemEntry(333, 5)); //dark_oak_boat
 
-        swap(449, 450); //totem shulker_shell
+        toPEOverride(449, 450); //totem
+        toPEOverride(450, 445); //shulker_shell
 
         swap(2256, 500); //record_13
         swap(2257, 501); //record_cat
@@ -179,6 +181,7 @@ public class ItemBlockTranslator {
 //        rootTag.put(DRAGONET_COMPOUND, tag);
 //        slot.tag = rootTag;
         slot.tag = translateRawNBT(item.getId(), item.getNBT(), null);
+        System.out.println("translateSlotToPE " + slot.id);
         return slot;
     }
 
