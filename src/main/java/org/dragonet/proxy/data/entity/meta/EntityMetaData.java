@@ -185,7 +185,7 @@ public class EntityMetaData extends BinaryStream {
         data.setGenericFlag(Constants.DATA_FLAG_CAN_CLIMB, true);
         data.set(Constants.DATA_AIR, new ShortMeta((short) 400));
         data.set(Constants.DATA_MAX_AIR, new ShortMeta((short) 400));
-        data.set(Constants.DATA_NAMETAG, new ByteArrayMeta(""));
+        // data.set(Constants.DATA_NAMETAG, new ByteArrayMeta(""));
         data.set(Constants.DATA_LEAD_HOLDER_EID, new LongMeta(-1L));
         data.set(Constants.DATA_SCALE, new FloatMeta(1.0f));
 //		data.set(Constants.DATA_BED_POSITION, new BlockPositionMeta(new BlockPosition(0, 0, 0)));

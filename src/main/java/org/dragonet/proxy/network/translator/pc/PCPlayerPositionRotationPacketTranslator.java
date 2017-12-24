@@ -199,7 +199,10 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                     pkAddPlayer.pitch = entity.pitch;
                     pkAddPlayer.username = playerListEntry.getProfile().getName();
 
-                    pkAddPlayer.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, EntityType.PLAYER);
+					// TODO: this does not work well yet
+                    // pkAddPlayer.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, EntityType.PLAYER);
+
+					pkAddPlayer.meta = EntityMetaData.createDefault();
                     pkAddPlayer.meta.set(EntityMetaData.Constants.DATA_NAMETAG, new ByteArrayMeta(playerListEntry.getProfile().getName())); //hacky for now
 
                     PlayerSkinPacket skin = new PlayerSkinPacket(entity.playerUniqueId);

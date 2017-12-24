@@ -64,7 +64,7 @@ public final class EntityMetaTranslator {
                         peMeta.set(EntityMetaData.Constants.DATA_AIR, new ShortMeta(((Integer) m.getValue()).shortValue()));
                         break;
                     case 2:// Name tag
-                        if ((String) m.getValue() != "") {
+                        if (!m.getValue().equals("")) {
                             peMeta.set(EntityMetaData.Constants.DATA_NAMETAG, new ByteArrayMeta((String) m.getValue()));
                         }
                         break;
