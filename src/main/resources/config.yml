@@ -20,7 +20,7 @@ motd: '&aServer by DragonProxy'
 
 
 # What server should we connect to by default?
-# Set the server nams in the next option
+# Set the server name in the next option
 default_server: 'my_pc_server'
 
 
