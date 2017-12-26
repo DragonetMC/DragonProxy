@@ -14,17 +14,14 @@ package org.dragonet.proxy.network.translator.pe;
 
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
 import com.github.steveice10.packetlib.packet.Packet;
-import org.dragonet.proxy.configuration.Lang;
-import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.IPEPacketTranslator;
 import org.dragonet.proxy.protocol.packets.TextPacket;
-import org.dragonet.proxy.utilities.PatternChecker;
 
 public class PEChatPacketTranslator implements IPEPacketTranslator<TextPacket> {
 
     public Packet[] translate(UpstreamSession session, TextPacket packet) {
-        if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE) != null) {
+        /*if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE) != null) {
             if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE).equals("email")) {
                 if (!PatternChecker.matchEmail(packet.message.trim())) {
                     session.sendChat(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
@@ -40,12 +37,12 @@ public class PEChatPacketTranslator implements IPEPacketTranslator<TextPacket> {
                     session.disconnect(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_ERROR));
                     return null;
                 }
-                session.sendChat(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_LOGGIN_IN));
+                session.sendChat(session.getProxy().getLang().get(Lang.MESSAGE_ONLINE_LOGGING_IN));
                 session.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
                 session.authenticate(packet.message); // We NEVER cache password for better security.
             }
             return null;
-        }
+        }*/
 
         ClientChatPacket pk = new ClientChatPacket(packet.message);
         return new Packet[]{pk};

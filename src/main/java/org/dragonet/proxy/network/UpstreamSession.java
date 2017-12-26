@@ -249,11 +249,10 @@ public class UpstreamSession {
         packetProcessorScheule.cancel(true);
     }
 
-    public void authenticate(String password) {
+    public void authenticate(String email, String password) {
         proxy.getGeneralThreadPool().execute(() -> {
             try {
-                protocol = new MinecraftProtocol((String) dataCache.get(CacheKey.AUTHENTICATION_EMAIL), password,
-                        false);
+                protocol = new MinecraftProtocol(email, password, false);
             } catch (RequestException ex) {
                 if (ex.getMessage().toLowerCase().contains("invalid")) {
                     sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_FAILD));
@@ -347,14 +346,13 @@ public class UpstreamSession {
             sendPacket(new FullChunkDataPacket(-1, 0, data.getBuffer()));
             sendPacket(new FullChunkDataPacket(-1, -1, data.getBuffer()));
 
+			dataCache.put(CacheKey.AUTHENTICATION_STATE, "online_login_wait");
+
             PlayStatusPacket pkStat = new PlayStatusPacket();
             pkStat.status = PlayStatusPacket.PLAYER_SPAWN;
             sendPacket(pkStat, true);
 
-            dataCache.put(CacheKey.AUTHENTICATION_STATE, "email");
-
-            sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_NOTICE, username));
-            sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_EMAIL));
+			sendChat(proxy.getLang().get(Lang.MESSAGE_LOGIN_PROMPT));
         } else if (proxy.getAuthMode().equals("cls")) {
             // CLS LOGIN!
             if ((username.length() < 6 + 1 + 1) || (!username.contains("_"))) {

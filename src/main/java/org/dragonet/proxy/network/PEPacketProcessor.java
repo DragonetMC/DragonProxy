@@ -17,12 +17,15 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 import com.github.steveice10.packetlib.packet.Packet;
+import org.dragonet.proxy.configuration.Lang;
+import org.dragonet.proxy.gui.CustomFormComponent;
+import org.dragonet.proxy.gui.InputComponent;
+import org.dragonet.proxy.gui.LabelComponent;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.Protocol;
 import org.dragonet.proxy.protocol.ProtocolInfo;
-import org.dragonet.proxy.protocol.packets.ChunkRadiusUpdatedPacket;
-import org.dragonet.proxy.protocol.packets.LoginPacket;
-import org.dragonet.proxy.protocol.packets.RequestChunkRadiusPacket;
+import org.dragonet.proxy.protocol.packets.*;
+import org.json.JSONArray;
 
 public class PEPacketProcessor implements Runnable {
 
@@ -70,6 +73,8 @@ public class PEPacketProcessor implements Runnable {
             return;
         }
 
+        System.out.println(" <<PE " + org.dragonet.proxy.utilities.DebugTools.matchConstant((byte)(packet.pid() & 0xFF), ProtocolInfo.class));
+
         // System.out.println("RECEIVED PACKET=" + packet.getClass().getSimpleName());
         /*
         * try{ FileOutputStream fos = new FileOutputStream("cap_" +
@@ -80,6 +85,32 @@ public class PEPacketProcessor implements Runnable {
             case ProtocolInfo.LOGIN_PACKET:
                 client.onLogin((LoginPacket) packet);
                 break;
+			case ProtocolInfo.MOVE_PLAYER_PACKET:
+				if(client.getDataCache().containsKey(CacheKey.AUTHENTICATION_STATE) &&
+					client.getDataCache().get(CacheKey.AUTHENTICATION_STATE).equals("online_login_wait")) {
+					// client.getDataCache().put(CacheKey.AUTHENTICATION_STATE, "online_login");
+					ModalFormRequestPacket packetForm = new ModalFormRequestPacket();
+					CustomFormComponent form = new CustomFormComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_TITLE));
+					form.addComponent(new LabelComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_DESC)));
+					form.addComponent(new LabelComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_PROMPT)));
+					form.addComponent(new InputComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_USERNAME)).setPlaceholder("steve@example.com"));
+					form.addComponent(new InputComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_PASSWORD)).setPlaceholder("123456"));
+					packetForm.formId = 1;
+					packetForm.formData = form.serializeToJson().toString();
+					client.sendPacket(packetForm);
+					break;
+				}
+			case ProtocolInfo.MODAL_FORM_RESPONSE_PACKET:
+				if(client.getDataCache().containsKey(CacheKey.AUTHENTICATION_STATE) &&
+					client.getDataCache().get(CacheKey.AUTHENTICATION_STATE).equals("online_login_wait")) {
+					client.sendChat(client.getProxy().getLang().get(Lang.MESSAGE_LOGIN_PROGRESS));
+
+					ModalFormResponsePacket formResponse = (ModalFormResponsePacket) packet;
+					JSONArray array = new JSONArray(formResponse.formData);
+					client.authenticate(array.get(2).toString(), array.get(3).toString());
+					client.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
+					break;
+				}
             case ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET:
                 if (client.isLoggedIn()) {
                     return;
@@ -89,11 +120,6 @@ public class PEPacketProcessor implements Runnable {
             case ProtocolInfo.REQUEST_CHUNK_RADIUS_PACKET:
                 client.sendPacket(new ChunkRadiusUpdatedPacket(((RequestChunkRadiusPacket) packet).radius));
                 break;
-            case ProtocolInfo.TEXT_PACKET: // Text (check CLS Login)
-                if (client.getDataCache().get(CacheKey.AUTHENTICATION_STATE) != null) {
-                    PacketTranslatorRegister.translateToPC(client, packet);
-                    break;
-                }
             default:
                 if (client.getDownstream() == null) {
                     break;

@@ -60,4 +60,22 @@ public class DebugTools {
         }
         return data;
     }
+
+    public static String matchConstant(Object obj, Class target) {
+		if(obj == null) return "NULL";
+		try {
+			for (Field f : target.getDeclaredFields()) {
+				if ((f.getModifiers() & Modifier.STATIC) > 0) {
+					if (obj == f.get(null)) {
+						return f.getName();
+					}
+				}
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+			System.out.println("DebugTools.matchConstant() ERROR! ");
+			return "ERROR(" + obj.toString() + ")";
+		}
+		return "NOT_FOUND(" + obj.toString() + ")";
+	}
 }

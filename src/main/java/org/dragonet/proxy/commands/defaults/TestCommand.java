@@ -2,6 +2,9 @@ package org.dragonet.proxy.commands.defaults;
 
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.commands.Command;
+import org.dragonet.proxy.gui.CustomFormComponent;
+import org.dragonet.proxy.gui.DropDownComponent;
+import org.dragonet.proxy.gui.LabelComponent;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.protocol.type.chunk.ChunkData;
@@ -21,6 +24,10 @@ public class TestCommand extends Command {
     }
 
     public void execute(DragonProxy proxy, String[] args) {
+		if(args.length == 0) {
+			System.out.println("This is a developer's command! ");
+			return;
+		}
         UpstreamSession player = proxy.getSessionRegister().getAll().values().toArray(new UpstreamSession[1])[0];
         if (args[0].equalsIgnoreCase("status")) {
             PlayStatusPacket s = new PlayStatusPacket();
@@ -84,6 +91,20 @@ public class TestCommand extends Command {
             data.encode();
             chunk.payload = data.getBuffer();
             player.sendPacket(chunk);
-        }
+        } else if (args[0].equalsIgnoreCase("form")) {
+			testForm(player);
+		}
     }
+
+    public static void testForm(UpstreamSession player) {
+		ModalFormRequestPacket p = new ModalFormRequestPacket();
+		CustomFormComponent form = new CustomFormComponent("\u00a7dTest Form");
+		form.addComponent(new LabelComponent("\u00a71Text \u00a7ki"));
+		form.addComponent(new LabelComponent("LABEL 2"));
+		form.addComponent(new DropDownComponent("DROP DOWN", Arrays.asList("option 1", "option 2")));
+		System.out.println(form.serializeToJson().toString());
+		p.formId = 1;
+		p.formData = form.serializeToJson().toString();
+		player.sendPacket(p);
+	}
 }
