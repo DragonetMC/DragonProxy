@@ -105,10 +105,11 @@ public class PEPacketProcessor implements Runnable {
 					client.getDataCache().get(CacheKey.AUTHENTICATION_STATE).equals("online_login_wait")) {
 					client.sendChat(client.getProxy().getLang().get(Lang.MESSAGE_LOGIN_PROGRESS));
 
+                    client.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
+                    
 					ModalFormResponsePacket formResponse = (ModalFormResponsePacket) packet;
 					JSONArray array = new JSONArray(formResponse.formData);
 					client.authenticate(array.get(2).toString(), array.get(3).toString());
-					client.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
 					break;
 				}
             case ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET:
