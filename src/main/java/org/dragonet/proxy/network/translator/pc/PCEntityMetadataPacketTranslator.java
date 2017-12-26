@@ -14,10 +14,8 @@ package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityMetadataPacket;
 import org.dragonet.proxy.data.entity.EntityType;
-import org.dragonet.proxy.data.entity.PEEntityAttribute;
 import org.dragonet.proxy.data.entity.meta.EntityMetaData;
 import org.dragonet.proxy.data.entity.meta.type.SlotMeta;
-import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
@@ -25,10 +23,8 @@ import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.AddEntityPacket;
 import org.dragonet.proxy.protocol.packets.AddItemEntityPacket;
-import org.dragonet.proxy.protocol.packets.AddPaintingPacket;
+import org.dragonet.proxy.protocol.packets.AddPlayerPacket;
 import org.dragonet.proxy.protocol.packets.SetEntityDataPacket;
-import org.dragonet.proxy.utilities.BlockPosition;
-import org.dragonet.proxy.utilities.DebugTools;
 import org.dragonet.proxy.utilities.Vector3F;
 
 public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<ServerEntityMetadataPacket> {
@@ -66,6 +62,18 @@ public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<Ser
 //                pk.title = "Kebab";
 //                entity.spawned = true;
 //                session.sendPacket(pk);
+            }else if(entity.peType == EntityType.PLAYER) {
+            	AddPlayerPacket pk = new AddPlayerPacket();
+                pk.rtid = entity.proxyEid;
+                pk.eid = entity.proxyEid;
+                pk.position = new Vector3F((float) entity.x, (float) entity.y + entity.peType.getOffset(), (float) entity.z);
+                pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
+                pk.yaw = entity.yaw;
+                pk.pitch = entity.pitch;
+                pk.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, entity.peType);
+                entity.spawned = true;
+                // TODO: Hack for now. ;P
+                session.sendPacket(pk);
             } else {
                 AddEntityPacket pk = new AddEntityPacket();
                 pk.rtid = entity.proxyEid;
