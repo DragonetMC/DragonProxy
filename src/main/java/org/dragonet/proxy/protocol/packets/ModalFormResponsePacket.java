@@ -8,8 +8,8 @@ import org.dragonet.proxy.protocol.ProtocolInfo;
  */
 public class ModalFormResponsePacket extends PEPacket {
 
-	private int formId;
-	private String formData;
+	public int formId;
+	public String formData;
 
 	@Override
 	public int pid() {
