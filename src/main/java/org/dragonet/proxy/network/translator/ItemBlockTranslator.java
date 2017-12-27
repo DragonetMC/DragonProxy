@@ -26,7 +26,7 @@ import com.github.steveice10.opennbt.tag.builtin.Tag;
 import java.util.List;
 import org.dragonet.proxy.data.itemsblocks.ItemEntry;
 import org.dragonet.proxy.data.nbt.tag.ListTag;
-import org.dragonet.proxy.network.translator.itemsblocks.IItemDataTranslator;
+import org.dragonet.proxy.network.translator.itemsblocks.*;
 
 import org.dragonet.proxy.protocol.type.Slot;
 
@@ -41,22 +41,8 @@ public class ItemBlockTranslator {
     static {
         //BLOCKS
         toPEOverride(36, 248); //unkown block
-        translateData(77, new IItemDataTranslator() {
-            @Override
-            public Integer translateToPE(Integer damage) {
-                // Here is the magic
-                int facing = damage > 5 ? damage - 0x08 : damage;
-                boolean activated = (damage & 0x08) > 0;
-                facing = translateFacing(facing);
-                return facing + (activated ? 0x08 : 0x00);
-            }
-
-            @Override
-            public Integer translateToPC(Integer damage) {
-                // Here too
-                return damage;
-            }
-        }); //stone_button
+        translateData(77, new ButtonDataTranslator()); //stone_button
+        translateData(143, new ButtonDataTranslator()); //wooden_button
         swap(125, 157); // double_wooden_slab
         swap(126, 158); // wooden_slab
         swap(157, 126); //activator_rail
@@ -68,7 +54,6 @@ public class ItemBlockTranslator {
         swap(211, 189); //chain_command_block
         swap(95, 241); //stained_glass
         swap(158, 125); //dropper
-//        swap(160, 248); //stained_glass_pane
         swap(166, 95); //barrier -> invisiblebedrock
         swap(188, new ItemEntry(85, 1)); //spruce_fence
         swap(189, new ItemEntry(85, 2)); //birch_fence
