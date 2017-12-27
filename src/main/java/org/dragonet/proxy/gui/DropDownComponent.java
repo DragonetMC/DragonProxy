@@ -10,18 +10,18 @@ import java.util.List;
  */
 public class DropDownComponent extends BaseModalFormComponent {
 
-	private String text;
-	private List<String> options;
+    private String text;
+    private List<String> options;
 
-	public DropDownComponent(String text, List<String> options) {
-		super("dropdown");
-		this.text = text;
-		this.options = options;
-	}
+    public DropDownComponent(String text, List<String> options) {
+        super("dropdown");
+        this.text = text;
+        this.options = options;
+    }
 
-	@Override
-	public void serializeData(JSONObject out) {
-		out.put("text", text);
-		out.put("options", new JSONArray(options));
-	}
+    @Override
+    public void serializeData(JSONObject out) {
+        out.put("text", text);
+        out.put("options", new JSONArray(options));
+    }
 }

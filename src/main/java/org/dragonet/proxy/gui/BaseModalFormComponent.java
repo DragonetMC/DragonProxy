@@ -7,22 +7,22 @@ import org.json.JSONObject;
  */
 public abstract class BaseModalFormComponent implements ModalFormComponent {
 
-	private final String type;
+    private final String type;
 
-	public BaseModalFormComponent(String type) {
-		this.type = type;
-	}
+    public BaseModalFormComponent(String type) {
+        this.type = type;
+    }
 
-	@Override
-	public String getType() {
-		return type;
-	}
+    @Override
+    public String getType() {
+        return type;
+    }
 
-	@Override
-	public final JSONObject serializeToJson() {
-		JSONObject obj = new JSONObject();
-		obj.put("type", type);
-		serializeData(obj);
-		return obj;
-	}
+    @Override
+    public final JSONObject serializeToJson() {
+        JSONObject obj = new JSONObject();
+        obj.put("type", type);
+        serializeData(obj);
+        return obj;
+    }
 }

@@ -11,29 +11,29 @@ import java.util.List;
  */
 public class CustomFormComponent extends BaseModalFormComponent {
 
-	private String title;
+    private String title;
 
-	private final List<ModalFormComponent> components = new ArrayList<>();
+    private final List<ModalFormComponent> components = new ArrayList<>();
 
-	public CustomFormComponent(String title) {
-		super("custom_form");
-		this.title = title;
-	}
+    public CustomFormComponent(String title) {
+        super("custom_form");
+        this.title = title;
+    }
 
-	public CustomFormComponent addComponent(ModalFormComponent component){
-		components.add(component);
-		return this;
-	}
+    public CustomFormComponent addComponent(ModalFormComponent component) {
+        components.add(component);
+        return this;
+    }
 
-	public List<ModalFormComponent> getComponents() {
-		return components;
-	}
+    public List<ModalFormComponent> getComponents() {
+        return components;
+    }
 
-	@Override
-	public void serializeData(JSONObject out) {
-		out.put("title", title);
-		JSONArray content = new JSONArray();
-		components.forEach((c) -> content.put(c.serializeToJson()));
-		out.put("content", content);
-	}
+    @Override
+    public void serializeData(JSONObject out) {
+        out.put("title", title);
+        JSONArray content = new JSONArray();
+        components.forEach((c) -> content.put(c.serializeToJson()));
+        out.put("content", content);
+    }
 }

@@ -7,10 +7,10 @@ import org.json.JSONObject;
  */
 public interface ModalFormComponent {
 
-	String getType();
+    String getType();
 
-	void serializeData(JSONObject out);
+    void serializeData(JSONObject out);
 
-	JSONObject serializeToJson();
+    JSONObject serializeToJson();
 
 }

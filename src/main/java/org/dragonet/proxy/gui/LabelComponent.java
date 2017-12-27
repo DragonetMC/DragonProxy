@@ -7,19 +7,19 @@ import org.json.JSONObject;
  */
 public class LabelComponent extends BaseModalFormComponent {
 
-	private String text;
+    private String text;
 
-	public LabelComponent(String text) {
-		super("label");
-		this.text = text;
-	}
+    public LabelComponent(String text) {
+        super("label");
+        this.text = text;
+    }
 
-	public String getText() {
-		return text;
-	}
+    public String getText() {
+        return text;
+    }
 
-	@Override
-	public void serializeData(JSONObject out) {
-		out.put("text", text);
-	}
+    @Override
+    public void serializeData(JSONObject out) {
+        out.put("text", text);
+    }
 }
