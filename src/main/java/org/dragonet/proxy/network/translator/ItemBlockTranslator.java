@@ -43,6 +43,8 @@ public class ItemBlockTranslator {
         toPEOverride(36, 248); //unkown block
         translateData(77, new ButtonDataTranslator()); //stone_button
         translateData(143, new ButtonDataTranslator()); //wooden_button
+        translateData(96, new TrapDoorDataTranslator()); //trapdoor
+        translateData(167, new TrapDoorDataTranslator()); //iron_trapdoor
         swap(125, 157); // double_wooden_slab
         swap(126, 158); // wooden_slab
         swap(157, 126); //activator_rail
