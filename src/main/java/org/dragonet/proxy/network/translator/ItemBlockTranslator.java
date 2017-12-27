@@ -26,7 +26,7 @@ import com.github.steveice10.opennbt.tag.builtin.Tag;
 import java.util.List;
 import org.dragonet.proxy.data.itemsblocks.ItemEntry;
 import org.dragonet.proxy.data.nbt.tag.ListTag;
-import org.dragonet.proxy.network.translator.itemsblocks.IItemDataTranslator;
+import org.dragonet.proxy.network.translator.itemsblocks.*;
 
 import org.dragonet.proxy.protocol.type.Slot;
 
@@ -41,23 +41,15 @@ public class ItemBlockTranslator {
     static {
         //BLOCKS
         toPEOverride(36, 248); //unkown block
-        translateData(77, new IItemDataTranslator() {
-            @Override
-            public Integer translateToPE(Integer damage) {
-                // Here is the magic
-                return damage;
-            }
-
-            @Override
-            public Integer translateToPC(Integer damage) {
-                // Here too
-                return damage;
-            }
-        }); //stone_button
+        translateData(26, new BedDataTranslator()); //bed
+        translateData(77, new ButtonDataTranslator()); //stone_button
+        translateData(143, new ButtonDataTranslator()); //wooden_button
+        translateData(96, new TrapDoorDataTranslator()); //trapdoor
+        translateData(167, new TrapDoorDataTranslator()); //iron_trapdoor
         swap(125, 157); // double_wooden_slab
         swap(126, 158); // wooden_slab
         swap(157, 126); //activator_rail
-        swap(198, 208); //end_rod
+        swap(198, 208, new EndRodDataTranslator()); //end_rod
         swap(199, 240); //chorus_plant
         swap(202, 201); //purpur_pillar -> purpur_block
         swap(208, 198); //grass_path
@@ -65,7 +57,6 @@ public class ItemBlockTranslator {
         swap(211, 189); //chain_command_block
         swap(95, 241); //stained_glass
         swap(158, 125); //dropper
-        swap(160, 248); //stained_glass_pane
         swap(166, 95); //barrier -> invisiblebedrock
         swap(188, new ItemEntry(85, 1)); //spruce_fence
         swap(189, new ItemEntry(85, 2)); //birch_fence
@@ -146,54 +137,28 @@ public class ItemBlockTranslator {
         //TODO: replace podzol
     }
 
-    public static ItemEntry translateToPE(int pcItemBlockId, int damage) {
-        ItemEntry entry = new ItemEntry(pcItemBlockId, damage);
-
-        //here translate item data value (color / facing ....) need another translator items specific
+    public static ItemEntry translateToPE(int pcId, int damage) {
         // see https://minecraft.gamepedia.com/Block_states
-        if (!PC_TO_PE_OVERRIDE.containsKey(pcItemBlockId)) {
-            return entry;
-        }
-        entry = PC_TO_PE_OVERRIDE.get(pcItemBlockId);
-        if (entry.getPEDamage() == null) {
-            entry.setDamage(damage);
-        }
-
-        if (pcItemBlockId >= 255 && entry.getId() == UNSUPPORTED_BLOCK_ID) {
-            entry = new ItemEntry(UNSUPPORTED_BLOCK_ID, 0);
-        }
-        return entry;
+        if (!PC_TO_PE_OVERRIDE.containsKey(pcId))
+            return new ItemEntry(pcId, damage);
+        return PC_TO_PE_OVERRIDE.get(pcId).setDamage(damage);
     }
 
-    public static ItemEntry translateToPC(int peItemBlockId, int damage) {
-        ItemEntry entry = new ItemEntry(peItemBlockId, damage);
-
-        if (!PE_TO_PC_OVERRIDE.containsKey(peItemBlockId)) {
-            return entry;
-        }
-
-        entry = PE_TO_PC_OVERRIDE.get(peItemBlockId);
-
-        return entry;
+    public static ItemEntry translateToPC(int peId, int damage) {
+        if (!PE_TO_PC_OVERRIDE.containsKey(peId))
+            return new ItemEntry(peId, damage);
+        return PE_TO_PC_OVERRIDE.get(peId).setDamage(damage);
     }
 
     public static Slot translateSlotToPE(ItemStack item) {
-        if (item == null || item.getId() == 0) {
+        if (item == null || item.getId() == 0)
             return null;
-        }
         Slot slot = new Slot();
 
         ItemEntry entry = translateToPE(item.getId(), item.getData());
         slot.id = entry.getId();
         slot.damage = entry.getPEDamage() != null ? entry.getPEDamage() : item.getData();
         slot.count = (item.getAmount() & 0xff);
-//        org.dragonet.proxy.data.nbt.tag.CompoundTag tag = new org.dragonet.proxy.data.nbt.tag.CompoundTag();
-//        tag.putShort("id", item.getId());
-//        tag.putShort("amount", item.getAmount());
-//        tag.putShort("data", item.getData());
-//        org.dragonet.proxy.data.nbt.tag.CompoundTag rootTag = new org.dragonet.proxy.data.nbt.tag.CompoundTag();
-//        rootTag.put(DRAGONET_COMPOUND, tag);
-//        slot.tag = rootTag;
         slot.tag = translateRawNBT(item.getId(), item.getNBT(), null);
         return slot;
     }
@@ -202,9 +167,8 @@ public class ItemBlockTranslator {
     public static org.dragonet.proxy.data.nbt.tag.CompoundTag translateRawNBT(int id, Tag pcTag, org.dragonet.proxy.data.nbt.tag.CompoundTag target) {
         if (pcTag != null) {
             String name = pcTag.getName() != null ? pcTag.getName() : "";
-            if (target == null) {
+            if (target == null)
                 target = new org.dragonet.proxy.data.nbt.tag.CompoundTag(name);
-            }
             switch (pcTag.getClass().getSimpleName()) {
                 case "ByteArrayTag":
                     target.putByteArray(name, (byte[]) pcTag.getValue());
@@ -234,15 +198,13 @@ public class ItemBlockTranslator {
                     target.putString(name, (String) pcTag.getValue());
                     break;
                 case "CompoundTag":
-                    for (String subName : ((CompoundTag) pcTag).getValue().keySet()) {
+                    for (String subName : ((CompoundTag) pcTag).getValue().keySet())
                         translateRawNBT(0, ((CompoundTag) pcTag).getValue().get(subName), target);
-                    }
                     break;
                 case "ListTag":
                     ListTag listTag = new ListTag();
-                    for (Tag subTag : (List<Tag>) pcTag.getValue()) {
+                    for (Tag subTag : (List<Tag>) pcTag.getValue())
                         listTag.add(translateRawNBT(0, subTag, new org.dragonet.proxy.data.nbt.tag.CompoundTag()));
-                    }
                     target.putList(listTag);
                     break;
                 default:
@@ -255,11 +217,10 @@ public class ItemBlockTranslator {
 
     //WIP
     public static org.dragonet.proxy.data.nbt.tag.CompoundTag translateBlockEntityToPE(com.github.steveice10.opennbt.tag.builtin.CompoundTag input) {
-        if (input == null) {
+        if (input == null)
             return null;
-        }
         org.dragonet.proxy.data.nbt.tag.CompoundTag output = translateRawNBT(0, input, null);
-        if (output.contains("id")) {
+        if (output.contains("id"))
             switch (output.getString("id")) {
                 case "minecraft:bed":
                     output.putString("id", "Bed");
@@ -276,13 +237,12 @@ public class ItemBlockTranslator {
                     break;
                 case "minecraft:sign":
                     output.putString("id", "Sign");
-                    if (!output.contains("Text")) {
+                    if (!output.contains("Text"))
                         output.putString("Text",
                                 Message.fromString(output.getString("Text1")).getFullText()
                                 + "\n" + Message.fromString(output.getString("Text2")).getFullText()
                                 + "\n" + Message.fromString(output.getString("Text3")).getFullText()
                                 + "\n" + Message.fromString(output.getString("Text4")).getFullText());
-                    }
                     output.remove("Text1");
                     output.remove("Text2");
                     output.remove("Text3");
@@ -347,7 +307,6 @@ public class ItemBlockTranslator {
                     output.putString("id", "PistonArm");
                     break;
             }
-        }
 //        if (output.getString("id") == "ShulkerBox" || output.getString("id") == "Bed" || output.getString("id") == "Chest")
 //            System.out.println("translateBlockEntityToPE " + output.toString());
         return output;
@@ -358,18 +317,18 @@ public class ItemBlockTranslator {
         return new ItemStack(entry.getId(), slot.count, entry.getPCDamage() != null ? entry.getPCDamage() : slot.damage); //TODO NBT
     }
 
-    public static BlockFace translateToPC(int face) {
-        return BlockFace.values()[Math.abs(face % 6)];
+    private static void swap(int pcId, int peId) {
+        swap(pcId, peId, null);
     }
 
-    private static void swap(int pcId, int peId) {
-        PC_TO_PE_OVERRIDE.put(pcId, new ItemEntry(peId));
-        PE_TO_PC_OVERRIDE.put(peId, new ItemEntry(pcId));
+    private static void swap(int pcId, int peId, IItemDataTranslator translator) {
+        PC_TO_PE_OVERRIDE.put(pcId, new ItemEntry(peId, null, translator));
+        PE_TO_PC_OVERRIDE.put(peId, new ItemEntry(pcId, null, translator));
     }
 
     private static void translateData(int id, IItemDataTranslator translator) {
-        PC_TO_PE_OVERRIDE.put(id, new ItemEntry(id, 0, translator));
-        PE_TO_PC_OVERRIDE.put(id, new ItemEntry(id, 0, translator));
+        PC_TO_PE_OVERRIDE.put(id, new ItemEntry(id, null, translator));
+        PE_TO_PC_OVERRIDE.put(id, new ItemEntry(id, null, translator));
     }
 
     private static void swap(int pcId, ItemEntry toPe) {
@@ -379,9 +338,8 @@ public class ItemBlockTranslator {
 
     private static void toPEOverride(int fromPc, int toPe, String nameOverride) {
         toPEOverride(fromPc, toPe);
-        if (nameOverride != null) {
+        if (nameOverride != null)
             NAME_OVERRIDES.put(fromPc, nameOverride);
-        }
     }
 
     private static void toPEOverride(int fromPc, int toPe) {
@@ -407,5 +365,39 @@ public class ItemBlockTranslator {
         t.put(new IntTag("y", y));
         t.put(new IntTag("z", z));
         return t;
+    }
+
+    public static BlockFace translateToPC(int face) {
+        return BlockFace.values()[Math.abs(face % 6)];
+    }
+
+    public static Integer translateFacing(int input) {
+        // translate facing
+        if (input == 0) // DOWN
+            input = 0;
+        else if (input == 1) //EAST
+            input = 5;
+        else if (input == 2) //WEST
+            input = 4;
+        else if (input == 3) //SOUTH
+            input = 3;
+        else if (input == 4) //NORTH
+            input = 2;
+        else if (input == 5) //UP
+            input = 1;
+        return input;
+    }
+    
+    public static Integer invertVerticalFacing(int input) {
+        // translate facing
+        if (input == 5) //EAST
+            input = 4;
+        else if (input == 4) //WEST
+            input = 5;
+        else if (input == 3) //SOUTH
+            input = 2;
+        else if (input == 2) //NORTH
+            input = 3;
+        return input;
     }
 }
