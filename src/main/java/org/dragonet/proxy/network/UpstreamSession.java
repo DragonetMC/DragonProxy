@@ -230,8 +230,9 @@ public class UpstreamSession {
     public void disconnect(String reason) {
         if (!connecting) {
             sendPacket(new DisconnectPacket(false, reason));
-            // RakNet server will call onDisconnect()
         }
+        //Forceing the connection to close
+        onDisconnect(reason);
     }
 
     /**
