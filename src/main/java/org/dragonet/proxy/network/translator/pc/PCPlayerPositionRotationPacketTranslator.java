@@ -94,8 +94,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
 
             UpdateAttributesPacket attr = new UpdateAttributesPacket();
             attr.rtid = entityPlayer.proxyEid;
-            if (entityPlayer.attributes.isEmpty())
-            {
+            if (entityPlayer.attributes.isEmpty()) {
                 attr.entries = new ArrayList();
                 attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.ABSORPTION));
                 attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.EXHAUSTION));
@@ -104,9 +103,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE));
                 attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE_LEVEL));
                 attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.MOVEMENT_SPEED));
-            }
-            else
-            {
+            } else {
                 attr.entries = entityPlayer.attributes.values();
             }
             session.sendPacket(attr);
@@ -199,10 +196,10 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                     pkAddPlayer.pitch = entity.pitch;
                     pkAddPlayer.username = playerListEntry.getProfile().getName();
 
-					// TODO: this does not work well yet
+                    // TODO: this does not work well yet
                     // pkAddPlayer.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, EntityType.PLAYER);
 
-					pkAddPlayer.meta = EntityMetaData.createDefault();
+                    pkAddPlayer.meta = EntityMetaData.createDefault();
                     pkAddPlayer.meta.set(EntityMetaData.Constants.DATA_NAMETAG, new ByteArrayMeta(playerListEntry.getProfile().getName())); //hacky for now
 
                     PlayerSkinPacket skin = new PlayerSkinPacket(entity.playerUniqueId);
