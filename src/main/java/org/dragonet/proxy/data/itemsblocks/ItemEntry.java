@@ -25,7 +25,7 @@ public class ItemEntry {
     private IItemDataTranslator translator;
 
     public ItemEntry(Integer id) {
-        this(id, 0);
+        this(id, null);
     }
 
     public ItemEntry(Integer id, Integer damage) {
@@ -42,21 +42,21 @@ public class ItemEntry {
     public Integer getId() {
         return this.id;
     }
-    
-    public void setDamage(int damage)
-    {
+
+    public ItemEntry setDamage(int damage) {
         this.damage = damage;
+        return this;
     }
 
     public Integer getPEDamage() {
-        if (this.translator != null) {
+        if (this.translator != null && this.damage != null) {
             return this.translator.translateToPE(this.damage);
         }
         return damage;
     }
 
     public Integer getPCDamage() {
-        if (this.translator != null) {
+        if (this.translator != null && this.damage != null) {
             return this.translator.translateToPC(this.damage);
         }
         return damage;
