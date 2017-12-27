@@ -41,6 +41,7 @@ public class ItemBlockTranslator {
     static {
         //BLOCKS
         toPEOverride(36, 248); //unkown block
+        translateData(26, new BedDataTranslator()); //bed
         translateData(77, new ButtonDataTranslator()); //stone_button
         translateData(143, new ButtonDataTranslator()); //wooden_button
         translateData(96, new TrapDoorDataTranslator()); //trapdoor
