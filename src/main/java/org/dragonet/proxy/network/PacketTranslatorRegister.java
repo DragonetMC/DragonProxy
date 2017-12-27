@@ -65,6 +65,7 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerUpdateTimePacket.class, new PCUpdateTimePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerBlockChangePacket.class, new PCBlockChangePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerMultiBlockChangePacket.class, new PCMultiBlockChangePacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerBlockBreakAnimPacket.class, new PCBlockBreakAnimationPacketTranslator());
         // PC_TO_PE_TRANSLATOR.put(ServerUpdateSignPacket.class, new
         // PCUpdateSignPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlaySoundPacket.class, new PCPlaySoundPacketTranslator());
