@@ -46,7 +46,7 @@ public class ItemBlockTranslator {
         swap(125, 157); // double_wooden_slab
         swap(126, 158); // wooden_slab
         swap(157, 126); //activator_rail
-        swap(198, 208); //end_rod
+        swap(198, 208, new EndRodDataTranslator()); //end_rod
         swap(199, 240); //chorus_plant
         swap(202, 201); //purpur_pillar -> purpur_block
         swap(208, 198); //grass_path
@@ -314,13 +314,13 @@ public class ItemBlockTranslator {
         return new ItemStack(entry.getId(), slot.count, entry.getPCDamage() != null ? entry.getPCDamage() : slot.damage); //TODO NBT
     }
 
-    public static BlockFace translateToPC(int face) {
-        return BlockFace.values()[Math.abs(face % 6)];
+    private static void swap(int pcId, int peId) {
+        swap(pcId, peId, null);
     }
 
-    private static void swap(int pcId, int peId) {
-        PC_TO_PE_OVERRIDE.put(pcId, new ItemEntry(peId));
-        PE_TO_PC_OVERRIDE.put(peId, new ItemEntry(pcId));
+    private static void swap(int pcId, int peId, IItemDataTranslator translator) {
+        PC_TO_PE_OVERRIDE.put(pcId, new ItemEntry(peId, null, translator));
+        PE_TO_PC_OVERRIDE.put(peId, new ItemEntry(pcId, null, translator));
     }
 
     private static void translateData(int id, IItemDataTranslator translator) {
@@ -364,6 +364,10 @@ public class ItemBlockTranslator {
         return t;
     }
 
+    public static BlockFace translateToPC(int face) {
+        return BlockFace.values()[Math.abs(face % 6)];
+    }
+
     public static Integer translateFacing(int input) {
         // translate facing
         if (input == 0) // DOWN
@@ -378,6 +382,19 @@ public class ItemBlockTranslator {
             input = 2;
         else if (input == 5) //UP
             input = 1;
+        return input;
+    }
+    
+    public static Integer invertVerticalFacing(int input) {
+        // translate facing
+        if (input == 5) //EAST
+            input = 4;
+        else if (input == 4) //WEST
+            input = 5;
+        else if (input == 3) //SOUTH
+            input = 2;
+        else if (input == 2) //NORTH
+            input = 3;
         return input;
     }
 }
