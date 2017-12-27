@@ -11,7 +11,6 @@ public class PCDisconnectPacketTranslator implements IPCPacketTranslator<ServerD
     @Override
     public PEPacket[] translate(UpstreamSession session, ServerDisconnectPacket packet) {
         session.disconnect(packet.getReason().getFullText());
-        session.onDisconnect(packet.getReason().getFullText());
         return null;
     }
 
