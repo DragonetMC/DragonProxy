@@ -346,13 +346,13 @@ public class UpstreamSession {
             sendPacket(new FullChunkDataPacket(-1, 0, data.getBuffer()));
             sendPacket(new FullChunkDataPacket(-1, -1, data.getBuffer()));
 
-			dataCache.put(CacheKey.AUTHENTICATION_STATE, "online_login_wait");
+            dataCache.put(CacheKey.AUTHENTICATION_STATE, "online_login_wait");
 
             PlayStatusPacket pkStat = new PlayStatusPacket();
             pkStat.status = PlayStatusPacket.PLAYER_SPAWN;
             sendPacket(pkStat, true);
 
-			sendChat(proxy.getLang().get(Lang.MESSAGE_LOGIN_PROMPT));
+            sendChat(proxy.getLang().get(Lang.MESSAGE_LOGIN_PROMPT));
         } else if (proxy.getAuthMode().equals("cls")) {
             // CLS LOGIN!
             if ((username.length() < 6 + 1 + 1) || (!username.contains("_"))) {

@@ -73,8 +73,8 @@ public final class Protocol {
         packets.put(SET_ENTITY_LINK_PACKET, SetEntityLinkPacket.class);
         packets.put(PLAYER_INPUT_PACKET, PlayerInputPacket.class);
 
-		packets.put(MODAL_FORM_REQUEST_PACKET, ModalFormRequestPacket.class);
-		packets.put(MODAL_FORM_RESPONSE_PACKET, ModalFormResponsePacket.class);
+        packets.put(MODAL_FORM_REQUEST_PACKET, ModalFormRequestPacket.class);
+        packets.put(MODAL_FORM_RESPONSE_PACKET, ModalFormResponsePacket.class);
 
         packets.put(CONTAINER_OPEN_PACKET, ContainerOpenPacket.class);
         packets.put(CONTAINER_CLOSE_PACKET, ContainerClosePacket.class);
