@@ -230,9 +230,10 @@ public class UpstreamSession {
     public void disconnect(String reason) {
         if (!connecting) {
             sendPacket(new DisconnectPacket(false, reason));
+            raknetClient.update(); //Force the DisconnectPacket to be sent before we close the connection
         }
         //Forceing the connection to close
-        onDisconnect(reason);
+        getProxy().getNetwork().getRakServer().removeSession(getRaknetClient(), reason);
     }
 
     /**
