@@ -25,6 +25,7 @@ import com.github.steveice10.opennbt.tag.builtin.StringTag;
 import com.github.steveice10.opennbt.tag.builtin.Tag;
 import java.util.List;
 import org.dragonet.proxy.data.nbt.tag.ListTag;
+import org.dragonet.proxy.network.translator.itemsblocks.IItemDataTranslator;
 
 import org.dragonet.proxy.protocol.type.Slot;
 
@@ -39,6 +40,19 @@ public class ItemBlockTranslator {
     static {
         //BLOCKS
         toPEOverride(36, 248); //unkown block
+        add(77, new IItemDataTranslator() {
+            @Override
+            public Integer translateToPE(Integer damage) {
+                // Here is the magic
+                return damage;
+            }
+
+            @Override
+            public Integer translateToPC(Integer damage) {
+                // Here too
+                return damage;
+            }
+        }); //stone_button
         swap(125, 157); // double_wooden_slab
         swap(126, 158); // wooden_slab
         swap(157, 126); //activator_rail
@@ -353,6 +367,11 @@ public class ItemBlockTranslator {
         PE_TO_PC_OVERRIDE.put(peId, new ItemEntry(pcId));
     }
 
+    private static void add(int id, IItemDataTranslator translator) {
+        PC_TO_PE_OVERRIDE.put(id, new ItemEntry(id, 0, translator));
+        PE_TO_PC_OVERRIDE.put(id, new ItemEntry(id, 0, translator));
+    }
+
     private static void swap(int pcId, ItemEntry toPe) {
         PC_TO_PE_OVERRIDE.put(pcId, toPe);
         PE_TO_PC_OVERRIDE.put(toPe.id, new ItemEntry(pcId));
@@ -394,6 +413,7 @@ public class ItemBlockTranslator {
 
         public Integer id;
         public Integer damage;
+        private IItemDataTranslator translator;
 
         public ItemEntry(Integer id) {
             this(id, null);
@@ -402,6 +422,30 @@ public class ItemBlockTranslator {
         public ItemEntry(Integer id, Integer damage) {
             this.id = id;
             this.damage = damage;
+        }
+
+        public ItemEntry(Integer id, Integer damage, IItemDataTranslator translator) {
+            this.id = id;
+            this.damage = damage;
+            this.translator = translator;
+        }
+
+        public Integer getId() {
+            return this.id;
+        }
+
+        public Integer getPEDamage() {
+            if (this.translator != null) {
+                return this.translator.translateToPE(this.damage);
+            }
+            return damage;
+        }
+
+        public Integer getPCDamage() {
+            if (this.translator != null) {
+                return this.translator.translateToPC(this.damage);
+            }
+            return damage;
         }
     }
 }
