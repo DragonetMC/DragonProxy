@@ -25,7 +25,7 @@ import org.dragonet.proxy.data.nbt.NBTIO;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.proxy.network.translator.ItemBlockTranslator.ItemEntry;
+import org.dragonet.proxy.data.itemsblocks.ItemEntry;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.FullChunkDataPacket;
 import org.dragonet.proxy.protocol.type.chunk.ChunkData;
@@ -79,12 +79,12 @@ public class PCMultiChunkDataPacketTranslator implements IPCPacketTranslator<Ser
 
                     Section section = pe.sections[cy];
                     //Block id
-                    section.blockIds[index(x, y, z)] = (byte) (entry.id & 0xFF);
+                    section.blockIds[index(x, y, z)] = (byte) (entry.getId() & 0xFF);
 
                     //Data value
                     int i = dataIndex(x, y, z);
                     byte data = section.blockMetas[i];
-                    int newValue = entry.damage.byteValue();
+                    int newValue = entry.getPEDamage().byteValue();
 
                     if ((y & 1) == 0) {
                         data = (byte) ((data & 0xf0) | (newValue & 0x0f));

@@ -24,6 +24,7 @@ import com.github.steveice10.opennbt.tag.builtin.IntTag;
 import com.github.steveice10.opennbt.tag.builtin.StringTag;
 import com.github.steveice10.opennbt.tag.builtin.Tag;
 import java.util.List;
+import org.dragonet.proxy.data.itemsblocks.ItemEntry;
 import org.dragonet.proxy.data.nbt.tag.ListTag;
 import org.dragonet.proxy.network.translator.itemsblocks.IItemDataTranslator;
 
@@ -40,7 +41,7 @@ public class ItemBlockTranslator {
     static {
         //BLOCKS
         toPEOverride(36, 248); //unkown block
-        add(77, new IItemDataTranslator() {
+        translateData(77, new IItemDataTranslator() {
             @Override
             public Integer translateToPE(Integer damage) {
                 // Here is the magic
@@ -154,13 +155,12 @@ public class ItemBlockTranslator {
             return entry;
         }
         entry = PC_TO_PE_OVERRIDE.get(pcItemBlockId);
-        if (entry.damage == null) {
-            entry.damage = damage;
+        if (entry.getPEDamage() == null) {
+            entry.setDamage(damage);
         }
 
-        if (pcItemBlockId >= 255 && entry.id == UNSUPPORTED_BLOCK_ID) {
-            entry.id = UNSUPPORTED_BLOCK_ID; // Unsupported item becomes air
-            entry.damage = 0;
+        if (pcItemBlockId >= 255 && entry.getId() == UNSUPPORTED_BLOCK_ID) {
+            entry = new ItemEntry(UNSUPPORTED_BLOCK_ID, 0);
         }
         return entry;
     }
@@ -184,8 +184,8 @@ public class ItemBlockTranslator {
         Slot slot = new Slot();
 
         ItemEntry entry = translateToPE(item.getId(), item.getData());
-        slot.id = entry.id;
-        slot.damage = entry.damage != null ? entry.damage : item.getData();
+        slot.id = entry.getId();
+        slot.damage = entry.getPEDamage() != null ? entry.getPEDamage() : item.getData();
         slot.count = (item.getAmount() & 0xff);
 //        org.dragonet.proxy.data.nbt.tag.CompoundTag tag = new org.dragonet.proxy.data.nbt.tag.CompoundTag();
 //        tag.putShort("id", item.getId());
@@ -355,7 +355,7 @@ public class ItemBlockTranslator {
 
     public static ItemStack translateToPC(Slot slot) {
         ItemEntry entry = translateToPC(slot.id, slot.damage);
-        return new ItemStack(entry.id, slot.count, entry.damage != null ? entry.damage : slot.damage); //TODO NBT
+        return new ItemStack(entry.getId(), slot.count, entry.getPCDamage() != null ? entry.getPCDamage() : slot.damage); //TODO NBT
     }
 
     public static BlockFace translateToPC(int face) {
@@ -367,14 +367,14 @@ public class ItemBlockTranslator {
         PE_TO_PC_OVERRIDE.put(peId, new ItemEntry(pcId));
     }
 
-    private static void add(int id, IItemDataTranslator translator) {
+    private static void translateData(int id, IItemDataTranslator translator) {
         PC_TO_PE_OVERRIDE.put(id, new ItemEntry(id, 0, translator));
         PE_TO_PC_OVERRIDE.put(id, new ItemEntry(id, 0, translator));
     }
 
     private static void swap(int pcId, ItemEntry toPe) {
         PC_TO_PE_OVERRIDE.put(pcId, toPe);
-        PE_TO_PC_OVERRIDE.put(toPe.id, new ItemEntry(pcId));
+        PE_TO_PC_OVERRIDE.put(toPe.getId(), new ItemEntry(pcId));
     }
 
     private static void toPEOverride(int fromPc, int toPe, String nameOverride) {
@@ -407,45 +407,5 @@ public class ItemBlockTranslator {
         t.put(new IntTag("y", y));
         t.put(new IntTag("z", z));
         return t;
-    }
-
-    public static class ItemEntry {
-
-        public Integer id;
-        public Integer damage;
-        private IItemDataTranslator translator;
-
-        public ItemEntry(Integer id) {
-            this(id, null);
-        }
-
-        public ItemEntry(Integer id, Integer damage) {
-            this.id = id;
-            this.damage = damage;
-        }
-
-        public ItemEntry(Integer id, Integer damage, IItemDataTranslator translator) {
-            this.id = id;
-            this.damage = damage;
-            this.translator = translator;
-        }
-
-        public Integer getId() {
-            return this.id;
-        }
-
-        public Integer getPEDamage() {
-            if (this.translator != null) {
-                return this.translator.translateToPE(this.damage);
-            }
-            return damage;
-        }
-
-        public Integer getPCDamage() {
-            if (this.translator != null) {
-                return this.translator.translateToPC(this.damage);
-            }
-            return damage;
-        }
     }
 }
