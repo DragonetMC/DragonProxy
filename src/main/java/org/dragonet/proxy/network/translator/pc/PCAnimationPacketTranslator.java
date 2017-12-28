@@ -28,9 +28,23 @@ public class PCAnimationPacketTranslator implements IPCPacketTranslator<ServerEn
         if (entity == null) {
             return null;
         }
-
         AnimatePacket pk = new AnimatePacket();
-        pk.action = packet.getAnimation().ordinal();
+        switch(packet.getAnimation()) {
+            case CRITICAL_HIT:
+                pk.action = AnimatePacket.ACTION_CRITICAL_HIT;
+                break;
+            case DAMAGE:
+                break;
+            case EAT_FOOD:
+                break;
+            case ENCHANTMENT_CRITICAL_HIT:
+                break;
+            case LEAVE_BED:
+                pk.action = AnimatePacket.ANIMATION_LEAVE_BED;
+                break;
+            case SWING_ARM:
+                pk.action = AnimatePacket.ANIMATION_SWING_ARM;
+        }
         pk.eid = entity.proxyEid;
         return new PEPacket[]{pk};
     }
