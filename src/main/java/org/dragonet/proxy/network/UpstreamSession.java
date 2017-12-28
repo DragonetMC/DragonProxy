@@ -23,7 +23,6 @@ import net.marfgamer.jraknet.protocol.Reliability;
 import net.marfgamer.jraknet.session.RakNetClientSession;
 import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.LoginPacketAuthUtil;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.RemoteServer;
 import org.dragonet.proxy.data.entity.EntityType;
@@ -325,7 +324,7 @@ public class UpstreamSession {
         profile = packet.decoded;
 
         // Verify the integrity of the LoginPacket
-        if(proxy.getConfig().authenticate_players && !LoginPacketAuthUtil.verifyLogin(packet)){
+        if(proxy.getConfig().authenticate_players && !packet.decoded.isLoginVerified()){
 			status.status = PlayStatusPacket.LOGIN_FAILED_CLIENT;
 			sendPacket(status, true);
 			disconnect(proxy.getLang().get(Lang.LOGIN_VERIFY_FAILED));
