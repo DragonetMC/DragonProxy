@@ -29,7 +29,7 @@ import org.dragonet.proxy.network.translator.IPEPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.*;
 import org.dragonet.proxy.network.translator.pe.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerChatPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDisconnectPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDisconnectPacket; 
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerRespawnPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
@@ -51,8 +51,7 @@ public final class PacketTranslatorRegister {
     static {
         // Login phase
         PC_TO_PE_TRANSLATOR.put(ServerJoinGamePacket.class, new PCJoinGamePacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerDisconnectPacket.class, new PCDisconnectPacketTranslator());
-
+        PC_TO_PE_TRANSLATOR.put(ServerDisconnectPacket.class, new PCDisconnectPacketTranslator()); 
         // Settings && Weather
         PC_TO_PE_TRANSLATOR.put(ServerNotifyClientPacket.class, new PCNotifyClientPacketTranslator());
 
@@ -65,7 +64,6 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerUpdateTimePacket.class, new PCUpdateTimePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerBlockChangePacket.class, new PCBlockChangePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerMultiBlockChangePacket.class, new PCMultiBlockChangePacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerBlockBreakAnimPacket.class, new PCBlockBreakAnimationPacketTranslator());
         // PC_TO_PE_TRANSLATOR.put(ServerUpdateSignPacket.class, new
         // PCUpdateSignPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlaySoundPacket.class, new PCPlaySoundPacketTranslator());
