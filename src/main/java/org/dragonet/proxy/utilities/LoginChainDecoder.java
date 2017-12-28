@@ -16,8 +16,8 @@ import java.util.UUID;
  */
 public class LoginChainDecoder {
 
-    private final byte[] chainJWT;
-    private final byte[] clientDataJWT;
+    public final byte[] chainJWT;
+    public final byte[] clientDataJWT;
     public String username;
     public UUID clientUniqueId;
     public JsonObject clientData;
@@ -34,6 +34,7 @@ public class LoginChainDecoder {
      * function goes to Nukkit development team
      */
     public void decode() {
+
         // chain
         Map<String, List<String>> map = new Gson().fromJson(new String(chainJWT),
                 new TypeToken<Map<String, List<String>>>() {
