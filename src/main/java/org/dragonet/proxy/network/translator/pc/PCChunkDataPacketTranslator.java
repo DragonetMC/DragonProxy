@@ -31,7 +31,7 @@ import org.dragonet.proxy.protocol.packets.FullChunkDataPacket;
 import org.dragonet.proxy.protocol.type.chunk.ChunkData;
 import org.dragonet.proxy.protocol.type.chunk.Section;
 
-public class PCMultiChunkDataPacketTranslator implements IPCPacketTranslator<ServerChunkDataPacket> {
+public class PCChunkDataPacketTranslator implements IPCPacketTranslator<ServerChunkDataPacket> {
 
     public PEPacket[] translate(UpstreamSession session, ServerChunkDataPacket packet) {
         session.getProxy().getGeneralThreadPool().execute(() -> {
@@ -103,7 +103,7 @@ public class PCMultiChunkDataPacketTranslator implements IPCPacketTranslator<Ser
                 pe.blockEntities = NBTIO.write(ItemBlockTranslator.translateBlockEntityToPE(pc.getTileEntities()[i]), ByteOrder.LITTLE_ENDIAN, true);
             }
         } catch (IOException ex) {
-            Logger.getLogger(PCMultiChunkDataPacketTranslator.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PCChunkDataPacketTranslator.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
