@@ -21,3 +21,4 @@ nb-configuration.xml
 /.idea
 *.bat
 /config.yml
+/src/main/resources/buildNumber.properties

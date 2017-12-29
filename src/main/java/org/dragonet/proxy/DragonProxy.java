@@ -12,11 +12,13 @@
  */
 package org.dragonet.proxy;
 
+import com.github.steveice10.mc.protocol.MinecraftConstants;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -24,9 +26,10 @@ import org.dragonet.proxy.network.SessionRegister;
 import org.dragonet.proxy.network.RaknetInterface;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.ServerConfig;
-import org.dragonet.proxy.utilities.*;
 import org.dragonet.proxy.commands.CommandRegister;
 import org.dragonet.proxy.commands.ConsoleCommandReader;
+import org.dragonet.proxy.protocol.ProtocolInfo;
+import org.dragonet.proxy.utilities.Logger;
 
 import org.yaml.snakeyaml.Yaml;
 
@@ -34,6 +37,8 @@ public class DragonProxy {
 
     public static final boolean IS_RELEASE = false; // DO NOT CHANGE, ONLY ON PRODUCTION
 
+    private static DragonProxy instance;
+    private final Properties properties;
     private Logger logger;
     private final TickerThread ticker = new TickerThread(this);
     private ServerConfig config;
@@ -49,7 +54,12 @@ public class DragonProxy {
     private boolean debug = false;
 
     public static void main(String[] args) {
-        new DragonProxy().run(args);
+        if (instance == null)
+            instance = new DragonProxy(args);
+    }
+
+    public static DragonProxy getInstance() {
+        return instance;
     }
 
     public Logger getLogger() {
@@ -92,7 +102,7 @@ public class DragonProxy {
         return debug;
     }
 
-    public void run(String[] args) {
+    public DragonProxy(String[] args) {
         logger = new Logger(this);
 
         try {
@@ -102,9 +112,8 @@ public class DragonProxy {
                 FileOutputStream fos = new FileOutputStream(fileConfig);
                 InputStream ins = DragonProxy.class.getResourceAsStream("/config.yml");
                 int data;
-                while ((data = ins.read()) != -1) {
+                while ((data = ins.read()) != -1)
                     fos.write(data);
-                }
                 ins.close();
                 fos.close();
             }
@@ -112,7 +121,21 @@ public class DragonProxy {
         } catch (IOException ex) {
             logger.severe("Failed to load configuration file! Make sure the file is writable.");
             ex.printStackTrace();
-            return;
+        }
+
+        InputStream inputStream = this.getClass().getResourceAsStream("/buildNumber.properties");
+        properties = new Properties();
+        try {
+            properties.load(inputStream);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read properties file", e);
+        } finally {
+            if (inputStream != null)
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    // Ignore
+                }
         }
 
         // Initialize console command reader
@@ -120,16 +143,15 @@ public class DragonProxy {
         console.startConsole();
 
         // Should we save console log? Set it in config file
-        /*
-		 * if(config.isLog_console()){ console.startFile("console.log");
-		 * logger.info("Saving console output enabled"); } else {
-		 * logger.info("Saving console output disabled"); }
-         */
+        if (config.log_console)
+//            console.startFile("console.log"); TODO
+            logger.info("Saving console output enabled");
+        else
+            logger.info("Saving console output disabled");
+
         // Put at the top instead
-        if (!IS_RELEASE) {
-            logger.warning(
-                    MCColor.YELLOW + "This is a development build. It may contain bugs. Do not use on production.\n");
-        }
+        if (!IS_RELEASE)
+            logger.warning("This is a development build. It may contain bugs. Do not use on production.\n");
 
         // Check for startup arguments
         checkArguments(args);
@@ -140,18 +162,19 @@ public class DragonProxy {
         } catch (IOException ex) {
             logger.severe("Failed to load language file: " + config.lang + "!");
             ex.printStackTrace();
-            return;
         }
+
         // Load some more stuff
-        logger.info(lang.get(Lang.INIT_LOADING, Versioning.RELEASE_VERSION));
-        logger.info(lang.get(Lang.INIT_MC_PC_SUPPORT, Versioning.MINECRAFT_PC_VERSION));
-        logger.info(lang.get(Lang.INIT_MC_PE_SUPPORT, Versioning.MINECRAFT_PE_VERSION));
+        String version = properties.getProperty("git.build.version");
+        if (properties.getProperty("git.dirty").equals("true"))
+            version += " (" + properties.getProperty("git.commit.id.describe-short") + ")";
+        logger.info(lang.get(Lang.INIT_LOADING, version));
+        logger.info(lang.get(Lang.INIT_MC_PC_SUPPORT, MinecraftConstants.GAME_VERSION));
+        logger.info(lang.get(Lang.INIT_MC_PE_SUPPORT, ProtocolInfo.MINECRAFT_VERSION));
         authMode = config.mode.toLowerCase();
-        if (!authMode.equals("cls") && !authMode.equals("online") && !authMode.equals("offline")) {
+        if (!authMode.equals("cls") && !authMode.equals("online") && !authMode.equals("offline"))
             logger.severe("Invalid login 'mode' option detected, must be cls/online/offline. You set it to '" + authMode
                     + "'! ");
-            return;
-        }
 
         // Init session and command stuff
         sessionRegister = new SessionRegister(this);
@@ -176,19 +199,21 @@ public class DragonProxy {
         logger.info(lang.get(Lang.INIT_DONE));
     }
 
+    public Properties getProperties() {
+        return this.properties;
+    }
+
     public void onTick() {
-        // network.onTick();
         sessionRegister.onTick();
     }
 
     public void checkArguments(String[] args) {
-        for (String arg : args) {
+        for (String arg : args)
             if (arg.toLowerCase().contains("--debug")) {
                 debug = true;
                 getLogger().debug = true;
-                logger.info(MCColor.DARK_AQUA + "Proxy is running in debug mode.");
+                logger.info("Proxy is running in debug mode.");
             }
-        }
     }
 
     public void shutdown() {
