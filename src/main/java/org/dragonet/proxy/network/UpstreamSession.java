@@ -19,10 +19,6 @@ import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import java.net.InetSocketAddress;
-import java.util.*;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import net.marfgamer.jraknet.protocol.Reliability;
 import net.marfgamer.jraknet.session.RakNetClientSession;
 import org.dragonet.proxy.DesktopServer;
@@ -34,10 +30,35 @@ import org.dragonet.proxy.network.cache.EntityCache;
 import org.dragonet.proxy.network.cache.WindowCache;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.ProtocolInfo;
-import org.dragonet.proxy.protocol.packets.*;
+import org.dragonet.proxy.protocol.packets.DisconnectPacket;
+import org.dragonet.proxy.protocol.packets.FullChunkDataPacket;
+import org.dragonet.proxy.protocol.packets.LoginPacket;
+import org.dragonet.proxy.protocol.packets.PlayStatusPacket;
+import org.dragonet.proxy.protocol.packets.ResourcePackStackPacket;
+import org.dragonet.proxy.protocol.packets.ResourcePacksInfoPacket;
+import org.dragonet.proxy.protocol.packets.SetSpawnPositionPacket;
+import org.dragonet.proxy.protocol.packets.StartGamePacket;
+import org.dragonet.proxy.protocol.packets.TextPacket;
+import org.dragonet.proxy.protocol.packets.UpdateBlockPacket;
 import org.dragonet.proxy.protocol.type.chunk.ChunkData;
 import org.dragonet.proxy.protocol.type.chunk.Section;
-import org.dragonet.proxy.utilities.*;
+import org.dragonet.proxy.utilities.Binary;
+import org.dragonet.proxy.utilities.BlockPosition;
+import org.dragonet.proxy.utilities.HTTP;
+import org.dragonet.proxy.utilities.LoginChainDecoder;
+import org.dragonet.proxy.utilities.Vector3F;
+import org.dragonet.proxy.utilities.Zlib;
+
+import java.net.InetSocketAddress;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Maintaince the connection between the proxy and Minecraft: Pocket Edition
@@ -301,6 +322,15 @@ public class UpstreamSession {
 
         // Get the profile and read out the username!
         profile = packet.decoded;
+
+        // Verify the integrity of the LoginPacket
+        if(proxy.getConfig().authenticate_players && !packet.decoded.isLoginVerified()){
+			status.status = PlayStatusPacket.LOGIN_FAILED_CLIENT;
+			sendPacket(status, true);
+			disconnect(proxy.getLang().get(Lang.LOGIN_VERIFY_FAILED));
+			return;
+		}
+
         this.username = profile.username;
 
         // Okay @dktapps ;)

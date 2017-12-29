@@ -47,6 +47,8 @@ remote_servers:
 #           servers like Hypixel. 
 mode: online
 
+# Should we authenticate connecting player sessions with xbox live?
+authenticate_players: true
 
 # The in-game command prefix for players, by default it's Minecraft command prefix (a slash).
 command_prefix: '/'
