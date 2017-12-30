@@ -56,6 +56,7 @@ public class CachedEntity {
     public Slot chestplate;
     public Slot leggings;
     public Slot boots;
+    public Slot mainHand;
 
     // cache riding datas for dismount
     public long riding = 0;
