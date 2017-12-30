@@ -12,6 +12,8 @@
  */
 package org.dragonet.proxy.network;
 
+import co.aikar.timings.Timing;
+import co.aikar.timings.Timings;
 import com.github.steveice10.mc.auth.exception.request.RequestException;
 import com.github.steveice10.mc.auth.service.AuthenticationService;
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
@@ -170,34 +172,34 @@ public class UpstreamSession {
     }
 
     public void sendPacket(PEPacket packet, boolean immediate) {
-        if (packet == null) {
+        if (packet == null)
             return;
-        }
+
         // System.out.println("Sending [" + packet.getClass().getSimpleName() + "] ");
+        try (Timing timing = Timings.getSendDataPacketTiming(packet)) {
 
-        packet.encode();
+            packet.encode();
 
-        byte[] buffer;
-        try {
-            buffer = Zlib.deflate(
-                    Binary.appendBytes(Binary.writeUnsignedVarInt(packet.getBuffer().length), packet.getBuffer()), 6);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
+            byte[] buffer;
+            try {
+                buffer = Zlib.deflate(Binary.appendBytes(Binary.writeUnsignedVarInt(packet.getBuffer().length), packet.getBuffer()), 6);
+            } catch (Exception e) {
+                timing.stopTiming();
+                e.printStackTrace();
+                return;
+            }
+
+            // handler.sendEncapsulated(identifier, encapsulated, RakNet.FLAG_NEED_ACK |
+            // (overridedImmediate ? RakNet.PRIORITY_IMMEDIATE : RakNet.PRIORITY_NORMAL));
+            raknetClient.sendMessage(Reliability.RELIABLE_ORDERED, 0,
+                    new net.marfgamer.jraknet.Packet(Binary.appendBytes((byte) 0xfe, buffer)));
         }
-
-        // handler.sendEncapsulated(identifier, encapsulated, RakNet.FLAG_NEED_ACK |
-        // (overridedImmediate ? RakNet.PRIORITY_IMMEDIATE : RakNet.PRIORITY_NORMAL));
-        raknetClient.sendMessage(Reliability.RELIABLE_ORDERED, 0,
-                new net.marfgamer.jraknet.Packet(Binary.appendBytes((byte) 0xfe, buffer)));
     }
 
     public void sendAllPackets(PEPacket[] packets, boolean immediate) {
-        if (packets.length < 5) {
-            for (PEPacket packet : packets) {
+        if (packets.length < 5)
+            for (PEPacket packet : packets)
                 sendPacket(packet);
-            }
-        }
         /*
 			 * else { Batch batch = new BatchPacket(); boolean mustImmediate = immediate; if
 			 * (!mustImmediate) { for (PEPacket packet : packets) { if
@@ -207,9 +209,8 @@ public class UpstreamSession {
     }
 
     public void connectToServer(RemoteServer server) {
-        if (server == null) {
+        if (server == null)
             return;
-        }
         connecting = true;
         if (downstream != null && downstream.isConnected()) {
             spawned = false;
@@ -232,11 +233,10 @@ public class UpstreamSession {
             downstream = new PCDownstreamSession(proxy, this);
             ((PCDownstreamSession) downstream).protocol = protocol;
             downstream.connect(server.remote_addr, server.remote_port);
-        } else {
+        } else
             // downstream = new PEDownstreamSession(proxy, this);
             // ((PEDownstreamSession)downstream).connect((PocketServer) server);
             disconnect("PE targets not supported yet");
-        }
     }
 
     public void onConnected() {
@@ -265,9 +265,8 @@ public class UpstreamSession {
     public void onDisconnect(String reason) {
         proxy.getLogger().info(proxy.getLang().get(Lang.CLIENT_DISCONNECTED,
                 proxy.getAuthMode().equals("cls") ? "unknown" : username, remoteAddress, reason));
-        if (downstream != null) {
+        if (downstream != null)
             downstream.disconnect();
-        }
         proxy.getSessionRegister().removeSession(this);
         packetProcessorScheule.cancel(true);
     }
@@ -324,12 +323,12 @@ public class UpstreamSession {
         profile = packet.decoded;
 
         // Verify the integrity of the LoginPacket
-        if(proxy.getConfig().authenticate_players && !packet.decoded.isLoginVerified()){
-			status.status = PlayStatusPacket.LOGIN_FAILED_CLIENT;
-			sendPacket(status, true);
-			disconnect(proxy.getLang().get(Lang.LOGIN_VERIFY_FAILED));
-			return;
-		}
+        if (proxy.getConfig().authenticate_players && !packet.decoded.isLoginVerified()) {
+            status.status = PlayStatusPacket.LOGIN_FAILED_CLIENT;
+            sendPacket(status, true);
+            disconnect(proxy.getLang().get(Lang.LOGIN_VERIFY_FAILED));
+            return;
+        }
 
         this.username = profile.username;
 
@@ -368,9 +367,8 @@ public class UpstreamSession {
             data.sections = new Section[16];
             for (int cy = 0; cy < 16; cy++) {
                 data.sections[cy] = new Section();
-                if (cy < 6) {
+                if (cy < 6)
                     Arrays.fill(data.sections[cy].blockIds, (byte) 1);
-                }
             }
             data.encode();
             sendPacket(new FullChunkDataPacket(0, 0, data.getBuffer()));
@@ -463,9 +461,8 @@ public class UpstreamSession {
     public void sendChat(String chat) {
         if (chat.contains("\n")) {
             String[] lines = chat.split("\n");
-            for (String line : lines) {
+            for (String line : lines)
                 sendChat(line);
-            }
             return;
         }
         TextPacket text = new TextPacket(); // raw
@@ -488,9 +485,8 @@ public class UpstreamSession {
     }
 
     public void putCachePacket(PEPacket p) {
-        if (p == null) {
+        if (p == null)
             return;
-        }
         if (spawned || cachedPackets == null) {
             // System.out.println("Not caching since already spawned! ");
             sendPacket(p);
@@ -501,8 +497,7 @@ public class UpstreamSession {
 
     public void onTick() {
         entityCache.onTick();
-        if (downstream != null) {
+        if (downstream != null)
             downstream.onTick();
-        }
     }
 }
