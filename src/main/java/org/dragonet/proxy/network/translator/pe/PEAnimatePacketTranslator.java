@@ -16,7 +16,7 @@ public class PEAnimatePacketTranslator implements IPEPacketTranslator<AnimatePac
 			case AnimatePacket.ANIMATION_SWING_ARM:
 				return new Packet[]{new ClientPlayerSwingArmPacket(Hand.MAIN_HAND)};
 			default:
-				return new Packet[]{};
+				return null;
 		}
 
 	}
