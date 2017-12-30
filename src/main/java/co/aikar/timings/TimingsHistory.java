@@ -126,6 +126,7 @@ public class TimingsHistory {
 //            if (!levelMap.containsKey(level.getName())) levelMap.put(level.getName(), levelIdPool++);
 //            levels.add(String.valueOf(levelMap.get(level.getName())), jsonLevel);
 //        }
+            levels.add("world 1", new JsonArray());
     }
 
     static void resetTicks(boolean fullReset) {

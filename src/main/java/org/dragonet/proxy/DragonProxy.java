@@ -39,6 +39,7 @@ public class DragonProxy {
 
     private static DragonProxy instance;
     private final Properties properties;
+    private String version;
     private Logger logger;
     private final TickerThread ticker = new TickerThread(this);
     private ServerConfig config;
@@ -165,7 +166,7 @@ public class DragonProxy {
         }
 
         // Load some more stuff
-        String version = properties.getProperty("git.build.version");
+        version = properties.getProperty("git.build.version");
         if (properties.getProperty("git.dirty").equals("true"))
             version += " (" + properties.getProperty("git.commit.id.describe-short") + ")";
         logger.info(lang.get(Lang.INIT_LOADING, version));
@@ -201,6 +202,14 @@ public class DragonProxy {
 
     public Properties getProperties() {
         return this.properties;
+    }
+
+    public String getVersion() {
+        return this.version;
+    }
+
+    public String getMotd() {
+        return this.motd;
     }
 
     public void onTick() {
