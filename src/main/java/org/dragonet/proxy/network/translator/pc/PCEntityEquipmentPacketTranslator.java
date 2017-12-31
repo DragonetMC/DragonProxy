@@ -13,66 +13,66 @@ import org.dragonet.proxy.protocol.packets.MobEquipmentPacket;
 
 public class PCEntityEquipmentPacketTranslator implements IPCPacketTranslator<ServerEntityEquipmentPacket> {
 
-	@Override
-	public PEPacket[] translate(UpstreamSession session, ServerEntityEquipmentPacket packet) {
-		CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
-		if (entity == null) {
-			if (packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID)) {
-				entity = session.getEntityCache().getClientEntity();
-			} else {
-				return null;
-			}
-			return null;
-		}
+    @Override
+    public PEPacket[] translate(UpstreamSession session, ServerEntityEquipmentPacket packet) {
+        CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
+        if (entity == null) {
+            if (packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID)) {
+                entity = session.getEntityCache().getClientEntity();
+            } else {
+                return null;
+            }
+            return null;
+        }
 
-		ItemStack items = packet.getItem();
-		MobArmorEquipmentPacket aeq = new MobArmorEquipmentPacket();
+        ItemStack items = packet.getItem();
+        MobArmorEquipmentPacket aeq = new MobArmorEquipmentPacket();
 
-		boolean handModified = false;
+        boolean handModified = false;
 
-		switch (packet.getSlot()) {
-			case HELMET:
-				entity.helmet = ItemBlockTranslator.translateSlotToPE(items);
-				break;
-			case CHESTPLATE:
-				entity.chestplate = ItemBlockTranslator.translateSlotToPE(items);
-				break;
-			case LEGGINGS:
-				entity.leggings = ItemBlockTranslator.translateSlotToPE(items);
-				break;
-			case BOOTS:
-				entity.boots = ItemBlockTranslator.translateSlotToPE(items);
-				break;
-			case MAIN_HAND:
-				entity.mainHand = ItemBlockTranslator.translateSlotToPE(items);
-			case OFF_HAND:
-				handModified = true;
-				break;
-		}
+        switch (packet.getSlot()) {
+            case HELMET:
+                entity.helmet = ItemBlockTranslator.translateSlotToPE(items);
+                break;
+            case CHESTPLATE:
+                entity.chestplate = ItemBlockTranslator.translateSlotToPE(items);
+                break;
+            case LEGGINGS:
+                entity.leggings = ItemBlockTranslator.translateSlotToPE(items);
+                break;
+            case BOOTS:
+                entity.boots = ItemBlockTranslator.translateSlotToPE(items);
+                break;
+            case MAIN_HAND:
+                entity.mainHand = ItemBlockTranslator.translateSlotToPE(items);
+            case OFF_HAND:
+                handModified = true;
+                break;
+        }
 
-		aeq.helmet = entity.helmet;
-		aeq.chestplate = entity.chestplate;
-		aeq.leggings = entity.leggings;
-		aeq.boots = entity.boots;
-		aeq.rtid = entity.proxyEid;
+        aeq.helmet = entity.helmet;
+        aeq.chestplate = entity.chestplate;
+        aeq.leggings = entity.leggings;
+        aeq.boots = entity.boots;
+        aeq.rtid = entity.proxyEid;
 
-		if (handModified) {
+        if (handModified) {
 
-			MobEquipmentPacket equipPacket = new MobEquipmentPacket();
+            MobEquipmentPacket equipPacket = new MobEquipmentPacket();
 
-			equipPacket.rtid = entity.proxyEid;
-			equipPacket.item = entity.mainHand;
-			equipPacket.inventorySlot = 0;
-			equipPacket.hotbarSlot = 0;
-			equipPacket.windowId = 0;
+            equipPacket.rtid = entity.proxyEid;
+            equipPacket.item = entity.mainHand;
+            equipPacket.inventorySlot = 0;
+            equipPacket.hotbarSlot = 0;
+            equipPacket.windowId = 0;
 
-			return new PEPacket[]{aeq, equipPacket};
+            return new PEPacket[]{aeq, equipPacket};
 
-		} else {
+        } else {
 
-			return new PEPacket[]{aeq};
+            return new PEPacket[]{aeq};
 
-		}
+        }
 
-	}
+    }
 }
