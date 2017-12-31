@@ -121,6 +121,9 @@ public final class PacketTranslatorRegister {
         PE_TO_PC_TRANSLATOR.put(MobEquipmentPacket.class, new PEPlayerEquipmentPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(InventoryTransactionPacket.class, new PEInventoryTransactionPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(BlockPickRequestPacket.class, new PEBlockPickRequestPacketTranslator());
+
+        // Player
+        PE_TO_PC_TRANSLATOR.put(AnimatePacket.class, new PEAnimatePacketTranslator());
     }
 
     public static PEPacket[] translateToPE(UpstreamSession session, Packet packet) {
