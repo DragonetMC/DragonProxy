@@ -103,7 +103,7 @@ public class ItemBlockTranslator {
         swap(252, 237); //concretepowder
         swap(218, 251); //observer
         swap(207, 244); //beetroots
-        swap(255, 252); //structure_block
+        swap(255, 252, new StructureBlockDataTranslator()); //structure_block
 
         //ITEMS
         toPEOverride(343, 342); //minecart_furnace (unavailable on PE)
