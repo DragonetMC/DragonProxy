@@ -6,30 +6,43 @@
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
  *
- * You can view LICENCE file for details. 
+ * You can view LICENCE file for details.
  *
  * @author The Dragonet Team
  */
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
+import org.dragonet.proxy.data.entity.PEEntityAttribute;
 import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.RespawnPacket;
 import org.dragonet.proxy.protocol.packets.SetHealthPacket;
+import org.dragonet.proxy.protocol.packets.UpdateAttributesPacket;
 
 public class PCUpdateHealthPacketTranslator implements IPCPacketTranslator<ServerPlayerHealthPacket> {
 
     public PEPacket[] translate(UpstreamSession session, ServerPlayerHealthPacket packet) {
-        SetHealthPacket h = new SetHealthPacket((int) packet.getHealth());
-        if (packet.getHealth() > 0 && h.health <= 0) {
-            h.health = 1;
-        }
-        if (packet.getHealth() <= 0.0f) {
-            RespawnPacket r = new RespawnPacket();
-            return new PEPacket[]{h, r};
-        }
-        return new PEPacket[]{h};
+
+        int newHealth = (int) Math.ceil(packet.getHealth()); // Always round up
+
+        SetHealthPacket h = new SetHealthPacket(newHealth);
+
+        CachedEntity peSelfPlayer = session.getEntityCache().getClientEntity();
+
+        peSelfPlayer.attributes.put(PEEntityAttribute.HEALTH, PEEntityAttribute.findAttribute(PEEntityAttribute.HEALTH).setValue(newHealth));
+        peSelfPlayer.attributes.put(PEEntityAttribute.FOOD, PEEntityAttribute.findAttribute(PEEntityAttribute.FOOD).setValue(packet.getFood()));
+
+        UpdateAttributesPacket pk = new UpdateAttributesPacket();
+        pk.rtid = peSelfPlayer.proxyEid;
+        pk.entries = peSelfPlayer.attributes.values();
+
+        if (newHealth <= 0)
+            return new PEPacket[]{h, pk, new RespawnPacket()};
+
+        return new PEPacket[]{h, pk};
+
     }
 }
