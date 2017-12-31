@@ -48,7 +48,6 @@ public class TimingsHistory {
     public static long tileEntityTicks;
     public static long activatedEntityTicks;
 
-    private static int levelIdPool = 1;
     static Map<String, Integer> levelMap = new HashMap<>();
     static Map<Integer, String> entityMap = new HashMap<>();
     static Map<Integer, String> blockEntityMap = new HashMap<>();
@@ -85,48 +84,7 @@ public class TimingsHistory {
         for (Timing timing : TimingsManager.TIMINGS)
             this.entries[i++] = new TimingsHistoryEntry(timing);
 
-        final Map<Integer, AtomicInteger> entityCounts = new HashMap<>();
-        final Map<Integer, AtomicInteger> blockEntityCounts = new HashMap<>();
-        final Gson GSON = new Gson();
-        // Information about all loaded entities/block entities
-//        for (Level level : Server.getInstance().getLevels().values()) {
-//            JsonArray jsonLevel = new JsonArray();
-//            for (BaseFullChunk chunk : level.getChunks().values()) {
-//                entityCounts.clear();
-//                blockEntityCounts.clear();
-//
-//                //count entities
-//                for (Entity entity : chunk.getEntities().values()) {
-//                    if (!entityCounts.containsKey(entity.getNetworkId()))
-//                        entityCounts.put(entity.getNetworkId(), new AtomicInteger(0));
-//                    entityCounts.get(entity.getNetworkId()).incrementAndGet();
-//                    entityMap.put(entity.getNetworkId(), entity.getClass().getSimpleName());
-//                }
-//
-//                //count block entities
-//                for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
-//                    if (!blockEntityCounts.containsKey(blockEntity.getBlock().getId()))
-//                        blockEntityCounts.put(blockEntity.getBlock().getId(), new AtomicInteger(0));
-//                    blockEntityCounts.get(blockEntity.getBlock().getId()).incrementAndGet();
-//                    blockEntityMap.put(blockEntity.getBlock().getId(), blockEntity.getClass().getSimpleName());
-//                }
-//
-//                if (blockEntityCounts.isEmpty() && entityCounts.isEmpty()) {
-//                    continue;
-//                }
-//
-//                JsonArray jsonChunk = new JsonArray();
-//                jsonChunk.add(chunk.getX());
-//                jsonChunk.add(chunk.getZ());
-//                jsonChunk.add(GSON.toJsonTree(JsonUtil.mapToObject(entityCounts.entrySet(), (entry) -> new JsonUtil.JSONPair(entry.getKey(), entry.getValue().get()))).getAsJsonObject());
-//                jsonChunk.add(GSON.toJsonTree(JsonUtil.mapToObject(blockEntityCounts.entrySet(), (entry) -> new JsonUtil.JSONPair(entry.getKey(), entry.getValue().get()))).getAsJsonObject());
-//                jsonLevel.add(jsonChunk);
-//            }
-//
-//            if (!levelMap.containsKey(level.getName())) levelMap.put(level.getName(), levelIdPool++);
-//            levels.add(String.valueOf(levelMap.get(level.getName())), jsonLevel);
-//        }
-            levels.add("world 1", new JsonArray());
+        levels.add("world 1", new JsonArray());
     }
 
     static void resetTicks(boolean fullReset) {

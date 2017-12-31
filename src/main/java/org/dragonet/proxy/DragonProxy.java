@@ -12,6 +12,7 @@
  */
 package org.dragonet.proxy;
 
+import co.aikar.timings.Timings;
 import com.github.steveice10.mc.protocol.MinecraftConstants;
 import java.io.File;
 import java.io.FileInputStream;
@@ -237,6 +238,7 @@ public class DragonProxy {
             System.out.println("Exception while shutting down!");
             ex.printStackTrace();
         }
+        Timings.stopServer();
         System.out.println("Goodbye!");
         System.exit(0);
     }

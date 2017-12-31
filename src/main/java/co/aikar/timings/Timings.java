@@ -240,6 +240,7 @@ public final class Timings {
     }
 
     public static void stopServer() {
+        TimingsExport.reportTimings(null);
         setTimingsEnabled(false);
         TimingsManager.recheckEnabled();
     }

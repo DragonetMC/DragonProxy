@@ -41,7 +41,6 @@ import static co.aikar.timings.TimingsManager.HISTORY;
 import com.google.gson.JsonArray;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.utilities.DebugTools;
 import org.dragonet.proxy.utilities.JsonUtil;
 
 public class TimingsExport extends Thread {
@@ -99,12 +98,14 @@ public class TimingsExport extends Thread {
 
         JsonObject timings = new JsonObject();
         for (TimingIdentifier.TimingGroup group : TimingIdentifier.GROUP_MAP.values())
+        {
             for (Timing id : group.timings.stream().toArray(Timing[]::new)) {
                 if (!id.timed && !id.isSpecial())
                     continue;
 
                 timings.add(String.valueOf(id.id), JsonUtil.toArray(group.id, id.name));
             }
+        }
 
         JsonObject idmap = new JsonObject();
         idmap.add("groups", JsonUtil.mapToObject(TimingIdentifier.GROUP_MAP.values(), (group)
@@ -118,28 +119,19 @@ public class TimingsExport extends Thread {
                 -> new JsonUtil.JSONPair(entry.getKey(), entry.getValue())));
         out.add("idmap", idmap);
 
-        //Information about loaded plugins
-//        out.add("plugins", JsonUtil.mapToObject(Server.getInstance().getPluginManager().getPlugins().values(), (plugin) -> {
-//            JsonObject jsonPlugin = new JsonObject();
-//            jsonPlugin.addProperty("version", plugin.getDescription().getVersion());
-//            jsonPlugin.addProperty("description", plugin.getDescription().getDescription());
-//            jsonPlugin.addProperty("website", plugin.getDescription().getWebsite());
-//            jsonPlugin.addProperty("authors", String.join(", ", plugin.getDescription().getAuthors()));
-//            return new JsonUtil.JSONPair(plugin.getName(), jsonPlugin);
-//        }));
+        //Information about plugins, needed but empty
         out.add("plugins", new JsonArray());
 
-        //Information on the users Config
-//        JsonObject config = new JsonObject();
-//        if (!Timings.getIgnoredConfigSections().contains("all")) {
-//            JsonObject jsonConfig = JsonUtil.toObject(DragonProxy.getInstance().getConfig().getRootSection());
-//            Timings.getIgnoredConfigSections().forEach(jsonConfig::remove);
-//            config.add("DragonProxy", jsonConfig);
-//        } else {
-//            config.add("DragonProxy", null);
-//        }
-//        config.add("DragonProxy", null);
-        out.add("config", new JsonArray());
+        //Information on the proxy Config
+        JsonObject config = new JsonObject();
+        if (!Timings.getIgnoredConfigSections().contains("all")) {
+            JsonObject jsonConfig = JsonUtil.toObject(DragonProxy.getInstance().getConfig());
+            Timings.getIgnoredConfigSections().forEach(jsonConfig::remove);
+            config.add("DragonProxy", jsonConfig);
+        } else {
+            config.add("DragonProxy", null);
+        }
+        out.add("config", config);
 
         new TimingsExport(sender, out, history).start();
     }
