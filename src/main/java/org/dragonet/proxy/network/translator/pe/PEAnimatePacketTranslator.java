@@ -9,16 +9,16 @@ import org.dragonet.proxy.protocol.packets.AnimatePacket;
 
 public class PEAnimatePacketTranslator implements IPEPacketTranslator<AnimatePacket> {
 
-	@Override
-	public Packet[] translate(UpstreamSession session, AnimatePacket packet) {
+    @Override
+    public Packet[] translate(UpstreamSession session, AnimatePacket packet) {
 
-		switch (packet.action) {
-			case AnimatePacket.ANIMATION_SWING_ARM:
-				return new Packet[]{new ClientPlayerSwingArmPacket(Hand.MAIN_HAND)};
-			default:
-				return null;
-		}
+        switch (packet.action) {
+            case AnimatePacket.ANIMATION_SWING_ARM:
+                return new Packet[]{new ClientPlayerSwingArmPacket(Hand.MAIN_HAND)};
+            default:
+                return new Packet[]{};
+        }
 
-	}
+    }
 
 }
