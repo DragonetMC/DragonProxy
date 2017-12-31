@@ -1,5 +1,7 @@
 package org.dragonet.proxy.network.translator.pc;
 
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityEquipmentPacket;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
@@ -7,8 +9,7 @@ import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.MobArmorEquipmentPacket;
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityEquipmentPacket;
+import org.dragonet.proxy.protocol.packets.MobEquipmentPacket;
 
 public class PCEntityEquipmentPacketTranslator implements IPCPacketTranslator<ServerEntityEquipmentPacket> {
 
@@ -23,32 +24,55 @@ public class PCEntityEquipmentPacketTranslator implements IPCPacketTranslator<Se
             }
             return null;
         }
-      
-    ItemStack items = packet.getItem();
-    MobArmorEquipmentPacket aeq = new MobArmorEquipmentPacket();
-    switch(packet.getSlot()) {
-        case HELMET:
-            entity.helmet = ItemBlockTranslator.translateSlotToPE(items);
-            break;
-        case CHESTPLATE:
-            entity.chestplate = ItemBlockTranslator.translateSlotToPE(items);
-            break;
-        case LEGGINGS:
-            entity.leggings = ItemBlockTranslator.translateSlotToPE(items);
-            break;
-        case BOOTS:
-            entity.boots = ItemBlockTranslator.translateSlotToPE(items);
-            break;
-        case MAIN_HAND:
-            break;
-        case OFF_HAND:
-            break;
-    }
-    aeq.helmet = entity.helmet;
-    aeq.chestplate = entity.chestplate;
-    aeq.leggings = entity.leggings;
-    aeq.boots = entity.boots;
-    aeq.rtid = entity.proxyEid;
-    return new PEPacket[]{aeq};
+
+        ItemStack items = packet.getItem();
+        MobArmorEquipmentPacket aeq = new MobArmorEquipmentPacket();
+
+        boolean handModified = false;
+
+        switch (packet.getSlot()) {
+            case HELMET:
+                entity.helmet = ItemBlockTranslator.translateSlotToPE(items);
+                break;
+            case CHESTPLATE:
+                entity.chestplate = ItemBlockTranslator.translateSlotToPE(items);
+                break;
+            case LEGGINGS:
+                entity.leggings = ItemBlockTranslator.translateSlotToPE(items);
+                break;
+            case BOOTS:
+                entity.boots = ItemBlockTranslator.translateSlotToPE(items);
+                break;
+            case MAIN_HAND:
+                entity.mainHand = ItemBlockTranslator.translateSlotToPE(items);
+            case OFF_HAND:
+                handModified = true;
+                break;
+        }
+
+        aeq.helmet = entity.helmet;
+        aeq.chestplate = entity.chestplate;
+        aeq.leggings = entity.leggings;
+        aeq.boots = entity.boots;
+        aeq.rtid = entity.proxyEid;
+
+        if (handModified) {
+
+            MobEquipmentPacket equipPacket = new MobEquipmentPacket();
+
+            equipPacket.rtid = entity.proxyEid;
+            equipPacket.item = entity.mainHand;
+            equipPacket.inventorySlot = 0;
+            equipPacket.hotbarSlot = 0;
+            equipPacket.windowId = 0;
+
+            return new PEPacket[]{aeq, equipPacket};
+
+        } else {
+
+            return new PEPacket[]{aeq};
+
+        }
+
     }
 }
