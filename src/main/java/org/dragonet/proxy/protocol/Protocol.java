@@ -16,7 +16,6 @@ import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.utilities.BinaryStream;
 import org.dragonet.proxy.utilities.Zlib;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,6 +72,7 @@ public final class Protocol {
         packets.put(SET_ENTITY_LINK_PACKET, SetEntityLinkPacket.class);
         packets.put(PLAYER_INPUT_PACKET, PlayerInputPacket.class);
         packets.put(SET_DIFFICULTY_PACKET, SetDifficultyPacket.class);
+        packets.put(SET_TITLE_PACKET, SetTitlePacket.class);
 
         packets.put(MODAL_FORM_REQUEST_PACKET, ModalFormRequestPacket.class);
         packets.put(MODAL_FORM_RESPONSE_PACKET, ModalFormResponsePacket.class);
