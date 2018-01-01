@@ -12,18 +12,23 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnExpOrbPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnExpOrbPacket;
 import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.SpawnExperienceOrb;
+import org.dragonet.proxy.utilities.Vector3F;
 
 public class PCSpawnExpOrbPacketTranslator implements IPCPacketTranslator<ServerSpawnExpOrbPacket> {
 
     public PEPacket[] translate(UpstreamSession session, ServerSpawnExpOrbPacket packet) {
         session.getEntityCache().newEntity(packet);
-        
-        //implements and send packer
-        return null;
+
+        SpawnExperienceOrb spawnXpOrb = new SpawnExperienceOrb();
+        spawnXpOrb.position = new Vector3F((float) packet.getX(), (float) packet.getY(), (float) packet.getZ());
+        spawnXpOrb.count = packet.getExp();
+
+        return new PEPacket[]{spawnXpOrb};
     }
 
 }

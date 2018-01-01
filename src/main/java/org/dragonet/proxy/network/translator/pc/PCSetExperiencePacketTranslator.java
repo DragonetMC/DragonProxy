@@ -13,9 +13,9 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerSetExperiencePacket;
-import java.util.ArrayList;
 import org.dragonet.proxy.data.entity.PEEntityAttribute;
 import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.UpdateAttributesPacket;
@@ -24,10 +24,16 @@ public class PCSetExperiencePacketTranslator implements IPCPacketTranslator<Serv
 
     public PEPacket[] translate(UpstreamSession session, ServerPlayerSetExperiencePacket packet) {
 
+        CachedEntity peSelfPlayer = session.getEntityCache().getClientEntity();
+
+        peSelfPlayer.attributes.put(PEEntityAttribute.EXPERIENCE_LEVEL, PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE_LEVEL).setValue(packet.getLevel()));
+        peSelfPlayer.attributes.put(PEEntityAttribute.EXPERIENCE, PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE).setValue(packet.getSlot()));
+
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
-        pk.entries = new ArrayList();
-        pk.entries.add(new PEEntityAttribute(PEEntityAttribute.EXPERIENCE_LEVEL, "minecraft:player.level", 0.00f, 24791.00f, 0.00f, packet.getLevel()));
-        pk.entries.add(new PEEntityAttribute(PEEntityAttribute.EXPERIENCE, "minecraft:player.experience", 0.00f, 1.00f, 0.00f, packet.getSlot()));//weird
+        pk.rtid = peSelfPlayer.proxyEid;
+        pk.entries = peSelfPlayer.attributes.values();
+
         return new PEPacket[]{pk};
     }
+
 }
