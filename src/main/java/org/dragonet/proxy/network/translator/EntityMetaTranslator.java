@@ -43,7 +43,7 @@ public final class EntityMetaTranslator {
                 switch (m.getId()) {
                     case 0:// Flags
                         byte pcFlags = ((byte) m.getValue());
-                        System.out.println("PC flag: " + pcFlags);
+                        //System.out.println("PC flag: " + pcFlags);
                         peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_ONFIRE, (pcFlags & 0x01) > 0);
                         peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_SNEAKING, (pcFlags & 0x02) > 0);
                         peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_RIDING, (pcFlags & 0x04) > 0);
