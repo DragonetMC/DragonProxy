@@ -44,6 +44,7 @@ public final class Protocol {
         packets.put(CHANGE_DIMENSION_PACKET, ChangeDimensionPacket.class);
         packets.put(REMOVE_ENTITY_PACKET, RemoveEntityPacket.class);
         packets.put(MOB_EFFECT_PACKET, MobEffectPacket.class);
+        packets.put(BOSS_EVENT_PACKET, BossEventPacket.class);
         packets.put(ADD_ITEM_ENTITY_PACKET, AddItemEntityPacket.class);
         packets.put(MOVE_ENTITY_PACKET, MoveEntityPacket.class);
         packets.put(MOVE_PLAYER_PACKET, MovePlayerPacket.class);
