@@ -21,29 +21,30 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessag
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientSettingsPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientTeleportConfirmPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
-import org.dragonet.proxy.configuration.Lang;
-import org.dragonet.proxy.data.entity.PEEntityAttribute;
-import org.dragonet.proxy.data.entity.meta.EntityMetaData;
-import org.dragonet.proxy.network.CacheKey;
-import org.dragonet.proxy.network.PCDownstreamSession;
-import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.data.entity.EntityType;
+import org.dragonet.proxy.data.entity.PEEntityAttribute;
+import org.dragonet.proxy.data.entity.meta.EntityMetaData;
 import org.dragonet.proxy.data.entity.meta.type.ByteArrayMeta;
 import org.dragonet.proxy.data.entity.meta.type.SlotMeta;
+import org.dragonet.proxy.network.CacheKey;
+import org.dragonet.proxy.network.PCDownstreamSession;
+import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
+import org.dragonet.proxy.network.translator.IPCPacketTranslator;
+import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.protocol.type.Skin;
 import org.dragonet.proxy.utilities.BlockPosition;
 import org.dragonet.proxy.utilities.Vector3F;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTranslator<ServerPlayerPositionRotationPacket> {
 
@@ -80,6 +81,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 ret.commandsEnabled = true;
                 ret.defaultPlayerPermission = 2;
                 ret.premiumWorldTemplateId = "";
+                ret.difficulty = restored.getDifficulty();
                 session.sendPacket(ret);
             }
 
