@@ -6,6 +6,7 @@ import org.dragonet.proxy.gui.CustomFormComponent;
 import org.dragonet.proxy.gui.DropDownComponent;
 import org.dragonet.proxy.gui.LabelComponent;
 import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.protocol.type.chunk.ChunkData;
 import org.dragonet.proxy.protocol.type.chunk.Section;
@@ -93,7 +94,21 @@ public class TestCommand extends Command {
             player.sendPacket(chunk);
         } else if (args[0].equalsIgnoreCase("form")) {
 			testForm(player);
-		}
+        } else if (args[0].equalsIgnoreCase("sound")) {
+
+            int id = Integer.parseInt(args[1]);
+
+            LevelSoundEventPacket pk = new LevelSoundEventPacket();
+
+            CachedEntity self = player.getEntityCache().getClientEntity();
+
+            pk.position = new Vector3F((float) self.x, (float) self.y, (float) self.z);
+            pk.sound = LevelSoundEventPacket.Sound.fromID(id);
+
+            player.sendPacket(pk);
+            player.sendChat("\u00a7bSound ID " + pk.sound.soundID + " (" + pk.sound.name() + ") sent");
+
+        }
     }
 
     public static void testForm(UpstreamSession player) {
