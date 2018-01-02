@@ -173,7 +173,6 @@ public class UpstreamSession {
     public void sendPacket(PEPacket packet, boolean immediate) {
         if (packet == null)
             return;
-        System.out.println("Sending [" + packet.getClass().getSimpleName() + "] ");
 
         packet.encode();
 

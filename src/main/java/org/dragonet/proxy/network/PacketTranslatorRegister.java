@@ -14,11 +14,8 @@ package org.dragonet.proxy.network;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.*;
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerSetExperiencePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.*;
-import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerCloseWindowPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
@@ -28,6 +25,16 @@ import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.network.translator.IPEPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.*;
 import org.dragonet.proxy.network.translator.pe.*;
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerBossBarPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerChatPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDisconnectPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerRespawnPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerSetExperiencePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPaintingPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerCloseWindowPacket;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.*;
 
@@ -45,7 +52,7 @@ public final class PacketTranslatorRegister {
     static {
         // Login phase
         PC_TO_PE_TRANSLATOR.put(ServerJoinGamePacket.class, new PCJoinGamePacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerDisconnectPacket.class, new PCDisconnectPacketTranslator()); 
+        PC_TO_PE_TRANSLATOR.put(ServerDisconnectPacket.class, new PCDisconnectPacketTranslator());
         // Settings && Weather
         PC_TO_PE_TRANSLATOR.put(ServerNotifyClientPacket.class, new PCNotifyClientPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerDifficultyPacket.class, new PCSetDifficultyTranslator());
@@ -91,6 +98,8 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerSpawnPaintingPacket.class, new PCSpawnPaintingPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerUpdateTileEntityPacket.class, new PCUpdateTileEntityPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerSpawnExpOrbPacket.class, new PCSpawnExpOrbPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerBossBarPacket.class, new PCBossBarPacketTranslator());
+
         //
         // //Inventory
         PC_TO_PE_TRANSLATOR.put(ServerOpenWindowPacket.class, new PCOpenWindowPacketTranslator());
@@ -130,13 +139,11 @@ public final class PacketTranslatorRegister {
     }
 
     public static PEPacket[] translateToPE(UpstreamSession session, Packet packet) {
-        if (packet == null) {
+        if (packet == null)
             return null;
-        }
         IPCPacketTranslator<Packet> target = (IPCPacketTranslator<Packet>) PC_TO_PE_TRANSLATOR.get(packet.getClass());
-        if (target == null) {
+        if (target == null)
             return null;
-        }
         try {
             return target.translate(session, packet);
         } catch (Exception e) {
@@ -146,14 +153,12 @@ public final class PacketTranslatorRegister {
     }
 
     public static Packet[] translateToPC(UpstreamSession session, PEPacket packet) {
-        if (packet == null) {
+        if (packet == null)
             return null;
-        }
         IPEPacketTranslator<PEPacket> target = (IPEPacketTranslator<PEPacket>) PE_TO_PC_TRANSLATOR
                 .get(packet.getClass());
-        if (target == null) {
+        if (target == null)
             return null;
-        }
         try {
             return target.translate(session, packet);
         } catch (Exception e) {
