@@ -8,10 +8,10 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.ServerBossBarPacke
 
 public class PCBossBarPacketTranslator implements IPCPacketTranslator<ServerBossBarPacket> {
 
-	@Override
-	public PEPacket[] translate(UpstreamSession session, ServerBossBarPacket packet) {
+    @Override
+    public PEPacket[] translate(UpstreamSession session, ServerBossBarPacket packet) {
 
-		return new PEPacket[]{ };
-	}
+        return new PEPacket[]{};
+    }
 
 }

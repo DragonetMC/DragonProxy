@@ -31,12 +31,11 @@ public class PCChatPacketTranslator implements IPCPacketTranslator<ServerChatPac
     public static final byte TYPE_WHISPER = 6;
     public static final byte TYPE_ANNOUNCEMENT = 7;
 
-
     public PEPacket[] translate(UpstreamSession session, ServerChatPacket packet) {
         TextPacket pe = new TextPacket();
         System.out.println(packet.getMessage().toJson());
-        
-        switch(packet.getType()) {
+
+        switch (packet.getType()) {
             case NOTIFICATION:
                 pe.message = pe.message = MessageTranslator.translate(packet.getMessage());
                 pe.type = TYPE_POPUP;
@@ -57,7 +56,7 @@ public class PCChatPacketTranslator implements IPCPacketTranslator<ServerChatPac
                 if (packet.getMessage() instanceof TranslationMessage) {
                     pe.type = TYPE_TRANSLATION;
                     pe.needsTranslation = true;
-                    
+
                     pe.message = MessageTranslator.translationTranslateText((TranslationMessage) packet.getMessage());
                     pe.params = MessageTranslator.translationTranslateParams((TranslationMessage) packet.getMessage());
                     System.out.println(pe.message);
