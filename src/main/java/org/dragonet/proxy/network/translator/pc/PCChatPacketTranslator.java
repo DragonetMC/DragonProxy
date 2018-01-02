@@ -34,22 +34,35 @@ public class PCChatPacketTranslator implements IPCPacketTranslator<ServerChatPac
 
     public PEPacket[] translate(UpstreamSession session, ServerChatPacket packet) {
         TextPacket pe = new TextPacket();
-        pe.message = pe.message = MessageTranslator.translate(packet.getMessage());
+        System.out.println(packet.getMessage().toJson());
+        
         switch(packet.getType()) {
             case NOTIFICATION:
+                pe.message = pe.message = MessageTranslator.translate(packet.getMessage());
                 pe.type = TYPE_POPUP;
                 break;
             case CHAT:
                 if (packet.getMessage() instanceof TranslationMessage) {
                     pe.type = TYPE_TRANSLATION;
+                    pe.needsTranslation = true;
+                    pe.message = MessageTranslator.translationTranslateText((TranslationMessage) packet.getMessage());
+                    pe.params = MessageTranslator.translationTranslateParams((TranslationMessage) packet.getMessage());
+                    System.out.println(pe.message);
                 } else {
+                    pe.message = pe.message = MessageTranslator.translate(packet.getMessage());
                     pe.type = TYPE_RAW;
                 }
                 break;
             case SYSTEM:
                 if (packet.getMessage() instanceof TranslationMessage) {
                     pe.type = TYPE_TRANSLATION;
+                    pe.needsTranslation = true;
+                    
+                    pe.message = MessageTranslator.translationTranslateText((TranslationMessage) packet.getMessage());
+                    pe.params = MessageTranslator.translationTranslateParams((TranslationMessage) packet.getMessage());
+                    System.out.println(pe.message);
                 } else {
+                    pe.message = pe.message = MessageTranslator.translate(packet.getMessage());
                     pe.type = TYPE_RAW;
                 }
                 break;
