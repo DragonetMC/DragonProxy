@@ -44,6 +44,7 @@ public final class Protocol {
         packets.put(CHANGE_DIMENSION_PACKET, ChangeDimensionPacket.class);
         packets.put(REMOVE_ENTITY_PACKET, RemoveEntityPacket.class);
         packets.put(MOB_EFFECT_PACKET, MobEffectPacket.class);
+        packets.put(BOSS_EVENT_PACKET, BossEventPacket.class);
         packets.put(ADD_ITEM_ENTITY_PACKET, AddItemEntityPacket.class);
         packets.put(MOVE_ENTITY_PACKET, MoveEntityPacket.class);
         packets.put(MOVE_PLAYER_PACKET, MovePlayerPacket.class);
@@ -91,9 +92,8 @@ public final class Protocol {
     }
 
     public static PEPacket[] decode(byte[] data) throws Exception {
-        if (data == null || data.length < 1) {
+        if (data == null || data.length < 1)
             return null;
-        }
 
         byte[] inflated;
         try {
@@ -109,11 +109,10 @@ public final class Protocol {
             byte[] buffer = stream.get((int) stream.getUnsignedVarInt());
             PEPacket decoded = decodeSingle(buffer);
 
-            if (decoded != null) {
+            if (decoded != null)
                 packets.add(decoded);
-            } else {
+            else
                 System.out.println("decode fail");
-            }
         }
 
         return packets.size() > 0 ? packets.toArray(new PEPacket[0]) : null;
@@ -138,9 +137,8 @@ public final class Protocol {
                     | IllegalArgumentException ex) {
                 ex.printStackTrace();
             }
-        } else {
+        } else
             System.out.println("can not decode for pid 0x" + Integer.toHexString(pid));
-        }
         return null;
     }
 }
