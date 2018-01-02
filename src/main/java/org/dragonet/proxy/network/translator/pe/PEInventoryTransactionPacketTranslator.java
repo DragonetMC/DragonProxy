@@ -17,6 +17,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlaye
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerUseItemPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientWindowActionPacket;
 import com.github.steveice10.packetlib.packet.Packet;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,9 +67,9 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                 {
                     // drop item
                     ClientPlayerActionPacket act = new ClientPlayerActionPacket(
-                            com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.DROP_ITEM,
-                            new Position(0, 0, 0),
-                            BlockFace.DOWN);
+                        com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.DROP_ITEM,
+                        new Position(0, 0, 0),
+                        BlockFace.DOWN);
                     return new Packet[]{act};
                 }
                 if (packet.actions.length == 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_CONTAINER && packet.actions[1].containerId == ContainerId.CURSOR.getId()) {
@@ -91,15 +92,15 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                         slot += 18; //normal chest 0 -> 26 + inv 27 -> 62
                     }
                     System.out.println("interact in chest (" + container + ") slot " + slot);
-                    
+
                     // send action to server
                     ClientWindowActionPacket windowActionPacket = new ClientWindowActionPacket(
-                            container, //window id
-                            session.getWindowCache().currentTransactionId.incrementAndGet(), //transaction id
-                            slot, //slot
-                            ItemBlockTranslator.translateToPC(cursor),
-                            WindowAction.CLICK_ITEM,
-                            (WindowActionParam) ClickItemParam.LEFT_CLICK
+                        container, //window id
+                        session.getWindowCache().currentTransactionId.incrementAndGet(), //transaction id
+                        slot, //slot
+                        ItemBlockTranslator.translateToPC(cursor),
+                        WindowAction.CLICK_ITEM,
+                        (WindowActionParam) ClickItemParam.LEFT_CLICK
                     );
                     session.getDownstream().send(windowActionPacket);
 
@@ -108,7 +109,7 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                         // mobile version: move item
                         // desktop version: SHIFT-click item
                         System.out.println("Move item from " + packet.actions[0].containerId + " slot " + packet.actions[0].slotId
-                                + " to " + packet.actions[1].containerId + " slot " + packet.actions[1].slotId);
+                            + " to " + packet.actions[1].containerId + " slot " + packet.actions[1].slotId);
                     }
 
                     System.out.println("Cursor set to " + cursor);
@@ -127,9 +128,9 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                     case InventoryTransactionPacket.USE_ITEM_ACTION_BREAK_BLOCK: //2
                     {
                         ClientPlayerActionPacket act = new ClientPlayerActionPacket(
-                                com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.START_DIGGING,
-                                new Position(useItemData.blockPos.x, useItemData.blockPos.y, useItemData.blockPos.z),
-                                MagicValues.key(BlockFace.class, useItemData.face));
+                            com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.START_DIGGING,
+                            new Position(useItemData.blockPos.x, useItemData.blockPos.y, useItemData.blockPos.z),
+                            MagicValues.key(BlockFace.class, useItemData.face));
                         session.getDataCache().put(CacheKey.BLOCK_BREAKING_POSITION, act.getPosition());
                         return new Packet[]{act};
                     }
@@ -137,12 +138,12 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                     case InventoryTransactionPacket.USE_ITEM_ACTION_CLICK_AIR: //1
                     {
                         ClientPlayerPlaceBlockPacket placePacket = new ClientPlayerPlaceBlockPacket(
-                                new Position(useItemData.blockPos.x, useItemData.blockPos.y, useItemData.blockPos.z),
-                                ItemBlockTranslator.translateToPC(useItemData.face),
-                                Hand.MAIN_HAND,
-                                useItemData.clickPos.x,
-                                useItemData.clickPos.y,
-                                useItemData.clickPos.z
+                            new Position(useItemData.blockPos.x, useItemData.blockPos.y, useItemData.blockPos.z),
+                            ItemBlockTranslator.translateToPC(useItemData.face),
+                            Hand.MAIN_HAND,
+                            useItemData.clickPos.x,
+                            useItemData.clickPos.y,
+                            useItemData.clickPos.z
                         );
                         return new Packet[]{placePacket, new ClientPlayerSwingArmPacket(Hand.MAIN_HAND)};
                     }
@@ -160,8 +161,8 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                     interractAction = InteractAction.ATTACK;
                 }
                 ClientPlayerInteractEntityPacket interractPacket = new ClientPlayerInteractEntityPacket(
-                        (int) cachedEntity.eid,
-                        interractAction
+                    (int) cachedEntity.eid,
+                    interractAction
                 );
                 return new Packet[]{interractPacket};
             case InventoryTransactionPacket.TYPE_RELEASE_ITEM: //4

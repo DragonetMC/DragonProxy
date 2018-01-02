@@ -43,10 +43,10 @@ public class PCBlockValuePacketTranslator implements IPCPacketTranslator<ServerB
 //        pk.data = entry.damage;
 //        pk.id = entry.id;
 //        pk.blockPosition = new BlockPosition(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
-    return new PEPacket[]
+        return new PEPacket[]
 
-    {
+            {
+            }
+            ;
     }
-;
-}
 }

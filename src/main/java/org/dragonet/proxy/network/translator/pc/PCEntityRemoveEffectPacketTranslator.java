@@ -36,7 +36,7 @@ public class PCEntityRemoveEffectPacketTranslator implements IPCPacketTranslator
         }
         MobEffectPacket eff = new MobEffectPacket();
         eff.rtid = packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID) ? 1L
-                : entity.proxyEid;
+            : entity.proxyEid;
         eff.eventId = MobEffectPacket.EVENT_REMOVE;
         return new PEPacket[]{eff};
     }

@@ -30,20 +30,20 @@ public class PEMovePlayerPacketTranslator implements IPEPacketTranslator<MovePla
         if (entity.riding != 0 && packet.ridingRuntimeId != 0) { //Riding case
 //            System.out.println("MovePlayerPacket Vehicle" + DebugTools.getAllFields(packet));
             ClientVehicleMovePacket pk = new ClientVehicleMovePacket(
-                    packet.position.x,
-                    packet.position.y - EntityType.PLAYER.getOffset(),
-                    packet.position.z,
-                    packet.yaw,
-                    packet.pitch);
+                packet.position.x,
+                packet.position.y - EntityType.PLAYER.getOffset(),
+                packet.position.z,
+                packet.yaw,
+                packet.pitch);
             session.getDownstream().send(pk);
         } else { //not riding
             ClientPlayerPositionRotationPacket pk = new ClientPlayerPositionRotationPacket(
-                    packet.onGround,
-                    packet.position.x,
-                    packet.position.y - EntityType.PLAYER.getOffset(),
-                    packet.position.z,
-                    packet.yaw,
-                    packet.pitch);
+                packet.onGround,
+                packet.position.x,
+                packet.position.y - EntityType.PLAYER.getOffset(),
+                packet.position.z,
+                packet.yaw,
+                packet.pitch);
             session.getDownstream().send(pk);
         }
         return null;

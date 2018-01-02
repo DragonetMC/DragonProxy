@@ -1,6 +1,7 @@
 package org.dragonet.proxy.protocol.packets;
 
 import java.util.Collection;
+
 import org.dragonet.proxy.data.entity.PEEntityAttribute;
 import org.dragonet.proxy.data.entity.meta.EntityMetaData;
 import org.dragonet.proxy.protocol.PEPacket;
@@ -43,7 +44,7 @@ public class AddEntityPacket extends PEPacket {
         putLFloat(pitch);
         putLFloat(yaw);
 
-        if (attributes!= null && attributes.size() > 0) {
+        if (attributes != null && attributes.size() > 0) {
             putUnsignedVarInt(attributes.size());
             for (PEEntityAttribute attr : attributes) {
                 putString(attr.name);
@@ -86,7 +87,7 @@ public class AddEntityPacket extends PEPacket {
         yaw = getLFloat();
 
         int lenAttr = (int) getUnsignedVarInt();
-        
+
 //        attributes = new PEEntityAttribute[lenAttr];
 //        if (lenAttr > 0) {
 //            for (int i = 0; i < lenAttr; i++) {

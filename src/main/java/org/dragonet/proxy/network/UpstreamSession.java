@@ -18,6 +18,7 @@ import com.github.steveice10.mc.auth.exception.request.RequestException;
 import com.github.steveice10.mc.auth.service.AuthenticationService;
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
+import com.github.steveice10.mc.protocol.data.game.setting.Difficulty;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -82,14 +83,14 @@ public class UpstreamSession {
     private IDownstreamSession downstream;
 
     /*
-	 * =============================================================================
+     * =============================================================================
 	 * ========================== | Caches for Protocol Compatibility | /*
 	 * =============================================================================
 	 * ==========================
      */
     private final Map<String, Object> dataCache = Collections.synchronizedMap(new HashMap<String, Object>());
     private final Map<UUID, PlayerListEntry> playerInfoCache = Collections
-            .synchronizedMap(new HashMap<UUID, PlayerListEntry>());
+        .synchronizedMap(new HashMap<UUID, PlayerListEntry>());
     private final EntityCache entityCache = new EntityCache(this);
     private final WindowCache windowCache = new WindowCache(this);
     protected boolean connecting;
@@ -101,14 +102,14 @@ public class UpstreamSession {
     private MinecraftProtocol protocol;
 
     public UpstreamSession(DragonProxy proxy, String raknetID, RakNetClientSession raknetClient,
-            InetSocketAddress remoteAddress) {
+                           InetSocketAddress remoteAddress) {
         this.proxy = proxy;
         this.raknetID = raknetID;
         this.remoteAddress = remoteAddress;
         this.raknetClient = raknetClient;
         packetProcessor = new PEPacketProcessor(this);
         packetProcessorScheule = proxy.getGeneralThreadPool().scheduleAtFixedRate(packetProcessor, 10, 50,
-                TimeUnit.MILLISECONDS);
+            TimeUnit.MILLISECONDS);
     }
 
     public DragonProxy getProxy() {
@@ -264,7 +265,7 @@ public class UpstreamSession {
      */
     public void onDisconnect(String reason) {
         proxy.getLogger().info(proxy.getLang().get(Lang.CLIENT_DISCONNECTED,
-                proxy.getAuthMode().equals("cls") ? "unknown" : username, remoteAddress, reason));
+            proxy.getAuthMode().equals("cls") ? "unknown" : username, remoteAddress, reason));
         if (downstream != null)
             downstream.disconnect();
         proxy.getSessionRegister().removeSession(this);
@@ -295,7 +296,7 @@ public class UpstreamSession {
             sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_SUCCESS, username));
 
             proxy.getLogger().info(
-                    proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_SUCCESS_CONSOLE, username, remoteAddress, username));
+                proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_SUCCESS_CONSOLE, username, remoteAddress, username));
             connectToServer(proxy.getConfig().remote_servers.get(proxy.getConfig().default_server));
         });
     }
@@ -309,7 +310,7 @@ public class UpstreamSession {
         getDataCache().put(CacheKey.PACKET_LOGIN_PACKET, packet);
 
         PlayStatusPacket status = new PlayStatusPacket();
-        System.out.println("CLIENT PROTOCOL = " + packet.protocol);
+        DragonProxy.getInstance().getLogger().debug("CLIENT PROTOCOL = " + packet.protocol);
         if (packet.protocol != ProtocolInfo.CURRENT_PROTOCOL) {
             status.status = PlayStatusPacket.LOGIN_FAILED_CLIENT;
             sendPacket(status, true);
@@ -344,12 +345,14 @@ public class UpstreamSession {
         loggedIn = true;
         proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, username, remoteAddress));
         if (proxy.getAuthMode().equals("online")) {
+            proxy.getLogger().debug("Login online mode, sending placeholder datas");
             StartGamePacket pkStartGame = new StartGamePacket();
             pkStartGame.eid = 1L; // well we use 1 now
             pkStartGame.rtid = 1L;
             pkStartGame.dimension = 0;
             pkStartGame.seed = 0;
             pkStartGame.generator = 1;
+            pkStartGame.difficulty = Difficulty.PEACEFUL;
             pkStartGame.spawnPosition = new BlockPosition(0, 72, 0);
             pkStartGame.position = new Vector3F(0f, 72f + EntityType.PLAYER.getOffset(), 0f);
             pkStartGame.levelId = "";
@@ -392,14 +395,14 @@ public class UpstreamSession {
             String name = username.substring(0, username.length() - 7);
             String keyCode = username.substring(username.length() - 6);
             String resp = HTTP.performGetRequest("http://api.dragonet.org/cls/query_token.php?"
-                    + String.format("username=%s&keycode=%s", name, keyCode));
+                + String.format("username=%s&keycode=%s", name, keyCode));
             if (resp == null) {
                 disconnect(proxy.getLang().get(Lang.MESSAGE_SERVER_ERROR,
-                        proxy.getLang().get(Lang.ERROR_CLS_UNREACHABLE)));
+                    proxy.getLang().get(Lang.ERROR_CLS_UNREACHABLE)));
                 proxy.getLogger()
-                        .severe(proxy.getLang()
-                                .get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_UNREACHABLE))
-                                .replace("§c", "").replace("§0", ""));
+                    .severe(proxy.getLang()
+                        .get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_UNREACHABLE))
+                        .replace("§c", "").replace("§0", ""));
                 return;
             }
             JsonElement json;
@@ -409,9 +412,9 @@ public class UpstreamSession {
             } catch (Exception e) {
                 disconnect(proxy.getLang().get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_ERROR)));
                 proxy.getLogger()
-                        .severe(proxy.getLang()
-                                .get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_ERROR))
-                                .replace("§c", "").replace("§0", ""));
+                    .severe(proxy.getLang()
+                        .get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_ERROR))
+                        .replace("§c", "").replace("§0", ""));
                 // Json parse error!
                 return;
             }
@@ -432,8 +435,8 @@ public class UpstreamSession {
             }
             username = authSvc.getSelectedProfile().getName();
             HTTP.performGetRequest("http://api.dragonet.org/cls/update_token.php?"
-                    + String.format("username=%s&oldtoken=%s&newtoken=%s", name, obj.get("token").getAsString(),
-                            authSvc.getAccessToken()));
+                + String.format("username=%s&oldtoken=%s&newtoken=%s", name, obj.get("token").getAsString(),
+                authSvc.getAccessToken()));
             protocol = new MinecraftProtocol(authSvc.getSelectedProfile(), authSvc.getAccessToken());
 
             proxy.getLogger().debug("Initially joining [" + proxy.getConfig().default_server + "]... ");

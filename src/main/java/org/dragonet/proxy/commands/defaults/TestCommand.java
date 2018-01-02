@@ -6,6 +6,7 @@ import org.dragonet.proxy.gui.CustomFormComponent;
 import org.dragonet.proxy.gui.DropDownComponent;
 import org.dragonet.proxy.gui.LabelComponent;
 import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.protocol.type.chunk.ChunkData;
 import org.dragonet.proxy.protocol.type.chunk.Section;
@@ -24,10 +25,10 @@ public class TestCommand extends Command {
     }
 
     public void execute(DragonProxy proxy, String[] args) {
-		if(args.length == 0) {
-			System.out.println("This is a developer's command! ");
-			return;
-		}
+        if (args.length == 0) {
+            System.out.println("This is a developer's command! ");
+            return;
+        }
         UpstreamSession player = proxy.getSessionRegister().getAll().values().toArray(new UpstreamSession[1])[0];
         if (args[0].equalsIgnoreCase("status")) {
             PlayStatusPacket s = new PlayStatusPacket();
@@ -37,11 +38,11 @@ public class TestCommand extends Command {
             player.sendPacket(new ResourcePacksInfoPacket());
         } else if (args[0].equalsIgnoreCase("pos")) {
             player.sendChat("pos at: " + player.getEntityCache().getClientEntity().x + ", "
-                    + player.getEntityCache().getClientEntity().y + ", " + player.getEntityCache().getClientEntity().z);
+                + player.getEntityCache().getClientEntity().y + ", " + player.getEntityCache().getClientEntity().z);
         } else if (args[0].equalsIgnoreCase("respawn")) {
             RespawnPacket resp = new RespawnPacket();
             resp.position = new Vector3F(Float.parseFloat(args[1]), Float.parseFloat(args[2]),
-                    Float.parseFloat(args[3]));
+                Float.parseFloat(args[3]));
             player.sendPacket(resp);
         } else if (args[0].equalsIgnoreCase("chunkradius")) {
             player.sendPacket(new ChunkRadiusUpdatedPacket(8));
@@ -58,7 +59,7 @@ public class TestCommand extends Command {
             player.sendPacket(new SetHealthPacket(0));
         } else if (args[0].equalsIgnoreCase("tp")) {
             Vector3F dest = new Vector3F(Float.parseFloat(args[1]), Float.parseFloat(args[2]),
-                    Float.parseFloat(args[3]));
+                Float.parseFloat(args[3]));
             MovePlayerPacket m = new MovePlayerPacket();
             m.rtid = 1L;
             m.mode = (byte) (Integer.parseInt(args[4]) & 0xFF);
@@ -67,7 +68,7 @@ public class TestCommand extends Command {
             player.sendChat("\u00a7bTeleported to: " + dest.toString());
         } else if (args[0].equalsIgnoreCase("moveentity")) {
             Vector3F dest = new Vector3F(Float.parseFloat(args[1]), Float.parseFloat(args[2]),
-                    Float.parseFloat(args[3]));
+                Float.parseFloat(args[3]));
             MoveEntityPacket m = new MoveEntityPacket();
             m.rtid = 1L;
             m.teleported = args[4].equalsIgnoreCase("true");
@@ -76,7 +77,7 @@ public class TestCommand extends Command {
             player.sendChat("\u00a7bTeleported to: " + dest.toString());
         } else if (args[0].equalsIgnoreCase("chunk")) {
             /*
-			 * FullChunkData chunk = new FullChunkData(Integer.parseInt(args[1]),
+             * FullChunkData chunk = new FullChunkData(Integer.parseInt(args[1]),
 			 * Integer.parseInt(args[2])); Arrays.fill(chunk.ids, (byte)1);
              */
             ChunkData data = new ChunkData();
@@ -92,19 +93,33 @@ public class TestCommand extends Command {
             chunk.payload = data.getBuffer();
             player.sendPacket(chunk);
         } else if (args[0].equalsIgnoreCase("form")) {
-			testForm(player);
-		}
+            testForm(player);
+        } else if (args[0].equalsIgnoreCase("sound")) {
+
+            int id = Integer.parseInt(args[1]);
+
+            LevelSoundEventPacket pk = new LevelSoundEventPacket();
+
+            CachedEntity self = player.getEntityCache().getClientEntity();
+
+            pk.position = new Vector3F((float) self.x, (float) self.y, (float) self.z);
+            pk.sound = LevelSoundEventPacket.Sound.fromID(id);
+
+            player.sendPacket(pk);
+            player.sendChat("\u00a7bSound ID " + pk.sound.soundID + " (" + pk.sound.name() + ") sent");
+
+        }
     }
 
     public static void testForm(UpstreamSession player) {
-		ModalFormRequestPacket p = new ModalFormRequestPacket();
-		CustomFormComponent form = new CustomFormComponent("\u00a7dTest Form");
-		form.addComponent(new LabelComponent("\u00a71Text \u00a7ki"));
-		form.addComponent(new LabelComponent("LABEL 2"));
-		form.addComponent(new DropDownComponent("DROP DOWN", Arrays.asList("option 1", "option 2")));
-		System.out.println(form.serializeToJson().toString());
-		p.formId = 1;
-		p.formData = form.serializeToJson().toString();
-		player.sendPacket(p);
-	}
+        ModalFormRequestPacket p = new ModalFormRequestPacket();
+        CustomFormComponent form = new CustomFormComponent("\u00a7dTest Form");
+        form.addComponent(new LabelComponent("\u00a71Text \u00a7ki"));
+        form.addComponent(new LabelComponent("LABEL 2"));
+        form.addComponent(new DropDownComponent("DROP DOWN", Arrays.asList("option 1", "option 2")));
+        System.out.println(form.serializeToJson().toString());
+        p.formId = 1;
+        p.formData = form.serializeToJson().toString();
+        player.sendPacket(p);
+    }
 }

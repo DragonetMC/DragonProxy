@@ -120,7 +120,7 @@ public class PEBinaryWriter implements Flushable, Closeable {
         if (addr instanceof Inet4Address) {
             writeByte((byte) 4);
             writeInt((addr.getAddress()[0] << 24) | (addr.getAddress()[1] << 16) | (addr.getAddress()[2] << 8)
-                    | addr.getAddress()[3]);
+                | addr.getAddress()[3]);
             writeShort(port);
         } else {
             // IPv6? Nah, we do this later.

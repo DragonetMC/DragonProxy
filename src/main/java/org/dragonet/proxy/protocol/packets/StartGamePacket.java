@@ -1,5 +1,6 @@
 package org.dragonet.proxy.protocol.packets;
 
+import com.github.steveice10.mc.protocol.data.game.setting.Difficulty;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.ProtocolInfo;
 import org.dragonet.proxy.utilities.BlockPosition;
@@ -25,7 +26,7 @@ public class StartGamePacket extends PEPacket {
     public int dimension;
     public int generator;
     public int worldGamemode;
-    public int difficulty;
+    public Difficulty difficulty;
     public BlockPosition spawnPosition;
     public boolean achievementsDisabled;
     public int time;
@@ -77,7 +78,7 @@ public class StartGamePacket extends PEPacket {
         putVarInt(dimension);
         putVarInt(generator);
         putVarInt(worldGamemode);
-        putVarInt(difficulty);
+        putVarInt(difficulty.ordinal());
         putBlockPosition(spawnPosition);
         putBoolean(achievementsDisabled);
         putVarInt(time);
@@ -121,7 +122,7 @@ public class StartGamePacket extends PEPacket {
         dimension = getVarInt();
         generator = getVarInt();
         worldGamemode = getVarInt();
-        difficulty = getVarInt();
+        difficulty = Difficulty.values()[getVarInt()];
         spawnPosition = getBlockPosition();
         achievementsDisabled = getBoolean();
         time = getVarInt();

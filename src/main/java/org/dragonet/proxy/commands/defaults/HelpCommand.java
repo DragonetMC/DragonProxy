@@ -35,7 +35,7 @@ public class HelpCommand extends Command {
 
         for (Command command1 : commands.values()) {
             proxy.getLogger()
-                    .info(MCColor.DARK_GREEN + command1.getName() + ": " + MCColor.WHITE + command1.getDescription());
+                .info(MCColor.DARK_GREEN + command1.getName() + ": " + MCColor.WHITE + command1.getDescription());
         }
     }
 }

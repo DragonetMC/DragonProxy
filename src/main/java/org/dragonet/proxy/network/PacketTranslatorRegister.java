@@ -12,24 +12,22 @@
  */
 package org.dragonet.proxy.network;
 
-import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPlayerListEntryPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnObjectPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.*;
 import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import java.util.HashMap;
-import java.util.Map;
 import org.dragonet.proxy.network.translator.IPEPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.*;
 import org.dragonet.proxy.network.translator.pe.*;
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerBossBarPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerChatPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDisconnectPacket; 
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDisconnectPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerRespawnPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
@@ -40,31 +38,39 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerClose
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public final class PacketTranslatorRegister {
 
     private static final Map<Class<? extends Packet>, IPCPacketTranslator<? extends Packet>> PC_TO_PE_TRANSLATOR = new HashMap<>();
     private static final Map<Class<? extends PEPacket>, IPEPacketTranslator<? extends PEPacket>> PE_TO_PC_TRANSLATOR = new HashMap<>();
 
-    /**
+    /*
      * PC to PE
      */
     static {
         // Login phase
         PC_TO_PE_TRANSLATOR.put(ServerJoinGamePacket.class, new PCJoinGamePacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerDisconnectPacket.class, new PCDisconnectPacketTranslator()); 
+        PC_TO_PE_TRANSLATOR.put(ServerDisconnectPacket.class, new PCDisconnectPacketTranslator());
         // Settings && Weather
         PC_TO_PE_TRANSLATOR.put(ServerNotifyClientPacket.class, new PCNotifyClientPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerDifficultyPacket.class, new PCSetDifficultyTranslator());
 
         // Chat
         PC_TO_PE_TRANSLATOR.put(ServerChatPacket.class, new PCChatPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerTitlePacket.class, new PCSetTitlePacketTranslator());
 
         // Map
         PC_TO_PE_TRANSLATOR.put(ServerChunkDataPacket.class, new PCChunkDataPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerExplosionPacket.class, new PCExplosionTranslator());
 
         PC_TO_PE_TRANSLATOR.put(ServerUpdateTimePacket.class, new PCUpdateTimePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerBlockChangePacket.class, new PCBlockChangePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerMultiBlockChangePacket.class, new PCMultiBlockChangePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlaySoundPacket.class, new PCPlaySoundPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerPlayBuiltinSoundPacket.class, new PCSoundEventPacketTranslator());
+
         //
         // // Entity
         PC_TO_PE_TRANSLATOR.put(ServerPlayerPositionRotationPacket.class, new PCPlayerPositionRotationPacketTranslator());
@@ -91,6 +97,9 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerPlayerSetExperiencePacket.class, new PCSetExperiencePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerSpawnPaintingPacket.class, new PCSpawnPaintingPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerUpdateTileEntityPacket.class, new PCUpdateTileEntityPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerSpawnExpOrbPacket.class, new PCSpawnExpOrbPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerBossBarPacket.class, new PCBossBarPacketTranslator());
+
         //
         // //Inventory
         PC_TO_PE_TRANSLATOR.put(ServerOpenWindowPacket.class, new PCOpenWindowPacketTranslator());
@@ -124,16 +133,17 @@ public final class PacketTranslatorRegister {
         PE_TO_PC_TRANSLATOR.put(MobEquipmentPacket.class, new PEPlayerEquipmentPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(InventoryTransactionPacket.class, new PEInventoryTransactionPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(BlockPickRequestPacket.class, new PEBlockPickRequestPacketTranslator());
+
+        // Player
+        PE_TO_PC_TRANSLATOR.put(AnimatePacket.class, new PEAnimatePacketTranslator());
     }
 
     public static PEPacket[] translateToPE(UpstreamSession session, Packet packet) {
-        if (packet == null) {
+        if (packet == null)
             return null;
-        }
         IPCPacketTranslator<Packet> target = (IPCPacketTranslator<Packet>) PC_TO_PE_TRANSLATOR.get(packet.getClass());
-        if (target == null) {
+        if (target == null)
             return null;
-        }
         try {
             return target.translate(session, packet);
         } catch (Exception e) {
@@ -143,14 +153,12 @@ public final class PacketTranslatorRegister {
     }
 
     public static Packet[] translateToPC(UpstreamSession session, PEPacket packet) {
-        if (packet == null) {
+        if (packet == null)
             return null;
-        }
         IPEPacketTranslator<PEPacket> target = (IPEPacketTranslator<PEPacket>) PE_TO_PC_TRANSLATOR
-                .get(packet.getClass());
-        if (target == null) {
+            .get(packet.getClass());
+        if (target == null)
             return null;
-        }
         try {
             return target.translate(session, packet);
         } catch (Exception e) {

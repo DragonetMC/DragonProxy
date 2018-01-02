@@ -34,7 +34,7 @@ public final class EntityMetaTranslator {
 
     public static EntityMetaData translateToPE(UpstreamSession session, EntityMetadata[] pcMeta, EntityType type) {
         /*
-	 * Following format was fetched from http://wiki.vg/Entities#Entity_meta_Format
+     * Following format was fetched from http://wiki.vg/Entities#Entity_meta_Format
          */
         EntityMetaData peMeta = EntityMetaData.createDefault();
         if (pcMeta == null || type == EntityType.NONE) {
