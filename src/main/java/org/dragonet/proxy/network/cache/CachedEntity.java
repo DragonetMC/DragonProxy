@@ -86,8 +86,10 @@ public class CachedEntity {
             this.x += rx;
             this.y += ry;
             this.z += rz;
-            this.yaw = yaw;
-            this.pitch = pitch;
+            if (yaw != 0)
+                this.yaw = yaw;
+            if (pitch != 0)
+                this.pitch = pitch;
             this.shouldMove = true;
         }
         return this;
