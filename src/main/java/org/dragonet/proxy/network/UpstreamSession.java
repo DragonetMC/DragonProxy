@@ -16,6 +16,7 @@ import com.github.steveice10.mc.auth.exception.request.RequestException;
 import com.github.steveice10.mc.auth.service.AuthenticationService;
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
+import com.github.steveice10.mc.protocol.data.game.setting.Difficulty;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -172,7 +173,7 @@ public class UpstreamSession {
     public void sendPacket(PEPacket packet, boolean immediate) {
         if (packet == null)
             return;
-        // System.out.println("Sending [" + packet.getClass().getSimpleName() + "] ");
+        System.out.println("Sending [" + packet.getClass().getSimpleName() + "] ");
 
         packet.encode();
 
@@ -304,7 +305,7 @@ public class UpstreamSession {
         getDataCache().put(CacheKey.PACKET_LOGIN_PACKET, packet);
 
         PlayStatusPacket status = new PlayStatusPacket();
-        System.out.println("CLIENT PROTOCOL = " + packet.protocol);
+        DragonProxy.getInstance().getLogger().debug("CLIENT PROTOCOL = " + packet.protocol);
         if (packet.protocol != ProtocolInfo.CURRENT_PROTOCOL) {
             status.status = PlayStatusPacket.LOGIN_FAILED_CLIENT;
             sendPacket(status, true);
@@ -339,12 +340,14 @@ public class UpstreamSession {
         loggedIn = true;
         proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, username, remoteAddress));
         if (proxy.getAuthMode().equals("online")) {
+            proxy.getLogger().debug("Login online mode, sending placeholder datas");
             StartGamePacket pkStartGame = new StartGamePacket();
             pkStartGame.eid = 1L; // well we use 1 now
             pkStartGame.rtid = 1L;
             pkStartGame.dimension = 0;
             pkStartGame.seed = 0;
             pkStartGame.generator = 1;
+            pkStartGame.difficulty = Difficulty.PEACEFUL;
             pkStartGame.spawnPosition = new BlockPosition(0, 72, 0);
             pkStartGame.position = new Vector3F(0f, 72f + EntityType.PLAYER.getOffset(), 0f);
             pkStartGame.levelId = "";
