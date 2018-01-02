@@ -16,7 +16,6 @@ public class StructureBlockDataTranslator extends IItemDataTranslator {
     @Override
     public Integer translateToPE(Integer damage) {
         // Here is the magic
-        System.out.println("INPUT " + damage);
         int variant = damage & 0x03;
         variant = translateVariant(variant);
         return variant;
