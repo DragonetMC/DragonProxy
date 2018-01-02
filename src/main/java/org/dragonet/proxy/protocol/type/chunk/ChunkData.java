@@ -50,7 +50,7 @@ public class ChunkData extends BinaryStream {
     }
 
     public ChunkData(Section[] sections, short[] heights, byte[] biomes, byte[] borders, ExtraData[] extraData,
-            byte[] blockEntities) {
+                     byte[] blockEntities) {
         this.sections = sections;
         this.heights = heights;
         this.biomes = biomes;
@@ -80,8 +80,8 @@ public class ChunkData extends BinaryStream {
 
     public String toString() {
         return "ChunkData(sections: " + Arrays.deepToString(this.sections) + ", heights: "
-                + Arrays.toString(this.heights) + ", biomes: " + Arrays.toString(this.biomes) + ", borders: "
-                + Arrays.toString(this.borders) + ", extraData: " + Arrays.deepToString(this.extraData)
-                + ", blockEntities: " + Arrays.toString(this.blockEntities) + ")";
+            + Arrays.toString(this.heights) + ", biomes: " + Arrays.toString(this.biomes) + ", borders: "
+            + Arrays.toString(this.borders) + ", extraData: " + Arrays.deepToString(this.extraData)
+            + ", blockEntities: " + Arrays.toString(this.blockEntities) + ")";
     }
 }

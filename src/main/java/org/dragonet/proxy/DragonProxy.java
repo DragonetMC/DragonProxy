@@ -13,6 +13,7 @@
 package org.dragonet.proxy;
 
 import com.github.steveice10.mc.protocol.MinecraftConstants;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -151,7 +152,7 @@ public class DragonProxy {
 
         // set logger mode
         logger.debug = config.log_debug;
-        
+
         // Put at the top instead
         if (!IS_RELEASE)
             logger.warning("This is a development build. It may contain bugs. Do not use on production.\n");
@@ -177,7 +178,7 @@ public class DragonProxy {
         authMode = config.mode.toLowerCase();
         if (!authMode.equals("cls") && !authMode.equals("online") && !authMode.equals("offline"))
             logger.severe("Invalid login 'mode' option detected, must be cls/online/offline. You set it to '" + authMode
-                    + "'! ");
+                + "'! ");
 
         // Init session and command stuff
         sessionRegister = new SessionRegister(this);
@@ -191,7 +192,7 @@ public class DragonProxy {
         logger.info(lang.get(Lang.INIT_BINDING, config.udp_bind_ip, config.udp_bind_port));
         // RakNet.enableLogging();
         network = new RaknetInterface(this, config.udp_bind_ip, // IP
-                config.udp_bind_port); // Port
+            config.udp_bind_port); // Port
 
         // MOTD
         motd = config.motd;

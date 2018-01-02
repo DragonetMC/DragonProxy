@@ -6,6 +6,7 @@ import org.dragonet.proxy.utilities.BlockPosition;
 
 import java.io.ByteArrayInputStream;
 import java.nio.ByteOrder;
+
 import org.dragonet.proxy.data.nbt.NBTIO;
 import org.dragonet.proxy.data.nbt.tag.CompoundTag;
 

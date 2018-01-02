@@ -29,7 +29,7 @@ public class PCAnimationPacketTranslator implements IPCPacketTranslator<ServerEn
             return null;
         }
         AnimatePacket pk = new AnimatePacket();
-        switch(packet.getAnimation()) {
+        switch (packet.getAnimation()) {
             case CRITICAL_HIT:
                 pk.action = AnimatePacket.ACTION_CRITICAL_HIT;
                 break;

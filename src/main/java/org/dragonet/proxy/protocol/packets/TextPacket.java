@@ -71,9 +71,9 @@ public class TextPacket extends PEPacket {
         switch (type) {
             case TYPE_CHAT:
             case TYPE_WHISPER:
-            /**
-             * @noinspection PhpMissingBreakStatementInspection
-             */
+                /**
+                 * @noinspection PhpMissingBreakStatementInspection
+                 */
             case TYPE_ANNOUNCEMENT:
                 putString(source);
             case TYPE_RAW:

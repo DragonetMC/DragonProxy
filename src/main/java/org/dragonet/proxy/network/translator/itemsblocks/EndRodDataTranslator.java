@@ -8,11 +8,10 @@ package org.dragonet.proxy.network.translator.itemsblocks;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 
 /**
- *
  * @author vincent
  */
 public class EndRodDataTranslator extends IItemDataTranslator {
-    
+
     @Override
     public Integer translateToPE(Integer damage) {
         // Here is the magic

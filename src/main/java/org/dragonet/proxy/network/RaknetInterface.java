@@ -55,7 +55,7 @@ public class RaknetInterface implements RakNetServerListener {
     }
 
     /*
-	 * public void onTick() { }
+     * public void onTick() { }
      */
     public void handlePing(ServerPing ping) {
         DragonProxy.getInstance().getLogger().debug("PING " + ping.getSender().toString());
@@ -103,8 +103,8 @@ public class RaknetInterface implements RakNetServerListener {
 
     public void setBroadcastName(String serverName, int players, int maxPlayers) {
         rakServer.setIdentifier(
-                new MinecraftIdentifier(serverName, ProtocolInfo.CURRENT_PROTOCOL, ProtocolInfo.MINECRAFT_VERSION_NETWORK,
-                        players, maxPlayers, new Random().nextLong(), "DragonProxy", "Survival"));
+            new MinecraftIdentifier(serverName, ProtocolInfo.CURRENT_PROTOCOL, ProtocolInfo.MINECRAFT_VERSION_NETWORK,
+                players, maxPlayers, new Random().nextLong(), "DragonProxy", "Survival"));
         if (!rakServer.isBroadcastingEnabled())
             rakServer.setBroadcastingEnabled(true);
     }

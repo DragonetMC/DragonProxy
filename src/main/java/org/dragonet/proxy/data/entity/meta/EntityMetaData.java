@@ -14,6 +14,7 @@ package org.dragonet.proxy.data.entity.meta;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.dragonet.proxy.data.entity.meta.type.ByteArrayMeta;
 import org.dragonet.proxy.data.entity.meta.type.FloatMeta;
 import org.dragonet.proxy.data.entity.meta.type.LongMeta;
@@ -58,7 +59,7 @@ public class EntityMetaData extends BinaryStream {
         public static final int DATA_ENDERMAN_HELD_ITEM_DAMAGE = 24; // short
         public static final int DATA_ENTITY_AGE = 25; // short
         /*
-		 * 27 (byte) player-specific flags 28 (int) player "index"? 29 (block coords)
+         * 27 (byte) player-specific flags 28 (int) player "index"? 29 (block coords)
 		 * bed position
          */
         public static final int DATA_BED_POSITION = 29;

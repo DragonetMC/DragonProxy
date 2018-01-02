@@ -15,7 +15,6 @@ package org.dragonet.proxy.data.itemsblocks;
 import org.dragonet.proxy.network.translator.itemsblocks.IItemDataTranslator;
 
 /**
- *
  * @author vincent
  */
 public class ItemEntry {

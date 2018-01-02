@@ -45,6 +45,7 @@ import org.dragonet.proxy.utilities.Vector3F;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
 import org.dragonet.proxy.DragonProxy;
 
 public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTranslator<ServerPlayerPositionRotationPacket> {
@@ -63,7 +64,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             }
 
             ServerJoinGamePacket restored = (ServerJoinGamePacket) session.getDataCache()
-                    .remove(CacheKey.PACKET_JOIN_GAME_PACKET);
+                .remove(CacheKey.PACKET_JOIN_GAME_PACKET);
             if (!session.getProxy().getAuthMode().equalsIgnoreCase("online")) {
                 StartGamePacket ret = new StartGamePacket();
                 ret.rtid = entityPlayer.proxyEid;
@@ -155,7 +156,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 session.sendPacket(pk);
 
                 /*ChangeDimensionPacket d = new ChangeDimensionPacket();
-				d.dimension = 0;
+                d.dimension = 0;
 				d.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET,
 						(float) packet.getZ());
 				session.sendPacket(d);

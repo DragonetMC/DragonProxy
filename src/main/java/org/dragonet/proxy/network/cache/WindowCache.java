@@ -19,17 +19,19 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.steveice10.packetlib.packet.Packet;
+
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.dragonet.proxy.network.UpstreamSession;
 
 public final class WindowCache {
 
     private final UpstreamSession upstream;
     private final Map<Integer, CachedWindow> windows = Collections
-            .synchronizedMap(new HashMap<Integer, CachedWindow>());
+        .synchronizedMap(new HashMap<Integer, CachedWindow>());
     private final Map<Integer, List<Packet>> cachedItems = Collections
-            .synchronizedMap(new HashMap<Integer, List<Packet>>());
-    
+        .synchronizedMap(new HashMap<Integer, List<Packet>>());
+
     public AtomicInteger currentTransactionId = new AtomicInteger();
 
     public WindowCache(UpstreamSession upstream) {

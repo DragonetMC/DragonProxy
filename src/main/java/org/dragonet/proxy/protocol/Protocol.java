@@ -134,7 +134,7 @@ public final class Protocol {
                 pk.decode();
                 return pk;
             } catch (SecurityException | InstantiationException | IllegalAccessException
-                    | IllegalArgumentException ex) {
+                | IllegalArgumentException ex) {
                 ex.printStackTrace();
             }
         } else

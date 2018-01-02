@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 public final class PatternChecker {
 
     /*
-	 * TODO "Beware the regex e-mail validation, for this way lies madness." -egg82
+     * TODO "Beware the regex e-mail validation, for this way lies madness." -egg82
      */
 
     public static final String REGEX_EMAIL = "^([a-z0-9A-Z]+[-|_|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";

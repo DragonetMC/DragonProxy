@@ -36,7 +36,7 @@ public class PEPlayerEquipmentPacketTranslator implements IPEPacketTranslator<Mo
         }
         return null;
         /*
-		if (packet.inventorySlot == 0x28 || packet.inventorySlot == 0 || packet.inventorySlot == 255) {
+        if (packet.inventorySlot == 0x28 || packet.inventorySlot == 0 || packet.inventorySlot == 255) {
 			// That thing changed to air
 			// TODO
 		}

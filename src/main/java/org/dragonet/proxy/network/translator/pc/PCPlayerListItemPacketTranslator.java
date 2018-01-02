@@ -17,8 +17,10 @@ import com.github.steveice10.mc.protocol.data.game.PlayerListEntryAction;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPlayerListEntryPacket;
+
 import java.util.HashSet;
 import java.util.Set;
+
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.PlayerListPacket;
 import org.dragonet.proxy.protocol.type.Skin;

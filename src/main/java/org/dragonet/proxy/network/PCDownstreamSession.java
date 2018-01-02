@@ -58,7 +58,7 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
         remoteClient.getSession().addListener(new SessionAdapter() {
             public void connected(ConnectedEvent event) {
                 proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_REMOTE_CONNECTED, upstream.getUsername(),
-                        upstream.getRemoteAddress()));
+                    upstream.getRemoteAddress()));
                 upstream.onConnected();
             }
 
