@@ -23,8 +23,10 @@ import org.dragonet.proxy.protocol.type.Slot;
 import com.github.steveice10.mc.protocol.data.game.entity.EquipmentSlot;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
+
 import java.util.HashMap;
 import java.util.Map;
+
 import org.dragonet.proxy.data.entity.PEEntityAttribute;
 import org.dragonet.proxy.utilities.BlockPosition;
 
@@ -68,7 +70,7 @@ public class CachedEntity {
     public Map<Integer, PEEntityAttribute> attributes = Collections.synchronizedMap(new HashMap());
 
     public CachedEntity(long eid, long proxyEid, int pcType, EntityType peType, ObjectType objType, boolean player,
-            UUID playerUniqueId) {
+                        UUID playerUniqueId) {
         super();
 
         this.eid = eid;
@@ -81,8 +83,7 @@ public class CachedEntity {
     }
 
     public CachedEntity relativeMove(double rx, double ry, double rz, float yaw, float pitch) {
-        if (rx != 0 || ry != 0 || rz != 0 || yaw != 0 || pitch != 0)
-        {
+        if (rx != 0 || ry != 0 || rz != 0 || yaw != 0 || pitch != 0) {
             this.x += rx;
             this.y += ry;
             this.z += rz;
@@ -96,8 +97,7 @@ public class CachedEntity {
     }
 
     public CachedEntity absoluteMove(double x, double y, double z, float yaw, float pitch) {
-        if (x != 0 || y != 0 || z != 0 || yaw != 0 || pitch != 0)
-        {
+        if (x != 0 || y != 0 || z != 0 || yaw != 0 || pitch != 0) {
             this.x = x;
             this.y = y;
             this.z = z;

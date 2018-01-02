@@ -156,7 +156,7 @@ public final class PacketTranslatorRegister {
         if (packet == null)
             return null;
         IPEPacketTranslator<PEPacket> target = (IPEPacketTranslator<PEPacket>) PE_TO_PC_TRANSLATOR
-                .get(packet.getClass());
+            .get(packet.getClass());
         if (target == null)
             return null;
         try {

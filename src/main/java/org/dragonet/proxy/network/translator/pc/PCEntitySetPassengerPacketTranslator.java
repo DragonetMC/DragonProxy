@@ -13,8 +13,10 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntitySetPassengersPacket;
+
 import java.util.Arrays;
 import java.util.Iterator;
+
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.data.entity.meta.EntityMetaData;
 import org.dragonet.proxy.data.entity.meta.type.Vector3FMeta;

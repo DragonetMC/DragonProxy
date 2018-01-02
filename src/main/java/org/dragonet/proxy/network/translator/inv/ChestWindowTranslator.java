@@ -29,8 +29,8 @@ public class ChestWindowTranslator implements IInventoryTranslator {
 
     public boolean open(UpstreamSession session, CachedWindow window) {
         BlockPosition pos = new BlockPosition((int) session.getEntityCache().getClientEntity().x,
-                (int) session.getEntityCache().getClientEntity().y - 4,
-                (int) session.getEntityCache().getClientEntity().z);
+            (int) session.getEntityCache().getClientEntity().y - 4,
+            (int) session.getEntityCache().getClientEntity().z);
 
         session.getDataCache().put(CacheKey.WINDOW_OPENED_ID, window.windowId);
         session.getDataCache().put(CacheKey.WINDOW_BLOCK_POSITION, pos);

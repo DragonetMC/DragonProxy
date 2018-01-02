@@ -117,7 +117,7 @@ public final class VarInt {
 
     /**
      * @param stream BinaryStream
-     * @param value Signed int
+     * @param value  Signed int
      */
     public static void writeVarInt(BinaryStream stream, int value) {
         writeUnsignedVarInt(stream, encodeZigZag32(value));
@@ -125,7 +125,7 @@ public final class VarInt {
 
     /**
      * @param stream OutputStream
-     * @param value Signed int
+     * @param value  Signed int
      */
     public static void writeVarInt(OutputStream stream, int value) throws IOException {
         writeUnsignedVarInt(stream, encodeZigZag32(value));
@@ -133,7 +133,7 @@ public final class VarInt {
 
     /**
      * @param stream BinaryStream
-     * @param value Unsigned int
+     * @param value  Unsigned int
      */
     public static void writeUnsignedVarInt(BinaryStream stream, long value) {
         write(stream, value);
@@ -141,7 +141,7 @@ public final class VarInt {
 
     /**
      * @param stream OutputStream
-     * @param value Unsigned int
+     * @param value  Unsigned int
      */
     public static void writeUnsignedVarInt(OutputStream stream, long value) throws IOException {
         write(stream, value);
@@ -149,7 +149,7 @@ public final class VarInt {
 
     /**
      * @param stream BinaryStream
-     * @param value Signed long
+     * @param value  Signed long
      */
     public static void writeVarLong(BinaryStream stream, long value) {
         writeUnsignedVarLong(stream, encodeZigZag64(value));
@@ -157,7 +157,7 @@ public final class VarInt {
 
     /**
      * @param stream OutputStream
-     * @param value Signed long
+     * @param value  Signed long
      */
     public static void writeVarLong(OutputStream stream, long value) throws IOException {
         writeUnsignedVarLong(stream, encodeZigZag64(value));
@@ -165,7 +165,7 @@ public final class VarInt {
 
     /**
      * @param stream BinaryStream
-     * @param value Unsigned long
+     * @param value  Unsigned long
      */
     public static void writeUnsignedVarLong(BinaryStream stream, long value) {
         write(stream, value);
@@ -173,7 +173,7 @@ public final class VarInt {
 
     /**
      * @param stream OutputStream
-     * @param value Unsigned long
+     * @param value  Unsigned long
      */
     public static void writeUnsignedVarLong(OutputStream stream, long value) throws IOException {
         write(stream, value);

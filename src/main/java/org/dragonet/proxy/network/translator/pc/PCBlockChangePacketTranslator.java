@@ -38,13 +38,13 @@ public class PCBlockChangePacketTranslator implements IPCPacketTranslator<Server
 //            pk1.case2 = 2;
 //            session.sendPacket(pk1);
 //        } else {
-            UpdateBlockPacket pk = new UpdateBlockPacket();
-            pk.flags = UpdateBlockPacket.FLAG_NEIGHBORS << 4;
-            pk.data = entry.getPEDamage();
-            pk.id = entry.getId();
-            pk.blockPosition = new BlockPosition(packet.getRecord().getPosition().getX(),
-                    packet.getRecord().getPosition().getY(), packet.getRecord().getPosition().getZ());
-            return new PEPacket[]{pk};
+        UpdateBlockPacket pk = new UpdateBlockPacket();
+        pk.flags = UpdateBlockPacket.FLAG_NEIGHBORS << 4;
+        pk.data = entry.getPEDamage();
+        pk.id = entry.getId();
+        pk.blockPosition = new BlockPosition(packet.getRecord().getPosition().getX(),
+            packet.getRecord().getPosition().getY(), packet.getRecord().getPosition().getZ());
+        return new PEPacket[]{pk};
 //        }
 //        return null;
     }

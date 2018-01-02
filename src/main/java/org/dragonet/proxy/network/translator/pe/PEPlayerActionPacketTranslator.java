@@ -34,66 +34,66 @@ public class PEPlayerActionPacketTranslator implements IPEPacketTranslator<Playe
         }
         if (packet.action == PlayerActionPacket.ACTION_START_SPRINT) {
             ClientPlayerStatePacket stat = new ClientPlayerStatePacket(
-                    (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.START_SPRINTING);
+                (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.START_SPRINTING);
             return new Packet[]{stat};
         }
         if (packet.action == PlayerActionPacket.ACTION_STOP_SPRINT) {
             ClientPlayerStatePacket stat = new ClientPlayerStatePacket(
-                    (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.STOP_SPRINTING);
+                (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.STOP_SPRINTING);
             return new Packet[]{stat};
         }
         if (packet.action == PlayerActionPacket.ACTION_START_GLIDE) {
             ClientPlayerStatePacket stat = new ClientPlayerStatePacket(
-                    (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.START_ELYTRA_FLYING);
+                (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.START_ELYTRA_FLYING);
             return new Packet[]{stat};
         }
         if (packet.action == PlayerActionPacket.ACTION_STOP_GLIDE) {
             ClientPlayerStatePacket stat = new ClientPlayerStatePacket(
-                    (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.START_ELYTRA_FLYING);
+                (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.START_ELYTRA_FLYING);
             return new Packet[]{stat};
         }
         if (packet.action == PlayerActionPacket.ACTION_START_SNEAK) {
             ClientPlayerStatePacket stat = new ClientPlayerStatePacket(
-                    (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.START_SNEAKING);
+                (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.START_SNEAKING);
             return new Packet[]{stat};
         }
         if (packet.action == PlayerActionPacket.ACTION_STOP_SNEAK) {
             ClientPlayerStatePacket stat = new ClientPlayerStatePacket(
-                    (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.STOP_SNEAKING);
+                (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.STOP_SNEAKING);
             return new Packet[]{stat};
         }
         if (packet.action == PlayerActionPacket.ACTION_STOP_SLEEPING) {
             ClientPlayerStatePacket stat = new ClientPlayerStatePacket(
-                    (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.LEAVE_BED);
+                (int) session.getDataCache().get(CacheKey.PLAYER_EID), PlayerState.LEAVE_BED);
             return new Packet[]{stat};
         }
         if (packet.action == PlayerActionPacket.ACTION_DROP_ITEM) {
             ClientPlayerActionPacket act = new ClientPlayerActionPacket(
-                    com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.DROP_ITEM,
-                    new Position(0, 0, 0), BlockFace.UP);
+                com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.DROP_ITEM,
+                new Position(0, 0, 0), BlockFace.UP);
             return new Packet[]{act};
         }
         if (packet.action == PlayerActionPacket.ACTION_START_BREAK) {
             ClientPlayerActionPacket act = new ClientPlayerActionPacket(
-                    com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.START_DIGGING,
-                    new Position(packet.position.x, packet.position.y, packet.position.z),
-                    MagicValues.key(BlockFace.class, packet.face));
+                com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.START_DIGGING,
+                new Position(packet.position.x, packet.position.y, packet.position.z),
+                MagicValues.key(BlockFace.class, packet.face));
             session.getDataCache().put(CacheKey.BLOCK_BREAKING_POSITION, act.getPosition());
             return new Packet[]{act};
         }
         if (session.getDataCache().containsKey(CacheKey.BLOCK_BREAKING_POSITION)) {
             if (packet.action == PlayerActionPacket.ACTION_STOP_BREAK) {
                 ClientPlayerActionPacket act = new ClientPlayerActionPacket(
-                        com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.FINISH_DIGGING,
-                        (Position) session.getDataCache().remove(CacheKey.BLOCK_BREAKING_POSITION),
-                        MagicValues.key(BlockFace.class, packet.face));
+                    com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.FINISH_DIGGING,
+                    (Position) session.getDataCache().remove(CacheKey.BLOCK_BREAKING_POSITION),
+                    MagicValues.key(BlockFace.class, packet.face));
                 return new Packet[]{act};
             }
             if (packet.action == PlayerActionPacket.ACTION_ABORT_BREAK) {
                 ClientPlayerActionPacket act = new ClientPlayerActionPacket(
-                        com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.CANCEL_DIGGING,
-                        (Position) session.getDataCache().remove(CacheKey.BLOCK_BREAKING_POSITION),
-                        MagicValues.key(BlockFace.class, packet.face));
+                    com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.CANCEL_DIGGING,
+                    (Position) session.getDataCache().remove(CacheKey.BLOCK_BREAKING_POSITION),
+                    MagicValues.key(BlockFace.class, packet.face));
                 return new Packet[]{act};
             }
         }

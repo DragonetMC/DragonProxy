@@ -62,8 +62,8 @@ public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<Ser
 //                pk.title = "Kebab";
 //                entity.spawned = true;
 //                session.sendPacket(pk);
-            }else if(entity.peType == EntityType.PLAYER) {
-            	AddPlayerPacket pk = new AddPlayerPacket();
+            } else if (entity.peType == EntityType.PLAYER) {
+                AddPlayerPacket pk = new AddPlayerPacket();
                 pk.rtid = entity.proxyEid;
                 pk.eid = entity.proxyEid;
                 pk.position = new Vector3F((float) entity.x, (float) entity.y + entity.peType.getOffset(), (float) entity.z);

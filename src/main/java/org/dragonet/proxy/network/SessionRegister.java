@@ -16,13 +16,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import org.dragonet.proxy.DragonProxy;
 
 public class SessionRegister {
 
     private final DragonProxy proxy;
     private final Map<String, UpstreamSession> clients = Collections
-            .synchronizedMap(new HashMap<String, UpstreamSession>());
+        .synchronizedMap(new HashMap<String, UpstreamSession>());
 
     public SessionRegister(DragonProxy proxy) {
         this.proxy = proxy;
