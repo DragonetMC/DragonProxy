@@ -59,6 +59,7 @@ public class Lang extends PropertiesConfig {
     public static final String SHUTTING_DOWN = "shutting_down";
     public static final String MESSAGE_UNSUPPORTED_CLIENT = "message_unsupported_client";
     public static final String QUERY_FAILED = "query_failed";
+    public static final String LOGIN_VERIFY_FAILED = "error_bad_login_packet";
 
     public Lang(String langFileName) throws IOException {
         super("/en_US.properties", langFileName, false);

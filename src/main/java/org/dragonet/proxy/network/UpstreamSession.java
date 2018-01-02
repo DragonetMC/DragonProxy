@@ -16,13 +16,10 @@ import com.github.steveice10.mc.auth.exception.request.RequestException;
 import com.github.steveice10.mc.auth.service.AuthenticationService;
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
+import com.github.steveice10.mc.protocol.data.game.setting.Difficulty;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import java.net.InetSocketAddress;
-import java.util.*;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import net.marfgamer.jraknet.protocol.Reliability;
 import net.marfgamer.jraknet.session.RakNetClientSession;
 import org.dragonet.proxy.DesktopServer;
@@ -34,10 +31,35 @@ import org.dragonet.proxy.network.cache.EntityCache;
 import org.dragonet.proxy.network.cache.WindowCache;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.ProtocolInfo;
-import org.dragonet.proxy.protocol.packets.*;
+import org.dragonet.proxy.protocol.packets.DisconnectPacket;
+import org.dragonet.proxy.protocol.packets.FullChunkDataPacket;
+import org.dragonet.proxy.protocol.packets.LoginPacket;
+import org.dragonet.proxy.protocol.packets.PlayStatusPacket;
+import org.dragonet.proxy.protocol.packets.ResourcePackStackPacket;
+import org.dragonet.proxy.protocol.packets.ResourcePacksInfoPacket;
+import org.dragonet.proxy.protocol.packets.SetSpawnPositionPacket;
+import org.dragonet.proxy.protocol.packets.StartGamePacket;
+import org.dragonet.proxy.protocol.packets.TextPacket;
+import org.dragonet.proxy.protocol.packets.UpdateBlockPacket;
 import org.dragonet.proxy.protocol.type.chunk.ChunkData;
 import org.dragonet.proxy.protocol.type.chunk.Section;
-import org.dragonet.proxy.utilities.*;
+import org.dragonet.proxy.utilities.Binary;
+import org.dragonet.proxy.utilities.BlockPosition;
+import org.dragonet.proxy.utilities.HTTP;
+import org.dragonet.proxy.utilities.LoginChainDecoder;
+import org.dragonet.proxy.utilities.Vector3F;
+import org.dragonet.proxy.utilities.Zlib;
+
+import java.net.InetSocketAddress;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Maintaince the connection between the proxy and Minecraft: Pocket Edition
@@ -149,10 +171,9 @@ public class UpstreamSession {
     }
 
     public void sendPacket(PEPacket packet, boolean immediate) {
-        if (packet == null) {
+        if (packet == null)
             return;
-        }
-        // System.out.println("Sending [" + packet.getClass().getSimpleName() + "] ");
+        System.out.println("Sending [" + packet.getClass().getSimpleName() + "] ");
 
         packet.encode();
 
@@ -172,11 +193,9 @@ public class UpstreamSession {
     }
 
     public void sendAllPackets(PEPacket[] packets, boolean immediate) {
-        if (packets.length < 5) {
-            for (PEPacket packet : packets) {
+        if (packets.length < 5)
+            for (PEPacket packet : packets)
                 sendPacket(packet);
-            }
-        }
         /*
 			 * else { Batch batch = new BatchPacket(); boolean mustImmediate = immediate; if
 			 * (!mustImmediate) { for (PEPacket packet : packets) { if
@@ -186,9 +205,8 @@ public class UpstreamSession {
     }
 
     public void connectToServer(RemoteServer server) {
-        if (server == null) {
+        if (server == null)
             return;
-        }
         connecting = true;
         if (downstream != null && downstream.isConnected()) {
             spawned = false;
@@ -211,11 +229,10 @@ public class UpstreamSession {
             downstream = new PCDownstreamSession(proxy, this);
             ((PCDownstreamSession) downstream).protocol = protocol;
             downstream.connect(server.remote_addr, server.remote_port);
-        } else {
+        } else
             // downstream = new PEDownstreamSession(proxy, this);
             // ((PEDownstreamSession)downstream).connect((PocketServer) server);
             disconnect("PE targets not supported yet");
-        }
     }
 
     public void onConnected() {
@@ -244,9 +261,8 @@ public class UpstreamSession {
     public void onDisconnect(String reason) {
         proxy.getLogger().info(proxy.getLang().get(Lang.CLIENT_DISCONNECTED,
                 proxy.getAuthMode().equals("cls") ? "unknown" : username, remoteAddress, reason));
-        if (downstream != null) {
+        if (downstream != null)
             downstream.disconnect();
-        }
         proxy.getSessionRegister().removeSession(this);
         packetProcessorScheule.cancel(true);
     }
@@ -289,7 +305,7 @@ public class UpstreamSession {
         getDataCache().put(CacheKey.PACKET_LOGIN_PACKET, packet);
 
         PlayStatusPacket status = new PlayStatusPacket();
-        System.out.println("CLIENT PROTOCOL = " + packet.protocol);
+        DragonProxy.getInstance().getLogger().debug("CLIENT PROTOCOL = " + packet.protocol);
         if (packet.protocol != ProtocolInfo.CURRENT_PROTOCOL) {
             status.status = PlayStatusPacket.LOGIN_FAILED_CLIENT;
             sendPacket(status, true);
@@ -301,6 +317,15 @@ public class UpstreamSession {
 
         // Get the profile and read out the username!
         profile = packet.decoded;
+
+        // Verify the integrity of the LoginPacket
+        if (proxy.getConfig().authenticate_players && !packet.decoded.isLoginVerified()) {
+            status.status = PlayStatusPacket.LOGIN_FAILED_CLIENT;
+            sendPacket(status, true);
+            disconnect(proxy.getLang().get(Lang.LOGIN_VERIFY_FAILED));
+            return;
+        }
+
         this.username = profile.username;
 
         // Okay @dktapps ;)
@@ -315,12 +340,14 @@ public class UpstreamSession {
         loggedIn = true;
         proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, username, remoteAddress));
         if (proxy.getAuthMode().equals("online")) {
+            proxy.getLogger().debug("Login online mode, sending placeholder datas");
             StartGamePacket pkStartGame = new StartGamePacket();
             pkStartGame.eid = 1L; // well we use 1 now
             pkStartGame.rtid = 1L;
             pkStartGame.dimension = 0;
             pkStartGame.seed = 0;
             pkStartGame.generator = 1;
+            pkStartGame.difficulty = Difficulty.PEACEFUL;
             pkStartGame.spawnPosition = new BlockPosition(0, 72, 0);
             pkStartGame.position = new Vector3F(0f, 72f + EntityType.PLAYER.getOffset(), 0f);
             pkStartGame.levelId = "";
@@ -338,9 +365,8 @@ public class UpstreamSession {
             data.sections = new Section[16];
             for (int cy = 0; cy < 16; cy++) {
                 data.sections[cy] = new Section();
-                if (cy < 6) {
+                if (cy < 6)
                     Arrays.fill(data.sections[cy].blockIds, (byte) 1);
-                }
             }
             data.encode();
             sendPacket(new FullChunkDataPacket(0, 0, data.getBuffer()));
@@ -433,9 +459,8 @@ public class UpstreamSession {
     public void sendChat(String chat) {
         if (chat.contains("\n")) {
             String[] lines = chat.split("\n");
-            for (String line : lines) {
+            for (String line : lines)
                 sendChat(line);
-            }
             return;
         }
         TextPacket text = new TextPacket(); // raw
@@ -458,9 +483,8 @@ public class UpstreamSession {
     }
 
     public void putCachePacket(PEPacket p) {
-        if (p == null) {
+        if (p == null)
             return;
-        }
         if (spawned || cachedPackets == null) {
             // System.out.println("Not caching since already spawned! ");
             sendPacket(p);
@@ -471,8 +495,7 @@ public class UpstreamSession {
 
     public void onTick() {
         entityCache.onTick();
-        if (downstream != null) {
+        if (downstream != null)
             downstream.onTick();
-        }
     }
 }

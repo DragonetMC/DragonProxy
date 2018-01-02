@@ -12,7 +12,6 @@
  */
 package org.dragonet.proxy.network;
 
-import java.io.FileOutputStream;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -54,79 +53,68 @@ public class PEPacketProcessor implements Runnable {
             PEPacket[] packets;
             try {
                 packets = Protocol.decode(p);
-                if (packets == null || packets.length <= 0) {
+                if (packets == null || packets.length <= 0)
                     continue;
-                }
             } catch (Exception e) {
                 e.printStackTrace();
                 return;
             }
-            for (PEPacket decoded : packets) {
+            for (PEPacket decoded : packets)
                 handlePacket(decoded);
-            }
         }
 
     }
 
     public void handlePacket(PEPacket packet) {
-        if (packet == null) {
+        if (packet == null)
             return;
-        }
-
-        // Do nothing if client is in waiting auth state
-        if (client.getDataCache().containsKey(CacheKey.AUTHENTICATION_STATE)
-                && client.getDataCache().get(CacheKey.AUTHENTICATION_STATE).equals("online_login_wait")) {
-
-            if (packet.pid() == ProtocolInfo.MOVE_PLAYER_PACKET) {
-                ModalFormRequestPacket packetForm = new ModalFormRequestPacket();
-                CustomFormComponent form = new CustomFormComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_TITLE));
-                form.addComponent(new LabelComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_DESC)));
-                form.addComponent(new LabelComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_PROMPT)));
-                form.addComponent(new InputComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_USERNAME)).setPlaceholder("steve@example.com"));
-                form.addComponent(new InputComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_PASSWORD)).setPlaceholder("123456"));
-                packetForm.formId = 1;
-                packetForm.formData = form.serializeToJson().toString();
-                client.sendPacket(packetForm);
-                return;
-            }
-
-            if (packet.pid() == ProtocolInfo.MODAL_FORM_RESPONSE_PACKET) {
-                client.sendChat(client.getProxy().getLang().get(Lang.MESSAGE_LOGIN_PROGRESS));
-
-                client.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
-
-                ModalFormResponsePacket formResponse = (ModalFormResponsePacket) packet;
-                JSONArray array = new JSONArray(formResponse.formData);
-                client.authenticate(array.get(2).toString(), array.get(3).toString());
-                return;
-            }
-
-        }
 
         switch (packet.pid()) {
             case ProtocolInfo.LOGIN_PACKET:
                 client.onLogin((LoginPacket) packet);
                 break;
-            case ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET:
-                if (client.isLoggedIn()) {
-                    return;
+            case ProtocolInfo.MOVE_PLAYER_PACKET:
+                if (client.getDataCache().getOrDefault(CacheKey.AUTHENTICATION_STATE, "").equals("online_login_wait")) {
+
+                    // client.getDataCache().put(CacheKey.AUTHENTICATION_STATE, "online_login");
+                    ModalFormRequestPacket packetForm = new ModalFormRequestPacket();
+                    CustomFormComponent form = new CustomFormComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_TITLE));
+                    form.addComponent(new LabelComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_DESC)));
+                    form.addComponent(new LabelComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_PROMPT)));
+                    form.addComponent(new InputComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_USERNAME)).setPlaceholder("steve@example.com"));
+                    form.addComponent(new InputComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_PASSWORD)).setPlaceholder("123456"));
+                    packetForm.formId = 1;
+                    packetForm.formData = form.serializeToJson().toString();
+                    client.sendPacket(packetForm);
+                    break;
                 }
+            case ProtocolInfo.MODAL_FORM_RESPONSE_PACKET:
+                if (client.getDataCache().getOrDefault(CacheKey.AUTHENTICATION_STATE, "").equals("online_login_wait")) {
+
+                    client.sendChat(client.getProxy().getLang().get(Lang.MESSAGE_LOGIN_PROGRESS));
+                    client.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
+
+                    ModalFormResponsePacket formResponse = (ModalFormResponsePacket) packet;
+                    JSONArray array = new JSONArray(formResponse.formData);
+                    client.authenticate(array.get(2).toString(), array.get(3).toString());
+                    break;
+                }
+            case ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET:
+                if (client.isLoggedIn())
+                    return;
                 client.postLogin();
                 break;
             case ProtocolInfo.REQUEST_CHUNK_RADIUS_PACKET:
                 client.sendPacket(new ChunkRadiusUpdatedPacket(((RequestChunkRadiusPacket) packet).radius));
                 break;
             default:
-                if (client.getDownstream() == null) {
+                if (client.getDownstream() == null)
                     break;
-                }
-                if (!client.getDownstream().isConnected()) {
+                if (!client.getDownstream().isConnected())
                     break;
-                }
                 Packet[] translated = PacketTranslatorRegister.translateToPC(client, packet);
-                if (translated == null || translated.length == 0) {
+                if (translated == null || translated.length == 0)
                     break;
-                }
                 client.getDownstream().send(translated);
                 break;
         }

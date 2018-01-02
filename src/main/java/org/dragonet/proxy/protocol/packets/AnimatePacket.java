@@ -5,10 +5,9 @@ import org.dragonet.proxy.protocol.ProtocolInfo;
 
 public class AnimatePacket extends PEPacket {
 
-    public static int ANIMATION_SWING_ARM = 1;
-    public static int ACTION_LEFT_CLICK = 2;
-    public static int ANIMATION_LEAVE_BED = 3;
-    public static int ACTION_MOUSE_HOVER = 4;
+    public static final int ANIMATION_SWING_ARM = 1;
+    public static final int ANIMATION_LEAVE_BED = 3;
+    public static final int ACTION_CRITICAL_HIT = 4;
 
     public int action;
     public long eid;

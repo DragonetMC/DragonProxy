@@ -21,29 +21,31 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessag
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientSettingsPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientTeleportConfirmPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
-import org.dragonet.proxy.configuration.Lang;
-import org.dragonet.proxy.data.entity.PEEntityAttribute;
-import org.dragonet.proxy.data.entity.meta.EntityMetaData;
-import org.dragonet.proxy.network.CacheKey;
-import org.dragonet.proxy.network.PCDownstreamSession;
-import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.data.entity.EntityType;
+import org.dragonet.proxy.data.entity.PEEntityAttribute;
+import org.dragonet.proxy.data.entity.meta.EntityMetaData;
 import org.dragonet.proxy.data.entity.meta.type.ByteArrayMeta;
 import org.dragonet.proxy.data.entity.meta.type.SlotMeta;
+import org.dragonet.proxy.network.CacheKey;
+import org.dragonet.proxy.network.PCDownstreamSession;
+import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
+import org.dragonet.proxy.network.translator.IPCPacketTranslator;
+import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.protocol.type.Skin;
 import org.dragonet.proxy.utilities.BlockPosition;
 import org.dragonet.proxy.utilities.Vector3F;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import org.dragonet.proxy.DragonProxy;
 
 public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTranslator<ServerPlayerPositionRotationPacket> {
 
@@ -71,8 +73,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 ret.generator = 1;
                 ret.gamemode = restored.getGameMode() == GameMode.CREATIVE ? 1 : 0;
                 ret.spawnPosition = new BlockPosition((int) packet.getX(), (int) packet.getY(), (int) packet.getZ());
-                ret.position = new Vector3F((float) packet.getX(), (float) packet.getY() + EntityType.PLAYER.getOffset(),
-                        (float) packet.getZ());
+                ret.position = new Vector3F((float) packet.getX(), (float) packet.getY() + EntityType.PLAYER.getOffset() + 0.1f, (float) packet.getZ());
                 ret.yaw = packet.getYaw();
                 ret.pitch = packet.getPitch();
                 ret.levelId = "";
@@ -80,6 +81,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 ret.commandsEnabled = true;
                 ret.defaultPlayerPermission = 2;
                 ret.premiumWorldTemplateId = "";
+                ret.difficulty = restored.getDifficulty();
                 session.sendPacket(ret);
             }
 
@@ -141,7 +143,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 MovePlayerPacket pk = new MovePlayerPacket();
                 pk.rtid = entityPlayer.proxyEid;
                 pk.mode = MovePlayerPacket.MODE_TELEPORT;
-                pk.position = new Vector3F((float) packet.getX(), (float) packet.getY() + EntityType.PLAYER.getOffset(), (float) packet.getZ());
+                pk.position = new Vector3F((float) packet.getX(), (float) packet.getY() + EntityType.PLAYER.getOffset() + 0.1f, (float) packet.getZ());
                 pk.yaw = packet.getYaw();
                 pk.pitch = packet.getPitch();
                 pk.headYaw = packet.getYaw();
@@ -154,22 +156,18 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 }
                 session.sendPacket(pk);
 
-                entityPlayer.absoluteMove(packet.getX(), packet.getY() + entityPlayer.peType.getOffset(), packet.getZ(), packet.getYaw(), packet.getPitch());
-
                 /*ChangeDimensionPacket d = new ChangeDimensionPacket();
 				d.dimension = 0;
 				d.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET,
 						(float) packet.getZ());
 				session.sendPacket(d);
 				session.sendPacket(new PlayStatusPacket(PlayStatusPacket.PLAYER_SPAWN));*/
-                System.out.println("spawning at " + pk.position.toString());
             }
 
             session.setSpawned();
 
-            session.getEntityCache().getClientEntity().x = packet.getX();
-            session.getEntityCache().getClientEntity().y = packet.getY();
-            session.getEntityCache().getClientEntity().z = packet.getZ();
+            entityPlayer.absoluteMove(packet.getX(), packet.getY() + entityPlayer.peType.getOffset() + 0.1f, packet.getZ(), packet.getYaw(), packet.getPitch());
+            DragonProxy.getInstance().getLogger().debug("Spawning " + session.getUsername() + " in world -1 at " + entityPlayer.x + "/" + entityPlayer.y + "/" + entityPlayer.z);
 
             // send the confirmation
             ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());
@@ -253,7 +251,6 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             playerListPacket.entries = (org.dragonet.proxy.protocol.type.PlayerListEntry[]) peEntries.toArray(new org.dragonet.proxy.protocol.type.PlayerListEntry[peEntries.size()]);
             session.sendPacket(playerListPacket);
             entityPlayer.spawned = true;
-            System.out.println("SPAWNED !");
             return null;
         }
 
