@@ -149,6 +149,9 @@ public class DragonProxy {
         else
             logger.info("Saving console output disabled");
 
+        // set logger mode
+        logger.debug = config.log_debug;
+        
         // Put at the top instead
         if (!IS_RELEASE)
             logger.warning("This is a development build. It may contain bugs. Do not use on production.\n");
@@ -166,8 +169,8 @@ public class DragonProxy {
 
         // Load some more stuff
         String version = properties.getProperty("git.build.version");
-        if (properties.getProperty("git.dirty").equals("true"))
-            version += " (" + properties.getProperty("git.commit.id.describe-short") + ")";
+        if (properties.containsKey("git.commit.id.describe"))
+            version += " (" + properties.getProperty("git.commit.id.describe") + ")";
         logger.info(lang.get(Lang.INIT_LOADING, version));
         logger.info(lang.get(Lang.INIT_MC_PC_SUPPORT, MinecraftConstants.GAME_VERSION));
         logger.info(lang.get(Lang.INIT_MC_PE_SUPPORT, ProtocolInfo.MINECRAFT_VERSION));
