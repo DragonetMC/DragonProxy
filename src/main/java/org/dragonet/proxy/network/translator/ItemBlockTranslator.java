@@ -13,6 +13,7 @@
 package org.dragonet.proxy.network.translator;
 
 import com.github.steveice10.mc.protocol.data.MagicValues;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +24,9 @@ import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
 import com.github.steveice10.opennbt.tag.builtin.IntTag;
 import com.github.steveice10.opennbt.tag.builtin.StringTag;
 import com.github.steveice10.opennbt.tag.builtin.Tag;
+
 import java.util.List;
+
 import org.dragonet.proxy.data.itemsblocks.ItemEntry;
 import org.dragonet.proxy.data.nbt.tag.ListTag;
 import org.dragonet.proxy.network.translator.itemsblocks.*;
@@ -240,7 +243,7 @@ public class ItemBlockTranslator {
                     output.putString("id", "Sign");
                     if (!output.contains("Text"))
                         output.putString("Text",
-                                Message.fromString(output.getString("Text1")).getFullText()
+                            Message.fromString(output.getString("Text1")).getFullText()
                                 + "\n" + Message.fromString(output.getString("Text2")).getFullText()
                                 + "\n" + Message.fromString(output.getString("Text3")).getFullText()
                                 + "\n" + Message.fromString(output.getString("Text4")).getFullText());
@@ -388,7 +391,7 @@ public class ItemBlockTranslator {
             input = 1;
         return input;
     }
-    
+
     public static Integer invertVerticalFacing(int input) {
         // translate facing
         if (input == 5) //EAST
