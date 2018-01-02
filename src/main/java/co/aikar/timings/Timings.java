@@ -100,8 +100,8 @@ public final class Timings {
 //        serverCommandTimer = TimingsManager.getTiming("Server Command");
 //        levelSaveTimer = TimingsManager.getTiming("Level Save");
 
-        playerNetworkSendTimer = TimingsManager.getTiming("Player Network Send");
-        playerNetworkReceiveTimer = TimingsManager.getTiming("Player Network Receive");
+        playerNetworkSendTimer = TimingsManager.getTiming(DEFAULT_GROUP.name, "Player Network Send", fullServerTickTimer);
+        playerNetworkReceiveTimer = TimingsManager.getTiming(DEFAULT_GROUP.name, "Player Network Receive", fullServerTickTimer);
 //        playerChunkOrderTimer = TimingsManager.getTiming("Player Order Chunks");
         playerChunkSendTimer = TimingsManager.getTiming("Player Send Chunks");
         playerCommandTimer = TimingsManager.getTiming("Player Command");

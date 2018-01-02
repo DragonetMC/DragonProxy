@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.dragonet.proxy.DragonProxy;
 
 /**
  * Created on 2017/9/12.
@@ -113,11 +114,11 @@ public class LoginChainDecoder {
             // The for loop successfully verified all JWT tokens with no exceptions thrown
             this.loginVerified = true;
 
-            System.out.println("The LoginPacket has been successfully verified for integrity");
+            DragonProxy.getInstance().getLogger().info("The LoginPacket has been successfully verified for integrity");
 
         } catch (Exception e) {
             this.loginVerified = false;
-            System.out.println("Failed to verify the integrity of the LoginPacket");
+            DragonProxy.getInstance().getLogger().info("Failed to verify the integrity of the LoginPacket");
             e.printStackTrace();
         }
 

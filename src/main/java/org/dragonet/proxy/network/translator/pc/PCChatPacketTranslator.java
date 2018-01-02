@@ -33,7 +33,7 @@ public class PCChatPacketTranslator implements IPCPacketTranslator<ServerChatPac
 
     public PEPacket[] translate(UpstreamSession session, ServerChatPacket packet) {
         TextPacket pe = new TextPacket();
-        System.out.println(packet.getMessage().toJson());
+//        System.out.println(packet.getMessage().toJson());
 
         switch (packet.getType()) {
             case NOTIFICATION:
