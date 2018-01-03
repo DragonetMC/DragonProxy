@@ -17,6 +17,7 @@ import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.MetadataType;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
+import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.data.entity.meta.EntityMetaData;
 import org.dragonet.proxy.data.entity.meta.type.*;
@@ -36,6 +37,7 @@ public final class EntityMetaTranslator {
 //        System.out.println("Entity + " + type);
         for (EntityMetadata m : pcMeta) {
 //            System.out.println(m);
+            boolean handle = true;
             try {
                 if (m == null)
                     continue;
@@ -259,10 +261,15 @@ public final class EntityMetaTranslator {
                                 break;
                             default: //ZOMBIE, AGEABLE //Boolean Is baby
                             {
-                                peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_BABY, ((boolean) m.getValue()));
-                                if ((boolean) m.getValue()) {
-                                    peMeta.set(EntityMetaData.Constants.DATA_SCALE, new FloatMeta(0.5f));
+                                if (m.getValue() instanceof Boolean)
+                                {
+                                    peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_BABY, ((boolean) m.getValue()));
+                                    if ((boolean) m.getValue()) {
+                                        peMeta.set(EntityMetaData.Constants.DATA_SCALE, new FloatMeta(0.5f));
+                                    }
                                 }
+                                else
+                                    handle = false;
                                 break;
                             }
                         }
@@ -379,6 +386,8 @@ public final class EntityMetaTranslator {
                         }
                         break;
                 }
+                if (!handle)
+                    DragonProxy.getInstance().getLogger().debug("Not supported entity meta (" + type.name() + ") : " + m.toString());
             } catch (Exception p_Ex) {
                 p_Ex.printStackTrace();
             }
