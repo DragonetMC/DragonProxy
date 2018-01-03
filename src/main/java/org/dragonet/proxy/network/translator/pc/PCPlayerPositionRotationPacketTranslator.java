@@ -28,13 +28,10 @@ import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.data.entity.PEEntityAttribute;
 import org.dragonet.proxy.data.entity.meta.EntityMetaData;
-import org.dragonet.proxy.data.entity.meta.type.ByteArrayMeta;
-import org.dragonet.proxy.data.entity.meta.type.SlotMeta;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.PCDownstreamSession;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.*;
@@ -180,22 +177,6 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                     continue;
                 if (entity.peType == EntityType.PLAYER) {
                     PlayerListEntry playerListEntry = session.getPlayerInfoCache().get(entity.playerUniqueId);
-                    AddPlayerPacket pkAddPlayer = new AddPlayerPacket();
-                    pkAddPlayer.eid = entity.proxyEid;
-                    pkAddPlayer.rtid = entity.proxyEid;
-
-                    pkAddPlayer.uuid = entity.playerUniqueId;
-
-                    pkAddPlayer.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
-                    pkAddPlayer.motion = Vector3F.ZERO;
-                    pkAddPlayer.yaw = entity.yaw;
-                    pkAddPlayer.pitch = entity.pitch;
-                    pkAddPlayer.username = playerListEntry.getProfile().getName();
-
-                    // TODO: this does not work well yet
-                    pkAddPlayer.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, EntityType.PLAYER);
-                    pkAddPlayer.meta.set(EntityMetaData.Constants.DATA_NAMETAG, new ByteArrayMeta(playerListEntry.getProfile().getName())); //hacky for now
-
                     PlayerSkinPacket skin = new PlayerSkinPacket(entity.playerUniqueId);
 
                     org.dragonet.proxy.protocol.type.PlayerListEntry peEntry = new org.dragonet.proxy.protocol.type.PlayerListEntry();
@@ -207,41 +188,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                     peEntries.add(peEntry);
 
                     entity.spawned = true;
-                    session.sendPacket(pkAddPlayer);
                     session.sendPacket(skin);
-                } else if (entity.peType == EntityType.ITEM) {
-                    AddItemEntityPacket pk = new AddItemEntityPacket();
-                    pk.rtid = entity.proxyEid;
-                    pk.eid = entity.proxyEid;
-                    pk.metadata = EntityMetaTranslator.translateToPE(session, entity.pcMeta, entity.peType);
-                    pk.item = ((SlotMeta) pk.metadata.map.get(EntityMetaData.Constants.DATA_TYPE_SLOT)).slot;
-                    pk.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
-                    pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
-                    entity.spawned = true;
-                    session.sendPacket(pk);
-                } else if (entity.peType == EntityType.PAINTING) {
-//                    AddPaintingPacket pk = new AddPaintingPacket();
-//                    pk.rtid = entity.proxyEid;
-//                    pk.eid = entity.proxyEid;
-//                    pk.pos = new BlockPosition((int) entity.x, (int) entity.y, (int) entity.z);
-//                    pk.direction = 1;
-//                    pk.title = "Kebab";
-//                    entity.spawned = true;
-//                    session.sendPacket(pk);
-                } else if (entity.peType != null) { //ENTITY
-                    AddEntityPacket pk = new AddEntityPacket();
-                    pk.rtid = entity.proxyEid;
-                    pk.eid = entity.proxyEid;
-                    pk.type = entity.peType.getPeType();
-                    pk.position = new Vector3F((float) entity.x, (float) entity.y, (float) entity.z);
-                    pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
-                    pk.yaw = entity.yaw;
-                    pk.pitch = entity.pitch;
-                    pk.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, entity.peType);
-                    // TODO: Hack for now. ;P
-                    pk.attributes = entity.attributes.values();
-                    entity.spawned = true;
-                    session.sendPacket(pk);
                 }
                 // Process equipments
                 if (entity.helmet != null || entity.chestplate != null || entity.leggings != null || entity.boots != null || entity.mainHand != null) {
@@ -253,6 +200,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                     aeq.boots = entity.boots;
                     session.sendPacket(aeq);
                 }
+                entity.spawn(session);
             }
 
             playerListPacket.type = PlayerListPacket.TYPE_ADD;

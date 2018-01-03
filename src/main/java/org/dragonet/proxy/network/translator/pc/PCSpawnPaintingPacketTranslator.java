@@ -17,27 +17,15 @@ import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPaintingPacket;
 import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.protocol.packets.AddPaintingPacket;
-import org.dragonet.proxy.utilities.BlockPosition;
 
 public class PCSpawnPaintingPacketTranslator implements IPCPacketTranslator<ServerSpawnPaintingPacket> {
 
     public PEPacket[] translate(UpstreamSession session, ServerSpawnPaintingPacket packet) {
         CachedEntity entity = session.getEntityCache().newEntity(packet);
-        if (entity == null) {
+        if (entity == null)
             return null;
-        }
 
-        if (session.isLoggedIn()) {
-//            AddPaintingPacket pk = new AddPaintingPacket();
-//            pk.rtid = entity.proxyEid;
-//            pk.eid = entity.proxyEid;
-//            pk.pos = new BlockPosition((int)entity.x, (int)entity.y, (int)entity.z);
-//            pk.direction = 0;
-//            pk.title = packet.getPaintingType().name();
-//            entity.spawned = true;
-//            return new PEPacket[]{pk};
-        }
+        entity.spawn(session);
         return null;
     }
 }

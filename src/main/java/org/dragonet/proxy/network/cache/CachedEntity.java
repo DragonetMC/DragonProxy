@@ -12,6 +12,7 @@
  */
 package org.dragonet.proxy.network.cache;
 
+import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,7 +28,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.dragonet.proxy.data.entity.PEEntityAttribute;
+import org.dragonet.proxy.data.entity.meta.EntityMetaData;
+import org.dragonet.proxy.data.entity.meta.type.ByteArrayMeta;
+import org.dragonet.proxy.data.entity.meta.type.SlotMeta;
+import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.translator.EntityMetaTranslator;
+import org.dragonet.proxy.protocol.packets.AddEntityPacket;
+import org.dragonet.proxy.protocol.packets.AddItemEntityPacket;
+import org.dragonet.proxy.protocol.packets.AddPaintingPacket;
+import org.dragonet.proxy.protocol.packets.AddPlayerPacket;
 import org.dragonet.proxy.utilities.BlockPosition;
+import org.dragonet.proxy.utilities.Vector3F;
 
 public class CachedEntity {
 
@@ -115,5 +126,60 @@ public class CachedEntity {
     public CachedEntity relativeMove(float yaw, float pitch) {
         this.relativeMove(yaw, pitch);
         return this;
+    }
+
+    public void spawn(UpstreamSession session)
+    {
+        if (session.isSpawned()) {
+            if (this.peType == EntityType.PLAYER){
+                PlayerListEntry playerListEntry = session.getPlayerInfoCache().get(this.playerUniqueId);
+                AddPlayerPacket pk = new AddPlayerPacket();
+                pk.eid = this.proxyEid;
+                pk.rtid = this.proxyEid;
+                pk.uuid = this.playerUniqueId;
+                pk.position = new Vector3F((float) this.x, (float) this.y, (float) this.z);
+                pk.motion = Vector3F.ZERO;
+                pk.yaw = this.yaw;
+                pk.pitch = this.pitch;
+                pk.username = playerListEntry.getProfile().getName();
+                pk.meta = EntityMetaTranslator.translateToPE(session, this.pcMeta, this.peType);
+                pk.meta.set(EntityMetaData.Constants.DATA_NAMETAG, new ByteArrayMeta(playerListEntry.getProfile().getName())); //hacky for now
+                this.spawned = true;
+                session.sendPacket(pk);
+            } else if (this.peType == EntityType.ITEM) {
+                AddItemEntityPacket pk = new AddItemEntityPacket();
+                pk.rtid = this.proxyEid;
+                pk.eid = this.proxyEid;
+                pk.metadata = EntityMetaTranslator.translateToPE(session, this.pcMeta, this.peType);
+                pk.item = ((SlotMeta) pk.metadata.map.get(EntityMetaData.Constants.DATA_TYPE_SLOT)).slot;
+                pk.position = new Vector3F((float) this.x, (float) this.y + this.peType.getOffset(), (float) this.z);
+                pk.motion = new Vector3F((float) this.motionX, (float) this.motionY, (float) this.motionZ);
+                this.spawned = true;
+                session.sendPacket(pk);
+            }  else if (this.peType == EntityType.PAINTING) {
+                AddPaintingPacket pk = new AddPaintingPacket();
+                pk.rtid = this.proxyEid;
+                pk.eid = this.proxyEid;
+                pk.pos = new BlockPosition((int) this.x, (int) this.y, (int) this.z);
+                pk.direction = 1;
+                pk.title = "Kebab";
+                this.spawned = true;
+//                session.sendPacket(pk); //BUGGY
+            } else if (this.peType != null) {
+                AddEntityPacket pk = new AddEntityPacket();
+                pk.rtid = this.proxyEid;
+                pk.eid = this.proxyEid;
+                pk.type = this.peType.getPeType();
+                pk.position = new Vector3F((float) this.x, (float) this.y - this.peType.getOffset(), (float) this.z);
+                pk.motion = new Vector3F((float) this.motionX, (float) this.motionY, (float) this.motionZ);
+                pk.yaw = this.yaw;
+                pk.pitch = this.pitch;
+                pk.meta = EntityMetaTranslator.translateToPE(session, this.pcMeta, this.peType);
+                // TODO: Hack for now. ;P
+                pk.attributes = this.attributes.values();
+                this.spawned = true;
+                session.sendPacket(pk);
+            }
+        }
     }
 }
