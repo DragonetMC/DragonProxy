@@ -22,7 +22,6 @@ public class PCEntityEquipmentPacketTranslator implements IPCPacketTranslator<Se
             } else {
                 return null;
             }
-            return null;
         }
 
         ItemStack items = packet.getItem();

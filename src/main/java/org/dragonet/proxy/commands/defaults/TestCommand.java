@@ -108,6 +108,18 @@ public class TestCommand extends Command {
             player.sendPacket(pk);
             player.sendChat("\u00a7bSound ID " + pk.sound.soundID + " (" + pk.sound.name() + ") sent");
 
+        } else if (args[0].equalsIgnoreCase("painting")) {
+
+            AddPaintingPacket pk = new AddPaintingPacket();
+            pk.rtid = player.getEntityCache().getNextAtomicLong().incrementAndGet();
+            pk.eid = pk.rtid;
+            pk.pos = new BlockPosition(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+            pk.direction = Integer.parseInt(args[4]);
+            pk.title = args[5];
+            
+            player.sendPacket(pk);
+            player.sendChat("\u00a7bPainting " + pk.title + " spawned at " + pk.pos.toString());
+
         }
     }
 

@@ -15,6 +15,7 @@ package org.dragonet.proxy.network.translator.pc;
 import com.github.steveice10.mc.protocol.data.game.entity.attribute.Attribute;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityPropertiesPacket;
 import org.dragonet.proxy.data.entity.PEEntityAttribute;
+import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
@@ -27,7 +28,11 @@ public class PCEntityPropertiesPacketTranslator implements IPCPacketTranslator<S
 
         CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
         if (entity == null) {
-            return null;
+            if (packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID)) {
+                entity = session.getEntityCache().getClientEntity();
+            } else {
+                return null;
+            }
         }
 
         for (Attribute attr : packet.getAttributes()) {

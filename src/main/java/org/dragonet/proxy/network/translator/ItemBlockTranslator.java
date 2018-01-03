@@ -228,7 +228,7 @@ public class ItemBlockTranslator {
             switch (output.getString("id")) {
                 case "minecraft:bed":
                     output.putString("id", "Bed");
-                    output.putByte("color", 0); //TODO check colors
+//                    output.putByte("color", 0); //TODO check colors
                     break;
                 case "minecraft:chest":
                     output.putString("id", "Chest");
