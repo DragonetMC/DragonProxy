@@ -122,7 +122,12 @@ public final class EntityMetaTranslator {
                                 peMeta.set(EntityMetaData.Constants.DATA_TYPE_SLOT, new SlotMeta(ItemBlockTranslator.translateSlotToPE((ItemStack) m.getValue())));
                                 break;
                             default: // (all LIVING) Byte : Hand states, used to trigger blocking/eating/drinking animation.
-                                peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_ACTION, ((byte) m.getValue() & 0x01) > 0);
+                                if (m.getValue() instanceof Byte)
+                                {
+                                    peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_ACTION, ((byte) m.getValue() & 0x01) > 0);
+                                }
+                                else
+                                    handle = false;
 //                                System.out.println("case 6 " + type.name() + " " + m.getValue());
                                 break;
                         }
@@ -147,7 +152,12 @@ public final class EntityMetaTranslator {
 //                            peMeta.set(EntityMetaData.Constants.DATA_, new IntegerMeta((int) m.getValue()));
 //                            break;
                             default: // (all LIVING) Float : Health
-                                peMeta.set(EntityMetaData.Constants.DATA_HEALTH, new IntegerMeta((int) ((float) m.getValue())));
+                                if (m.getValue() instanceof Float)
+                                {
+                                    peMeta.set(EntityMetaData.Constants.DATA_HEALTH, new IntegerMeta((int) ((float) m.getValue())));
+                                }
+                                else
+                                    handle = false;
 //                                System.out.println("case 7 " + type.name() + " " + m.getValue());
                                 break;
                         }
@@ -241,9 +251,9 @@ public final class EntityMetaTranslator {
                                 peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_ONFIRE, ((byte) m.getValue()) == 0x01);
                                 break;
                             case CREEPER: //VarInt	State (-1 = idle, 1 = fuse)
-//                        case EVOCATOR: //Byte	Spell (0: none, 1: summon vex, 2: attack, 3: wololo)
+                            case EVOCATION_ILLAGER: //Byte	Spell (0: none, 1: summon vex, 2: attack, 3: wololo)
                             case VEX: //Byte : 0x01 = Is in attack mode
-//                        case VINDICATOR: //Byte : 0x01 = Has target (aggressive state)
+                            case VINDICATOR: //Byte : 0x01 = Has target (aggressive state)
                             case SKELETON: //Boolean : Is swinging arms
                                 break;
                             case SPIDER: //Byte : 0x01 = Is climbing
@@ -254,7 +264,10 @@ public final class EntityMetaTranslator {
                             case ENDERMAN: //Opt BlockID : Carried block
                             case ENDER_DRAGON: //VarInt : Dragon phase
                             case GHAST: //Boolean : Is attacking
+                                break;
                             case SLIME: //VarInt : Size
+                            case MAGMA_CUBE: //VarInt : Size
+                                peMeta.set(EntityMetaData.Constants.DATA_SCALE, new FloatMeta((int) m.getValue()));
                                 break;
                             case PLAYER: //VarInt : Score
                                 // Not supported yet
@@ -385,6 +398,10 @@ public final class EntityMetaTranslator {
                                 break;
                         }
                         break;
+                }
+                if (type == EntityType.GIANT_ZOMBIE)
+                {
+                    peMeta.set(EntityMetaData.Constants.DATA_SCALE, new FloatMeta(6));
                 }
                 if (!handle)
                     DragonProxy.getInstance().getLogger().debug("Not supported entity meta (" + type.name() + ") : " + m.toString());
