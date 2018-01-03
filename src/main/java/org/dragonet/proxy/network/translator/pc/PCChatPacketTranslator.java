@@ -45,12 +45,6 @@ public class PCChatPacketTranslator implements IPCPacketTranslator<ServerChatPac
                     pe.needsTranslation = true;
                     pe.message = MessageTranslator.translationTranslateText((TranslationMessage) packet.getMessage());
                     pe.params = MessageTranslator.translationTranslateParams(((TranslationMessage) packet.getMessage()).getTranslationParams());
-
-                    System.out.println(pe.message);
-                    for(int i = 0; i<pe.params.length;i++)
-                    {
-                    	System.out.println(pe.params[i]);
-                    }
                 } else {
                     pe.message = pe.message = MessageTranslator.translate(packet.getMessage());
                     pe.type = TYPE_RAW;
@@ -62,11 +56,6 @@ public class PCChatPacketTranslator implements IPCPacketTranslator<ServerChatPac
                     pe.needsTranslation = true;
                     pe.message = MessageTranslator.translationTranslateText((TranslationMessage) packet.getMessage());
                     pe.params = MessageTranslator.translationTranslateParams(((TranslationMessage) packet.getMessage()).getTranslationParams());
-                    System.out.println(pe.message);
-                    for(int i = 0; i<pe.params.length;i++)
-                    {
-                    	System.out.println(pe.params[i]);
-                    }
                 } else {
                     pe.message = pe.message = MessageTranslator.translate(packet.getMessage());
                     pe.type = TYPE_RAW;
