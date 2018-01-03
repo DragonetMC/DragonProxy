@@ -133,12 +133,11 @@ public class DragonProxy {
             } catch (IOException e) {
                 throw new RuntimeException("Failed to read properties file", e);
             } finally {
-                if (inputStream != null)
-                    try {
-                        inputStream.close();
-                    } catch (IOException e) {
-                        // Ignore
-                    }
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    // Ignore
+                }
             }
         }
         // Initialize console command reader
