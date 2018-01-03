@@ -20,6 +20,8 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkD
 
 import java.io.IOException;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,10 +30,13 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.data.itemsblocks.ItemEntry;
+import org.dragonet.proxy.data.nbt.tag.CompoundTag;
 import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.BlockEntityDataPacket;
 import org.dragonet.proxy.protocol.packets.FullChunkDataPacket;
 import org.dragonet.proxy.protocol.type.chunk.ChunkData;
 import org.dragonet.proxy.protocol.type.chunk.Section;
+import org.dragonet.proxy.utilities.BlockPosition;
 
 public class PCChunkDataPacketTranslator implements IPCPacketTranslator<ServerChunkDataPacket> {
 
@@ -98,15 +103,35 @@ public class PCChunkDataPacketTranslator implements IPCPacketTranslator<ServerCh
                 }
             }
         }
-        // Blocks entities
-        try {
-            pe.blockEntities = new byte[pc.getTileEntities().length];
-            for (int i = 0; i < pc.getTileEntities().length; i++) {
-                pe.blockEntities = NBTIO.write(ItemBlockTranslator.translateBlockEntityToPE(pc.getTileEntities()[i]), ByteOrder.LITTLE_ENDIAN, true);
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(PCChunkDataPacketTranslator.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        // Blocks entities (Not Working)
+//        try {
+//            pe.blockEntities = new byte[pc.getTileEntities().length];
+//            for (int i = 0; i < pc.getTileEntities().length; i++) {
+//                pe.blockEntities = NBTIO.write(ItemBlockTranslator.translateBlockEntityToPE(pc.getTileEntities()[i]), ByteOrder.LITTLE_ENDIAN, true);
+//            }
+//        } catch (IOException ex) {
+//            Logger.getLogger(PCChunkDataPacketTranslator.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+        
+//        //  This way looks better but client crash
+//        try {
+//            pe.blockEntities = new byte[pc.getTileEntities().length];
+//            List<CompoundTag> blockEntities = new ArrayList<>();
+//            for (int i = 0; i < pc.getTileEntities().length; i++) {
+//                blockEntities.add(ItemBlockTranslator.translateBlockEntityToPE(pc.getTileEntities()[i]));
+//            }
+//            pe.blockEntities = NBTIO.write(blockEntities, ByteOrder.LITTLE_ENDIAN, true);
+//        } catch (IOException ex) {
+//            Logger.getLogger(PCChunkDataPacketTranslator.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+        
+//        // I tried that horrible way too ><
+//        for (int i = 0; i < pc.getTileEntities().length; i++) {
+//            BlockEntityDataPacket data = new BlockEntityDataPacket();
+//            data.tag = ItemBlockTranslator.translateBlockEntityToPE(pc.getTileEntities()[i]);
+//            data.blockPosition = new BlockPosition(data.tag.getInt("x"), data.tag.getInt("y"), data.tag.getInt("z"));
+//            this.session.putCachePacket(data);
+//        }
     }
 
     private static int index(int x, int y, int z) {
