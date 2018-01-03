@@ -20,7 +20,6 @@ import java.util.UUID;
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.protocol.type.Slot;
 
-import com.github.steveice10.mc.protocol.data.game.entity.EquipmentSlot;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
 
@@ -65,7 +64,7 @@ public class CachedEntity {
     public Set<Long> passengers = new HashSet();
 
     public EntityMetadata[] pcMeta;
-    public boolean spawned;
+    public boolean spawned = false;
     public final Set<Integer> effects = Collections.synchronizedSet(new HashSet<Integer>());
     public Map<Integer, PEEntityAttribute> attributes = Collections.synchronizedMap(new HashMap());
 
