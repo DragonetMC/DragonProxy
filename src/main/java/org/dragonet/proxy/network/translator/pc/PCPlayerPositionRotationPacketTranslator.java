@@ -64,7 +64,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             }
 
             ServerJoinGamePacket restored = (ServerJoinGamePacket) session.getDataCache()
-                .remove(CacheKey.PACKET_JOIN_GAME_PACKET);
+                    .remove(CacheKey.PACKET_JOIN_GAME_PACKET);
             if (!session.getProxy().getAuthMode().equalsIgnoreCase("online")) {
                 StartGamePacket ret = new StartGamePacket();
                 ret.rtid = entityPlayer.proxyEid;
@@ -193,8 +193,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                     pkAddPlayer.username = playerListEntry.getProfile().getName();
 
                     // TODO: this does not work well yet
-                    // pkAddPlayer.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, EntityType.PLAYER);
-                    pkAddPlayer.meta = EntityMetaData.createDefault();
+                    pkAddPlayer.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, EntityType.PLAYER);
                     pkAddPlayer.meta.set(EntityMetaData.Constants.DATA_NAMETAG, new ByteArrayMeta(playerListEntry.getProfile().getName())); //hacky for now
 
                     PlayerSkinPacket skin = new PlayerSkinPacket(entity.playerUniqueId);
@@ -207,6 +206,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                     peEntry.xboxUserId = "null";
                     peEntries.add(peEntry);
 
+                    entity.spawned = true;
                     session.sendPacket(pkAddPlayer);
                     session.sendPacket(skin);
                 } else if (entity.peType == EntityType.ITEM) {
@@ -240,7 +240,18 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                     pk.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, entity.peType);
                     // TODO: Hack for now. ;P
                     pk.attributes = entity.attributes.values();
+                    entity.spawned = true;
                     session.sendPacket(pk);
+                }
+                // Process equipments
+                if (entity.helmet != null || entity.chestplate != null || entity.leggings != null || entity.boots != null || entity.mainHand != null) {
+                    MobArmorEquipmentPacket aeq = new MobArmorEquipmentPacket();
+                    aeq.rtid = entity.proxyEid;
+                    aeq.helmet = entity.helmet;
+                    aeq.chestplate = entity.chestplate;
+                    aeq.leggings = entity.leggings;
+                    aeq.boots = entity.boots;
+                    session.sendPacket(aeq);
                 }
             }
 

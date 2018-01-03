@@ -20,9 +20,12 @@ public class PCSetTitlePacketTranslator implements IPCPacketTranslator<ServerTit
             case SUBTITLE:
                 titlePacket.text = packet.getSubtitle().getFullText();
                 break;
-            default:
-                titlePacket.text = packet.getTitle().getFullText();
+            case RESET:
+            case CLEAR:
+                titlePacket.text = "";
                 break;
+            default:
+                return null;
         }
 
         titlePacket.fadeIn = packet.getFadeIn();

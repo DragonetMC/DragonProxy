@@ -16,6 +16,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntit
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.data.entity.meta.EntityMetaData;
 import org.dragonet.proxy.data.entity.meta.type.SlotMeta;
+import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
@@ -23,7 +24,6 @@ import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.AddEntityPacket;
 import org.dragonet.proxy.protocol.packets.AddItemEntityPacket;
-import org.dragonet.proxy.protocol.packets.AddPlayerPacket;
 import org.dragonet.proxy.protocol.packets.SetEntityDataPacket;
 import org.dragonet.proxy.utilities.Vector3F;
 
@@ -31,8 +31,13 @@ public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<Ser
 
     public PEPacket[] translate(UpstreamSession session, ServerEntityMetadataPacket packet) {
         CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
-
         if (entity == null) {
+            if (packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID)) {
+                entity = session.getEntityCache().getClientEntity();
+            } else {
+                return null;
+            }
+            System.out.println("!!!!!!!!!!!!!!! TRY TO update the player meta from PCEntityMetadataPacketTranslator");
             return null;
         }
 
@@ -42,37 +47,18 @@ public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<Ser
             pk.rtid = entity.proxyEid;
             pk.meta = EntityMetaTranslator.translateToPE(session, packet.getMetadata(), entity.peType);
             session.sendPacket(pk);
-        } else {
-            if (entity.peType == EntityType.ITEM) {
+        } else { 
+            if (entity.peType == EntityType.PLAYER || entity.peType == EntityType.PAINTING) {
+                //Do nothing here !
+            } else if (entity.peType == EntityType.ITEM) {
                 AddItemEntityPacket pk = new AddItemEntityPacket();
                 pk.rtid = entity.proxyEid;
                 pk.eid = entity.proxyEid;
-                pk.metadata = EntityMetaTranslator.translateToPE(session, packet.getMetadata(), entity.peType);
+                pk.metadata = EntityMetaTranslator.translateToPE(session, entity.pcMeta, entity.peType);
                 pk.item = ((SlotMeta) pk.metadata.map.get(EntityMetaData.Constants.DATA_TYPE_SLOT)).slot;
                 pk.position = new Vector3F((float) entity.x, (float) entity.y + entity.peType.getOffset(), (float) entity.z);
                 pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
                 entity.spawned = true;
-                session.sendPacket(pk);
-            } else if (entity.peType == EntityType.PAINTING) {
-//                AddPaintingPacket pk = new AddPaintingPacket();
-//                pk.rtid = entity.proxyEid;
-//                pk.eid = entity.proxyEid;
-//                pk.pos = new BlockPosition((int) entity.x, (int) entity.y, (int) entity.z);
-//                pk.direction = 1;
-//                pk.title = "Kebab";
-//                entity.spawned = true;
-//                session.sendPacket(pk);
-            } else if (entity.peType == EntityType.PLAYER) {
-                AddPlayerPacket pk = new AddPlayerPacket();
-                pk.rtid = entity.proxyEid;
-                pk.eid = entity.proxyEid;
-                pk.position = new Vector3F((float) entity.x, (float) entity.y + entity.peType.getOffset(), (float) entity.z);
-                pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
-                pk.yaw = entity.yaw;
-                pk.pitch = entity.pitch;
-                pk.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, entity.peType);
-                entity.spawned = true;
-                // TODO: Hack for now. ;P
                 session.sendPacket(pk);
             } else {
                 AddEntityPacket pk = new AddEntityPacket();

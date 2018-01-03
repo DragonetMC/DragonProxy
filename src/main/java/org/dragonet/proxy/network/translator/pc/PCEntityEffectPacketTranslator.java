@@ -21,7 +21,6 @@ import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.MobEffectPacket;
-import org.dragonet.proxy.utilities.Logger;
 
 public class PCEntityEffectPacketTranslator implements IPCPacketTranslator<ServerEntityEffectPacket> {
 
@@ -29,7 +28,11 @@ public class PCEntityEffectPacketTranslator implements IPCPacketTranslator<Serve
 
         CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
         if (entity == null) {
-            return null;
+            if (packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID)) {
+                entity = session.getEntityCache().getClientEntity();
+            } else {
+                return null;
+            }
         }
 
         int effectId = MagicValues.value(Integer.class, packet.getEffect());

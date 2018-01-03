@@ -30,19 +30,21 @@ public class PCSpawnMobPacketTranslator implements IPCPacketTranslator<ServerSpa
                 return null;
             }
 
-            AddEntityPacket pk = new AddEntityPacket();
-            pk.rtid = entity.proxyEid;
-            pk.eid = entity.proxyEid;
-            pk.type = entity.peType.getPeType();
-            pk.position = new Vector3F((float) entity.x, (float) entity.y - entity.peType.getOffset(), (float) entity.z);
-            pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
-            pk.yaw = entity.yaw;
-            pk.pitch = entity.pitch;
-            pk.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, entity.peType);
-            // TODO: Hack for now. ;P
-            pk.attributes = entity.attributes.values();
-            entity.spawned = true;
-            return new PEPacket[]{pk};
+            if (session.isSpawned()) {
+                AddEntityPacket pk = new AddEntityPacket();
+                pk.rtid = entity.proxyEid;
+                pk.eid = entity.proxyEid;
+                pk.type = entity.peType.getPeType();
+                pk.position = new Vector3F((float) entity.x, (float) entity.y - entity.peType.getOffset(), (float) entity.z);
+                pk.motion = new Vector3F((float) entity.motionX, (float) entity.motionY, (float) entity.motionZ);
+                pk.yaw = entity.yaw;
+                pk.pitch = entity.pitch;
+                pk.meta = EntityMetaTranslator.translateToPE(session, entity.pcMeta, entity.peType);
+                // TODO: Hack for now. ;P
+                pk.attributes = entity.attributes.values();
+                entity.spawned = true;
+                session.sendPacket(pk);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
