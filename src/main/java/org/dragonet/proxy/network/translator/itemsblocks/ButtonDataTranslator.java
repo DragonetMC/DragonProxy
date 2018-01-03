@@ -8,7 +8,6 @@ package org.dragonet.proxy.network.translator.itemsblocks;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 
 /**
- *
  * @author vincent
  */
 public class ButtonDataTranslator extends IItemDataTranslator {

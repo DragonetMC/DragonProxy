@@ -29,37 +29,34 @@ public class PCEntityPropertiesPacketTranslator implements IPCPacketTranslator<S
         if (entity == null) {
             return null;
         }
-        
-        for(Attribute attr : packet.getAttributes())
-        {
-            switch(attr.getType())
-            {
+
+        for (Attribute attr : packet.getAttributes()) {
+            switch (attr.getType()) {
                 case GENERIC_FOLLOW_RANGE:
-                    entity.attributes.put(PEEntityAttribute.FOLLOW_RANGE, PEEntityAttribute.findAttribute(PEEntityAttribute.FOLLOW_RANGE).setValue((float)attr.getValue()));
+                    entity.attributes.put(PEEntityAttribute.FOLLOW_RANGE, PEEntityAttribute.findAttribute(PEEntityAttribute.FOLLOW_RANGE).setValue((float) attr.getValue()));
                     break;
                 case GENERIC_KNOCKBACK_RESISTANCE:
-                    entity.attributes.put(PEEntityAttribute.KNOCKBACK_RESISTANCE, PEEntityAttribute.findAttribute(PEEntityAttribute.KNOCKBACK_RESISTANCE).setValue((float)attr.getValue()));
+                    entity.attributes.put(PEEntityAttribute.KNOCKBACK_RESISTANCE, PEEntityAttribute.findAttribute(PEEntityAttribute.KNOCKBACK_RESISTANCE).setValue((float) attr.getValue()));
                     break;
                 case GENERIC_MOVEMENT_SPEED:
-                    entity.attributes.put(PEEntityAttribute.MOVEMENT_SPEED, PEEntityAttribute.findAttribute(PEEntityAttribute.MOVEMENT_SPEED).setValue((float)attr.getValue()));
+                    entity.attributes.put(PEEntityAttribute.MOVEMENT_SPEED, PEEntityAttribute.findAttribute(PEEntityAttribute.MOVEMENT_SPEED).setValue((float) attr.getValue()));
                     break;
                 case GENERIC_ATTACK_DAMAGE:
-                    entity.attributes.put(PEEntityAttribute.ATTACK_DAMAGE, PEEntityAttribute.findAttribute(PEEntityAttribute.ATTACK_DAMAGE).setValue((float)attr.getValue()));
+                    entity.attributes.put(PEEntityAttribute.ATTACK_DAMAGE, PEEntityAttribute.findAttribute(PEEntityAttribute.ATTACK_DAMAGE).setValue((float) attr.getValue()));
                     break;
                 case GENERIC_FLYING_SPEED:
-                    entity.attributes.put(PEEntityAttribute.MOVEMENT_SPEED, PEEntityAttribute.findAttribute(PEEntityAttribute.MOVEMENT_SPEED).setValue((float)attr.getValue()));
+                    entity.attributes.put(PEEntityAttribute.MOVEMENT_SPEED, PEEntityAttribute.findAttribute(PEEntityAttribute.MOVEMENT_SPEED).setValue((float) attr.getValue()));
                     break;
             }
         }
 
-        if (entity.spawned)
-        {
+        if (entity.spawned) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.rtid = entity.proxyEid;
             pk.entries = entity.attributes.values();
             return new PEPacket[]{pk};
         }
-        
+
         return null;
     }
 }

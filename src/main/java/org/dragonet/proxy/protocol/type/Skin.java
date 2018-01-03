@@ -54,7 +54,7 @@ public class Skin {
 
     public static Skin read(BinaryStream source) {
         return new Skin(source.getString(), source.getByteArray(), source.getByteArray(), source.getString(),
-                source.getByteArray());
+            source.getByteArray());
     }
 
     public void write(BinaryStream dest) {

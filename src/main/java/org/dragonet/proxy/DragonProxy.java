@@ -13,6 +13,7 @@
 package org.dragonet.proxy;
 
 import com.github.steveice10.mc.protocol.MinecraftConstants;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -149,6 +150,9 @@ public class DragonProxy {
         else
             logger.info("Saving console output disabled");
 
+        // set logger mode
+        logger.debug = config.log_debug;
+
         // Put at the top instead
         if (!IS_RELEASE)
             logger.warning("This is a development build. It may contain bugs. Do not use on production.\n");
@@ -166,15 +170,15 @@ public class DragonProxy {
 
         // Load some more stuff
         String version = properties.getProperty("git.build.version");
-        if (properties.getProperty("git.dirty").equals("true"))
-            version += " (" + properties.getProperty("git.commit.id.describe-short") + ")";
+        if (properties.containsKey("git.commit.id.describe"))
+            version += " (" + properties.getProperty("git.commit.id.describe") + ")";
         logger.info(lang.get(Lang.INIT_LOADING, version));
         logger.info(lang.get(Lang.INIT_MC_PC_SUPPORT, MinecraftConstants.GAME_VERSION));
         logger.info(lang.get(Lang.INIT_MC_PE_SUPPORT, ProtocolInfo.MINECRAFT_VERSION));
         authMode = config.mode.toLowerCase();
         if (!authMode.equals("cls") && !authMode.equals("online") && !authMode.equals("offline"))
             logger.severe("Invalid login 'mode' option detected, must be cls/online/offline. You set it to '" + authMode
-                    + "'! ");
+                + "'! ");
 
         // Init session and command stuff
         sessionRegister = new SessionRegister(this);
@@ -188,7 +192,7 @@ public class DragonProxy {
         logger.info(lang.get(Lang.INIT_BINDING, config.udp_bind_ip, config.udp_bind_port));
         // RakNet.enableLogging();
         network = new RaknetInterface(this, config.udp_bind_ip, // IP
-                config.udp_bind_port); // Port
+            config.udp_bind_port); // Port
 
         // MOTD
         motd = config.motd;

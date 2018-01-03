@@ -6,17 +6,15 @@
 package org.dragonet.proxy.network.translator.itemsblocks;
 
 /**
- *
  * @author vincent
  */
 public class StructureBlockDataTranslator extends IItemDataTranslator {
 
     //https://minecraft.gamepedia.com/Structure_Block
-    
+
     @Override
     public Integer translateToPE(Integer damage) {
         // Here is the magic
-        System.out.println("INPUT " + damage);
         int variant = damage & 0x03;
         variant = translateVariant(variant);
         return variant;
@@ -27,9 +25,8 @@ public class StructureBlockDataTranslator extends IItemDataTranslator {
         // Here too
         return damage;
     }
-    
-    private int translateVariant(int input)
-    {
+
+    private int translateVariant(int input) {
         if (input == 0) // Save
             input = 2;
         else if (input == 1) // Load

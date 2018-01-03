@@ -2,6 +2,7 @@ package org.dragonet.proxy.protocol.type.transaction.action;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import org.dragonet.proxy.protocol.type.Slot;
 
 /**

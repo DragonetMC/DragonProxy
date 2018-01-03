@@ -14,7 +14,7 @@ public class BossEventPacket extends PEPacket {
     public static final int TYPE_TITLE = 5;
     public static final int TYPE_UNKNOWN_6 = 6;
     public static final int TYPE_TEXTURE = 7;
-    
+
     public long bossEid;
     public int type;
     public long playerEid;
@@ -23,7 +23,7 @@ public class BossEventPacket extends PEPacket {
     public short unknown;
     public int color;
     public int overlay;
-    
+
     @Override
     public int pid() {
         return ProtocolInfo.BOSS_EVENT_PACKET;
@@ -54,7 +54,7 @@ public class BossEventPacket extends PEPacket {
             case TYPE_TITLE:
                 this.putString(this.title);
                 break;
-            }        
+        }
     }
 
     @Override
@@ -81,8 +81,8 @@ public class BossEventPacket extends PEPacket {
             case TYPE_TITLE:
                 this.title = this.getString();
                 break;
-            }
-        
+        }
+
     }
 
 }

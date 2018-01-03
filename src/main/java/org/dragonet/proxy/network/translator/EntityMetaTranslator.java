@@ -17,24 +17,17 @@ import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.MetadataType;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
-import org.dragonet.proxy.data.entity.meta.type.ByteArrayMeta;
-import org.dragonet.proxy.data.entity.meta.type.ByteMeta;
-import org.dragonet.proxy.data.entity.meta.type.ShortMeta;
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.data.entity.meta.EntityMetaData;
-import org.dragonet.proxy.data.entity.meta.type.BlockPositionMeta;
-import org.dragonet.proxy.data.entity.meta.type.FloatMeta;
-import org.dragonet.proxy.data.entity.meta.type.IntegerMeta;
-import org.dragonet.proxy.data.entity.meta.type.SlotMeta;
+import org.dragonet.proxy.data.entity.meta.type.*;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.protocol.type.Slot;
 import org.dragonet.proxy.utilities.BlockPosition;
 
 public final class EntityMetaTranslator {
 
     public static EntityMetaData translateToPE(UpstreamSession session, EntityMetadata[] pcMeta, EntityType type) {
         /*
-	 * Following format was fetched from http://wiki.vg/Entities#Entity_meta_Format
+     * Following format was fetched from http://wiki.vg/Entities#Entity_meta_Format
          */
         EntityMetaData peMeta = EntityMetaData.createDefault();
         if (pcMeta == null || type == EntityType.NONE) {
@@ -44,13 +37,13 @@ public final class EntityMetaTranslator {
         for (EntityMetadata m : pcMeta) {
 //            System.out.println(m);
             try {
-                if (m == null) {
+                if (m == null)
                     continue;
-                }
+
                 switch (m.getId()) {
                     case 0:// Flags
                         byte pcFlags = ((byte) m.getValue());
-//                    System.out.println(new Integer(pcFlags));
+                        //System.out.println("PC flag: " + pcFlags);
                         peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_ONFIRE, (pcFlags & 0x01) > 0);
                         peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_SNEAKING, (pcFlags & 0x02) > 0);
                         peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_RIDING, (pcFlags & 0x04) > 0);
@@ -83,7 +76,7 @@ public final class EntityMetaTranslator {
                         peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_SILENT, ((boolean) m.getValue()));
                         break;
                     case 5://Boolean : No gravity
-                        peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_AFFECTED_BY_GRAVITY, (((boolean) m.getValue()) ? false : true));
+                        peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_AFFECTED_BY_GRAVITY, (!((boolean) m.getValue())));
                         break;
                     case 6:
                         switch (type) {
@@ -94,7 +87,7 @@ public final class EntityMetaTranslator {
                                 peMeta.set(EntityMetaData.Constants.DATA_FUSE_LENGTH, new IntegerMeta((int) m.getValue()));
                                 break;
                             case POTION: //Slot : Potion which is thrown
-                                peMeta.set(EntityMetaData.Constants.DATA_TYPE_SLOT, new SlotMeta((Slot) ItemBlockTranslator.translateSlotToPE((ItemStack) m.getValue())));
+                                peMeta.set(EntityMetaData.Constants.DATA_TYPE_SLOT, new SlotMeta(ItemBlockTranslator.translateSlotToPE((ItemStack) m.getValue())));
                                 break;
                             case FALLING_BLOCK: //Position : spawn position
                                 peMeta.set(EntityMetaData.Constants.DATA_BLOCK_TARGET, new BlockPositionMeta(new BlockPosition((Position) m.getValue())));
@@ -105,7 +98,7 @@ public final class EntityMetaTranslator {
                             case FISHING_HOOK: //VarInt : Hooked entity id + 1, or 0 if there is no hooked entity
                                 break;
                             case ARROW: //Byte : is critical
-                                peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_CRITICAL, ((byte) m.getValue() & 0x01) > 0 ? true : false);
+                                peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_CRITICAL, ((byte) m.getValue() & 0x01) > 0);
                                 break;
                             //case TIPPED_ARROW: //VarInt : Color (-1 for no particles)
                             case BOAT: //VarInt : Time since last hit
@@ -120,14 +113,14 @@ public final class EntityMetaTranslator {
                                 peMeta.set(EntityMetaData.Constants.DATA_WITHER_INVULNERABLE_TICKS, new IntegerMeta((int) m.getValue()));
                                 break;
                             case FIREWORKS_ROCKET: //Slot : Firework info
-                                peMeta.set(EntityMetaData.Constants.DATA_TYPE_SLOT, new SlotMeta((Slot) ItemBlockTranslator.translateSlotToPE((ItemStack) m.getValue())));
+                                peMeta.set(EntityMetaData.Constants.DATA_TYPE_SLOT, new SlotMeta(ItemBlockTranslator.translateSlotToPE((ItemStack) m.getValue())));
                                 break;
                             //case ITEM_FRAME: //Slot : Item
                             case ITEM: //Slot : Item
-                                peMeta.set(EntityMetaData.Constants.DATA_TYPE_SLOT, new SlotMeta((Slot) ItemBlockTranslator.translateSlotToPE((ItemStack) m.getValue())));
+                                peMeta.set(EntityMetaData.Constants.DATA_TYPE_SLOT, new SlotMeta(ItemBlockTranslator.translateSlotToPE((ItemStack) m.getValue())));
                                 break;
                             default: // (all LIVING) Byte : Hand states, used to trigger blocking/eating/drinking animation.
-                                peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_ACTION, ((byte) m.getValue() & 0x01) > 0 ? true : false);
+                                peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_ACTION, ((byte) m.getValue() & 0x01) > 0);
 //                                System.out.println("case 6 " + type.name() + " " + m.getValue());
                                 break;
                         }
@@ -145,6 +138,8 @@ public final class EntityMetaTranslator {
                                 break;
                             case FIREWORKS_ROCKET: //VarInt : Entity ID of entity which used firework (for elytra boosting)
                                 peMeta.set(EntityMetaData.Constants.DATA_OWNER_EID, new IntegerMeta((int) m.getValue()));
+                                break;
+                            case ARROW:
                                 break;
 //                        case ITEM_FRAME: //VarInt : Rotation
 //                            peMeta.set(EntityMetaData.Constants.DATA_, new IntegerMeta((int) m.getValue()));
@@ -177,7 +172,7 @@ public final class EntityMetaTranslator {
                                 peMeta.set(EntityMetaData.Constants.DATA_AREA_EFFECT_CLOUD_PARTICLE_ID, new IntegerMeta((int) m.getValue()));
                                 break;
                             case BOAT: //VarInt : Type (0=oak, 1=spruce, 2=birch, 3=jungle, 4=acacia, 5=dark oak)
-                                peMeta.set(20 /* woodID */, new ByteMeta((byte) ((byte) ((Integer) m.getValue()).byteValue())));
+                                peMeta.set(20 /* woodID */, new ByteMeta((byte) ((Integer) m.getValue()).byteValue()));
                                 break;
                             default: //(all LIVING) Boolean : Is potion effect ambient: reduces the number of particles generated by potions to 1/5 the normal amount
                                 peMeta.set(EntityMetaData.Constants.DATA_POTION_AMBIENT, new ByteMeta((byte) (((boolean) m.getValue()) ? 0x01 : 0x00)));
@@ -241,7 +236,7 @@ public final class EntityMetaTranslator {
                             case SHULKER: //Direction : Facing direction
                                 break;
                             case BLAZE: //Byte : 0x01 = Is on fire
-                                peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_ONFIRE, ((boolean) m.getValue()));
+                                peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_ONFIRE, ((byte) m.getValue()) == 0x01);
                                 break;
                             case CREEPER: //VarInt	State (-1 = idle, 1 = fuse)
 //                        case EVOCATOR: //Byte	Spell (0: none, 1: summon vex, 2: attack, 3: wololo)
@@ -250,7 +245,7 @@ public final class EntityMetaTranslator {
                             case SKELETON: //Boolean : Is swinging arms
                                 break;
                             case SPIDER: //Byte : 0x01 = Is climbing
-                                peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_WALLCLIMBING, ((boolean) m.getValue()));
+                                peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_WALLCLIMBING, ((byte) m.getValue()) == 0x01);
                                 break;
                             case WITCH: //Boolean : Is drinking potion
                             case WITHER: //VarInt : Center head's target (entity ID, or 0 if no target)

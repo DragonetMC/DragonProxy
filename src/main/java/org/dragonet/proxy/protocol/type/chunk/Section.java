@@ -46,6 +46,6 @@ public class Section {
 
     public String toString() {
         return "Section(storageVersion: " + this.storageVersion + ", blockIds: " + Arrays.toString(this.blockIds)
-                + ", blockMetas: " + Arrays.toString(this.blockMetas) + ")";
+            + ", blockMetas: " + Arrays.toString(this.blockMetas) + ")";
     }
 }

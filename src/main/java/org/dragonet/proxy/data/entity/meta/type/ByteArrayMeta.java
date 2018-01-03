@@ -13,6 +13,7 @@
 package org.dragonet.proxy.data.entity.meta.type;
 
 import java.nio.charset.StandardCharsets;
+
 import org.dragonet.proxy.data.entity.meta.EntityMetaData;
 import org.dragonet.proxy.data.entity.meta.IEntityMetaDataObject;
 import org.dragonet.proxy.utilities.BinaryStream;

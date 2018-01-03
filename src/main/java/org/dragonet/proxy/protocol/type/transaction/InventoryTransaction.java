@@ -1,6 +1,7 @@
 package org.dragonet.proxy.protocol.type.transaction;
 
 import java.util.Set;
+
 import org.dragonet.proxy.protocol.type.transaction.action.InventoryAction;
 
 /**

@@ -32,7 +32,7 @@ public final class EntityCache {
     private final UpstreamSession upstream;
     // proxy eid -> entity
     private final Map<Long, CachedEntity> entities = Collections
-            .synchronizedMap(new HashMap<>());
+        .synchronizedMap(new HashMap<>());
     // pro
     private final Set<Long> playerEntities = Collections.synchronizedSet(new HashSet<Long>());
 
@@ -117,7 +117,7 @@ public final class EntityCache {
         }
 
         CachedEntity e = new CachedEntity(packet.getEntityId(), nextClientEntityId.getAndIncrement(), MagicValues.value(Integer.class, packet.getType()),
-                peType, null, false, null);
+            peType, null, false, null);
         e.absoluteMove(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch());
         e.motionX = packet.getMotionX();
         e.motionY = packet.getMotionY();
@@ -154,7 +154,7 @@ public final class EntityCache {
 
     public CachedEntity newObject(ServerSpawnObjectPacket packet) {
         CachedEntity e = new CachedEntity(packet.getEntityId(), nextClientEntityId.getAndIncrement(), -1, EntityType.ITEM, packet.getType(),
-                false, null);
+            false, null);
         e.absoluteMove(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch());
         e.motionX = packet.getMotionX();
         e.motionY = packet.getMotionY();
@@ -170,7 +170,7 @@ public final class EntityCache {
     public CachedEntity newEntity(ServerSpawnObjectPacket packet) {
         EntityType peType = EntityMetaTranslator.translateToPE(packet.getType());
         CachedEntity e = new CachedEntity(packet.getEntityId(), nextClientEntityId.getAndIncrement(), MagicValues.value(Integer.class, packet.getType()),
-                peType, packet.getType(), false, null);
+            peType, packet.getType(), false, null);
         e.absoluteMove(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch());
         e.motionX = packet.getMotionX();
         e.motionY = packet.getMotionY();
@@ -201,7 +201,7 @@ public final class EntityCache {
     public void onTick() {
         // Disabled this for now
         /*
-		 * entities.values().stream().map((e) -> { e.x += e.motionX; e.y += e.motionY;
+         * entities.values().stream().map((e) -> { e.x += e.motionX; e.y += e.motionY;
 		 * e.z += e.motionZ; return e; });
          */
     }

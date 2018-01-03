@@ -97,10 +97,10 @@ public final class InventoryTranslatorRegister {
             if (session.getDataCache().containsKey(CacheKey.WINDOW_BLOCK_POSITION)) {
                 // Already a block was replaced to Chest, reset it
                 session.sendFakeBlock(((Position) session.getDataCache().get(CacheKey.WINDOW_BLOCK_POSITION)).getX(),
-                        ((Position) session.getDataCache().get(CacheKey.WINDOW_BLOCK_POSITION)).getY(),
-                        ((Position) session.getDataCache().remove(CacheKey.WINDOW_BLOCK_POSITION)).getZ(), 1,
-                        // Set to stone since we don't know what it was, server will correct it once client interacts it
-                        0);
+                    ((Position) session.getDataCache().get(CacheKey.WINDOW_BLOCK_POSITION)).getY(),
+                    ((Position) session.getDataCache().remove(CacheKey.WINDOW_BLOCK_POSITION)).getZ(), 1,
+                    // Set to stone since we don't know what it was, server will correct it once client interacts it
+                    0);
             }
         }
     }
@@ -110,7 +110,7 @@ public final class InventoryTranslatorRegister {
             return; // We don't process player inventory updates here.
         }
         if (!session.getDataCache().containsKey(CacheKey.WINDOW_OPENED_ID)
-                || !session.getWindowCache().hasWindow(packet.getWindowId())) {
+            || !session.getWindowCache().hasWindow(packet.getWindowId())) {
             session.getDownstream().send(new ClientCloseWindowPacket(packet.getWindowId()));
             return;
         }
@@ -136,7 +136,7 @@ public final class InventoryTranslatorRegister {
             return; // We don't process player inventory updates here.
         }
         if (!session.getDataCache().containsKey(CacheKey.WINDOW_OPENED_ID)
-                || !session.getWindowCache().hasWindow(packet.getWindowId())) {
+            || !session.getWindowCache().hasWindow(packet.getWindowId())) {
             session.getDownstream().send(new ClientCloseWindowPacket(packet.getWindowId()));
             return;
         }

@@ -27,11 +27,11 @@ public class PCMultiBlockChangePacketTranslator implements IPCPacketTranslator<S
     public PEPacket[] translate(UpstreamSession session, ServerMultiBlockChangePacket packet) {
         UpdateBlockPacket[] packets = new UpdateBlockPacket[packet.getRecords().length];
         int generalFlag = packet.getRecords().length > 64 ? UpdateBlockPacket.FLAG_ALL_PRIORITY
-                : UpdateBlockPacket.FLAG_NEIGHBORS;
+            : UpdateBlockPacket.FLAG_NEIGHBORS;
         for (int i = 0; i < packets.length; i++) {
             packets[i] = new UpdateBlockPacket();
             packets[i].blockPosition = new BlockPosition(packet.getRecords()[i].getPosition().getX(),
-                    packet.getRecords()[i].getPosition().getY(), packet.getRecords()[i].getPosition().getZ());
+                packet.getRecords()[i].getPosition().getY(), packet.getRecords()[i].getPosition().getZ());
 
             BlockState block = packet.getRecords()[i].getBlock();
             ItemEntry entry = ItemBlockTranslator.translateToPE(block.getId(), block.getData());
