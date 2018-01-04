@@ -27,6 +27,11 @@ public class BlockPosition {
         this.y = pos.getY();
         this.z = pos.getZ();
     }
+    
+    public Vector3F toVector3F()
+    {
+        return new Vector3F(x, y, z);
+    }
 
     @Override
     public boolean equals(Object obj) {
