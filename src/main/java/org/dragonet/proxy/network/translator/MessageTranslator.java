@@ -43,7 +43,11 @@ public final class MessageTranslator {
                 build.append(translate(msg));
         }
         return build.toString();
-
+    }
+    
+    public static String translate(String message)
+    {
+        return translate(Message.fromString(message));
     }
 
     public static String translationTranslateText(TranslationMessage message) {
