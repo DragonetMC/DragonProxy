@@ -30,7 +30,7 @@ public enum EntityType {
     SQUID(17, 0),
     RABBIT(18, 0),
     BAT(19, 0),
-    IRONGOLEM(20, 0),
+    IRON_GOLEM(20, 0),
     SNOWMAN(21, 0),
     OCELOT(22, 0),
     HORSE(23, 1.6f),

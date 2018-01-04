@@ -243,7 +243,7 @@ public final class EntityMetaTranslator {
                             case BAT: //Byte : Is hanging
 //                                peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_SITTING, (((byte) m.getValue()) ? 0x01 : 0x00)); //wrong data
                                 break;
-                            case IRONGOLEM: //Byte : Is player-created
+                            case IRON_GOLEM: //Byte : Is player-created
                             case SNOWMAN: //Byte : has no pumpkin hat
                             case SHULKER: //Direction : Facing direction
                                 break;
