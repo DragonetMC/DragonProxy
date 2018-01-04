@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.dragonet.proxy.DragonProxy;
 
 import org.dragonet.proxy.data.nbt.NBTIO;
 import org.dragonet.proxy.network.UpstreamSession;
@@ -103,35 +104,20 @@ public class PCChunkDataPacketTranslator implements IPCPacketTranslator<ServerCh
                 }
             }
         }
-        // Blocks entities (Not Working)
-//        try {
-//            pe.blockEntities = new byte[pc.getTileEntities().length];
-//            for (int i = 0; i < pc.getTileEntities().length; i++) {
-//                pe.blockEntities = NBTIO.write(ItemBlockTranslator.translateBlockEntityToPE(pc.getTileEntities()[i]), ByteOrder.LITTLE_ENDIAN, true);
-//            }
-//        } catch (IOException ex) {
-//            Logger.getLogger(PCChunkDataPacketTranslator.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-        
-//        //  This way looks better but client crash
-//        try {
-//            pe.blockEntities = new byte[pc.getTileEntities().length];
-//            List<CompoundTag> blockEntities = new ArrayList<>();
-//            for (int i = 0; i < pc.getTileEntities().length; i++) {
-//                blockEntities.add(ItemBlockTranslator.translateBlockEntityToPE(pc.getTileEntities()[i]));
-//            }
-//            pe.blockEntities = NBTIO.write(blockEntities, ByteOrder.LITTLE_ENDIAN, true);
-//        } catch (IOException ex) {
-//            Logger.getLogger(PCChunkDataPacketTranslator.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-        
-//        // I tried that horrible way too ><
-//        for (int i = 0; i < pc.getTileEntities().length; i++) {
-//            BlockEntityDataPacket data = new BlockEntityDataPacket();
-//            data.tag = ItemBlockTranslator.translateBlockEntityToPE(pc.getTileEntities()[i]);
-//            data.blockPosition = new BlockPosition(data.tag.getInt("x"), data.tag.getInt("y"), data.tag.getInt("z"));
-//            this.session.putCachePacket(data);
-//        }
+        // Blocks entities
+        try {
+            List<CompoundTag> blockEntities = new ArrayList<>();
+            for (int i = 0; i < pc.getTileEntities().length; i++) {
+                org.dragonet.proxy.data.nbt.tag.CompoundTag peTag = ItemBlockTranslator.translateBlockEntityToPE(pc.getTileEntities()[i]);
+                if (peTag != null) //filter non hadled blocks entities
+                    blockEntities.add(peTag);
+//                else // debug
+//                    DragonProxy.getInstance().getLogger().debug("NBT null for " + pc.getTileEntities()[i].toString());
+            }
+            pe.blockEntities = NBTIO.write(blockEntities, ByteOrder.LITTLE_ENDIAN, true);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     private static int index(int x, int y, int z) {

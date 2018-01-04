@@ -26,6 +26,7 @@ import com.github.steveice10.opennbt.tag.builtin.StringTag;
 import com.github.steveice10.opennbt.tag.builtin.Tag;
 
 import java.util.List;
+import org.dragonet.proxy.DragonProxy;
 
 import org.dragonet.proxy.data.itemsblocks.ItemEntry;
 import org.dragonet.proxy.data.nbt.tag.ListTag;
@@ -228,17 +229,19 @@ public class ItemBlockTranslator {
             switch (output.getString("id")) {
                 case "minecraft:bed":
                     output.putString("id", "Bed");
-//                    output.putByte("color", 0); //TODO check colors
+                    output.putByte("color", output.getInt("color") & 0x00); //TODO check colors
+                    output.putByte("isMovable", 0x00);
                     break;
                 case "minecraft:chest":
                     output.putString("id", "Chest");
                     break;
-                case "minecraft:ender_chest":
-                    output.putString("id", "EnderChest");
-                    break;
-                case "minecraft:command_block":
-                    output.putString("id", "CommandBlock");
-                    break;
+//                case "minecraft:ender_chest":
+//                    output.putString("id", "EnderChest");
+//                    output.putByte("isMovable", 0x00);
+//                    break;
+//                case "minecraft:command_block":
+//                    output.putString("id", "CommandBlock");
+//                    break;
                 case "minecraft:sign":
                     output.putString("id", "Sign");
                     if (!output.contains("Text"))
@@ -252,66 +255,79 @@ public class ItemBlockTranslator {
                     output.remove("Text3");
                     output.remove("Text4");
                     break;
-                case "minecraft:flower_pot":
-                    output.putString("id", "FlowerPot");
-                    output.putInt("data", output.getInt("Data"));
-                    output.remove("Data");
-                    output.putShort("item", 0);
-                    output.remove("Item");
-                    break;
-                case "minecraft:hopper":
-                    output.putString("id", "Hopper");
-                    break;
-                case "minecraft:dropper":
-                    output.putString("id", "Dropper");
-                    break;
-                case "minecraft:dispenser":
-                    output.putString("id", "Dispenser");
-                    break;
-                case "minecraft:daylight_detector":
-                    output.putString("id", "DaylightDetector");
-                    break;
-                case "minecraft:shulker_box":
-                    output.putString("id", "ShulkerBox");
-                    break;
-                case "minecraft:furnace":
-                    output.putString("id", "Furnace");
-                    break;
-                case "minecraft:structure_block":
-                    output.putString("id", "StructureBlock");
-                    break;
-                case "minecraft:end_gateway":
-                    output.putString("id", "EndGateway");
-                    break;
-                case "minecraft:beacon":
-                    output.putString("id", "Beacon");
-                    break;
-                case "minecraft:end_portal":
-                    output.putString("id", "EndPortal");
-                    break;
-                case "minecraft:mob_spawner":
-                    output.putString("id", "MobSpawner");
-                    break;
-                case "minecraft:skull":
-                    output.putString("id", "Skull");
-                    break;
-                case "minecraft:banner":
-                    output.putString("id", "Banner");
-                    break;
-                case "minecraft:comparator":
-                    output.putString("id", "Comparator");
-                    break;
-                case "minecraft:item_frame":
-                    output.putString("id", "ItemFrame");
-                    break;
-                case "minecraft:jukebox":
-                    output.putString("id", "Jukebox");
-                    break;
-                case "minecraft:piston":
-                    output.putString("id", "PistonArm");
-                    break;
+//                case "minecraft:flower_pot":
+//                    output.putString("id", "FlowerPot");
+//                    output.putInt("data", output.getInt("Data"));
+//                    output.remove("Data");
+//                    output.putShort("item", 0);
+//                    output.remove("Item");
+//                    break;
+//                case "minecraft:hopper":
+//                    output.putString("id", "Hopper");
+//                    break;
+//                case "minecraft:dropper":
+//                    output.putString("id", "Dropper");
+//                    break;
+//                case "minecraft:dispenser":
+//                    output.putString("id", "Dispenser");
+//                    break;
+//                case "minecraft:daylight_detector":
+//                    output.putString("id", "DaylightDetector");
+//                    break;
+//                case "minecraft:shulker_box":
+//                    output.putString("id", "ShulkerBox");
+//                    break;
+//                case "minecraft:furnace":
+//                    output.putString("id", "Furnace");
+//                    break;
+//                case "minecraft:structure_block":
+//                    output.putString("id", "StructureBlock");
+//                    break;
+//                case "minecraft:end_gateway":
+//                    output.putString("id", "EndGateway");
+//                    break;
+//                case "minecraft:beacon":
+//                    output.putString("id", "Beacon");
+//                    break;
+//                case "minecraft:end_portal":
+//                    output.putString("id", "EndPortal");
+//                    break;
+//                case "minecraft:mob_spawner":
+//                    output.putString("id", "MobSpawner");
+//                    break;
+//                case "minecraft:skull":
+//                    output.putString("id", "Skull");
+//                    output.putByte("isMovable", 0x00);
+//                    break;
+//                case "minecraft:banner":
+//                    output.putString("id", "Banner");
+//                    break;
+//                case "minecraft:comparator":
+//                    output.putString("id", "Comparator");
+//                    break;
+//                case "minecraft:item_frame":
+//                    output.putString("id", "ItemFrame");
+//                    break;
+//                case "minecraft:jukebox":
+//                    output.putString("id", "Jukebox");
+//                    break;
+//                case "minecraft:piston":
+//                    output.putString("id", "PistonArm");
+//                    break;
+//                case "minecraft:noteblock":
+//                    output.putString("id", "PistonArm");
+//                    break;
+//                case "minecraft:enchanting_table":
+//                    output.putString("id", "PistonArm");
+//                    break;
+//                case "minecraft:brewing_stand":
+//                    output.putString("id", "BrewingStand");
+//                    break;
+                default :
+                    DragonProxy.getInstance().getLogger().debug("Block entitiy not handled : " + output.getString("id"));
+                    return null;
             }
-//        if (output.getString("id") == "ShulkerBox" || output.getString("id") == "Bed" || output.getString("id") == "Chest")
+//        if (output.getString("id") == "Chest") //debug
 //            System.out.println("translateBlockEntityToPE " + output.toString());
         return output;
     }
