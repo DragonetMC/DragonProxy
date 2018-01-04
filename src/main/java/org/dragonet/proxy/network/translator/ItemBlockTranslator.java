@@ -336,8 +336,8 @@ public class ItemBlockTranslator {
 //                    DragonProxy.getInstance().getLogger().debug("Block entitiy not handled : " + output.getString("id") + " " + output.toString());
                     return null;
             }
-        if (output.getString("id") == "Sign") //debug
-            System.out.println("translateBlockEntityToPE " + output.toString());
+//        if (output.getString("id") == "Sign") //debug
+//            System.out.println("translateBlockEntityToPE " + output.toString());
         return output;
     }
     
