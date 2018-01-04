@@ -43,6 +43,7 @@ public enum EntityType {
     PARROT(30, 0),
     //UNKNOWN(31, 0),
     ZOMBIE(32, 0),
+    GIANT_ZOMBIE(32, 0),
     CREEPER(33, 0),
     SKELETON(34, 0),
     SPIDER(35, 0),
@@ -65,7 +66,7 @@ public enum EntityType {
     WITHER(52, 0),
     ENDER_DRAGON(53, 0),
     SHULKER(54, 0),
-    ENDREMITE(55, 0),
+    ENDERMITE(55, 0),
     LEARN_TO_CODE_MASCOTE(56, 0),
     VINDICATOR(57, 0),
     //UNKNOWN(58, 0),
@@ -137,6 +138,7 @@ public enum EntityType {
     }
 
     public static EntityType convertToPE(MobType pcType) {
+        
         return convertToPE(MagicValues.value(Integer.class, pcType));
     }
 

@@ -22,12 +22,9 @@ public class PCEntityEquipmentPacketTranslator implements IPCPacketTranslator<Se
             } else {
                 return null;
             }
-            return null;
         }
 
         ItemStack items = packet.getItem();
-        MobArmorEquipmentPacket aeq = new MobArmorEquipmentPacket();
-
         boolean handModified = false;
 
         switch (packet.getSlot()) {
@@ -49,30 +46,18 @@ public class PCEntityEquipmentPacketTranslator implements IPCPacketTranslator<Se
                 handModified = true;
                 break;
         }
-
-        aeq.helmet = entity.helmet;
-        aeq.chestplate = entity.chestplate;
-        aeq.leggings = entity.leggings;
-        aeq.boots = entity.boots;
-        aeq.rtid = entity.proxyEid;
+        entity.updateEquipment(session);
 
         if (handModified) {
-
             MobEquipmentPacket equipPacket = new MobEquipmentPacket();
-
             equipPacket.rtid = entity.proxyEid;
             equipPacket.item = entity.mainHand;
             equipPacket.inventorySlot = 0;
             equipPacket.hotbarSlot = 0;
             equipPacket.windowId = 0;
-
-            return new PEPacket[]{aeq, equipPacket};
-
-        } else {
-
-            return new PEPacket[]{aeq};
-
+            session.sendPacket(equipPacket);
         }
+        return null;
 
     }
 }

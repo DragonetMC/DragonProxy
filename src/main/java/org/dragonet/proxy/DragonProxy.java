@@ -126,19 +126,20 @@ public class DragonProxy {
 
         InputStream inputStream = this.getClass().getResourceAsStream("/buildNumber.properties");
         properties = new Properties();
-        try {
-            properties.load(inputStream);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to read properties file", e);
-        } finally {
-            if (inputStream != null)
+
+        if (inputStream != null) {
+            try {
+                properties.load(inputStream);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to read properties file", e);
+            } finally {
                 try {
                     inputStream.close();
                 } catch (IOException e) {
                     // Ignore
                 }
+            }
         }
-
         // Initialize console command reader
         console = new ConsoleCommandReader(this);
         console.startConsole();

@@ -26,6 +26,7 @@ import com.github.steveice10.opennbt.tag.builtin.StringTag;
 import com.github.steveice10.opennbt.tag.builtin.Tag;
 
 import java.util.List;
+import org.dragonet.proxy.DragonProxy;
 
 import org.dragonet.proxy.data.itemsblocks.ItemEntry;
 import org.dragonet.proxy.data.nbt.tag.ListTag;
@@ -228,13 +229,15 @@ public class ItemBlockTranslator {
             switch (output.getString("id")) {
                 case "minecraft:bed":
                     output.putString("id", "Bed");
-                    output.putByte("color", 0); //TODO check colors
+                    output.putByte("color", output.getInt("color")); //TODO check colors
+                    output.putByte("isMovable", 0x00);
                     break;
                 case "minecraft:chest":
                     output.putString("id", "Chest");
                     break;
                 case "minecraft:ender_chest":
                     output.putString("id", "EnderChest");
+                    output.putByte("isMovable", 0x00);
                     break;
                 case "minecraft:command_block":
                     output.putString("id", "CommandBlock");
@@ -256,8 +259,15 @@ public class ItemBlockTranslator {
                     output.putString("id", "FlowerPot");
                     output.putInt("data", output.getInt("Data"));
                     output.remove("Data");
-                    output.putShort("item", 0);
-                    output.remove("Item");
+                    FlowerPot item = FlowerPot.byName(output.getString("Item"));
+                    if (item != null)
+                    {
+                        output.putShort("item", item.getId());
+                    }
+                    else
+                        output.putShort("item", 0);
+                        output.remove("Item");
+                    output.putByte("isMovable", 0x00);
                     break;
                 case "minecraft:hopper":
                     output.putString("id", "Hopper");
@@ -277,41 +287,54 @@ public class ItemBlockTranslator {
                 case "minecraft:furnace":
                     output.putString("id", "Furnace");
                     break;
-                case "minecraft:structure_block":
-                    output.putString("id", "StructureBlock");
-                    break;
-                case "minecraft:end_gateway":
-                    output.putString("id", "EndGateway");
-                    break;
-                case "minecraft:beacon":
-                    output.putString("id", "Beacon");
-                    break;
+//                case "minecraft:structure_block":
+//                    output.putString("id", "StructureBlock");
+//                    break;
+//                case "minecraft:end_gateway":
+//                    output.putString("id", "EndGateway");
+//                    break;
+//                case "minecraft:beacon":
+//                    output.putString("id", "Beacon");
+//                    break;
                 case "minecraft:end_portal":
                     output.putString("id", "EndPortal");
                     break;
-                case "minecraft:mob_spawner":
-                    output.putString("id", "MobSpawner");
-                    break;
+//                case "minecraft:mob_spawner":
+//                    output.putString("id", "MobSpawner");
+//                    break;
                 case "minecraft:skull":
                     output.putString("id", "Skull");
+                    output.putByte("isMovable", 0x00);
                     break;
-                case "minecraft:banner":
-                    output.putString("id", "Banner");
-                    break;
+//                case "minecraft:banner":
+//                    output.putString("id", "Banner");
+//                    break;
                 case "minecraft:comparator":
                     output.putString("id", "Comparator");
                     break;
-                case "minecraft:item_frame":
-                    output.putString("id", "ItemFrame");
-                    break;
+//                case "minecraft:item_frame":
+//                    output.putString("id", "ItemFrame");
+//                    break;
                 case "minecraft:jukebox":
                     output.putString("id", "Jukebox");
                     break;
-                case "minecraft:piston":
-                    output.putString("id", "PistonArm");
+//                case "minecraft:piston":
+//                    output.putString("id", "PistonArm");
+//                    break;
+                case "minecraft:noteblock":
+                    output.putString("id", "Noteblock");
                     break;
+                case "minecraft:enchanting_table":
+                    output.putString("id", "EnchantTable");
+                    break;
+                case "minecraft:brewing_stand":
+                    output.putString("id", "BrewingStand");
+                    break;
+                default :
+//                    DragonProxy.getInstance().getLogger().debug("Block entitiy not handled : " + output.getString("id"));
+                    return null;
             }
-//        if (output.getString("id") == "ShulkerBox" || output.getString("id") == "Bed" || output.getString("id") == "Chest")
+//        if (output.getString("id") == "Chest") //debug
 //            System.out.println("translateBlockEntityToPE " + output.toString());
         return output;
     }
@@ -403,5 +426,53 @@ public class ItemBlockTranslator {
         else if (input == 2) //NORTH
             input = 3;
         return input;
+    }
+    
+    public enum FlowerPot {
+        empty(0),
+        red_flower(1),
+        blue_orchid(2),
+        allium(3),
+        houstonia(4),
+        red_tulip(5),
+        orange_tulip(5),
+        white_tulip(5),
+        pink_tulip(5),
+        oxeye_daisy(6),
+        yellow_flower(7),
+        sapling(8),
+        spruce_sapling(8),
+        birch_sapling(8),
+        jungle_sapling(8),
+        acacia_sapling(8),
+        dark_oak_sapling(8),
+        red_mushroom(9),
+        brown_mushroom(10),
+        deadbush(11),
+        fern(12),
+        cactus(13);
+        
+        private int id;
+        
+        private FlowerPot(int id)
+        {
+            
+        }
+        
+        public int getId()
+        {
+            return this.id;
+        }
+        
+        public static FlowerPot byName(String value)
+        {
+            for (FlowerPot entry : values())
+            {
+                if (("minecraft:" + entry.name()).equals(value))
+                    return entry;
+            }
+//            DragonProxy.getInstance().getLogger().debug("FlowerPot item not found : " + value);
+            return null;
+        }
     }
 }

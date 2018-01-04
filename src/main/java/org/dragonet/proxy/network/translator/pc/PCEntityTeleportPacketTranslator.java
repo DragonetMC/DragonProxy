@@ -26,7 +26,11 @@ public class PCEntityTeleportPacketTranslator implements IPCPacketTranslator<Ser
     public PEPacket[] translate(UpstreamSession session, ServerEntityTeleportPacket packet) {
         CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
         if (entity == null) {
-            return null;
+            if (packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID)) {
+                entity = session.getEntityCache().getClientEntity();
+            } else {
+                return null;
+            }
         }
 
         entity.absoluteMove(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch());

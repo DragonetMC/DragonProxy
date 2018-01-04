@@ -64,6 +64,7 @@ public final class PacketTranslatorRegister {
         // Map
         PC_TO_PE_TRANSLATOR.put(ServerChunkDataPacket.class, new PCChunkDataPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerExplosionPacket.class, new PCExplosionTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerUnloadChunkPacket.class, new PCUnloadChunkDataPacketTranslator());
 
         PC_TO_PE_TRANSLATOR.put(ServerUpdateTimePacket.class, new PCUpdateTimePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerBlockChangePacket.class, new PCBlockChangePacketTranslator());

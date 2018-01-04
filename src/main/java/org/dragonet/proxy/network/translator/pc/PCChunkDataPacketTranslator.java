@@ -20,18 +20,24 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkD
 
 import java.io.IOException;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.dragonet.proxy.DragonProxy;
 
 import org.dragonet.proxy.data.nbt.NBTIO;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.data.itemsblocks.ItemEntry;
+import org.dragonet.proxy.data.nbt.tag.CompoundTag;
 import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.BlockEntityDataPacket;
 import org.dragonet.proxy.protocol.packets.FullChunkDataPacket;
 import org.dragonet.proxy.protocol.type.chunk.ChunkData;
 import org.dragonet.proxy.protocol.type.chunk.Section;
+import org.dragonet.proxy.utilities.BlockPosition;
 
 public class PCChunkDataPacketTranslator implements IPCPacketTranslator<ServerChunkDataPacket> {
 
@@ -100,12 +106,17 @@ public class PCChunkDataPacketTranslator implements IPCPacketTranslator<ServerCh
         }
         // Blocks entities
         try {
-            pe.blockEntities = new byte[pc.getTileEntities().length];
+            List<CompoundTag> blockEntities = new ArrayList<>();
             for (int i = 0; i < pc.getTileEntities().length; i++) {
-                pe.blockEntities = NBTIO.write(ItemBlockTranslator.translateBlockEntityToPE(pc.getTileEntities()[i]), ByteOrder.LITTLE_ENDIAN, true);
+                org.dragonet.proxy.data.nbt.tag.CompoundTag peTag = ItemBlockTranslator.translateBlockEntityToPE(pc.getTileEntities()[i]);
+                if (peTag != null) //filter non hadled blocks entities
+                    blockEntities.add(peTag);
+//                else // debug
+//                    DragonProxy.getInstance().getLogger().debug("NBT null for " + pc.getTileEntities()[i].toString());
             }
+            pe.blockEntities = NBTIO.write(blockEntities, ByteOrder.LITTLE_ENDIAN, true);
         } catch (IOException ex) {
-            Logger.getLogger(PCChunkDataPacketTranslator.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
     }
 
