@@ -14,17 +14,14 @@ package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerRespawnPacket;
-import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.AdventureSettingsPacket;
-import org.dragonet.proxy.protocol.packets.ChangeDimensionPacket;
 import org.dragonet.proxy.protocol.packets.PlayStatusPacket;
 import org.dragonet.proxy.protocol.packets.SetDifficultyPacket;
 import org.dragonet.proxy.protocol.packets.SetPlayerGameTypePacket;
-import org.dragonet.proxy.utilities.Vector3F;
 
 public class PCRespawnPacketTranslator implements IPCPacketTranslator<ServerRespawnPacket> {
 
@@ -36,11 +33,6 @@ public class PCRespawnPacketTranslator implements IPCPacketTranslator<ServerResp
 //            DragonProxy.getInstance().getLogger().debug(session.getUsername() + " change dim " + entity.dimention + " to " + packet.getDimension());
             
             session.getEntityCache().reset(true);
-
-            ChangeDimensionPacket pk = new ChangeDimensionPacket();
-            pk.dimension = packet.getDimension();
-            pk.position = entity.spawnPosition.toVector3F();
-            pk.respawn = false;
 
             SetPlayerGameTypePacket pkgm = new SetPlayerGameTypePacket();
             pkgm.gamemode = packet.getGameMode() == GameMode.CREATIVE ? 1 : 0;
@@ -56,8 +48,6 @@ public class PCRespawnPacketTranslator implements IPCPacketTranslator<ServerResp
             adv.commandsPermission = AdventureSettingsPacket.PERMISSION_NORMAL;
             adv.playerPermission = AdventureSettingsPacket.LEVEL_PERMISSION_MEMBER;
             
-            
-//            session.sendPacket(pk);
             session.sendPacket(new SetDifficultyPacket(packet.getDifficulty()));
             session.sendPacket(pkgm);
             session.sendPacket(adv);
