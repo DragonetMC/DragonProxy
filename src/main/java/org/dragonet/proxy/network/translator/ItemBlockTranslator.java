@@ -164,7 +164,7 @@ public class ItemBlockTranslator {
         slot.id = entry.getId();
         slot.damage = entry.getPEDamage() != null ? entry.getPEDamage() : item.getData();
         slot.count = (item.getAmount() & 0xff);
-        slot.tag = translateRawNBT(item.getId(), item.getNBT(), null);
+        slot.tag = translateItemNBT(item.getId(), item.getNBT(), null);
         return slot;
     }
 
@@ -336,6 +336,15 @@ public class ItemBlockTranslator {
             }
 //        if (output.getString("id") == "Chest") //debug
 //            System.out.println("translateBlockEntityToPE " + output.toString());
+        return output;
+    }
+    
+    public static org.dragonet.proxy.data.nbt.tag.CompoundTag translateItemNBT(int id, Tag input, org.dragonet.proxy.data.nbt.tag.CompoundTag target) {
+        if (input == null)
+            return null;
+        //do the magic
+        org.dragonet.proxy.data.nbt.tag.CompoundTag output = translateRawNBT(id, input, target);
+        System.out.println("translateItemNBT item id : " + id + " NBT : " + output.toString());
         return output;
     }
 
