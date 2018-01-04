@@ -331,7 +331,7 @@ public class ItemBlockTranslator {
                     output.putString("id", "BrewingStand");
                     break;
                 default :
-                    DragonProxy.getInstance().getLogger().debug("Block entitiy not handled : " + output.getString("id"));
+//                    DragonProxy.getInstance().getLogger().debug("Block entitiy not handled : " + output.getString("id"));
                     return null;
             }
 //        if (output.getString("id") == "Chest") //debug
@@ -471,7 +471,7 @@ public class ItemBlockTranslator {
                 if (("minecraft:" + entry.name()).equals(value))
                     return entry;
             }
-            DragonProxy.getInstance().getLogger().debug("FlowerPot item not found : " + value);
+//            DragonProxy.getInstance().getLogger().debug("FlowerPot item not found : " + value);
             return null;
         }
     }
