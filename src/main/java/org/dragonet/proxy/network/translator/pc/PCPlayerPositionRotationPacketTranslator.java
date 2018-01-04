@@ -66,7 +66,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 StartGamePacket ret = new StartGamePacket();
                 ret.rtid = entityPlayer.proxyEid;
                 ret.eid = entityPlayer.proxyEid;
-                ret.dimension = restored.getDimension();
+                ret.dimension = entityPlayer.dimention;
                 ret.seed = 0;
                 ret.generator = 1;
                 ret.gamemode = restored.getGameMode() == GameMode.CREATIVE ? 1 : 0;
@@ -163,7 +163,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             session.setSpawned();
 
             entityPlayer.absoluteMove(packet.getX(), packet.getY() + entityPlayer.peType.getOffset() + 0.1f, packet.getZ(), packet.getYaw(), packet.getPitch());
-            DragonProxy.getInstance().getLogger().debug("Spawning " + session.getUsername() + " in world -1 at " + entityPlayer.x + "/" + entityPlayer.y + "/" + entityPlayer.z);
+            DragonProxy.getInstance().getLogger().info("Spawning " + session.getUsername() + " in world " + entityPlayer.dimention + " at " + entityPlayer.x + "/" + entityPlayer.y + "/" + entityPlayer.z);
 
             // send the confirmation
             ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());
@@ -189,16 +189,6 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
 
                     entity.spawned = true;
                     session.sendPacket(skin);
-                }
-                // Process equipments
-                if (entity.helmet != null || entity.chestplate != null || entity.leggings != null || entity.boots != null || entity.mainHand != null) {
-                    MobArmorEquipmentPacket aeq = new MobArmorEquipmentPacket();
-                    aeq.rtid = entity.proxyEid;
-                    aeq.helmet = entity.helmet;
-                    aeq.chestplate = entity.chestplate;
-                    aeq.leggings = entity.leggings;
-                    aeq.boots = entity.boots;
-                    session.sendPacket(aeq);
                 }
                 entity.spawn(session);
             }

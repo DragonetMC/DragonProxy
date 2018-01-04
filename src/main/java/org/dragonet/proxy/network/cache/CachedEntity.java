@@ -37,6 +37,7 @@ import org.dragonet.proxy.protocol.packets.AddEntityPacket;
 import org.dragonet.proxy.protocol.packets.AddItemEntityPacket;
 import org.dragonet.proxy.protocol.packets.AddPaintingPacket;
 import org.dragonet.proxy.protocol.packets.AddPlayerPacket;
+import org.dragonet.proxy.protocol.packets.MobArmorEquipmentPacket;
 import org.dragonet.proxy.utilities.BlockPosition;
 import org.dragonet.proxy.utilities.Vector3F;
 
@@ -51,6 +52,7 @@ public class CachedEntity {
     public final boolean player;
     public final UUID playerUniqueId;
 
+    public int dimention;
     public double x;
     public double y;
     public double z;
@@ -180,6 +182,23 @@ public class CachedEntity {
                 this.spawned = true;
                 session.sendPacket(pk);
             }
+            // Process equipments
+            this.updateEquipment(session);
         }
     }
+    
+    public void updateEquipment(UpstreamSession session)
+    {
+        if (session.isSpawned()) {
+            if (this.helmet != null || this.chestplate != null || this.leggings != null || this.boots != null || this.mainHand != null) {
+                MobArmorEquipmentPacket aeq = new MobArmorEquipmentPacket();
+                aeq.rtid = this.proxyEid;
+                aeq.helmet = this.helmet;
+                aeq.chestplate = this.chestplate;
+                aeq.leggings = this.leggings;
+                aeq.boots = this.boots;
+                session.sendPacket(aeq);
+            }
+        }
+    } 
 }
