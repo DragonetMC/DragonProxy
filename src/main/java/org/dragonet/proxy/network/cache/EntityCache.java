@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.steveice10.mc.protocol.data.MagicValues;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnExpOrbPacket;
 
 import org.dragonet.proxy.data.entity.EntityType;
@@ -56,22 +57,31 @@ public final class EntityCache {
     }
 
     public void reset(boolean clear) {
+        CachedEntity clientEntity = null;
+        if (entities.containsKey(1L))
+            clientEntity = entities.get(1L); //store the session
         if (clear) {
             entities.clear();
             mapRemoteToClient.clear();
             mapClientToRemote.clear();
         }
-        CachedEntity clientEntity = new CachedEntity(1L, 1L, -1, EntityType.PLAYER, null, true, null);
+        if (clientEntity == null) // if the session it null, create one
+            clientEntity = new CachedEntity(1L, 1L, -1, EntityType.PLAYER, null, true, null);
         entities.put(1L, clientEntity);
+        mapClientToRemote.put(clientEntity.proxyEid, clientEntity.eid);
+        mapRemoteToClient.put(clientEntity.eid, clientEntity.proxyEid);
     }
 
     public CachedEntity getClientEntity() {
+        if (!entities.containsKey(1L))
+            entities.put(1L, new CachedEntity(1L, 1L, -1, EntityType.PLAYER, null, true, null));
         return entities.get(1L);
     }
 
-    public void updateClientEntityEID(long eid) {
+    public void updateClientEntity(ServerJoinGamePacket packet) {
         CachedEntity clientEntity = entities.get(1L);
-        clientEntity.eid = eid;
+        clientEntity.eid = packet.getEntityId();
+        clientEntity.dimention = packet.getDimension();
         mapClientToRemote.put(clientEntity.proxyEid, clientEntity.eid);
         mapRemoteToClient.put(clientEntity.eid, clientEntity.proxyEid);
     }
