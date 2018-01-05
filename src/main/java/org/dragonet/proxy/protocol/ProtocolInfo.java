@@ -126,4 +126,5 @@ public class ProtocolInfo {
     public static final byte SERVER_SETTINGS_RESPONSE_PACKET = (byte) 0x67;
     public static final byte SHOW_PROFILE_PACKET = (byte) 0x68;
     public static final byte SET_DEFAULT_GAME_TYPE_PACKET = (byte) 0x69;
+    public static final byte BATCH_PACKET = (byte) 0xff;
 }

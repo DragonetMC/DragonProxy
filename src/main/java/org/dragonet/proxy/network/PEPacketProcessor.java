@@ -25,6 +25,7 @@ import org.json.JSONArray;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import org.dragonet.proxy.DragonProxy;
 
 public class PEPacketProcessor implements Runnable {
 
@@ -99,6 +100,9 @@ public class PEPacketProcessor implements Runnable {
         }
 
         switch (packet.pid()) {
+            case ProtocolInfo.BATCH_PACKET:
+                DragonProxy.getInstance().getLogger().debug("Received batch packet from client !"); 
+                break;
             case ProtocolInfo.LOGIN_PACKET:
                 this.client.onLogin((LoginPacket) packet);
                 break;

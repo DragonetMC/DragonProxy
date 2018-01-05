@@ -14,6 +14,10 @@ public class RemoveEntityPacket extends PEPacket {
 
     }
 
+    public RemoveEntityPacket(long eid) {
+        this.eid = eid;
+    }
+
     @Override
     public int pid() {
         return ProtocolInfo.REMOVE_ENTITY_PACKET;

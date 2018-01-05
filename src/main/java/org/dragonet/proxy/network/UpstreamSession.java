@@ -60,6 +60,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import org.dragonet.proxy.protocol.packets.BatchPacket;
+import org.dragonet.proxy.protocol.packets.RemoveEntityPacket;
 
 /**
  * Maintaince the connection between the proxy and Minecraft: Pocket Edition
