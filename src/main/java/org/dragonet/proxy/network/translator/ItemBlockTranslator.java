@@ -249,7 +249,11 @@ public class ItemBlockTranslator {
                         StringBuilder signText = new StringBuilder();
                         for (int line = 1; line <= 4; line++)
                         {
-                            signText.append(MessageTranslator.translate(output.getString("Text" + line)));
+                            String lineText = output.getString("Text" + line);
+                            if (MessageTranslator.isMessage(lineText))
+                                signText.append(MessageTranslator.translate(lineText));
+                            else
+                                signText.append(lineText);
                             if (line != 4)
                                 signText.append("\n");
                             output.remove("Text" + line);
@@ -268,7 +272,7 @@ public class ItemBlockTranslator {
                     }
                     else
                         output.putShort("item", 0);
-                        output.remove("Item");
+                    output.remove("Item");
                     output.putByte("isMovable", 0x00);
                     break;
                 case "minecraft:hopper":
@@ -353,10 +357,9 @@ public class ItemBlockTranslator {
         // 397 skull                CompoundTag { {=ListTag { [CompoundTag { {Signature=StringTag(Signature) { Dfpupzf34kyZaa52cSxbbJhrT2KQ+H3DXEz0Ivsws75/pK3RMglcQrT8MMvfcax79DPFsiVHLvO9TD7AH76Oev5+VxjpJKkx9vnSI1Dnl4cpQ/160cHkc1gJaJaVyQhG7x1epH7h1u87U1yiHLw07ri4YkyLk7Zqa4RgGrgNIOrpXgexJ6gepgb14kxO3y+C6mW/9QIKjjlyXXc1XVQc3kYkoWwHB1qatTzYmq4ZB0u50OyIMzcXR7CcrYelm0u+DAIYIcbhwmcpUE6sLkieNLCdlRB9Qi7Bs/tIKs5nVAD8TgEJEWVxxS7iGCirjcjZuk7GoTqleX0TMFvHXyQ6K86VxRafNT9u3znuiKGev40Wl3969/93HtVHvFisH9bdquW5r00zd49h3kQs8xa7gQ5oE3uZ2xWPzOTuHrjEiZu2U3MlT3bnTRuQGIPzDCsRHRseZPEKzObIgyN+UB+EUO2EEiPED42jiFv6j4QFFAYkqxahAbnGlXXJPZ0Vq2GmwPwlIBvxmPuMZT/U9ECEg+j2TsIE766eYCm4GBZwC46Q9061eSKzPMPPrrSapo7i30yeKPuL1M8SnXGTGPVpDEpr63yqmHOEu0HJwjoSSeyViP0nphXOdVGEhHja6MIqyUl6gB9pAaiIDKVWQpFNO6z000FPGw+GcaDT8rc1pdQ= }, Value=StringTag(Value) { eyJ0aW1lc3RhbXAiOjE1MTI5MjM1NTc4MjAsInByb2ZpbGVJZCI6ImVjNTYxNTM4ZjNmZDQ2MWRhZmY1MDg2YjIyMTU0YmNlIiwicHJvZmlsZU5hbWUiOiJBbGV4Iiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7fX0= }} }] }, Id=StringTag(Id) { ec561538-f3fd-461d-aff5-086b22154bce }, Name=StringTag(Name) { Alex }} }
         
         boolean handle = false;
-        org.dragonet.proxy.data.nbt.tag.CompoundTag display = new org.dragonet.proxy.data.nbt.tag.CompoundTag();
+        org.dragonet.proxy.data.nbt.tag.CompoundTag display = new org.dragonet.proxy.data.nbt.tag.CompoundTag("display");
         if (output.contains("Name")) {
-            display.putString("name", output.getString("Name"));
-//            System.out.println(output.getString("Name"));
+            display.putString("Name", output.getString("Name"));
             output.remove("Name");
             handle = true;
         }
