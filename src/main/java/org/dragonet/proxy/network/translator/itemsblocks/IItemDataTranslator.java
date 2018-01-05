@@ -1,11 +1,27 @@
 package org.dragonet.proxy.network.translator.itemsblocks;
 
+import org.dragonet.proxy.data.itemsblocks.ItemEntry;
+
 /**
- * @author vincent
+ * @author Epic
  */
-public abstract class IItemDataTranslator {
+public class IItemDataTranslator extends AItemDataTranslator{
 
-    public abstract Integer translateToPE(Integer damage);
+    private Integer originalDamage;
 
-    public abstract Integer translateToPC(Integer damage);
+    public void setOriginalDamage(Integer originalDamage) {
+        this.originalDamage = originalDamage;
+    }
+    
+    public Integer getOriginalDamage(){
+        return this.originalDamage;
+    }
+
+    public Integer translateToPE(Integer damage) {
+        return damage;
+    }
+
+    public Integer translateToPC(Integer damage) {
+        return damage;
+    }
 }

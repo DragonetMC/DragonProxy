@@ -71,22 +71,22 @@ public class ItemBlockTranslator {
         swap(203, 202); //purpur_stairs
         swap(205, 248); //purpur_slab -> unknown
         //shulker_box
-        swap(219, new ItemEntry(218, 0)); //white
-        swap(220, new ItemEntry(218, 1)); //orange
-        swap(221, new ItemEntry(218, 2)); //magenta
-        swap(222, new ItemEntry(218, 3)); //light blue
-        swap(223, new ItemEntry(218, 4)); //yellow
-        swap(224, new ItemEntry(218, 5)); //lime
-        swap(225, new ItemEntry(218, 6)); //pink
-        swap(226, new ItemEntry(218, 7)); //gray
-        swap(227, new ItemEntry(218, 8)); //light gray
-        swap(228, new ItemEntry(218, 9)); //cyan
-        swap(229, new ItemEntry(218, 10)); //purple
-        swap(230, new ItemEntry(218, 11)); //blue
-        swap(231, new ItemEntry(218, 12)); //brown
-        swap(232, new ItemEntry(218, 13)); //green
-        swap(233, new ItemEntry(218, 14)); //red
-        swap(234, new ItemEntry(218, 15)); //black
+        swap(219, new ItemEntry(218, 0, new ShulkerBoxDataTranslator())); //white
+        swap(220, new ItemEntry(218, 1, new ShulkerBoxDataTranslator())); //orange
+        swap(221, new ItemEntry(218, 2, new ShulkerBoxDataTranslator())); //magenta0
+        swap(222, new ItemEntry(218, 3, new ShulkerBoxDataTranslator())); //light blue
+        swap(223, new ItemEntry(218, 4, new ShulkerBoxDataTranslator())); //yellow
+        swap(224, new ItemEntry(218, 5, new ShulkerBoxDataTranslator())); //lime
+        swap(225, new ItemEntry(218, 6, new ShulkerBoxDataTranslator())); //pink
+        swap(226, new ItemEntry(218, 7, new ShulkerBoxDataTranslator())); //gray
+        swap(227, new ItemEntry(218, 8, new ShulkerBoxDataTranslator())); //light gray
+        swap(228, new ItemEntry(218, 9, new ShulkerBoxDataTranslator())); //cyan
+        swap(229, new ItemEntry(218, 10, new ShulkerBoxDataTranslator())); //purple
+        swap(230, new ItemEntry(218, 11, new ShulkerBoxDataTranslator())); //blue
+        swap(231, new ItemEntry(218, 12, new ShulkerBoxDataTranslator())); //brown
+        swap(232, new ItemEntry(218, 13, new ShulkerBoxDataTranslator())); //green
+        swap(233, new ItemEntry(218, 14, new ShulkerBoxDataTranslator())); //red
+        swap(234, new ItemEntry(218, 15, new ShulkerBoxDataTranslator())); //black
         //glazed terracota
         swap(235, 220); //white
         swap(236, 221); //orange

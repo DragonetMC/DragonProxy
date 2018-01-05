@@ -20,6 +20,7 @@ import org.dragonet.proxy.network.translator.itemsblocks.IItemDataTranslator;
 public class ItemEntry {
 
     private Integer id;
+    private Integer originalDamage;
     private Integer damage;
     private IItemDataTranslator translator;
 
@@ -34,7 +35,7 @@ public class ItemEntry {
 
     public ItemEntry(Integer id, Integer damage, IItemDataTranslator translator) {
         this.id = id;
-        this.damage = damage;
+        this.originalDamage = this.damage = damage;
         this.translator = translator;
     }
 
@@ -44,6 +45,9 @@ public class ItemEntry {
 
     public ItemEntry setDamage(int damage) {
         this.damage = damage;
+        if (this.translator != null) {
+            this.translator.setOriginalDamage(originalDamage);
+        }
         return this;
     }
 
