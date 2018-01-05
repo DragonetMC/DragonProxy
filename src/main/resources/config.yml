@@ -59,12 +59,16 @@ command_prefix: '/'
 max_players: -1
 
 
-# Should we save console text in a file?
-log_console: true
+# Should we save console text in a file? (not working for now)
+log_console: false
+
+
+# Should console display colors
+log_colors: true
 
 
 # Should console display debug info (can spam A LOT)
-log_debug: true
+log_debug: false
 
 
 # How many threads will process MCPE packets? Only change if you know what you're doing.

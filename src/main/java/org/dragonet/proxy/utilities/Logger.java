@@ -19,10 +19,10 @@ import java.util.Calendar;
 
 public class Logger {
 
-    private boolean colorful = false;
     private DragonProxy proxy;
     private Calendar calender;
     private SimpleDateFormat consoleDate;
+    public boolean colorful = false;
     public boolean debug = false;
 
     public Logger(DragonProxy proxy) {
@@ -67,7 +67,7 @@ public class Logger {
 
             builder.append("[" + consoleDate.format(calender.getTime()) + "] ");
             builder.append("[" + level + "] ");
-            builder.append(message);
+            builder.append(MCColor.stripColors(message));
 
             System.out.println(builder.toString());
         }

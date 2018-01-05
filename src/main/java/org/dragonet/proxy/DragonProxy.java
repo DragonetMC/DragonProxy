@@ -150,9 +150,12 @@ public class DragonProxy {
             logger.info("Saving console output enabled");
         else
             logger.info("Saving console output disabled");
-
+        
         // set logger mode
         logger.debug = config.log_debug;
+        
+        // set logger colors mod
+        logger.colorful = config.log_colors;
 
         // Put at the top instead
         if (!IS_RELEASE)
