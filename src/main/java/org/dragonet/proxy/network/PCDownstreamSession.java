@@ -65,7 +65,7 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
                 // Notify the server
                 BinaryStream bis = new BinaryStream();
                 bis.putString("Notification"); // command
-                ClientPluginMessagePacket pluginMessage = new ClientPluginMessagePacket("DragonProxy", );
+                ClientPluginMessagePacket pluginMessage = new ClientPluginMessagePacket("DragonProxy", bis.get());
                 send(pluginMessage);
 
                 upstream.onConnected();
