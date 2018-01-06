@@ -27,6 +27,11 @@ public class BlockPosition {
         this.y = pos.getY();
         this.z = pos.getZ();
     }
+    
+    public Vector3F toVector3F()
+    {
+        return new Vector3F(x, y, z);
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -45,6 +50,12 @@ public class BlockPosition {
     @Override
     public int hashCode() {
         return Objects.hash(x, y, z);
+    }
+    
+    @Override
+    public String toString()
+    {
+        return x + "/" + y + "/" + z;
     }
 
 }

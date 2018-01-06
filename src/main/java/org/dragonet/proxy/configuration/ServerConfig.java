@@ -25,7 +25,8 @@ public class ServerConfig {
     public String mode = "cls";
     public String command_prefix = "/";
     public int max_players = -1;
-    public boolean log_console = true;
+    public boolean log_console = false;
+    public boolean log_colors = true;
     public boolean log_debug = false;
     public boolean authenticate_players = true;
     public int thread_pool_size;

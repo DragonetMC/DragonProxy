@@ -42,7 +42,7 @@ public class ChestWindowTranslator implements IInventoryTranslator {
         session.sendPacket(blockEntityData);
 
         ContainerOpenPacket pk = new ContainerOpenPacket();
-        pk.eid = -1;
+        pk.eid = 1;
         pk.windowId = window.windowId;
         pk.type = window.size <= 27 ? InventoryType.PEInventory.CHEST : InventoryType.PEInventory.DOUBLE_CHEST;
         pk.position = new BlockPosition(pos.x, pos.y, pos.z);

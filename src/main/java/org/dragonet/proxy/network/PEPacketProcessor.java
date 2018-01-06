@@ -14,6 +14,7 @@ package org.dragonet.proxy.network;
 
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
+import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -26,11 +27,20 @@ import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.Protocol;
 import org.dragonet.proxy.protocol.ProtocolInfo;
 import org.dragonet.proxy.protocol.packets.*;
+import org.dragonet.proxy.utilities.BinaryStream;
 import org.json.JSONArray;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.dragonet.proxy.DragonProxy;
 
 public class PEPacketProcessor implements Runnable {
 
     public static final int MAX_PACKETS_PER_CYCLE = 200;
+
+    private final AtomicBoolean enableForward = new AtomicBoolean();
 
     private final UpstreamSession client;
     private final Deque<byte[]> packets = new ArrayDeque<>();
@@ -62,9 +72,10 @@ public class PEPacketProcessor implements Runnable {
                 return;
             }
             for (PEPacket decoded : packets)
-                handlePacket(decoded);
+                try (Timing timing = Timings.getReceiveDataPacketTiming(decoded)) {
+                    handlePacket(decoded);
+                }
         }
-
     }
 
     // this method should be in UpstreamSession
@@ -72,56 +83,71 @@ public class PEPacketProcessor implements Runnable {
         if (packet == null)
             return;
 
-        try (Timing timing = Timings.getReceiveDataPacketTiming(packet)) {
-            switch (packet.pid()) {
-                case ProtocolInfo.LOGIN_PACKET:
-                    client.onLogin((LoginPacket) packet);
-                    break;
-                case ProtocolInfo.MOVE_PLAYER_PACKET:
-                    if (client.getDataCache().getOrDefault(CacheKey.AUTHENTICATION_STATE, "").equals("online_login_wait")) {
+        // Wait for player logginig in
+        if ("online_login_wait".equals(this.client.getDataCache().get(CacheKey.AUTHENTICATION_STATE))) {
+            if (packet.pid() == ProtocolInfo.MOVE_PLAYER_PACKET) {
 
-                        // client.getDataCache().put(CacheKey.AUTHENTICATION_STATE, "online_login");
-                        ModalFormRequestPacket packetForm = new ModalFormRequestPacket();
-                        CustomFormComponent form = new CustomFormComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_TITLE));
-                        form.addComponent(new LabelComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_DESC)));
-                        form.addComponent(new LabelComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_PROMPT)));
-                        form.addComponent(new InputComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_USERNAME)).setPlaceholder("steve@example.com"));
-                        form.addComponent(new InputComponent(client.getProxy().getLang().get(Lang.FORM_LOGIN_PASSWORD)).setPlaceholder("123456"));
-                        packetForm.formId = 1;
-                        packetForm.formData = form.serializeToJson().toString();
-                        client.sendPacket(packetForm);
-                        break;
-                    }
-                case ProtocolInfo.MODAL_FORM_RESPONSE_PACKET:
-                    if (client.getDataCache().getOrDefault(CacheKey.AUTHENTICATION_STATE, "").equals("online_login_wait")) {
+                // client.getDataCache().put(CacheKey.AUTHENTICATION_STATE, "online_login");
+                ModalFormRequestPacket packetForm = new ModalFormRequestPacket();
+                CustomFormComponent form = new CustomFormComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_TITLE));
+                form.addComponent(new LabelComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_DESC)));
+                form.addComponent(new LabelComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_PROMPT)));
+                form.addComponent(new InputComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_USERNAME)).setPlaceholder("steve@example.com"));
+                form.addComponent(new InputComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_PASSWORD)).setPlaceholder("123456"));
+                packetForm.formId = 1;
+                packetForm.formData = form.serializeToJson().toString();
+                this.client.sendPacket(packetForm);
+                return;
+            }
 
-                        client.sendChat(client.getProxy().getLang().get(Lang.MESSAGE_LOGIN_PROGRESS));
-                        client.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
+            if (packet.pid() == ProtocolInfo.MODAL_FORM_RESPONSE_PACKET) {
 
-                        ModalFormResponsePacket formResponse = (ModalFormResponsePacket) packet;
-                        JSONArray array = new JSONArray(formResponse.formData);
-                        client.authenticate(array.get(2).toString(), array.get(3).toString());
-                        break;
-                    }
-                case ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET:
-                    if (client.isLoggedIn())
-                        return;
-                    client.postLogin();
-                    break;
-                case ProtocolInfo.REQUEST_CHUNK_RADIUS_PACKET:
-                    client.sendPacket(new ChunkRadiusUpdatedPacket(((RequestChunkRadiusPacket) packet).radius));
-                    break;
-                default:
-                    if (client.getDownstream() == null)
-                        break;
-                    if (!client.getDownstream().isConnected())
-                        break;
-                    Packet[] translated = PacketTranslatorRegister.translateToPC(client, packet);
-                    if (translated == null || translated.length == 0)
-                        break;
-                    client.getDownstream().send(translated);
-                    break;
+                this.client.sendChat(this.client.getProxy().getLang().get(Lang.MESSAGE_LOGIN_PROGRESS));
+                this.client.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
+
+                ModalFormResponsePacket formResponse = (ModalFormResponsePacket) packet;
+                JSONArray array = new JSONArray(formResponse.formData);
+                this.client.authenticate(array.get(2).toString(), array.get(3).toString());
+                return;
             }
         }
+
+        switch (packet.pid()) {
+            case ProtocolInfo.BATCH_PACKET:
+                DragonProxy.getInstance().getLogger().debug("Received batch packet from client !"); 
+                break;
+            case ProtocolInfo.LOGIN_PACKET:
+                this.client.onLogin((LoginPacket) packet);
+                break;
+            case ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET:
+                if (!this.client.isLoggedIn())
+                    this.client.postLogin();
+
+                break;
+            case ProtocolInfo.REQUEST_CHUNK_RADIUS_PACKET:
+                this.client.sendPacket(new ChunkRadiusUpdatedPacket(((RequestChunkRadiusPacket) packet).radius));
+                break;
+            default:
+                if (this.client.getDownstream() == null || !this.client.getDownstream().isConnected())
+                    break;
+
+                if (enableForward.get()) {
+                    BinaryStream bis = new BinaryStream();
+                    bis.putString("PacketForward");
+                    bis.putByteArray(packet.getBuffer());
+                    ClientPluginMessagePacket msg = new ClientPluginMessagePacket("DragonProxy", bis.getBuffer());
+                } else {
+                    Packet[] translated = PacketTranslatorRegister.translateToPC(this.client, packet);
+                    if (translated == null || translated.length == 0)
+                        break;
+
+                    client.getDownstream().send(translated);
+                }
+                break;
+        }
+    }
+
+    public void setPacketForwardMode(boolean enabled) {
+        enableForward.set(enabled);
     }
 }

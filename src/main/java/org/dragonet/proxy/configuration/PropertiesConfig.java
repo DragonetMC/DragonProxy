@@ -17,6 +17,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Properties;
 
 public class PropertiesConfig {
@@ -29,7 +31,8 @@ public class PropertiesConfig {
         config = new Properties(defaultConfig);
         File file = new File(fileName);
         if (file.exists()) {
-            config.load(new FileInputStream(fileName));
+            FileInputStream input = new FileInputStream(file);
+            config.load(new InputStreamReader(input, Charset.forName("UTF-8")));
         } else if (saveDefault) {
             FileOutputStream fos = new FileOutputStream(fileName);
             InputStream ris = PropertiesConfig.class.getResourceAsStream(defaultResourcePath);

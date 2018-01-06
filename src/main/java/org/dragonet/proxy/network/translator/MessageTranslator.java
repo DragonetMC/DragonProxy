@@ -25,6 +25,7 @@ import com.google.gson.JsonPrimitive;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public final class MessageTranslator {
 
     public static String translate(Message message) {
@@ -42,60 +43,42 @@ public final class MessageTranslator {
                 build.append(translate(msg));
         }
         return build.toString();
-
+    }
+    
+    public static String translate(String message)
+    {
+        return translate(Message.fromString(message));
     }
 
     public static String translationTranslateText(TranslationMessage message) {
         StringBuilder build = new StringBuilder("");
-        if (!(message.getTranslationParams().length == 0)) {
             build.append(toMinecraftColor(message.getStyle().getColor()));
             build.append(toMinecraftFormat(message.getStyle().getFormats()));
             build.append("%");
             build.append(message.getTranslationKey());
-            build.append(" ");
-        }
-        for (Message msg : message.getTranslationParams()) {
-            if (!((msg.getText() == null) || (msg instanceof TranslationMessage) || msg.getText().substring(0, 1).equals("[") || msg.getText().matches("-?\\d+") || msg.getText().equals("Server"))) {
-                build.append(toMinecraftColor(msg.getStyle().getColor()));
-                build.append(toMinecraftFormat(msg.getStyle().getFormats()));
-                build.append(translate(msg));
-                build.append(" ");
-            }
-            if (msg instanceof TranslationMessage) {
-                TranslationMessage tmsg = (TranslationMessage) msg;
-                if (!(tmsg.getTranslationKey() == null))
-                    build.append(translationTranslateText(tmsg));
-            }
-        }
         return build.toString();
     }
 
-    public static String[] translationTranslateParams(TranslationMessage message) {
+    public static String[] translationTranslateParams(Message [] messages) {
         ArrayList<String> strings = new ArrayList<>();
-        if ((message.getTranslationParams().length == 0)) {
-            StringBuilder build = new StringBuilder("");
-            build.append("%");
-            build.append(toMinecraftColor(message.getStyle().getColor()));
-            build.append(toMinecraftFormat(message.getStyle().getFormats()));
-            build.append(message.getTranslationKey());
-            strings.add(build.toString());
-        }
-        for (Message msg : message.getTranslationParams()) {
-            if (!((msg.getText() == null) && (msg instanceof TranslationMessage)) && (msg.getText().substring(0, 1).equals("[") || msg.getText().matches("-?\\d+")) || msg.getText().equals("Server")) {
+        for (int i = 0; i<messages.length;i++) {
+             if (messages[i] instanceof TranslationMessage) {
+                 TranslationMessage tmsg = (TranslationMessage) messages[i];
                 StringBuilder build = new StringBuilder("");
-                build.append(toMinecraftColor(msg.getStyle().getColor()));
-                build.append(toMinecraftFormat(msg.getStyle().getFormats()));
-                build.append(translate(msg));
+                build.append("%");
+                build.append(tmsg.getTranslationKey());
                 strings.add(build.toString());
-                if (msg.getText().equals("Server"))
+                if(tmsg.getTranslationKey().equals("commands.gamemode.success.other"))
                     strings.add("");
-            }
-            if (msg instanceof TranslationMessage) {
-                TranslationMessage tmsg = (TranslationMessage) msg;
-                if (!(tmsg.getTranslationKey() == null))
-                    for (int i = 0; i < translationTranslateParams(tmsg).length; i++)
-                        strings.add(translationTranslateParams(tmsg)[i]);
-            }
+                for (int j = 0; j < translationTranslateParams(tmsg.getTranslationParams()).length; j++)
+                    strings.add(translationTranslateParams(tmsg.getTranslationParams())[j]);
+             } else {
+                StringBuilder build = new StringBuilder("");
+                build.append(toMinecraftColor(messages[i].getStyle().getColor()));
+                build.append(toMinecraftFormat(messages[i].getStyle().getFormats()));
+                build.append(translate(messages[i]));
+                strings.add(build.toString());
+             }
         }
         String[] stringArray = new String[strings.size()];
         return strings.toArray(stringArray);

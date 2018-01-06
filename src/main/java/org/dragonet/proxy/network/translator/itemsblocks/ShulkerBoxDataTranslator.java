@@ -5,20 +5,24 @@
  */
 package org.dragonet.proxy.network.translator.itemsblocks;
 
+import org.dragonet.proxy.network.translator.ItemBlockTranslator;
+
 /**
- * @author vincent
+ * @author Epic
  */
-public class BedDataTranslator extends IItemDataTranslator {
+public class ShulkerBoxDataTranslator extends IItemDataTranslator {
 
-    //https://minecraft.gamepedia.com/Trapdoor
-
+    //Shulker box datas:
+    // MC java : 0 - 5 -> facing
+    //
+    // MC bedrock 0 -> 16 color (0x0F) + 0 - 5 facing
+    
+    
     @Override
     public Integer translateToPE(Integer damage) {
         // Here is the magic
-        int facing = damage & 0x03;
-        boolean headOccupied = (damage & 0x04) > 0; // head bed occupied
-        boolean footOccupied = (damage & 0x08) > 0; // foot bed occupied
-        return facing + (headOccupied ? 0x04 : 0x00) + (footOccupied ? 0x08 : 0x00);
+        int result = (getOriginalDamage() & 0x0F) /*+ (damage & 0x??)*/; //missing facing data offset, 
+        return result;
     }
 
     @Override

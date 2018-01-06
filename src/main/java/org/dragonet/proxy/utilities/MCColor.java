@@ -71,4 +71,9 @@ public class MCColor {
     public static String clean(String message) {
         return message = message.replaceAll((char) 0x1b + "[0-9;\\[\\(]+[Bm]", "");
     }
+
+    //remove &? and §? colors codes
+    public static String stripColors(String message) {
+        return message = message.replaceAll("(&([a-fk-or0-9]))","").replaceAll("(\\u00A7([a-fk-or0-9]))","");
+    }
 }

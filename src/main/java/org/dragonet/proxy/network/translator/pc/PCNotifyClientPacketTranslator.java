@@ -17,6 +17,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerNotify
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.proxy.protocol.packets.AdventureSettingsPacket;
 import org.dragonet.proxy.protocol.packets.LevelEventPacket;
 import org.dragonet.proxy.protocol.packets.SetPlayerGameTypePacket;
 
@@ -26,13 +27,23 @@ public class PCNotifyClientPacketTranslator implements IPCPacketTranslator<Serve
         switch (packet.getNotification()) {
             case CHANGE_GAMEMODE:
                 GameMode gm = (GameMode) packet.getValue();
-                SetPlayerGameTypePacket pk = new SetPlayerGameTypePacket();
-                if (gm == GameMode.CREATIVE) {
-                    pk.gamemode = 1;
-                } else {
-                    pk.gamemode = 0;
-                }
-                return new PEPacket[]{pk};
+                SetPlayerGameTypePacket pkgm = new SetPlayerGameTypePacket();
+                pkgm.gamemode = gm == GameMode.CREATIVE ? 1 : 0;
+
+                AdventureSettingsPacket adv = new AdventureSettingsPacket();
+                adv.setFlag(AdventureSettingsPacket.WORLD_IMMUTABLE, gm.equals(GameMode.ADVENTURE));
+                adv.setFlag(AdventureSettingsPacket.ALLOW_FLIGHT, gm.equals(GameMode.CREATIVE) || gm.equals(GameMode.SPECTATOR));
+                adv.setFlag(AdventureSettingsPacket.NO_CLIP, gm.equals(GameMode.SPECTATOR));
+                adv.setFlag(AdventureSettingsPacket.WORLD_BUILDER, !gm.equals(GameMode.SPECTATOR) || !gm.equals(GameMode.ADVENTURE));
+                adv.setFlag(AdventureSettingsPacket.FLYING, false);
+                adv.setFlag(AdventureSettingsPacket.MUTED, false);
+                adv.eid = session.getEntityCache().getClientEntity().proxyEid;
+                adv.commandsPermission = AdventureSettingsPacket.PERMISSION_NORMAL;
+                adv.playerPermission = AdventureSettingsPacket.LEVEL_PERMISSION_MEMBER;
+
+                session.sendPacket(pkgm);
+                session.sendPacket(adv);
+                break;
             case START_RAIN:
                 LevelEventPacket evtStartRain = new LevelEventPacket();
                 evtStartRain.eventId = LevelEventPacket.EVENT_START_RAIN;

@@ -62,6 +62,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import org.dragonet.proxy.protocol.packets.BatchPacket;
+import org.dragonet.proxy.protocol.packets.RemoveEntityPacket;
 
 /**
  * Maintaince the connection between the proxy and Minecraft: Pocket Edition
@@ -317,19 +319,20 @@ public class UpstreamSession {
             disconnect(proxy.getLang().get(Lang.MESSAGE_UNSUPPORTED_CLIENT));
             return;
         }
-        status.status = PlayStatusPacket.LOGIN_SUCCESS;
-        sendPacket(status, true);
-
+        
         // Get the profile and read out the username!
         profile = packet.decoded;
 
         // Verify the integrity of the LoginPacket
         if (proxy.getConfig().authenticate_players && !packet.decoded.isLoginVerified()) {
-            status.status = PlayStatusPacket.LOGIN_FAILED_CLIENT;
+            status.status = PlayStatusPacket.LOGIN_FAILED_INVALID_TENANT;
             sendPacket(status, true);
             disconnect(proxy.getLang().get(Lang.LOGIN_VERIFY_FAILED));
             return;
         }
+        
+        status.status = PlayStatusPacket.LOGIN_SUCCESS;
+        sendPacket(status, true);
 
         this.username = profile.username;
 

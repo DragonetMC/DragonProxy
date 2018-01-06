@@ -306,7 +306,7 @@ public class BinaryStream {
         if (nbtLen > 0) {
             nbt = this.get(nbtLen);
             try {
-                tag = NBTIO.read(nbt, ByteOrder.LITTLE_ENDIAN);
+                tag = NBTIO.read(nbt, ByteOrder.LITTLE_ENDIAN, false);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -343,7 +343,7 @@ public class BinaryStream {
         byte[] nbt;
         if (item.tag != null) {
             try {
-                nbt = NBTIO.write(item.tag, ByteOrder.LITTLE_ENDIAN);
+                nbt = NBTIO.write(item.tag, ByteOrder.LITTLE_ENDIAN, false);
             } catch (IOException e) {
                 e.printStackTrace();
                 nbt = new byte[0];

@@ -127,19 +127,20 @@ public class DragonProxy {
 
         InputStream inputStream = this.getClass().getResourceAsStream("/buildNumber.properties");
         properties = new Properties();
-        try {
-            properties.load(inputStream);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to read properties file", e);
-        } finally {
-            if (inputStream != null)
+
+        if (inputStream != null) {
+            try {
+                properties.load(inputStream);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to read properties file", e);
+            } finally {
                 try {
                     inputStream.close();
                 } catch (IOException e) {
                     // Ignore
                 }
+            }
         }
-
         // Initialize console command reader
         console = new ConsoleCommandReader(this);
         console.startConsole();
@@ -150,9 +151,12 @@ public class DragonProxy {
             logger.info("Saving console output enabled");
         else
             logger.info("Saving console output disabled");
-
+        
         // set logger mode
         logger.debug = config.log_debug;
+        
+        // set logger colors mod
+        logger.colorful = config.log_colors;
 
         // Put at the top instead
         if (!IS_RELEASE)

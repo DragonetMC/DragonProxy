@@ -33,7 +33,7 @@ public class ConsoleCommandReader {
                 String command = "";
                 while (!proxy.isShuttingDown()) {
                     try {
-                        System.out.print(">");
+//                        System.out.print(">");
                         command = new Scanner(System.in).nextLine();
 
                         if (command == null || command.trim().length() == 0) {
