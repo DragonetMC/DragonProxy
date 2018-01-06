@@ -50,8 +50,8 @@ public class PEMovePlayerPacketTranslator implements IPEPacketTranslator<MovePla
             boolean isColliding = false;
             for (Block b: session.getBlockCache().getAllBlocks()) {
                 if (b.collidesWithBB(session.getEntityCache().getClientEntity().boundingBox.clone())) {
-                    DragonProxy.getInstance().getLogger().debug("Colliding packet, skipping");
-                    isColliding = true;
+                        DragonProxy.getInstance().getLogger().debug("Colliding packet, skipping");
+                        isColliding = true;
                 }
             }
 
