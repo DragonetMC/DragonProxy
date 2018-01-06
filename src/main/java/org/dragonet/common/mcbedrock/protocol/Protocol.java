@@ -13,7 +13,6 @@
 package org.dragonet.common.mcbedrock.protocol;
 
 import org.dragonet.common.mcbedrock.protocol.packets.*;
-import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.common.mcbedrock.utilities.BinaryStream;
 import org.dragonet.common.mcbedrock.utilities.Zlib;
 
