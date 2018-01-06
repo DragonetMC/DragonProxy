@@ -84,46 +84,33 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                 if (packet.actions.length == 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_CONTAINER && packet.actions[1].containerId == ContainerId.CURSOR.getId()) {
                     // desktop version: click on an item (maybe pick/place/merge/swap)
 
-                    cursor = packet.actions[1].newItem; //set the cursor
-                    int container = packet.actions[0].containerId;
+                    cursor = packet.actions[0].oldItem; //set the cursor
+                    int windowID = (int) session.getDataCache().get(CacheKey.WINDOW_OPENED_ID);
+                    int size = (int) session.getDataCache().get(CacheKey.WINDOW_OPENED_SIZE);
                     int slot = packet.actions[0].slotId;
-                    if (container == 0) { // if 0, source is player inv
-                        if (slot > 5 && slot <= 9) {
-                            System.out.println("interact in player inventory (stuff)");
+                    int slotBE = packet.actions[0].slotId;
+                    if (packet.actions[0].containerId == 0) { // if 0, source is player inv
+                        if(slot >= 9){//Top Inventory
+                            slot -= 9;
+                        }else{
+                            slot += 27;//Hotbar offset
                         }
-                        if (slot > 9 && slot <= 36) {
-                            System.out.println("interact in player inventory (inventory)");
-                        }
-                        if (slot > 36 && slot <= 45) {
-                            System.out.println("interact in player inventory (hotbar)");
-                        }
-                        container = (int) session.getDataCache().get(CacheKey.WINDOW_OPENED_ID);
-                        slot += 18; //normal chest 0 -> 26 + inv 27 -> 62
+                        slot += size;
                     }
-                    System.out.println("interact in chest (" + container + ") slot " + slot);
+                    System.out.println("interact in chest (" + packet.actions[0].containerId + ") slot JE: " + slot + " BE:" + slotBE);
 
                     // send action to server
                     ClientWindowActionPacket windowActionPacket = new ClientWindowActionPacket(
-                        container, //window id
+                        windowID, //window id
                         session.getWindowCache().currentTransactionId.incrementAndGet(), //transaction id
                         slot, //slot
                         ItemBlockTranslator.translateToPC(cursor),
                         WindowAction.CLICK_ITEM,
-                        (WindowActionParam) ClickItemParam.LEFT_CLICK
+                        ClickItemParam.LEFT_CLICK
                     );
                     System.out.println("WINDOWACTIONPACKET \n" + DebugTools.getAllFields(windowActionPacket));
-
-                    session.getDownstream().send(windowActionPacket);
-
-                    // after the previous one, we can detect SHIFT click or move items on mobile devices
-                    if (packet.actions.length == 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_CONTAINER && packet.actions[1].sourceType == InventoryTransactionAction.SOURCE_CONTAINER) {
-                        // mobile version: move item
-                        // desktop version: SHIFT-click item
-                        System.out.println("Move item from " + packet.actions[0].containerId + " slot " + packet.actions[0].slotId
-                            + " to " + packet.actions[1].containerId + " slot " + packet.actions[1].slotId);
-                    }
-
-                    System.out.println("Cursor set to " + cursor);
+                    
+                    return new Packet[]{windowActionPacket};
                 }
                 return null; // it's okay to return null
             case InventoryTransactionPacket.TYPE_MISMATCH: //1

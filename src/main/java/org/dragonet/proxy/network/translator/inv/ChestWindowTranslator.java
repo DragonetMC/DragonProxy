@@ -33,6 +33,7 @@ public class ChestWindowTranslator implements IInventoryTranslator {
             (int) session.getEntityCache().getClientEntity().z);
 
         session.getDataCache().put(CacheKey.WINDOW_OPENED_ID, window.windowId);
+        session.getDataCache().put(CacheKey.WINDOW_OPENED_SIZE, window.size - 36); //-36 for the player inv size
         session.getDataCache().put(CacheKey.WINDOW_BLOCK_POSITION, pos);
         session.sendFakeBlock(pos.x, pos.y, pos.z, 54, 0);
 
