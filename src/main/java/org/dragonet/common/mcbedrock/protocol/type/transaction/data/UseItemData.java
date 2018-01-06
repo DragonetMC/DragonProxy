@@ -1,8 +1,8 @@
 package org.dragonet.common.mcbedrock.protocol.type.transaction.data;
 
+import org.dragonet.common.mcbedrock.maths.Vector3F;
 import org.dragonet.common.mcbedrock.protocol.type.Slot;
 import org.dragonet.common.mcbedrock.utilities.BlockPosition;
-import org.dragonet.common.mcbedrock.utilities.Vector3F;
 
 
 /**

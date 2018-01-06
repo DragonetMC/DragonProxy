@@ -1,11 +1,11 @@
 package org.dragonet.common.mcbedrock.protocol.packets;
 
 import com.github.steveice10.mc.protocol.data.game.setting.Difficulty;
+import org.dragonet.common.mcbedrock.maths.Vector3F;
 import org.dragonet.common.mcbedrock.protocol.PEPacket;
 import org.dragonet.common.mcbedrock.protocol.ProtocolInfo;
 import org.dragonet.common.mcbedrock.utilities.BlockPosition;
 import org.dragonet.common.mcbedrock.utilities.GameRule;
-import org.dragonet.common.mcbedrock.utilities.Vector3F;
 
 import java.util.Map;
 

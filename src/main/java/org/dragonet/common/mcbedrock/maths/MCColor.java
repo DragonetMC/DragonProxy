@@ -10,7 +10,7 @@
  *
  * @author The Dragonet Team
  */
-package org.dragonet.common.mcbedrock.utilities;
+package org.dragonet.common.mcbedrock.maths;
 
 public class MCColor {
 

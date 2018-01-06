@@ -1,4 +1,4 @@
-package org.dragonet.common.mcbedrock.utilities;
+package org.dragonet.common.mcbedrock.maths;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

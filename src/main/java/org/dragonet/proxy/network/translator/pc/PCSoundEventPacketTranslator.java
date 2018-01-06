@@ -13,11 +13,12 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerPlayBuiltinSoundPacket;
+import org.dragonet.common.mcbedrock.maths.Vector3F;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.common.mcbedrock.protocol.PEPacket;
 import org.dragonet.common.mcbedrock.protocol.packets.LevelSoundEventPacket;
-import org.dragonet.common.mcbedrock.utilities.Vector3F;
+
 
 public class PCSoundEventPacketTranslator implements IPCPacketTranslator<ServerPlayBuiltinSoundPacket> {
 

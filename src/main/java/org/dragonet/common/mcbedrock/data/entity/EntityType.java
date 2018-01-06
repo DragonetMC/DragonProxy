@@ -74,7 +74,7 @@ public enum EntityType {
     //UNKNOWN(60, 0),
     ARMOR_STAND(61, 0),
     TRIPOD_CAMERA(62, 0),
-    PLAYER(63, 1.62f),
+    PLAYER(63, 1.6200000047683716f),
     ITEM(64, 0),
     PRIMED_TNT(65, 0),
     FALLING_BLOCK(66, 0),

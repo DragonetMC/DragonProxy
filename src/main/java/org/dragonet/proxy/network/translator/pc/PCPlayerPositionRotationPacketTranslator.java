@@ -24,6 +24,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePack
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import org.dragonet.common.mcbedrock.maths.Vector3F;
 import org.dragonet.common.mcbedrock.protocol.packets.*;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.common.mcbedrock.data.entity.EntityType;
@@ -38,7 +39,7 @@ import org.dragonet.common.mcbedrock.protocol.PEPacket;
 import org.dragonet.common.mcbedrock.protocol.type.Skin;
 import org.dragonet.common.mcbedrock.utilities.BinaryStream;
 import org.dragonet.common.mcbedrock.utilities.BlockPosition;
-import org.dragonet.common.mcbedrock.utilities.Vector3F;
+
 
 import java.util.ArrayList;
 import java.util.HashSet;

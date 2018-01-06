@@ -3,6 +3,7 @@ package org.dragonet.common.mcbedrock.utilities;
 import org.dragonet.common.mcbedrock.data.entity.PEEntityAttribute;
 import org.dragonet.common.mcbedrock.data.nbt.NBTIO;
 import org.dragonet.common.mcbedrock.data.nbt.tag.CompoundTag;
+import org.dragonet.common.mcbedrock.maths.Vector3F;
 import org.dragonet.common.mcbedrock.protocol.type.PEEntityLink;
 import org.dragonet.common.mcbedrock.protocol.type.Slot;
 

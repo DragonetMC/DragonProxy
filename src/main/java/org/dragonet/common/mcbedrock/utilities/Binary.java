@@ -1,5 +1,7 @@
 package org.dragonet.common.mcbedrock.utilities;
 
+import org.dragonet.common.mcbedrock.maths.NukkitMath;
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.UUID;

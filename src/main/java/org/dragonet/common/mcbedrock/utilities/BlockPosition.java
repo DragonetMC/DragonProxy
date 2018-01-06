@@ -1,6 +1,7 @@
 package org.dragonet.common.mcbedrock.utilities;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
+import org.dragonet.common.mcbedrock.maths.Vector3F;
 
 import java.util.Objects;
 
