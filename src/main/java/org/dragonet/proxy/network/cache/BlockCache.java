@@ -30,6 +30,10 @@ public class BlockCache {
     public Collection<Block> getAllBlocks() {
         return blocks.values();
     }
+    
+    public Map<Integer, Block> getBlockMap(){
+        return blocks;
+    }
 
     public void checkBlock(int id, int damage, Position position) {
         Block glitchyBlock = Block.get(id, damage, position);

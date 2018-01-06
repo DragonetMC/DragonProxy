@@ -48,12 +48,15 @@ public class PEMovePlayerPacketTranslator implements IPEPacketTranslator<MovePla
             session.getEntityCache().getClientEntity().absoluteMove(pk.getX(), pk.getY(), pk.getZ(), (float)pk.getYaw(), (float)pk.getPitch());
 
             boolean isColliding = false;
-            for (Block b: session.getBlockCache().getAllBlocks()) {
-                if (b.collidesWithBB(session.getEntityCache().getClientEntity().boundingBox.clone())) {
-                    DragonProxy.getInstance().getLogger().debug("Colliding packet, skipping");
-                    isColliding = true;
+            synchronized (session.getBlockCache().getBlockMap()) {
+                for (Block b: session.getBlockCache().getAllBlocks()) {
+                    if (b.collidesWithBB(session.getEntityCache().getClientEntity().boundingBox.clone())) {
+                        DragonProxy.getInstance().getLogger().debug("Colliding packet, skipping");
+                        isColliding = true;
+                    }
                 }
             }
+            
 
             if (!isColliding)
                 session.getDownstream().send(pk);
