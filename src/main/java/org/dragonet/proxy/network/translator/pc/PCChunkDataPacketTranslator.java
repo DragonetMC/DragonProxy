@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dragonet.common.mcbedrock.data.nbt.NBTIO;
+import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.data.blocks.Block;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
@@ -33,6 +35,8 @@ import org.dragonet.common.mcbedrock.protocol.PEPacket;
 import org.dragonet.common.mcbedrock.protocol.packets.FullChunkDataPacket;
 import org.dragonet.common.mcbedrock.protocol.type.chunk.ChunkData;
 import org.dragonet.common.mcbedrock.protocol.type.chunk.Section;
+import org.dragonet.proxy.utilities.Position;
+
 
 public class PCChunkDataPacketTranslator implements IPCPacketTranslator<ServerChunkDataPacket> {
 
@@ -45,7 +49,7 @@ public class PCChunkDataPacketTranslator implements IPCPacketTranslator<ServerCh
                 pePacket.z = packet.getColumn().getZ();
 
                 ChunkData chunk = new ChunkData();
-                processChunkSection(packet.getColumn(), chunk);
+                processChunkSection(packet.getColumn(), chunk, session);
                 chunk.encode();
                 pePacket.payload = chunk.getBuffer();
 
@@ -57,7 +61,7 @@ public class PCChunkDataPacketTranslator implements IPCPacketTranslator<ServerCh
         return null;
     }
 
-    private void processChunkSection(Column pc, ChunkData pe) {
+    private void processChunkSection(Column pc, ChunkData pe, UpstreamSession session) {
         /*
          * pe.sections = new Section[16]; for(int i = 0; i < 16; i++) { pe.sections[i] =
          * new Section(); if(i < 2) Arrays.fill(pe.sections[i].blockIds, (byte)1); }
@@ -95,6 +99,13 @@ public class PCChunkDataPacketTranslator implements IPCPacketTranslator<ServerCh
                         data = (byte) (((newValue & 0x0f) << 4) | (data & 0x0f));
                     }
 
+                    // Save glitchy items in cache
+                    Block glitchyBlock = Block.get(entry.getId(), entry.getPEDamage(), getCoordinateFromChunkData(pc.getX(), pc.getZ(), x, y, z));
+                    if (glitchyBlock != null) {
+                        DragonProxy.getInstance().getLogger().debug("Added glitchy block : " + glitchyBlock);
+                        session.getBlockCache().saveBlock(glitchyBlock);
+                    }
+
                     section.blockMetas[i] = data;
                 }
             }
@@ -122,4 +133,9 @@ public class PCChunkDataPacketTranslator implements IPCPacketTranslator<ServerCh
     private static int dataIndex(int x, int y, int z) {
         return (x << 7) | (z << 3) | ((y & 0xF) >> 1);
     }
+
+    private Position getCoordinateFromChunkData(int chunkX, int chunkZ, int x, int y, int z) {
+        return new Position(chunkX*16 + (x), y, chunkZ*16 + z);
+    }
 }
+

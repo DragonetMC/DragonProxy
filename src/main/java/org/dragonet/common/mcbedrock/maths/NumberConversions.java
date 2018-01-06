@@ -1,4 +1,4 @@
-package org.dragonet.common.mcbedrock.utilities;
+package org.dragonet.common.mcbedrock.maths;
 
 /**
  * Utils for casting number type to other number type

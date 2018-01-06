@@ -2,8 +2,8 @@ package org.dragonet.common.mcbedrock.data.entity.meta.type;
 
 import org.dragonet.common.mcbedrock.data.entity.meta.EntityMetaData;
 import org.dragonet.common.mcbedrock.data.entity.meta.IEntityMetaDataObject;
+import org.dragonet.common.mcbedrock.maths.Vector3F;
 import org.dragonet.common.mcbedrock.utilities.BinaryStream;
-import org.dragonet.common.mcbedrock.utilities.Vector3F;
 
 /**
  * Created on 2017/10/21.

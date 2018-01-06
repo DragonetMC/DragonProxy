@@ -23,6 +23,7 @@ import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.dragonet.proxy.data.blocks.Block;
 import org.dragonet.proxy.network.SessionRegister;
 import org.dragonet.proxy.network.RaknetInterface;
 import org.dragonet.proxy.configuration.Lang;
@@ -187,6 +188,9 @@ public class DragonProxy {
         // Init session and command stuff
         sessionRegister = new SessionRegister(this);
         commandRegister = new CommandRegister(this);
+
+        // Init block handling
+        Block.init();
 
         // Create thread pool
         logger.info(lang.get(Lang.INIT_CREATING_THREAD_POOL, config.thread_pool_size));

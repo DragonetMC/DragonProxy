@@ -22,11 +22,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.marfgamer.jraknet.protocol.Reliability;
 import net.marfgamer.jraknet.session.RakNetClientSession;
+import org.dragonet.common.mcbedrock.maths.Vector3F;
 import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.RemoteServer;
+
 import org.dragonet.common.mcbedrock.data.entity.EntityType;
+import org.dragonet.proxy.network.cache.BlockCache;
 import org.dragonet.proxy.network.cache.EntityCache;
 import org.dragonet.proxy.network.cache.WindowCache;
 import org.dragonet.common.mcbedrock.protocol.PEPacket;
@@ -47,7 +50,6 @@ import org.dragonet.common.mcbedrock.utilities.Binary;
 import org.dragonet.common.mcbedrock.utilities.BlockPosition;
 import org.dragonet.common.mcbedrock.utilities.HTTP;
 import org.dragonet.common.mcbedrock.utilities.LoginChainDecoder;
-import org.dragonet.common.mcbedrock.utilities.Vector3F;
 import org.dragonet.common.mcbedrock.utilities.Zlib;
 
 import java.net.InetSocketAddress;
@@ -91,6 +93,7 @@ public class UpstreamSession {
         .synchronizedMap(new HashMap<UUID, PlayerListEntry>());
     private final EntityCache entityCache = new EntityCache(this);
     private final WindowCache windowCache = new WindowCache(this);
+    private final BlockCache blockCache = new BlockCache(this);
     protected boolean connecting;
 
     /*
@@ -165,6 +168,8 @@ public class UpstreamSession {
     public WindowCache getWindowCache() {
         return windowCache;
     }
+
+    public BlockCache getBlockCache() { return blockCache; }
 
     public void sendPacket(PEPacket packet) {
         sendPacket(packet, false);

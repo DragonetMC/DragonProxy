@@ -1,4 +1,4 @@
-package org.dragonet.common.mcbedrock.utilities;
+package org.dragonet.common.mcbedrock.maths;
 
 /**
  * Created on 2017/10/21.

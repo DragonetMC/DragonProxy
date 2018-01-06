@@ -12,6 +12,7 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
+import org.dragonet.common.mcbedrock.maths.Vector3F;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
@@ -19,7 +20,6 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntit
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.common.mcbedrock.protocol.PEPacket;
 import org.dragonet.common.mcbedrock.protocol.packets.MoveEntityPacket;
-import org.dragonet.common.mcbedrock.utilities.Vector3F;
 
 public class PCEntityTeleportPacketTranslator implements IPCPacketTranslator<ServerEntityTeleportPacket> {
 

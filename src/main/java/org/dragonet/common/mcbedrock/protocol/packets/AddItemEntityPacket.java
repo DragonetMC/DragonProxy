@@ -1,10 +1,10 @@
 package org.dragonet.common.mcbedrock.protocol.packets;
 
 import org.dragonet.common.mcbedrock.data.entity.meta.EntityMetaData;
+import org.dragonet.common.mcbedrock.maths.Vector3F;
 import org.dragonet.common.mcbedrock.protocol.PEPacket;
 import org.dragonet.common.mcbedrock.protocol.ProtocolInfo;
 import org.dragonet.common.mcbedrock.protocol.type.Slot;
-import org.dragonet.common.mcbedrock.utilities.Vector3F;
 
 /**
  * Created on 2017/10/21.

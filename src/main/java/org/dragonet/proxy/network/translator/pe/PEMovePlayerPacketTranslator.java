@@ -13,6 +13,8 @@
 package org.dragonet.proxy.network.translator.pe;
 
 import com.github.steveice10.packetlib.packet.Packet;
+import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.data.blocks.Block;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPEPacketTranslator;
@@ -27,7 +29,6 @@ public class PEMovePlayerPacketTranslator implements IPEPacketTranslator<MovePla
         CachedEntity entity = session.getEntityCache().getClientEntity();
 
         if (entity.riding != 0 && packet.ridingRuntimeId != 0) { //Riding case
-//            System.out.println("MovePlayerPacket Vehicle" + DebugTools.getAllFields(packet));
             ClientVehicleMovePacket pk = new ClientVehicleMovePacket(
                 packet.position.x,
                 packet.position.y - EntityType.PLAYER.getOffset(),
@@ -39,12 +40,28 @@ public class PEMovePlayerPacketTranslator implements IPEPacketTranslator<MovePla
             ClientPlayerPositionRotationPacket pk = new ClientPlayerPositionRotationPacket(
                 packet.onGround,
                 packet.position.x,
-                packet.position.y - EntityType.PLAYER.getOffset(),
+                ceilToHalf(packet.position.y - EntityType.PLAYER.getOffset()), // To simplify the movements
                 packet.position.z,
                 packet.yaw,
                 packet.pitch);
-            session.getDownstream().send(pk);
+
+            session.getEntityCache().getClientEntity().absoluteMove(pk.getX(), pk.getY(), pk.getZ(), (float)pk.getYaw(), (float)pk.getPitch());
+
+            boolean isColliding = false;
+            for (Block b: session.getBlockCache().getAllBlocks()) {
+                if (b.collidesWithBB(session.getEntityCache().getClientEntity().boundingBox.clone())) {
+                    DragonProxy.getInstance().getLogger().debug("Colliding packet, skipping");
+                    isColliding = true;
+                }
+            }
+
+            if (!isColliding)
+                session.getDownstream().send(pk);
         }
         return null;
+    }
+
+    public double ceilToHalf(double value) {
+        return Math.ceil(value * 2) / 2;
     }
 }

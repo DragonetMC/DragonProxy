@@ -1,5 +1,6 @@
 package org.dragonet.proxy.commands.defaults;
 
+import org.dragonet.common.mcbedrock.maths.Vector3F;
 import org.dragonet.common.mcbedrock.protocol.packets.*;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.commands.Command;
@@ -11,7 +12,7 @@ import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.common.mcbedrock.protocol.type.chunk.ChunkData;
 import org.dragonet.common.mcbedrock.protocol.type.chunk.Section;
 import org.dragonet.common.mcbedrock.utilities.BlockPosition;
-import org.dragonet.common.mcbedrock.utilities.Vector3F;
+
 
 import java.util.Arrays;
 

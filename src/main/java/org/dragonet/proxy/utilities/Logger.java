@@ -12,7 +12,7 @@
  */
 package org.dragonet.proxy.utilities;
 
-import org.dragonet.common.mcbedrock.utilities.MCColor;
+import org.dragonet.common.mcbedrock.maths.MCColor;
 import org.dragonet.proxy.DragonProxy;
 
 import java.text.SimpleDateFormat;

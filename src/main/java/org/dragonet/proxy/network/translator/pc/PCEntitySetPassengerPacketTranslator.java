@@ -20,6 +20,7 @@ import java.util.Iterator;
 import org.dragonet.common.mcbedrock.data.entity.EntityType;
 import org.dragonet.common.mcbedrock.data.entity.meta.EntityMetaData;
 import org.dragonet.common.mcbedrock.data.entity.meta.type.Vector3FMeta;
+import org.dragonet.common.mcbedrock.maths.Vector3F;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
@@ -27,7 +28,7 @@ import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.common.mcbedrock.protocol.PEPacket;
 import org.dragonet.common.mcbedrock.protocol.packets.SetEntityDataPacket;
 import org.dragonet.common.mcbedrock.protocol.packets.SetEntityLinkPacket;
-import org.dragonet.common.mcbedrock.utilities.Vector3F;
+
 
 public class PCEntitySetPassengerPacketTranslator implements IPCPacketTranslator<ServerEntitySetPassengersPacket> {
 

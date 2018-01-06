@@ -13,13 +13,17 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerBlockChangePacket;
+import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.data.blocks.Block;
 import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.cache.BlockCache;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.common.mcbedrock.data.itemsblocks.ItemEntry;
 import org.dragonet.common.mcbedrock.protocol.PEPacket;
 import org.dragonet.common.mcbedrock.protocol.packets.UpdateBlockPacket;
 import org.dragonet.common.mcbedrock.utilities.BlockPosition;
+import org.dragonet.proxy.utilities.Position;
 
 public class PCBlockChangePacketTranslator implements IPCPacketTranslator<ServerBlockChangePacket> {
 
@@ -30,6 +34,11 @@ public class PCBlockChangePacketTranslator implements IPCPacketTranslator<Server
         pk.data = entry.getPEDamage();
         pk.id = entry.getId();
         pk.blockPosition = new BlockPosition(packet.getRecord().getPosition());
+
+        // Save glitchy items in cache
+        Position blockPosition = new Position(pk.blockPosition.x, pk.blockPosition.y, pk.blockPosition.z);
+        session.getBlockCache().checkBlock(entry.getId(), entry.getPEDamage(), blockPosition);
+
         return new PEPacket[]{pk};
     }
 }
