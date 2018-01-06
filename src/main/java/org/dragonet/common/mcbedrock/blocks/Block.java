@@ -1,4 +1,4 @@
-package org.dragonet.proxy.data.blocks;
+package org.dragonet.common.mcbedrock.blocks;
 
 import org.dragonet.common.mcbedrock.maths.AxisAlignedBB;
 import org.dragonet.proxy.utilities.Position;
@@ -6,6 +6,7 @@ import org.dragonet.proxy.utilities.Position;
 import java.lang.reflect.Constructor;
 
 public class Block extends Position {
+    public static final int SLABS = 44;
     public static final int WOOD_STAIRS = 53;
     public static final int COBBLESTONE_STAIRS = 67;
     public static final int BRICK_STAIRS = 108;
@@ -16,10 +17,13 @@ public class Block extends Position {
     public static final int BIRCH_WOODEN_STAIRS = 135;
     public static final int JUNGLE_WOOD_STAIRS = 136;
     public static final int QUARTZ_STAIRS = 156;
+    public static final int WOOD_SLABS = 158;
     public static final int ACACIA_WOOD_STAIRS = 163;
     public static final int DARK_OAK_WOOD_STAIRS = 164;
     public static final int RED_SANDSTONE_STAIRS = 180;
+    public static final int RED_SANDSTONE_SLAB = 182;
     public static final int PURPUR_STAIRS = 203;
+    public static final int PURPUR_SLAB = 205;
 
     public static Class[] list = null;
 
@@ -40,6 +44,10 @@ public class Block extends Position {
             list[DARK_OAK_WOOD_STAIRS] = BlockStairs.class;
             list[RED_SANDSTONE_STAIRS] = BlockStairs.class;
             list[PURPUR_STAIRS] = BlockStairs.class;
+            list[SLABS] = BlockSlab.class;
+            list[WOOD_SLABS] = BlockSlab.class;
+            list[RED_SANDSTONE_SLAB] = BlockSlab.class;
+            list[PURPUR_SLAB] = BlockSlab.class;
         }
     }
 

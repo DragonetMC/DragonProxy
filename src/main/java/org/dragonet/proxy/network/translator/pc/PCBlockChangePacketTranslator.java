@@ -13,10 +13,7 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerBlockChangePacket;
-import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.data.blocks.Block;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.cache.BlockCache;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.common.mcbedrock.data.itemsblocks.ItemEntry;

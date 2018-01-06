@@ -1,4 +1,4 @@
-package org.dragonet.proxy.data.blocks;
+package org.dragonet.common.mcbedrock.blocks;
 
 import org.dragonet.common.mcbedrock.maths.AxisAlignedBB;
 

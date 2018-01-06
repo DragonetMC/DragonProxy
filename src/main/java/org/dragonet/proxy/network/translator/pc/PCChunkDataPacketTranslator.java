@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.dragonet.common.mcbedrock.data.nbt.NBTIO;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.data.blocks.Block;
+import org.dragonet.common.mcbedrock.blocks.Block;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;

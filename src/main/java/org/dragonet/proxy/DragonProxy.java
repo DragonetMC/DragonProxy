@@ -23,7 +23,7 @@ import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.dragonet.proxy.data.blocks.Block;
+import org.dragonet.common.mcbedrock.blocks.Block;
 import org.dragonet.proxy.network.SessionRegister;
 import org.dragonet.proxy.network.RaknetInterface;
 import org.dragonet.proxy.configuration.Lang;
