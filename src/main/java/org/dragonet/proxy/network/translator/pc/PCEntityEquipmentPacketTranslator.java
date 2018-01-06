@@ -7,9 +7,8 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
-import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.protocol.packets.MobArmorEquipmentPacket;
-import org.dragonet.proxy.protocol.packets.MobEquipmentPacket;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.MobEquipmentPacket;
 
 public class PCEntityEquipmentPacketTranslator implements IPCPacketTranslator<ServerEntityEquipmentPacket> {
 

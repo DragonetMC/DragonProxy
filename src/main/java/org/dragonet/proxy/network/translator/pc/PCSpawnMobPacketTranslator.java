@@ -16,10 +16,7 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
-import org.dragonet.proxy.network.translator.EntityMetaTranslator;
-import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.protocol.packets.AddEntityPacket;
-import org.dragonet.proxy.utilities.Vector3F;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
 
 public class PCSpawnMobPacketTranslator implements IPCPacketTranslator<ServerSpawnMobPacket> {
 

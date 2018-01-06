@@ -16,7 +16,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerClose
 import org.dragonet.proxy.network.InventoryTranslatorRegister;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
 
 public class PCClosedWindowPacketTranslator implements IPCPacketTranslator<ServerCloseWindowPacket> {
 

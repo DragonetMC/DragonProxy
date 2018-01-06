@@ -23,7 +23,7 @@ import net.marfgamer.jraknet.server.ServerPing;
 import net.marfgamer.jraknet.session.RakNetClientSession;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
-import org.dragonet.proxy.protocol.ProtocolInfo;
+import org.dragonet.common.mcbedrock.protocol.ProtocolInfo;
 
 public class RaknetInterface implements RakNetServerListener {
 

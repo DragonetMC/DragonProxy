@@ -24,7 +24,7 @@ import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.IPEPacketTranslator;
-import org.dragonet.proxy.protocol.packets.PlayerActionPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.PlayerActionPacket;
 
 public class PEPlayerActionPacketTranslator implements IPEPacketTranslator<PlayerActionPacket> {
 

@@ -29,7 +29,7 @@ import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.ServerConfig;
 import org.dragonet.proxy.commands.CommandRegister;
 import org.dragonet.proxy.commands.ConsoleCommandReader;
-import org.dragonet.proxy.protocol.ProtocolInfo;
+import org.dragonet.common.mcbedrock.protocol.ProtocolInfo;
 import org.dragonet.proxy.utilities.Logger;
 
 import org.yaml.snakeyaml.Yaml;

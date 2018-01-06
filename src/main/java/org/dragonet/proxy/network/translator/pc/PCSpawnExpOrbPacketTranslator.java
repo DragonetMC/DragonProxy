@@ -16,9 +16,9 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.Serve
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.protocol.packets.SpawnExperienceOrb;
-import org.dragonet.proxy.utilities.Vector3F;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.SpawnExperienceOrb;
+import org.dragonet.common.mcbedrock.utilities.Vector3F;
 
 public class PCSpawnExpOrbPacketTranslator implements IPCPacketTranslator<ServerSpawnExpOrbPacket> {
 

@@ -12,18 +12,18 @@
  */
 package org.dragonet.proxy.network.translator.inv;
 
-import org.dragonet.proxy.data.inventory.InventoryType;
+import org.dragonet.common.mcbedrock.data.inventory.InventoryType;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.IInventoryTranslator;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
-import org.dragonet.proxy.protocol.packets.BlockEntityDataPacket;
-import org.dragonet.proxy.protocol.packets.ContainerOpenPacket;
-import org.dragonet.proxy.protocol.packets.InventoryContentPacket;
-import org.dragonet.proxy.protocol.packets.InventorySlotPacket;
-import org.dragonet.proxy.protocol.type.Slot;
-import org.dragonet.proxy.utilities.BlockPosition;
+import org.dragonet.common.mcbedrock.protocol.packets.BlockEntityDataPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.ContainerOpenPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.InventoryContentPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.InventorySlotPacket;
+import org.dragonet.common.mcbedrock.protocol.type.Slot;
+import org.dragonet.common.mcbedrock.utilities.BlockPosition;
 
 public class ChestWindowTranslator implements IInventoryTranslator {
 

@@ -18,8 +18,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.dragonet.proxy.data.entity.EntityType;
-import org.dragonet.proxy.protocol.type.Slot;
+import org.dragonet.common.mcbedrock.data.entity.EntityType;
+import org.dragonet.common.mcbedrock.protocol.type.Slot;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
@@ -27,19 +27,19 @@ import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dragonet.proxy.data.entity.PEEntityAttribute;
-import org.dragonet.proxy.data.entity.meta.EntityMetaData;
-import org.dragonet.proxy.data.entity.meta.type.ByteArrayMeta;
-import org.dragonet.proxy.data.entity.meta.type.SlotMeta;
+import org.dragonet.common.mcbedrock.data.entity.PEEntityAttribute;
+import org.dragonet.common.mcbedrock.data.entity.meta.EntityMetaData;
+import org.dragonet.common.mcbedrock.data.entity.meta.type.ByteArrayMeta;
+import org.dragonet.common.mcbedrock.data.entity.meta.type.SlotMeta;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
-import org.dragonet.proxy.protocol.packets.AddEntityPacket;
-import org.dragonet.proxy.protocol.packets.AddItemEntityPacket;
-import org.dragonet.proxy.protocol.packets.AddPaintingPacket;
-import org.dragonet.proxy.protocol.packets.AddPlayerPacket;
-import org.dragonet.proxy.protocol.packets.MobArmorEquipmentPacket;
-import org.dragonet.proxy.utilities.BlockPosition;
-import org.dragonet.proxy.utilities.Vector3F;
+import org.dragonet.common.mcbedrock.protocol.packets.AddEntityPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.AddItemEntityPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.AddPaintingPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.AddPlayerPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.MobArmorEquipmentPacket;
+import org.dragonet.common.mcbedrock.utilities.BlockPosition;
+import org.dragonet.common.mcbedrock.utilities.Vector3F;
 
 public class CachedEntity {
 

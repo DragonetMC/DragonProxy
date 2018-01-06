@@ -14,15 +14,15 @@ package org.dragonet.proxy.network;
 
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
 import com.github.steveice10.packetlib.packet.Packet;
+import org.dragonet.common.mcbedrock.protocol.packets.*;
 import org.dragonet.proxy.configuration.Lang;
-import org.dragonet.proxy.gui.CustomFormComponent;
-import org.dragonet.proxy.gui.InputComponent;
-import org.dragonet.proxy.gui.LabelComponent;
-import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.protocol.Protocol;
-import org.dragonet.proxy.protocol.ProtocolInfo;
-import org.dragonet.proxy.protocol.packets.*;
-import org.dragonet.proxy.utilities.BinaryStream;
+import org.dragonet.common.mcbedrock.gui.CustomFormComponent;
+import org.dragonet.common.mcbedrock.gui.InputComponent;
+import org.dragonet.common.mcbedrock.gui.LabelComponent;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.protocol.Protocol;
+import org.dragonet.common.mcbedrock.protocol.ProtocolInfo;
+import org.dragonet.common.mcbedrock.utilities.BinaryStream;
 import org.json.JSONArray;
 
 import java.util.*;

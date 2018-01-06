@@ -1,0 +1,37 @@
+package org.dragonet.common.mcbedrock.protocol.packets;
+
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.protocol.ProtocolInfo;
+
+/**
+ * Created on 15-10-22.
+ */
+public class SetEntityLinkPacket extends PEPacket {
+
+    public static final byte TYPE_REMOVE = 0;
+    public static final byte TYPE_RIDE = 1;
+    public static final byte TYPE_PASSENGER = 2;
+
+    public long riding;
+    public long rider;
+    public byte type;
+    public byte unknownByte;
+
+    @Override
+    public void decodePayload() {
+
+    }
+
+    @Override
+    public void encodePayload() {
+        this.putEntityUniqueId(this.riding);
+        this.putEntityUniqueId(this.rider);
+        this.putByte(this.type);
+        this.putByte(this.unknownByte);
+    }
+
+    @Override
+    public int pid() {
+        return ProtocolInfo.SET_ENTITY_LINK_PACKET;
+    }
+}

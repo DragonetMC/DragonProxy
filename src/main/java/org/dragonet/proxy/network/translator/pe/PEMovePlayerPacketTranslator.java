@@ -18,9 +18,8 @@ import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPEPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientVehicleMovePacket;
-import org.dragonet.proxy.data.entity.EntityType;
-import org.dragonet.proxy.protocol.packets.MovePlayerPacket;
-import org.dragonet.proxy.utilities.DebugTools;
+import org.dragonet.common.mcbedrock.data.entity.EntityType;
+import org.dragonet.common.mcbedrock.protocol.packets.MovePlayerPacket;
 
 public class PEMovePlayerPacketTranslator implements IPEPacketTranslator<MovePlayerPacket> {
 

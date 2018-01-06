@@ -14,7 +14,7 @@ package org.dragonet.proxy.commands.defaults;
 
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.commands.Command;
-import org.dragonet.proxy.utilities.MCColor;
+import org.dragonet.common.mcbedrock.utilities.MCColor;
 
 import java.util.Map;
 import java.util.TreeMap;

@@ -16,10 +16,10 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerBlockC
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.proxy.data.itemsblocks.ItemEntry;
-import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.protocol.packets.UpdateBlockPacket;
-import org.dragonet.proxy.utilities.BlockPosition;
+import org.dragonet.common.mcbedrock.data.itemsblocks.ItemEntry;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.UpdateBlockPacket;
+import org.dragonet.common.mcbedrock.utilities.BlockPosition;
 
 public class PCBlockChangePacketTranslator implements IPCPacketTranslator<ServerBlockChangePacket> {
 

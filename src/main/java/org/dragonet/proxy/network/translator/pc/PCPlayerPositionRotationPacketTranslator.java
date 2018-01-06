@@ -24,21 +24,21 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePack
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import org.dragonet.common.mcbedrock.protocol.packets.*;
 import org.dragonet.proxy.configuration.Lang;
-import org.dragonet.proxy.data.entity.EntityType;
-import org.dragonet.proxy.data.entity.PEEntityAttribute;
-import org.dragonet.proxy.data.entity.meta.EntityMetaData;
+import org.dragonet.common.mcbedrock.data.entity.EntityType;
+import org.dragonet.common.mcbedrock.data.entity.PEEntityAttribute;
+import org.dragonet.common.mcbedrock.data.entity.meta.EntityMetaData;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.PCDownstreamSession;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.protocol.packets.*;
-import org.dragonet.proxy.protocol.type.Skin;
-import org.dragonet.proxy.utilities.BinaryStream;
-import org.dragonet.proxy.utilities.BlockPosition;
-import org.dragonet.proxy.utilities.Vector3F;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.protocol.type.Skin;
+import org.dragonet.common.mcbedrock.utilities.BinaryStream;
+import org.dragonet.common.mcbedrock.utilities.BlockPosition;
+import org.dragonet.common.mcbedrock.utilities.Vector3F;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -177,7 +177,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             ((PCDownstreamSession) session.getDownstream()).send(confirm);
 
             PlayerListPacket playerListPacket = new PlayerListPacket();
-            Set<org.dragonet.proxy.protocol.type.PlayerListEntry> peEntries = new HashSet();
+            Set<org.dragonet.common.mcbedrock.protocol.type.PlayerListEntry> peEntries = new HashSet();
 
             for (CachedEntity entity : session.getEntityCache().getEntities().values()) {
                 if (entity.eid == entityPlayer.eid) //never send ME (entry 1L)
@@ -186,7 +186,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                     PlayerListEntry playerListEntry = session.getPlayerInfoCache().get(entity.playerUniqueId);
                     PlayerSkinPacket skin = new PlayerSkinPacket(entity.playerUniqueId);
 
-                    org.dragonet.proxy.protocol.type.PlayerListEntry peEntry = new org.dragonet.proxy.protocol.type.PlayerListEntry();
+                    org.dragonet.common.mcbedrock.protocol.type.PlayerListEntry peEntry = new org.dragonet.common.mcbedrock.protocol.type.PlayerListEntry();
                     peEntry.uuid = entity.playerUniqueId;
                     peEntry.eid = entity.eid;
                     peEntry.username = playerListEntry.getProfile().getName();
@@ -201,7 +201,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             }
 
             playerListPacket.type = PlayerListPacket.TYPE_ADD;
-            playerListPacket.entries = peEntries.toArray(new org.dragonet.proxy.protocol.type.PlayerListEntry[peEntries.size()]);
+            playerListPacket.entries = peEntries.toArray(new org.dragonet.common.mcbedrock.protocol.type.PlayerListEntry[peEntries.size()]);
             session.sendPacket(playerListPacket);
             entityPlayer.spawned = true;
             return null;

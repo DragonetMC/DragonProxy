@@ -13,14 +13,14 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
-import org.dragonet.proxy.data.entity.PEEntityAttribute;
+import org.dragonet.common.mcbedrock.data.entity.PEEntityAttribute;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.protocol.packets.RespawnPacket;
-import org.dragonet.proxy.protocol.packets.SetHealthPacket;
-import org.dragonet.proxy.protocol.packets.UpdateAttributesPacket;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.RespawnPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.SetHealthPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.UpdateAttributesPacket;
 
 public class PCUpdateHealthPacketTranslator implements IPCPacketTranslator<ServerPlayerHealthPacket> {
 

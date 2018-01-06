@@ -1,7 +1,5 @@
 package org.dragonet.proxy.network.translator.itemsblocks;
 
-import org.dragonet.proxy.data.itemsblocks.ItemEntry;
-
 /**
  * @author vincent
  */

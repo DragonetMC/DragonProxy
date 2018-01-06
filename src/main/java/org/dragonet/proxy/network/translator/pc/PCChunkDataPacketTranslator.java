@@ -22,22 +22,17 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.dragonet.proxy.DragonProxy;
 
-import org.dragonet.proxy.data.nbt.NBTIO;
+import org.dragonet.common.mcbedrock.data.nbt.NBTIO;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.proxy.data.itemsblocks.ItemEntry;
-import org.dragonet.proxy.data.nbt.tag.CompoundTag;
-import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.protocol.packets.BlockEntityDataPacket;
-import org.dragonet.proxy.protocol.packets.FullChunkDataPacket;
-import org.dragonet.proxy.protocol.type.chunk.ChunkData;
-import org.dragonet.proxy.protocol.type.chunk.Section;
-import org.dragonet.proxy.utilities.BlockPosition;
+import org.dragonet.common.mcbedrock.data.itemsblocks.ItemEntry;
+import org.dragonet.common.mcbedrock.data.nbt.tag.CompoundTag;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.FullChunkDataPacket;
+import org.dragonet.common.mcbedrock.protocol.type.chunk.ChunkData;
+import org.dragonet.common.mcbedrock.protocol.type.chunk.Section;
 
 public class PCChunkDataPacketTranslator implements IPCPacketTranslator<ServerChunkDataPacket> {
 
@@ -108,7 +103,7 @@ public class PCChunkDataPacketTranslator implements IPCPacketTranslator<ServerCh
         try {
             List<CompoundTag> blockEntities = new ArrayList<>();
             for (int i = 0; i < pc.getTileEntities().length; i++) {
-                org.dragonet.proxy.data.nbt.tag.CompoundTag peTag = ItemBlockTranslator.translateBlockEntityToPE(pc.getTileEntities()[i]);
+                CompoundTag peTag = ItemBlockTranslator.translateBlockEntityToPE(pc.getTileEntities()[i]);
                 if (peTag != null) //filter non hadled blocks entities
                     blockEntities.add(peTag);
 //                else // debug

@@ -24,7 +24,7 @@ import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
-import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
 
 /**
  * Maintaince the connection between the proxy and remote Minecraft server.
