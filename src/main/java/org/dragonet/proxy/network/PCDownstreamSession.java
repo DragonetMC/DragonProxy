@@ -82,6 +82,7 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
                  */
                 // Handle the packet
                 try {
+                    System.out.println(event.getPacket().getClass().getName());
                     PEPacket[] packets = PacketTranslatorRegister.translateToPE(upstream, event.getPacket());
                     if (packets == null) {
                         return;

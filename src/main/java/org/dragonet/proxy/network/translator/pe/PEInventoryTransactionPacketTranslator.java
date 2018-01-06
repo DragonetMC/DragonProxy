@@ -58,6 +58,15 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
 //            System.out.println("<<<<============================");
 //        }
 
+
+        System.out.println(">>>>============================");
+        System.out.println("InventoryTransactionPacket type: \n" + DebugTools.getAllFields(packet));
+        System.out.println("-------------");
+        for (InventoryTransactionAction action : packet.actions) {
+            System.out.println(DebugTools.getAllFields(action));
+        }
+        System.out.println("<<<<============================");
+
         // /!\ THIS IS A SIMPLE HANDLING WITHOUT JAVA DENY TRANSACTION
         switch (packet.transactionType) {
             case InventoryTransactionPacket.TYPE_NORMAL: //0 INVENTORY & CHEST
@@ -102,6 +111,8 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                         WindowAction.CLICK_ITEM,
                         (WindowActionParam) ClickItemParam.LEFT_CLICK
                     );
+                    System.out.println("WINDOWACTIONPACKET \n" + DebugTools.getAllFields(windowActionPacket));
+
                     session.getDownstream().send(windowActionPacket);
 
                     // after the previous one, we can detect SHIFT click or move items on mobile devices
