@@ -47,15 +47,16 @@ public class PCRespawnPacketTranslator implements IPCPacketTranslator<ServerResp
             adv.eid = entity.proxyEid;
             adv.commandsPermission = AdventureSettingsPacket.PERMISSION_NORMAL;
             adv.playerPermission = AdventureSettingsPacket.LEVEL_PERMISSION_MEMBER;
-            
-            session.sendPacket(new SetDifficultyPacket(packet.getDifficulty()));
-            session.sendPacket(pkgm);
-            session.sendPacket(adv);
+
+            return new PEPacket[] {
+                new SetDifficultyPacket(packet.getDifficulty()),
+                pkgm,
+                adv
+            };
         }
         else
         {
-            session.sendPacket(new PlayStatusPacket(PlayStatusPacket.PLAYER_SPAWN));
+            return new PEPacket[] {new PlayStatusPacket(PlayStatusPacket.PLAYER_SPAWN)};
         }
-        return new PEPacket[]{};
     }
 }
