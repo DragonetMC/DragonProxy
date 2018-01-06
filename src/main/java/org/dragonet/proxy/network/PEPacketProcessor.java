@@ -39,6 +39,7 @@ public class PEPacketProcessor implements Runnable {
     static {
         Set<Class<? extends PEPacket>> packets = new HashSet<>();
         packets.add(InventoryTransactionPacket.class);
+        packets.add(ContainerClosePacket.class);
         packets.add(ModalFormResponsePacket.class);
 
         FORWARDED_PACKETS = Collections.unmodifiableSet(packets);
