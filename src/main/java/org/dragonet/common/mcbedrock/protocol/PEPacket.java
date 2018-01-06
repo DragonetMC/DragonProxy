@@ -22,14 +22,14 @@ public abstract class PEPacket extends BinaryStream {
         return decoded;
     }
 
-    public final void encode() {
+    public void encode() {
         reset();
         encodeHeader();
         encodePayload();
         encoded = true;
     }
 
-    public final void decode() {
+    public void decode() {
         decodeHeader();
         decodePayload();
         decoded = true;
