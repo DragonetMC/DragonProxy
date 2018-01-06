@@ -14,7 +14,6 @@ package org.dragonet.proxy.network;
 
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
 import com.github.steveice10.packetlib.Client;
 import com.github.steveice10.packetlib.event.session.ConnectedEvent;
 import com.github.steveice10.packetlib.event.session.DisconnectedEvent;
@@ -26,7 +25,6 @@ import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.utilities.BinaryStream;
 
 /**
  * Maintaince the connection between the proxy and remote Minecraft server.
@@ -61,12 +59,6 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
             public void connected(ConnectedEvent event) {
                 proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_REMOTE_CONNECTED, upstream.getUsername(),
                     upstream.getRemoteAddress()));
-
-                // Notify the server
-//                BinaryStream bis = new BinaryStream();
-//                bis.putString("Notification"); // command
-//                ClientPluginMessagePacket pluginMessage = new ClientPluginMessagePacket("DragonProxy", bis.get());
-//                send(pluginMessage);
 
                 upstream.onConnected();
             }

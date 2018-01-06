@@ -36,6 +36,7 @@ import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.protocol.type.Skin;
+import org.dragonet.proxy.utilities.BinaryStream;
 import org.dragonet.proxy.utilities.BlockPosition;
 import org.dragonet.proxy.utilities.Vector3F;
 
@@ -160,6 +161,12 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
 				session.sendPacket(new PlayStatusPacket(PlayStatusPacket.PLAYER_SPAWN));*/
             }
 
+            // Notify the server
+            BinaryStream bis = new BinaryStream();
+            bis.putString("Notification"); // command
+            ClientPluginMessagePacket pluginMessage = new ClientPluginMessagePacket("DragonProxy", bis.get());
+            session.getDownstream().send(pluginMessage);
+
             session.setSpawned();
 
             entityPlayer.absoluteMove(packet.getX(), packet.getY() + entityPlayer.peType.getOffset() + 0.1f, packet.getZ(), packet.getYaw(), packet.getPitch());
@@ -194,7 +201,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             }
 
             playerListPacket.type = PlayerListPacket.TYPE_ADD;
-            playerListPacket.entries = (org.dragonet.proxy.protocol.type.PlayerListEntry[]) peEntries.toArray(new org.dragonet.proxy.protocol.type.PlayerListEntry[peEntries.size()]);
+            playerListPacket.entries = peEntries.toArray(new org.dragonet.proxy.protocol.type.PlayerListEntry[peEntries.size()]);
             session.sendPacket(playerListPacket);
             entityPlayer.spawned = true;
             return null;

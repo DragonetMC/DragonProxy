@@ -25,15 +25,24 @@ import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.utilities.BinaryStream;
 import org.json.JSONArray;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.dragonet.proxy.DragonProxy;
 
 public class PEPacketProcessor implements Runnable {
 
-    public static final int MAX_PACKETS_PER_CYCLE = 200;
+    public final static int MAX_PACKETS_PER_CYCLE = 200;
+
+    private final static Set<Class<? extends PEPacket>> FORWARDED_PACKETS;
+
+    static {
+        Set<Class<? extends PEPacket>> packets = new HashSet<>();
+        packets.add(InventoryTransactionPacket.class);
+        packets.add(ModalFormResponsePacket.class);
+
+        FORWARDED_PACKETS = Collections.unmodifiableSet(packets);
+    }
 
     private final AtomicBoolean enableForward = new AtomicBoolean();
 
@@ -123,11 +132,12 @@ public class PEPacketProcessor implements Runnable {
                 if (this.client.getDownstream() == null || !this.client.getDownstream().isConnected())
                     break;
 
-                if (enableForward.get()) {
+                if (enableForward.get() && FORWARDED_PACKETS.contains(packet.getClass())) {
                     BinaryStream bis = new BinaryStream();
                     bis.putString("PacketForward");
                     bis.putByteArray(packet.getBuffer());
                     ClientPluginMessagePacket msg = new ClientPluginMessagePacket("DragonProxy", bis.getBuffer());
+                    client.getDownstream().send(msg);
                 } else {
                     Packet[] translated = PacketTranslatorRegister.translateToPC(this.client, packet);
                     if (translated == null || translated.length == 0)
