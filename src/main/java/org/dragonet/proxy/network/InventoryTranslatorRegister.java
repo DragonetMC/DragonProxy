@@ -30,6 +30,7 @@ import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.packets.ContainerClosePacket;
 import org.dragonet.proxy.protocol.packets.InventoryContentPacket;
 import org.dragonet.proxy.protocol.type.Slot;
+import org.dragonet.proxy.utilities.BlockPosition;
 
 public final class InventoryTranslatorRegister {
 
@@ -96,11 +97,11 @@ public final class InventoryTranslatorRegister {
             }
             if (session.getDataCache().containsKey(CacheKey.WINDOW_BLOCK_POSITION)) {
                 // Already a block was replaced to Chest, reset it
-                session.sendFakeBlock(((Position) session.getDataCache().get(CacheKey.WINDOW_BLOCK_POSITION)).getX(),
-                    ((Position) session.getDataCache().get(CacheKey.WINDOW_BLOCK_POSITION)).getY(),
-                    ((Position) session.getDataCache().remove(CacheKey.WINDOW_BLOCK_POSITION)).getZ(), 1,
-                    // Set to stone since we don't know what it was, server will correct it once client interacts it
-                    0);
+                BlockPosition pos = ((BlockPosition) session.getDataCache().get(CacheKey.WINDOW_BLOCK_POSITION));
+                //session.sendFakeBlock(pos.x, pos.y, pos.z, 1,// Set to stone since we don't know what it was, server will correct it once client interacts it
+                //    0);
+                //session.sendFakeBlock(pos.x + 1, pos.y, pos.z, 1,// Set to stone since we don't know what it was, server will correct it once client interacts it
+                //        0);
             }
         }
     }

@@ -29,8 +29,8 @@ public class ChestWindowTranslator implements IInventoryTranslator {
 
     public boolean open(UpstreamSession session, CachedWindow window) {
         BlockPosition pos = new BlockPosition((int) session.getEntityCache().getClientEntity().x,
-            (int) session.getEntityCache().getClientEntity().y - 4,
-            (int) session.getEntityCache().getClientEntity().z);
+                (int) session.getEntityCache().getClientEntity().y - 4,
+                (int) session.getEntityCache().getClientEntity().z);
 
         session.getDataCache().put(CacheKey.WINDOW_OPENED_ID, window.windowId);
         session.getDataCache().put(CacheKey.WINDOW_OPENED_SIZE, window.size - 36); //-36 for the player inv size
@@ -40,12 +40,26 @@ public class ChestWindowTranslator implements IInventoryTranslator {
         BlockEntityDataPacket blockEntityData = new BlockEntityDataPacket();
         blockEntityData.blockPosition = new BlockPosition(pos.x, pos.y, pos.z);
         blockEntityData.tag = ItemBlockTranslator.translateBlockEntityToPE(ItemBlockTranslator.newTileTag("Chest", pos.x, pos.y, pos.z));
+        if(window.size > 27 + 36){
+            blockEntityData.tag.putInt("pairx", pos.x +1);
+            blockEntityData.tag.putInt("pairz", pos.z);
+        }
         session.sendPacket(blockEntityData);
+
+        if(window.size > 27 + 36){
+            session.sendFakeBlock(pos.x + 1, pos.y, pos.z, 54, 0);
+            BlockEntityDataPacket blockEntityData2 = new BlockEntityDataPacket();
+            blockEntityData2.blockPosition = new BlockPosition(pos.x +1, pos.y, pos.z);
+            blockEntityData2.tag = ItemBlockTranslator.translateBlockEntityToPE(ItemBlockTranslator.newTileTag("Chest", pos.x +1, pos.y, pos.z));
+            blockEntityData2.tag.putInt("pairx", pos.x);
+            blockEntityData2.tag.putInt("pairz", pos.z);
+            session.sendPacket(blockEntityData2);
+        }
 
         ContainerOpenPacket pk = new ContainerOpenPacket();
         pk.eid = -1;
         pk.windowId = window.windowId;
-        pk.type = window.size <= 27 ? InventoryType.PEInventory.CHEST : InventoryType.PEInventory.DOUBLE_CHEST;
+        pk.type = InventoryType.PEInventory.DOUBLE_CHEST;
         pk.position = new BlockPosition(pos.x, pos.y, pos.z);
         session.sendPacket(pk);
         return true;

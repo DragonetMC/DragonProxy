@@ -20,7 +20,6 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlaye
 import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientVehicleMovePacket;
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.protocol.packets.MovePlayerPacket;
-import org.dragonet.proxy.utilities.DebugTools;
 
 public class PEMovePlayerPacketTranslator implements IPEPacketTranslator<MovePlayerPacket> {
 
@@ -45,6 +44,9 @@ public class PEMovePlayerPacketTranslator implements IPEPacketTranslator<MovePla
                 packet.yaw,
                 packet.pitch);
             session.getDownstream().send(pk);
+            entity.x = packet.position.x;
+            entity.y = packet.position.y - EntityType.PLAYER.getOffset();
+            entity.z = packet.position.z;
         }
         return null;
     }
