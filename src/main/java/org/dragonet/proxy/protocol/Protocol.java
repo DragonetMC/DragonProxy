@@ -14,6 +14,7 @@ package org.dragonet.proxy.protocol;
 
 import org.dragonet.proxy.protocol.packets.*;
 import org.dragonet.proxy.utilities.BinaryStream;
+import org.dragonet.proxy.utilities.VarInt;
 import org.dragonet.proxy.utilities.Zlib;
 
 import java.io.IOException;

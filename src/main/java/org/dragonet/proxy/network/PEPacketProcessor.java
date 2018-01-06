@@ -12,6 +12,7 @@
  */
 package org.dragonet.proxy.network;
 
+import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
 import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.gui.CustomFormComponent;
@@ -21,15 +22,20 @@ import org.dragonet.proxy.protocol.PEPacket;
 import org.dragonet.proxy.protocol.Protocol;
 import org.dragonet.proxy.protocol.ProtocolInfo;
 import org.dragonet.proxy.protocol.packets.*;
+import org.dragonet.proxy.utilities.BinaryStream;
 import org.json.JSONArray;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.dragonet.proxy.DragonProxy;
 
 public class PEPacketProcessor implements Runnable {
 
     public static final int MAX_PACKETS_PER_CYCLE = 200;
+
+    private final AtomicBoolean enableForward = new AtomicBoolean();
 
     private final UpstreamSession client;
     private final Deque<byte[]> packets = new ArrayDeque<>();
@@ -63,7 +69,6 @@ public class PEPacketProcessor implements Runnable {
             for (PEPacket decoded : packets)
                 handlePacket(decoded);
         }
-
     }
 
     public void handlePacket(PEPacket packet) {
@@ -118,12 +123,23 @@ public class PEPacketProcessor implements Runnable {
                 if (this.client.getDownstream() == null || !this.client.getDownstream().isConnected())
                     break;
 
-                Packet[] translated = PacketTranslatorRegister.translateToPC(this.client, packet);
-                if (translated == null || translated.length == 0)
-                    break;
+                if (enableForward.get()) {
+                    BinaryStream bis = new BinaryStream();
+                    bis.putString("PacketForward");
+                    bis.putByteArray(packet.getBuffer());
+                    ClientPluginMessagePacket msg = new ClientPluginMessagePacket("DragonProxy", bis.getBuffer());
+                } else {
+                    Packet[] translated = PacketTranslatorRegister.translateToPC(this.client, packet);
+                    if (translated == null || translated.length == 0)
+                        break;
 
-                client.getDownstream().send(translated);
+                    client.getDownstream().send(translated);
+                }
                 break;
         }
+    }
+
+    public void setPacketForwardMode(boolean enabled) {
+        enableForward.set(enabled);
     }
 }
