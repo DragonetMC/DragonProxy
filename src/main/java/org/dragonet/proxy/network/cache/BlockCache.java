@@ -6,10 +6,11 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.utilities.Position;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BlockCache {
     private final UpstreamSession upstream;
-    private final Map<Integer, Block> blocks = Collections.synchronizedMap(new HashMap<Integer, Block>());
+    private final Map<Integer, Block> blocks = new ConcurrentHashMap<Integer, Block>();
 
     public BlockCache(UpstreamSession upstream) {
         this.upstream = upstream;
@@ -29,10 +30,6 @@ public class BlockCache {
 
     public Collection<Block> getAllBlocks() {
         return blocks.values();
-    }
-    
-    public Map<Integer, Block> getBlockMap(){
-        return blocks;
     }
 
     public void checkBlock(int id, int damage, Position position) {
