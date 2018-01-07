@@ -34,3 +34,10 @@ Circle: [![CircleCI](https://circleci.com/gh/DragonetMC/DragonProxy/tree/master.
 ## Libraries Used
 * JRakNet by the MarfGamer @ [Link](https://github.com/JRakNet/JRakNet)
 * @Steveice10 's MCProtocolLib @ [Link](https://github.com/Steveice10/MCProtocolLib)
+
+# YO!! HOLD ON!! 
+[![](https://shockbyte.com/assets/img/logo-2017.png)](https://shockbyte.com/partner/dragonet)
+## You need a server? huh? 
+## GET IT FROM [SHOCKBYTE](https://shockbyte.com/partner/dragonet)!! 
+#### It supports DragonProxy
+Super powerful servers with affordable price! :/ NOICE! 
