@@ -14,7 +14,7 @@ package org.dragonet.proxy.network.translator.pe;
 
 import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.data.blocks.Block;
+import org.dragonet.common.mcbedrock.data.blocks.Block;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPEPacketTranslator;
@@ -50,8 +50,8 @@ public class PEMovePlayerPacketTranslator implements IPEPacketTranslator<MovePla
             boolean isColliding = false;
             for (Block b: session.getBlockCache().getAllBlocks()) {
                 if (b.collidesWithBB(session.getEntityCache().getClientEntity().boundingBox.clone())) {
-                    DragonProxy.getInstance().getLogger().debug("Colliding packet, skipping");
-                    isColliding = true;
+                        DragonProxy.getInstance().getLogger().debug("Colliding packet, skipping");
+                        isColliding = true;
                 }
             }
 
