@@ -55,7 +55,7 @@ public enum EntityType {
     GHAST(41, 0),
     MAGMA_CUBE(42, 0),
     BLAZE(43, 0),
-    ZOMBIEVILLAGER(44, 0),
+    ZOMBIE_VILLAGER(44, 0),
     WITCH(45, 0),
     STRAY(46, 0),
     HUSK(47, 0),
