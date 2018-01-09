@@ -4,13 +4,14 @@ DragonProxy
 A proxy for to allow **Minecraft: Bedrock** clients to connect to **Minecraft: Java Edition** servers.
 
 ## WE ARE BACK
-- Currently supporting 1.2.x
+- Currently supporting Bedrock 1.2.8 and Java 1.12.2
 - Chat supported
 - Chunks supported
 - Movement supported
+- Block break / place supported
+- Entities spawn move and equipment
+- BocksEntities spawn
 - Inventory WIP
-
-Video by **[@MrPowerGamerBR](https://github.com/MrPowerGamerBR)** (On an older version): https://www.youtube.com/watch?v=oRSKQMzZYDE
 
 ![Screenshot](https://github.com/DragonetMC/DragonProxy/raw/master/screenshots/performium-factions.jpg)
 
