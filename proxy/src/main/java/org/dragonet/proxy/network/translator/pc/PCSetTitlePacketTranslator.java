@@ -11,17 +11,23 @@ public class PCSetTitlePacketTranslator implements IPCPacketTranslator<ServerTit
     @Override
     public PEPacket[] translate(UpstreamSession session, ServerTitlePacket packet) {
         SetTitlePacket titlePacket = new SetTitlePacket();
-        titlePacket.action = packet.getAction();
 
-        switch (titlePacket.action) {
+        switch (packet.getAction()) {
             case ACTION_BAR:
+                titlePacket.action = SetTitlePacket.SET_ACTIONBAR;
                 titlePacket.text = packet.getActionBar().getFullText();
                 break;
+            case TITLE:
+                titlePacket.action = SetTitlePacket.SET_TITLE;
+                titlePacket.text = packet.getTitle().getFullText();
+                break;
             case SUBTITLE:
+                titlePacket.action = SetTitlePacket.SET_SUBTITLE;
                 titlePacket.text = packet.getSubtitle().getFullText();
                 break;
             case RESET:
             case CLEAR:
+                titlePacket.action = SetTitlePacket.RESET;
                 titlePacket.text = "";
                 break;
             default:

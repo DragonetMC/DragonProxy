@@ -6,7 +6,15 @@ import org.dragonet.protocol.ProtocolInfo;
 
 public class SetTitlePacket extends PEPacket {
 
-    public TitleAction action;
+    public static int HIDE = 0;
+    public static int RESET = 1;
+    public static int SET_TITLE = 2;
+    public static int SET_SUBTITLE = 3;
+    public static int SET_ACTIONBAR = 4;
+    public static int SET_TIMINGS = 5;
+    
+    
+    public int action;
     public String text;
     public int fadeIn;
     public int stay;
@@ -19,7 +27,7 @@ public class SetTitlePacket extends PEPacket {
 
     @Override
     public void encodePayload() {
-        putVarInt(this.toActionID(this.action));
+        putVarInt(this.action);
         putString(this.text);
         putVarInt(this.fadeIn);
         putVarInt(this.stay);
@@ -28,49 +36,10 @@ public class SetTitlePacket extends PEPacket {
 
     @Override
     public void decodePayload() {
-        this.action = this.fromActionID(getVarInt());
+        this.action = getVarInt();
         this.text = getString();
         this.fadeIn = getVarInt();
         this.stay = getVarInt();
         this.fadeOut = getVarInt();
     }
-
-    private int toActionID(TitleAction action) {
-        switch (action) {
-            case TITLE:
-                return 2;
-            case SUBTITLE:
-                return 3;
-            case ACTION_BAR:
-                return 4;
-            case TIMES:
-                return 5;
-            case CLEAR:
-                return 0;
-            case RESET:
-                return 1;
-            default:
-                throw new UnsupportedOperationException("No action ID implemented for TitleAction " + action.name());
-        }
-    }
-
-    private TitleAction fromActionID(int actionID) {
-        switch (actionID) {
-            case 2:
-                return TitleAction.TITLE;
-            case 3:
-                return TitleAction.SUBTITLE;
-            case 4:
-                return TitleAction.ACTION_BAR;
-            case 5:
-                return TitleAction.TIMES;
-            case 0:
-                return TitleAction.CLEAR;
-            case 1:
-                return TitleAction.RESET;
-            default:
-                throw new UnsupportedOperationException("No TitleAction implemented for action ID " + actionID);
-        }
-    }
-
 }
