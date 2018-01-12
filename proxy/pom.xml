@@ -133,10 +133,6 @@
             <url>https://oss.sonatype.org/content/repositories/public/</url>
         </repository>
         <repository>
-            <id>maven-repo</id>
-            <url>https://raw.githubusercontent.com/JRakNet/MavenRepository/master</url>
-        </repository>
-        <repository>
             <id>egg82-ninja</id>
             <url>https://www.myget.org/F/egg82-java/maven/</url>
         </repository>
