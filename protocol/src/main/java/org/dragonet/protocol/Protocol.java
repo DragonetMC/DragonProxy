@@ -24,6 +24,7 @@ import java.util.Map;
 import static org.dragonet.protocol.ProtocolInfo.*;
 import org.dragonet.protocol.packets.*;
 
+
 public final class Protocol {
 
     public static final Map<Byte, Class<? extends PEPacket>> packets = new HashMap<>();
@@ -43,6 +44,7 @@ public final class Protocol {
         packets.put(COMMAND_REQUEST_PACKET, CommandRequestPacket.class);
         packets.put(CHANGE_DIMENSION_PACKET, ChangeDimensionPacket.class);
         packets.put(REMOVE_ENTITY_PACKET, RemoveEntityPacket.class);
+        packets.put(ENTITY_EVENT_PACKET, EntityEventPacket.class);
         packets.put(MOB_EFFECT_PACKET, MobEffectPacket.class);
         packets.put(BOSS_EVENT_PACKET, BossEventPacket.class);
         packets.put(ADD_ITEM_ENTITY_PACKET, AddItemEntityPacket.class);

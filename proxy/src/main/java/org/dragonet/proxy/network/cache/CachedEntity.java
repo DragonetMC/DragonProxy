@@ -70,6 +70,9 @@ public class CachedEntity {
     public Slot leggings;
     public Slot boots;
     public Slot mainHand;
+    
+    public int foodPacketCount = 0;
+    public long lastFoodPacketTime;
 
     public boolean isOnStairs = false;
     public AxisAlignedBB boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
