@@ -32,6 +32,7 @@ import org.dragonet.proxy.configuration.ServerConfig;
 import org.dragonet.proxy.commands.CommandRegister;
 import org.dragonet.proxy.commands.ConsoleCommandReader;
 import org.dragonet.proxy.utilities.Logger;
+import org.dragonet.proxy.utilities.MetricsManager;
 
 import org.yaml.snakeyaml.Yaml;
 
@@ -40,6 +41,7 @@ public class DragonProxy {
     public static final boolean IS_RELEASE = false; // DO NOT CHANGE, ONLY ON PRODUCTION
 
     private static DragonProxy instance;
+    private static String[] launchArgs;
     private final Properties properties;
     private String version;
     private Logger logger;
@@ -57,15 +59,14 @@ public class DragonProxy {
     private boolean debug = false;
 
     public static void main(String[] args) {
-        if (instance == null)
-            instance = new DragonProxy(args);
+        launchArgs = args;
+        getInstance();
     }
 
     public static DragonProxy getInstance() {
         if (instance == null)
         {
-            System.out.println("DragonProxy is not started !");
-            System.exit(1);
+            instance = new DragonProxy();
         }
         return instance;
     }
@@ -110,7 +111,7 @@ public class DragonProxy {
         return debug;
     }
 
-    private DragonProxy(String[] args) {
+    private DragonProxy() {
         logger = new Logger(this);
 
         try {
@@ -169,7 +170,7 @@ public class DragonProxy {
             logger.warning("This is a development build. It may contain bugs. Do not use on production.\n");
 
         // Check for startup arguments
-        checkArguments(args);
+        checkArguments(launchArgs);
 
         // Load language file
         try {
@@ -214,6 +215,7 @@ public class DragonProxy {
             motd, config.max_players);
 
         ticker.start();
+        MetricsManager.getInstance();
         logger.info(lang.get(Lang.INIT_DONE));
     }
 
@@ -234,12 +236,15 @@ public class DragonProxy {
     }
 
     public void checkArguments(String[] args) {
-        for (String arg : args)
-            if (arg.toLowerCase().contains("--debug")) {
-                debug = true;
-                getLogger().debug = true;
-                logger.info("Proxy is running in debug mode.");
+        if (args != null) {
+            for (String arg : args) {
+                if (arg.toLowerCase().contains("--debug")) {
+                    debug = true;
+                    getLogger().debug = true;
+                    logger.info("Proxy is running in debug mode.");
+                }
             }
+        }
     }
 
     public void shutdown() {
