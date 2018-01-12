@@ -62,6 +62,11 @@ public class DragonProxy {
     }
 
     public static DragonProxy getInstance() {
+        if (instance == null)
+        {
+            System.out.println("DragonProxy is not started !");
+            System.exit(1);
+        }
         return instance;
     }
 
@@ -105,7 +110,7 @@ public class DragonProxy {
         return debug;
     }
 
-    public DragonProxy(String[] args) {
+    private DragonProxy(String[] args) {
         logger = new Logger(this);
 
         try {
@@ -196,18 +201,18 @@ public class DragonProxy {
         // Create thread pool
         logger.info(lang.get(Lang.INIT_CREATING_THREAD_POOL, config.thread_pool_size));
         generalThreadPool = Executors.newScheduledThreadPool(config.thread_pool_size);
+        
+        // MOTD
+        motd = config.motd;
+        motd = motd.replace("&", "\u00a7");
 
         // Bind
         logger.info(lang.get(Lang.INIT_BINDING, config.udp_bind_ip, config.udp_bind_port));
         // RakNet.enableLogging();
         network = new RaknetInterface(this, config.udp_bind_ip, // IP
-            config.udp_bind_port); // Port
+            config.udp_bind_port, // Port
+            motd, config.max_players);
 
-        // MOTD
-        motd = config.motd;
-        motd = motd.replace("&", "\u00a7");
-
-        network.setBroadcastName(motd, 1, 2);
         ticker.start();
         logger.info(lang.get(Lang.INIT_DONE));
     }

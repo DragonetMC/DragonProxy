@@ -14,6 +14,8 @@ package org.dragonet.proxy.network;
 
 import java.net.InetSocketAddress;
 import java.util.*;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import net.marfgamer.jraknet.RakNetPacket;
 import net.marfgamer.jraknet.identifier.MinecraftIdentifier;
@@ -33,30 +35,48 @@ public class RaknetInterface implements RakNetServerListener {
     private final SessionRegister sessions;
     private final RakNetServer rakServer;
 
+    private String serverName;
+    private int maxPlayers;
+    private final ScheduledFuture updatePing;
+
     static {
         IMMEDIATE_PACKETS.add("PlayStatus");
     }
 
-    public RaknetInterface(DragonProxy proxy, String ip, int port) {
+    public RaknetInterface(DragonProxy proxy, String ip, int port, String serverName, int maxPlayers) {
         this.proxy = proxy;
-        rakServer = new RakNetServer(port, Integer.MAX_VALUE);
-        rakServer.addListener(this);
-        rakServer.addSelfListener();
-        sessions = this.proxy.getSessionRegister();
-        rakServer.startThreaded();
+        this.serverName = serverName;
+        this.maxPlayers = maxPlayers;
+        this.rakServer = new RakNetServer(port, Integer.MAX_VALUE);
+        this.rakServer.addListener(this);
+        this.rakServer.addSelfListener();
+        this.sessions = this.proxy.getSessionRegister();
+        this.rakServer.startThreaded();
+        this.updatePing = proxy.getGeneralThreadPool().scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                //TODO option to display minecraft server players instead of proxy
+                setBroadcastName(getServerName(), sessions.getOnlineCount(), getMaxPlayers());
+            }
+        }, 0, 5, TimeUnit.SECONDS);
     }
 
     public DragonProxy getProxy() {
         return proxy;
     }
 
+    public String getServerName() {
+        return serverName;
+    }
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
     public RakNetServer getRakServer() {
         return rakServer;
     }
 
-    /*
-     * public void onTick() { }
-     */
     public void handlePing(ServerPing ping) {
         DragonProxy.getInstance().getLogger().debug("PING " + ping.getSender().toString());
     }
@@ -102,14 +122,17 @@ public class RaknetInterface implements RakNetServerListener {
     }
 
     public void setBroadcastName(String serverName, int players, int maxPlayers) {
+        if (maxPlayers == -1)
+            maxPlayers = players + 1;
         rakServer.setIdentifier(
-            new MinecraftIdentifier(serverName, ProtocolInfo.CURRENT_PROTOCOL, ProtocolInfo.MINECRAFT_VERSION_NETWORK,
-                players, maxPlayers, new Random().nextLong(), "DragonProxy", "Survival"));
+                new MinecraftIdentifier(serverName, ProtocolInfo.CURRENT_PROTOCOL, ProtocolInfo.MINECRAFT_VERSION_NETWORK,
+                        players, maxPlayers, new Random().nextLong(), "DragonProxy", "Survival"));
         if (!rakServer.isBroadcastingEnabled())
             rakServer.setBroadcastingEnabled(true);
     }
 
     public void shutdown() {
+        updatePing.cancel(true);
         rakServer.shutdown();
     }
 }
