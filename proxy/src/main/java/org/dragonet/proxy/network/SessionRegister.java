@@ -12,6 +12,7 @@
  */
 package org.dragonet.proxy.network;
 
+import co.aikar.timings.Timings;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,11 +31,13 @@ public class SessionRegister {
     }
 
     public void onTick() {
+        Timings.connectionTimer.startTiming();
         Iterator<Map.Entry<String, UpstreamSession>> iterator = clients.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, UpstreamSession> ent = iterator.next();
             ent.getValue().onTick();
         }
+        Timings.connectionTimer.stopTiming();
     }
 
     public void newSession(UpstreamSession session) {

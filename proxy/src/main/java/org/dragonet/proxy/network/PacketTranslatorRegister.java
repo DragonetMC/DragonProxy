@@ -12,6 +12,8 @@
  */
 package org.dragonet.proxy.network;
 
+import co.aikar.timings.Timing;
+import co.aikar.timings.Timings;
 import com.github.steveice10.mc.protocol.packet.ingame.server.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
@@ -148,11 +150,15 @@ public final class PacketTranslatorRegister {
         IPCPacketTranslator<Packet> target = (IPCPacketTranslator<Packet>) PC_TO_PE_TRANSLATOR.get(packet.getClass());
         if (target == null)
             return null;
-        try {
-            return target.translate(session, packet);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+
+        try (Timing timing = Timings.getPcPacketTranslatorTiming(target)) {
+            try {
+                return target.translate(session, packet);
+            } catch (Exception e) {
+                timing.stopTiming();
+                e.printStackTrace();
+                return null;
+            }
         }
     }
 
@@ -162,11 +168,14 @@ public final class PacketTranslatorRegister {
         IPEPacketTranslator<PEPacket> target = (IPEPacketTranslator<PEPacket>) PE_TO_PC_TRANSLATOR.get(packet.getClass());
         if (target == null)
             return null;
-        try {
-            return target.translate(session, packet);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+
+        try (Timing timing = Timings.getPePacketTranslatorTiming(target)) {
+            try {
+                return target.translate(session, packet);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         }
     }
 }

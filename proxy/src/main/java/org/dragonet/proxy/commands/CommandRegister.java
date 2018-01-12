@@ -12,6 +12,8 @@
  */
 package org.dragonet.proxy.commands;
 
+import co.aikar.timings.Timing;
+import co.aikar.timings.Timings;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,6 +70,8 @@ public final class CommandRegister {
             proxy.getLogger().warning(proxy.getLang().get(Lang.COMMAND_NOT_FOUND));
             return;
         }
-        command.execute(proxy, args);
+        try(Timing timing = Timings.getCommandTiming(command)) {
+            command.execute(proxy, args);
+        }
     }
 }
