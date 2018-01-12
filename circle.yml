@@ -4,5 +4,5 @@ machine:
     
 checkout:
   post:
-    - mvn package
+    - mvn install package
     - cp -r proxy/target/dragonproxy*.jar $CIRCLE_ARTIFACTS/
