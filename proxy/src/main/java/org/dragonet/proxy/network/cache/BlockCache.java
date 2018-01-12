@@ -35,7 +35,7 @@ public class BlockCache {
     public void checkBlock(int id, int damage, Position position) {
         Block glitchyBlock = Block.get(id, damage, position);
         if (glitchyBlock != null) {
-            DragonProxy.getInstance().getLogger().debug("Added glitchy block : " + glitchyBlock);
+//            DragonProxy.getInstance().getLogger().debug("Added glitchy block : " + glitchyBlock);
             saveBlock(glitchyBlock);
         } else {
             if (getBlock(position) != null)

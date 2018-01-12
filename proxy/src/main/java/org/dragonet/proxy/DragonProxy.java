@@ -65,9 +65,7 @@ public class DragonProxy {
 
     public static DragonProxy getInstance() {
         if (instance == null)
-        {
             instance = new DragonProxy();
-        }
         return instance;
     }
 
@@ -192,6 +190,9 @@ public class DragonProxy {
             logger.severe("Invalid login 'mode' option detected, must be cls/online/offline. You set it to '" + authMode
                 + "'! ");
 
+        // Init metrics (https://bstats.org/plugin/server-implementation/DragonProxy)
+        MetricsManager.getInstance();
+        
         // Init session and command stuff
         sessionRegister = new SessionRegister(this);
         commandRegister = new CommandRegister(this);
@@ -215,7 +216,6 @@ public class DragonProxy {
             motd, config.max_players);
 
         ticker.start();
-        MetricsManager.getInstance();
         logger.info(lang.get(Lang.INIT_DONE));
     }
 

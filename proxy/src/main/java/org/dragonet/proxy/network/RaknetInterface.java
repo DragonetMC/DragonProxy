@@ -35,6 +35,7 @@ public class RaknetInterface implements RakNetServerListener {
     private final SessionRegister sessions;
     private final RakNetServer rakServer;
 
+    private long serverId = new Random().nextLong();
     private String serverName;
     private int maxPlayers;
     private final ScheduledFuture updatePing;
@@ -50,6 +51,7 @@ public class RaknetInterface implements RakNetServerListener {
         this.rakServer = new RakNetServer(port, Integer.MAX_VALUE);
         this.rakServer.addListener(this);
         this.rakServer.addSelfListener();
+        this.rakServer.setBroadcastingEnabled(true);
         this.sessions = this.proxy.getSessionRegister();
         this.rakServer.startThreaded();
         this.updatePing = proxy.getGeneralThreadPool().scheduleAtFixedRate(new Runnable() {
@@ -58,7 +60,7 @@ public class RaknetInterface implements RakNetServerListener {
                 //TODO option to display minecraft server players instead of proxy
                 setBroadcastName(getServerName(), sessions.getOnlineCount(), getMaxPlayers());
             }
-        }, 0, 5, TimeUnit.SECONDS);
+        }, 500, 500, TimeUnit.MILLISECONDS);
     }
 
     public DragonProxy getProxy() {
@@ -126,7 +128,7 @@ public class RaknetInterface implements RakNetServerListener {
             maxPlayers = Integer.MAX_VALUE;
         rakServer.setIdentifier(
                 new MinecraftIdentifier(serverName, ProtocolInfo.CURRENT_PROTOCOL, ProtocolInfo.MINECRAFT_VERSION_NETWORK,
-                        players, maxPlayers, new Random().nextLong(), "DragonProxy", "Survival"));
+                        players, maxPlayers, serverId, "DragonProxy", "Survival"));
         if (!rakServer.isBroadcastingEnabled())
             rakServer.setBroadcastingEnabled(true);
     }
