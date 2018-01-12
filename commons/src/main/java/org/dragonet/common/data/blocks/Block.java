@@ -11,6 +11,7 @@ public class Block extends Position {
     public static final int COBBLESTONE_STAIRS = 67;
     public static final int BRICK_STAIRS = 108;
     public static final int STONE_BRICK_STAIRS = 109;
+    public static final int LILY_PAD = 111;
     public static final int NETHER_BRICKS_STAIRS = 114;
     public static final int SANDSTONE_STAIRS = 128;
     public static final int SPRUCE_WOOD_STAIRS = 134;
@@ -20,6 +21,7 @@ public class Block extends Position {
     public static final int WOOD_SLABS = 158;
     public static final int ACACIA_WOOD_STAIRS = 163;
     public static final int DARK_OAK_WOOD_STAIRS = 164;
+    public static final int CARPET = 171;
     public static final int RED_SANDSTONE_STAIRS = 180;
     public static final int RED_SANDSTONE_SLAB = 182;
     public static final int PURPUR_STAIRS = 203;
@@ -34,6 +36,7 @@ public class Block extends Position {
             list[COBBLESTONE_STAIRS] = BlockStairs.class;
             list[BRICK_STAIRS] = BlockStairs.class;
             list[STONE_BRICK_STAIRS] = BlockStairs.class;
+            list[LILY_PAD] = BlockCarpet.class;
             list[NETHER_BRICKS_STAIRS] = BlockStairs.class;
             list[SANDSTONE_STAIRS] = BlockStairs.class;
             list[SPRUCE_WOOD_STAIRS] = BlockStairs.class;
@@ -44,6 +47,7 @@ public class Block extends Position {
             list[DARK_OAK_WOOD_STAIRS] = BlockStairs.class;
             list[RED_SANDSTONE_STAIRS] = BlockStairs.class;
             list[PURPUR_STAIRS] = BlockStairs.class;
+            list[CARPET] = BlockCarpet.class;
             list[SLABS] = BlockSlab.class;
             list[WOOD_SLABS] = BlockSlab.class;
             list[RED_SANDSTONE_SLAB] = BlockSlab.class;
