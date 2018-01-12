@@ -102,7 +102,7 @@ public class PCChunkDataPacketTranslator implements IPCPacketTranslator<ServerCh
                     // Save glitchy items in cache
                     Block glitchyBlock = Block.get(entry.getId(), entry.getPEDamage(), getCoordinateFromChunkData(pc.getX(), pc.getZ(), x, y, z));
                     if (glitchyBlock != null) {
-                        DragonProxy.getInstance().getLogger().debug("Added glitchy block : " + glitchyBlock);
+//                        DragonProxy.getInstance().getLogger().debug("Added glitchy block : " + glitchyBlock);
                         session.getBlockCache().saveBlock(glitchyBlock);
                     }
 
