@@ -12,6 +12,8 @@
  */
 package org.dragonet.proxy;
 
+import co.aikar.timings.Timings;
+
 public class TickerThread extends Thread {
 
     private final DragonProxy proxy;
@@ -26,17 +28,18 @@ public class TickerThread extends Thread {
         long time;
         while (!proxy.isShuttingDown()) {
             time = System.currentTimeMillis();
+            Timings.fullServerTickTimer.startTiming();
             proxy.onTick();
+            Timings.fullServerTickTimer.stopTiming();
             time = System.currentTimeMillis() - time;
-            if (time >= 50) {
+            if (time >= 50)
                 continue;
-            } else {
+            else
                 try {
                     Thread.sleep(50 - time);
                 } catch (InterruptedException ex) {
                     return;
                 }
-            }
         }
     }
 }

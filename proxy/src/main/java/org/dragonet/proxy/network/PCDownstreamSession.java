@@ -60,6 +60,12 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
                 proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_REMOTE_CONNECTED, upstream.getUsername(),
                     upstream.getRemoteAddress()));
 
+                // Notify the server
+//                BinaryStream bis = new BinaryStream();
+//                bis.putString("Notification"); // command
+//                ClientPluginMessagePacket pluginMessage = new ClientPluginMessagePacket("DragonProxy", bis.get());
+//                send(pluginMessage);
+
                 upstream.onConnected();
             }
 

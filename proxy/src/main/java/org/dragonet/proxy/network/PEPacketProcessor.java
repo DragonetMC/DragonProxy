@@ -12,7 +12,12 @@
  */
 package org.dragonet.proxy.network;
 
+import co.aikar.timings.Timing;
+import co.aikar.timings.Timings;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.protocol.packets.*;
 import org.dragonet.proxy.configuration.Lang;
@@ -77,10 +82,13 @@ public class PEPacketProcessor implements Runnable {
                 return;
             }
             for (PEPacket decoded : packets)
-                handlePacket(decoded);
+                try (Timing timing = Timings.getReceiveDataPacketTiming(decoded)) {
+                    handlePacket(decoded);
+                }
         }
     }
 
+    // this method should be in UpstreamSession
     public void handlePacket(PEPacket packet) {
         if (packet == null)
             return;

@@ -12,6 +12,8 @@
  */
 package org.dragonet.proxy.network;
 
+import co.aikar.timings.Timing;
+import co.aikar.timings.Timings;
 import com.github.steveice10.mc.auth.exception.request.RequestException;
 import com.github.steveice10.mc.auth.service.AuthenticationService;
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
@@ -179,21 +181,25 @@ public class UpstreamSession {
         if (packet == null)
             return;
 
-        packet.encode();
+        // System.out.println("Sending [" + packet.getClass().getSimpleName() + "] ");
+        try (Timing timing = Timings.getSendDataPacketTiming(packet)) {
 
-        byte[] buffer;
-        try {
-            buffer = Zlib.deflate(
-                Binary.appendBytes(Binary.writeUnsignedVarInt(packet.getBuffer().length), packet.getBuffer()), 6);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
+            packet.encode();
+
+            byte[] buffer;
+            try {
+                buffer = Zlib.deflate(Binary.appendBytes(Binary.writeUnsignedVarInt(packet.getBuffer().length), packet.getBuffer()), 6);
+            } catch (Exception e) {
+                timing.stopTiming();
+                e.printStackTrace();
+                return;
+            }
+
+            // handler.sendEncapsulated(identifier, encapsulated, RakNet.FLAG_NEED_ACK |
+            // (overridedImmediate ? RakNet.PRIORITY_IMMEDIATE : RakNet.PRIORITY_NORMAL));
+            raknetClient.sendMessage(Reliability.RELIABLE_ORDERED, 0,
+                    new net.marfgamer.jraknet.Packet(Binary.appendBytes((byte) 0xfe, buffer)));
         }
-
-        // handler.sendEncapsulated(identifier, encapsulated, RakNet.FLAG_NEED_ACK |
-        // (overridedImmediate ? RakNet.PRIORITY_IMMEDIATE : RakNet.PRIORITY_NORMAL));
-        raknetClient.sendMessage(Reliability.RELIABLE_ORDERED, 0,
-            new net.marfgamer.jraknet.Packet(Binary.appendBytes((byte) 0xfe, buffer)));
     }
 
     public void sendAllPackets(PEPacket[] packets, boolean immediate) {

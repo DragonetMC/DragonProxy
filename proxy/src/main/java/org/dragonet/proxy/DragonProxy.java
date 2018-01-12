@@ -12,8 +12,8 @@
  */
 package org.dragonet.proxy;
 
+import co.aikar.timings.Timings;
 import com.github.steveice10.mc.protocol.MinecraftConstants;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -41,6 +41,7 @@ public class DragonProxy {
 
     private static DragonProxy instance;
     private final Properties properties;
+    private String version;
     private Logger logger;
     private final TickerThread ticker = new TickerThread(this);
     private ServerConfig config;
@@ -174,7 +175,7 @@ public class DragonProxy {
         }
 
         // Load some more stuff
-        String version = properties.getProperty("git.build.version");
+        version = properties.getProperty("git.build.version");
         if (properties.containsKey("git.commit.id.describe"))
             version += " (" + properties.getProperty("git.commit.id.describe") + ")";
         logger.info(lang.get(Lang.INIT_LOADING, version));
@@ -215,6 +216,14 @@ public class DragonProxy {
         return this.properties;
     }
 
+    public String getVersion() {
+        return this.version;
+    }
+
+    public String getMotd() {
+        return this.motd;
+    }
+
     public void onTick() {
         sessionRegister.onTick();
     }
@@ -240,6 +249,7 @@ public class DragonProxy {
             System.out.println("Exception while shutting down!");
             ex.printStackTrace();
         }
+        Timings.stopServer();
         System.out.println("Goodbye!");
         System.exit(0);
     }
