@@ -123,7 +123,7 @@ public class RaknetInterface implements RakNetServerListener {
 
     public void setBroadcastName(String serverName, int players, int maxPlayers) {
         if (maxPlayers == -1)
-            maxPlayers = players + 1;
+            maxPlayers = Integer.MAX_VALUE;
         rakServer.setIdentifier(
                 new MinecraftIdentifier(serverName, ProtocolInfo.CURRENT_PROTOCOL, ProtocolInfo.MINECRAFT_VERSION_NETWORK,
                         players, maxPlayers, new Random().nextLong(), "DragonProxy", "Survival"));
