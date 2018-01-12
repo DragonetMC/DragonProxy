@@ -17,6 +17,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
 import com.github.steveice10.packetlib.Client;
 import com.github.steveice10.packetlib.event.session.ConnectedEvent;
 import com.github.steveice10.packetlib.event.session.DisconnectedEvent;
+import com.github.steveice10.packetlib.event.session.DisconnectingEvent;
 import com.github.steveice10.packetlib.event.session.PacketReceivedEvent;
 import com.github.steveice10.packetlib.event.session.SessionAdapter;
 import com.github.steveice10.packetlib.packet.Packet;
@@ -55,6 +56,9 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
             return;
         }
         remoteClient = new Client(addr, port, protocol, new TcpSessionFactory());
+        remoteClient.getSession().setConnectTimeout(5);
+        remoteClient.getSession().setReadTimeout(5);
+        remoteClient.getSession().setWriteTimeout(5);
         remoteClient.getSession().addListener(new SessionAdapter() {
             public void connected(ConnectedEvent event) {
                 proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_REMOTE_CONNECTED, upstream.getUsername(),
@@ -72,21 +76,11 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
             public void disconnected(DisconnectedEvent event) {
                 upstream.disconnect(proxy.getLang().get(event.getReason()));
             }
+            public void disconnecting(DisconnectingEvent event) {
+                upstream.disconnect(proxy.getLang().get(event.getReason()));
+            }
 
             public void packetReceived(PacketReceivedEvent event) {
-                /*
-                * if (!event.getPacket().getClass().getSimpleName().toLowerCase().contains(
-                * "block") &&
-                * !event.getPacket().getClass().getSimpleName().toLowerCase().contains(
-                * "entity") &&
-                * !event.getPacket().getClass().getSimpleName().toLowerCase().contains("time")
-                * &&
-                * !event.getPacket().getClass().getSimpleName().toLowerCase().contains("chunk")
-                * ) { String debug_string = event.getPacket().getClass().getSimpleName() +
-                * " > " + event.getPacket().toString(); if(debug_string.length() > 128)
-                * debug_string = debug_string.substring(0, 128) + "... ";
-                * System.out.println("REMOTE << " + debug_string); }
-                 */
                 // Handle the packet
                 try {
                     PEPacket[] packets = PacketTranslatorRegister.translateToPE(upstream, event.getPacket());
