@@ -12,6 +12,8 @@
  */
 package org.dragonet.proxy.utilities;
 
+import org.dragonet.common.mcbedrock.utilities.MCPESkin;
+
 import java.io.*;
 
 public class DefaultSkin {

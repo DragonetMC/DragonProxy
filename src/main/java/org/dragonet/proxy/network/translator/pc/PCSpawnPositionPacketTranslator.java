@@ -16,9 +16,9 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerSpawnP
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.protocol.packets.SetSpawnPositionPacket;
-import org.dragonet.proxy.utilities.BlockPosition;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.SetSpawnPositionPacket;
+import org.dragonet.common.mcbedrock.utilities.BlockPosition;
 
 public class PCSpawnPositionPacketTranslator implements IPCPacketTranslator<ServerSpawnPositionPacket> {
 

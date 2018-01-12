@@ -1,5 +1,7 @@
 package org.dragonet.proxy.utilities;
 
+import org.dragonet.common.mcbedrock.data.nbt.tag.CompoundTag;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
@@ -38,8 +40,8 @@ public class DebugTools {
         String data = "INSTANCE OF " + obj.getClass().getName() + "\n";
         if (obj instanceof com.github.steveice10.opennbt.tag.builtin.CompoundTag) {
             data += ((com.github.steveice10.opennbt.tag.builtin.CompoundTag) obj).toString() + "\n";
-        } else if (obj instanceof org.dragonet.proxy.data.nbt.tag.CompoundTag) {
-            data += ((org.dragonet.proxy.data.nbt.tag.CompoundTag) obj).toString() + "\n";
+        } else if (obj instanceof CompoundTag) {
+            data += ((CompoundTag) obj).toString() + "\n";
         } else {
             for (Field f : fields) {
                 f.setAccessible(true);

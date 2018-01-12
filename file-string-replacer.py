@@ -13,7 +13,7 @@ REPLACE_TO = "Bedrock137"
 #REPLACE_TO = "com.github.steveice10.mc"
 
 #REPLACE_FROM = "cn.nukkit.utils.Binary"
-#REPLACE_TO = "org.dragonet.proxy.utilities.Binary"
+#REPLACE_TO = "org.dragonet.common.mcbedrock.utilities.Binary"
 
 def main():
   g = os.walk("./proxy")

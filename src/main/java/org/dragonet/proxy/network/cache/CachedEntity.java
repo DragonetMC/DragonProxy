@@ -18,8 +18,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.dragonet.proxy.data.entity.EntityType;
-import org.dragonet.proxy.protocol.type.Slot;
+import org.dragonet.common.mcbedrock.data.entity.EntityType;
+import org.dragonet.common.mcbedrock.maths.AxisAlignedBB;
+import org.dragonet.common.mcbedrock.maths.Vector3F;
+import org.dragonet.common.mcbedrock.protocol.type.Slot;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
@@ -27,19 +29,19 @@ import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dragonet.proxy.data.entity.PEEntityAttribute;
-import org.dragonet.proxy.data.entity.meta.EntityMetaData;
-import org.dragonet.proxy.data.entity.meta.type.ByteArrayMeta;
-import org.dragonet.proxy.data.entity.meta.type.SlotMeta;
+import org.dragonet.common.mcbedrock.data.entity.PEEntityAttribute;
+import org.dragonet.common.mcbedrock.data.entity.meta.EntityMetaData;
+import org.dragonet.common.mcbedrock.data.entity.meta.type.ByteArrayMeta;
+import org.dragonet.common.mcbedrock.data.entity.meta.type.SlotMeta;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
-import org.dragonet.proxy.protocol.packets.AddEntityPacket;
-import org.dragonet.proxy.protocol.packets.AddItemEntityPacket;
-import org.dragonet.proxy.protocol.packets.AddPaintingPacket;
-import org.dragonet.proxy.protocol.packets.AddPlayerPacket;
-import org.dragonet.proxy.protocol.packets.MobArmorEquipmentPacket;
-import org.dragonet.proxy.utilities.BlockPosition;
-import org.dragonet.proxy.utilities.Vector3F;
+import org.dragonet.common.mcbedrock.protocol.packets.AddEntityPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.AddItemEntityPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.AddPaintingPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.AddPlayerPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.MobArmorEquipmentPacket;
+import org.dragonet.common.mcbedrock.utilities.BlockPosition;
+
 
 public class CachedEntity {
 
@@ -56,6 +58,7 @@ public class CachedEntity {
     public double x;
     public double y;
     public double z;
+    public int scale = 1;
     public double motionX;
     public double motionY;
     public double motionZ;
@@ -71,6 +74,9 @@ public class CachedEntity {
     public Slot leggings;
     public Slot boots;
     public Slot mainHand;
+
+    public boolean isOnStairs = false;
+    public AxisAlignedBB boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 
     // cache riding datas for dismount
     public long riding = 0;
@@ -109,6 +115,7 @@ public class CachedEntity {
     }
 
     public CachedEntity absoluteMove(double x, double y, double z, float yaw, float pitch) {
+        double radius = this.getWidth() / 2d;
         if (x != 0 || y != 0 || z != 0 || yaw != 0 || pitch != 0) {
             this.x = x;
             this.y = y;
@@ -116,6 +123,8 @@ public class CachedEntity {
             this.yaw = yaw;
             this.pitch = pitch;
             this.shouldMove = true;
+            this.boundingBox.setBounds(x - radius, y, z - radius, x + radius, y + (this.getHeight() * this.scale), z
+                + radius);
         }
         return this;
     }
@@ -128,6 +137,18 @@ public class CachedEntity {
     public CachedEntity relativeMove(float yaw, float pitch) {
         this.relativeMove(yaw, pitch);
         return this;
+    }
+
+    public float getHeight() {
+        return 1.8f;
+    }
+
+    public float getWidth() {
+        return 0.6f;
+    }
+
+    public float getLength() {
+        return 0.6f;
     }
 
     public void spawn(UpstreamSession session)

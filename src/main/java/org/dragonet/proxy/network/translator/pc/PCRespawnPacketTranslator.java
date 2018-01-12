@@ -17,11 +17,11 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.ServerRespawnPacke
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.protocol.packets.AdventureSettingsPacket;
-import org.dragonet.proxy.protocol.packets.PlayStatusPacket;
-import org.dragonet.proxy.protocol.packets.SetDifficultyPacket;
-import org.dragonet.proxy.protocol.packets.SetPlayerGameTypePacket;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.AdventureSettingsPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.PlayStatusPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.SetDifficultyPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.SetPlayerGameTypePacket;
 
 public class PCRespawnPacketTranslator implements IPCPacketTranslator<ServerRespawnPacket> {
 

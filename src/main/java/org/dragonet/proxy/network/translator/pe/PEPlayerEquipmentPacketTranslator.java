@@ -12,17 +12,11 @@
  */
 package org.dragonet.proxy.network.translator.pe;
 
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
-import com.github.steveice10.mc.protocol.data.game.window.ClickItemParam;
-import com.github.steveice10.mc.protocol.data.game.window.WindowAction;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerChangeHeldItemPacket;
 import com.github.steveice10.packetlib.packet.Packet;
-import org.dragonet.proxy.network.InventoryTranslatorRegister;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.IPEPacketTranslator;
-import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientWindowActionPacket;
-import org.dragonet.proxy.protocol.packets.MobEquipmentPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.MobEquipmentPacket;
 
 public class PEPlayerEquipmentPacketTranslator implements IPEPacketTranslator<MobEquipmentPacket> {
 

@@ -2,12 +2,13 @@ package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.data.game.world.block.ExplodedBlockRecord;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerExplosionPacket;
+import org.dragonet.common.mcbedrock.maths.Vector3F;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.protocol.packets.ExplodePacket;
-import org.dragonet.proxy.utilities.BlockPosition;
-import org.dragonet.proxy.utilities.Vector3F;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.ExplodePacket;
+import org.dragonet.common.mcbedrock.utilities.BlockPosition;
+
 
 import java.util.ArrayList;
 

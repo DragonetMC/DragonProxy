@@ -14,7 +14,6 @@ package org.dragonet.proxy.network;
 
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
 import com.github.steveice10.packetlib.Client;
 import com.github.steveice10.packetlib.event.session.ConnectedEvent;
 import com.github.steveice10.packetlib.event.session.DisconnectedEvent;
@@ -25,8 +24,7 @@ import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
-import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.utilities.BinaryStream;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
 
 /**
  * Maintaince the connection between the proxy and remote Minecraft server.

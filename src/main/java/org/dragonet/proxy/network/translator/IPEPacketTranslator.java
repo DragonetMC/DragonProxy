@@ -14,7 +14,7 @@ package org.dragonet.proxy.network.translator;
 
 import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
 
 public interface IPEPacketTranslator<P extends PEPacket> {
 

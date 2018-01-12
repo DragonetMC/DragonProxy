@@ -15,8 +15,7 @@ package org.dragonet.proxy.network.translator.pe;
 import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.IPEPacketTranslator;
-import org.dragonet.proxy.protocol.packets.AdventureSettingsPacket;
-import org.dragonet.proxy.utilities.DebugTools;
+import org.dragonet.common.mcbedrock.protocol.packets.AdventureSettingsPacket;
 
 public class PEAdventureSettingsPacketTranslator implements IPEPacketTranslator<AdventureSettingsPacket> {
 

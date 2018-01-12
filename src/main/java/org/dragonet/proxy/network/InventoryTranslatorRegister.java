@@ -21,15 +21,15 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientClose
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
-import org.dragonet.proxy.data.inventory.ContainerId;
+import org.dragonet.common.mcbedrock.data.inventory.ContainerId;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.inv.ChestWindowTranslator;
 import org.dragonet.proxy.network.translator.IInventoryTranslator;
-import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.protocol.packets.ContainerClosePacket;
-import org.dragonet.proxy.protocol.packets.InventoryContentPacket;
-import org.dragonet.proxy.protocol.type.Slot;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.ContainerClosePacket;
+import org.dragonet.common.mcbedrock.protocol.packets.InventoryContentPacket;
+import org.dragonet.common.mcbedrock.protocol.type.Slot;
 
 public final class InventoryTranslatorRegister {
 

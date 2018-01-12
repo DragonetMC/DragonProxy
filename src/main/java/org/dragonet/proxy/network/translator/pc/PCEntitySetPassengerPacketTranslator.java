@@ -17,18 +17,18 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntit
 import java.util.Arrays;
 import java.util.Iterator;
 
-import org.dragonet.proxy.data.entity.EntityType;
-import org.dragonet.proxy.data.entity.meta.EntityMetaData;
-import org.dragonet.proxy.data.entity.meta.type.Vector3FMeta;
+import org.dragonet.common.mcbedrock.data.entity.EntityType;
+import org.dragonet.common.mcbedrock.data.entity.meta.EntityMetaData;
+import org.dragonet.common.mcbedrock.data.entity.meta.type.Vector3FMeta;
+import org.dragonet.common.mcbedrock.maths.Vector3F;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.protocol.packets.SetEntityDataPacket;
-import org.dragonet.proxy.protocol.packets.SetEntityLinkPacket;
-import org.dragonet.proxy.utilities.DebugTools;
-import org.dragonet.proxy.utilities.Vector3F;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.SetEntityDataPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.SetEntityLinkPacket;
+
 
 public class PCEntitySetPassengerPacketTranslator implements IPCPacketTranslator<ServerEntitySetPassengersPacket> {
 

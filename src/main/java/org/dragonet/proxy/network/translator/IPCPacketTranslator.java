@@ -13,7 +13,7 @@
 package org.dragonet.proxy.network.translator;
 
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
 
 import com.github.steveice10.packetlib.packet.Packet;
 

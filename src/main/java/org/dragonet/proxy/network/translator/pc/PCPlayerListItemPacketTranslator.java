@@ -21,9 +21,9 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPlayerListEn
 import java.util.HashSet;
 import java.util.Set;
 
-import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.protocol.packets.PlayerListPacket;
-import org.dragonet.proxy.protocol.type.Skin;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.PlayerListPacket;
+import org.dragonet.common.mcbedrock.protocol.type.Skin;
 
 public class PCPlayerListItemPacketTranslator implements IPCPacketTranslator<ServerPlayerListEntryPacket> {
 
@@ -31,10 +31,10 @@ public class PCPlayerListItemPacketTranslator implements IPCPacketTranslator<Ser
         PlayerListPacket pk = new PlayerListPacket();
         if (packet.getAction() == PlayerListEntryAction.ADD_PLAYER) {
             PlayerListEntry[] entries = packet.getEntries();
-            Set<org.dragonet.proxy.protocol.type.PlayerListEntry> peEntries = new HashSet();
+            Set<org.dragonet.common.mcbedrock.protocol.type.PlayerListEntry> peEntries = new HashSet();
             for (PlayerListEntry entry : entries) {
                 session.getPlayerInfoCache().put(entry.getProfile().getId(), entry);
-                org.dragonet.proxy.protocol.type.PlayerListEntry peEntry = new org.dragonet.proxy.protocol.type.PlayerListEntry();
+                org.dragonet.common.mcbedrock.protocol.type.PlayerListEntry peEntry = new org.dragonet.common.mcbedrock.protocol.type.PlayerListEntry();
                 peEntry.uuid = entry.getProfile().getId();
                 peEntry.eid = 1;
                 peEntry.username = entry.getProfile().getName();
@@ -43,13 +43,13 @@ public class PCPlayerListItemPacketTranslator implements IPCPacketTranslator<Ser
                 peEntries.add(peEntry);
             }
             pk.type = PlayerListPacket.TYPE_ADD;
-            pk.entries = (org.dragonet.proxy.protocol.type.PlayerListEntry[]) peEntries.toArray(new org.dragonet.proxy.protocol.type.PlayerListEntry[peEntries.size()]);
+            pk.entries = (org.dragonet.common.mcbedrock.protocol.type.PlayerListEntry[]) peEntries.toArray(new org.dragonet.common.mcbedrock.protocol.type.PlayerListEntry[peEntries.size()]);
         } else if (packet.getAction() == PlayerListEntryAction.REMOVE_PLAYER) {
             PlayerListEntry[] entries = packet.getEntries();
-            Set<org.dragonet.proxy.protocol.type.PlayerListEntry> peEntries = new HashSet();
+            Set<org.dragonet.common.mcbedrock.protocol.type.PlayerListEntry> peEntries = new HashSet();
             for (PlayerListEntry entry : entries) {
                 session.getPlayerInfoCache().remove(entry.getProfile().getId());
-                org.dragonet.proxy.protocol.type.PlayerListEntry peEntry = new org.dragonet.proxy.protocol.type.PlayerListEntry();
+                org.dragonet.common.mcbedrock.protocol.type.PlayerListEntry peEntry = new org.dragonet.common.mcbedrock.protocol.type.PlayerListEntry();
                 peEntry.uuid = entry.getProfile().getId();
                 peEntry.eid = 1;
                 peEntry.username = entry.getProfile().getName();
@@ -58,7 +58,7 @@ public class PCPlayerListItemPacketTranslator implements IPCPacketTranslator<Ser
                 peEntries.add(peEntry);
             }
             pk.type = PlayerListPacket.TYPE_REMOVE;
-            pk.entries = (org.dragonet.proxy.protocol.type.PlayerListEntry[]) peEntries.toArray(new org.dragonet.proxy.protocol.type.PlayerListEntry[peEntries.size()]);
+            pk.entries = (org.dragonet.common.mcbedrock.protocol.type.PlayerListEntry[]) peEntries.toArray(new org.dragonet.common.mcbedrock.protocol.type.PlayerListEntry[peEntries.size()]);
         }
         return new PEPacket[]{pk};
     }

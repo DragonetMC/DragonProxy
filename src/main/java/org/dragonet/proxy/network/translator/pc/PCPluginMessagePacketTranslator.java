@@ -14,9 +14,10 @@ package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPluginMessagePacket;
 import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.common.mcbedrock.protocol.WrappedPEPacket;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.utilities.BinaryStream;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.utilities.BinaryStream;
 
 public class PCPluginMessagePacketTranslator implements IPCPacketTranslator<ServerPluginMessagePacket> {
     @Override
@@ -29,7 +30,12 @@ public class PCPluginMessagePacketTranslator implements IPCPacketTranslator<Serv
             if(command.equals("PacketForward")) {
                 boolean enabled = bis.getBoolean();
                 session.getPacketProcessor().setPacketForwardMode(enabled);
-            }
+            } else if (command.equals("SendPacket")) {
+                WrappedPEPacket wrapped = new WrappedPEPacket(bis.getByteArray());
+                session.sendPacket(wrapped);
+            }/* else if (command.equals("PacketSubscription")) {
+                TODO: packet subscription
+            }*/
 
             return null;
         }

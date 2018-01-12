@@ -1,17 +1,18 @@
 package org.dragonet.proxy.commands.defaults;
 
+import org.dragonet.common.mcbedrock.maths.Vector3F;
+import org.dragonet.common.mcbedrock.protocol.packets.*;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.commands.Command;
-import org.dragonet.proxy.gui.CustomFormComponent;
-import org.dragonet.proxy.gui.DropDownComponent;
-import org.dragonet.proxy.gui.LabelComponent;
+import org.dragonet.common.mcbedrock.gui.CustomFormComponent;
+import org.dragonet.common.mcbedrock.gui.DropDownComponent;
+import org.dragonet.common.mcbedrock.gui.LabelComponent;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.protocol.packets.*;
-import org.dragonet.proxy.protocol.type.chunk.ChunkData;
-import org.dragonet.proxy.protocol.type.chunk.Section;
-import org.dragonet.proxy.utilities.BlockPosition;
-import org.dragonet.proxy.utilities.Vector3F;
+import org.dragonet.common.mcbedrock.protocol.type.chunk.ChunkData;
+import org.dragonet.common.mcbedrock.protocol.type.chunk.Section;
+import org.dragonet.common.mcbedrock.utilities.BlockPosition;
+
 
 import java.util.Arrays;
 

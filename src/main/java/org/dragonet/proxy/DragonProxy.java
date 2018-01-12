@@ -23,13 +23,14 @@ import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.dragonet.common.mcbedrock.data.blocks.Block;
 import org.dragonet.proxy.network.SessionRegister;
 import org.dragonet.proxy.network.RaknetInterface;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.ServerConfig;
 import org.dragonet.proxy.commands.CommandRegister;
 import org.dragonet.proxy.commands.ConsoleCommandReader;
-import org.dragonet.proxy.protocol.ProtocolInfo;
+import org.dragonet.common.mcbedrock.protocol.ProtocolInfo;
 import org.dragonet.proxy.utilities.Logger;
 
 import org.yaml.snakeyaml.Yaml;
@@ -188,6 +189,9 @@ public class DragonProxy {
         // Init session and command stuff
         sessionRegister = new SessionRegister(this);
         commandRegister = new CommandRegister(this);
+
+        // Init block handling
+        Block.init();
 
         // Create thread pool
         logger.info(lang.get(Lang.INIT_CREATING_THREAD_POOL, config.thread_pool_size));

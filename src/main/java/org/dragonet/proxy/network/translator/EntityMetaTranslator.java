@@ -17,12 +17,12 @@ import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.MetadataType;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
+import org.dragonet.common.mcbedrock.data.entity.meta.type.*;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.data.entity.EntityType;
-import org.dragonet.proxy.data.entity.meta.EntityMetaData;
-import org.dragonet.proxy.data.entity.meta.type.*;
+import org.dragonet.common.mcbedrock.data.entity.EntityType;
+import org.dragonet.common.mcbedrock.data.entity.meta.EntityMetaData;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.utilities.BlockPosition;
+import org.dragonet.common.mcbedrock.utilities.BlockPosition;
 
 public final class EntityMetaTranslator {
 

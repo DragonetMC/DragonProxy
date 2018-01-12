@@ -5,40 +5,29 @@ import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
 import com.github.steveice10.mc.protocol.data.game.entity.player.InteractAction;
 import com.github.steveice10.mc.protocol.data.game.window.ClickItemParam;
-import com.github.steveice10.mc.protocol.data.game.window.DropItemParam;
 import com.github.steveice10.mc.protocol.data.game.window.WindowAction;
 import com.github.steveice10.mc.protocol.data.game.window.WindowActionParam;
-import com.github.steveice10.mc.protocol.data.game.window.WindowType;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockFace;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerActionPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerInteractEntityPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPlaceBlockPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerSwingArmPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerUseItemPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientWindowActionPacket;
 import com.github.steveice10.packetlib.packet.Packet;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.dragonet.proxy.data.inventory.ContainerId;
+import org.dragonet.common.mcbedrock.data.inventory.ContainerId;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.cache.CachedWindow;
-import org.dragonet.proxy.network.cache.WindowCache;
 import org.dragonet.proxy.network.translator.IPEPacketTranslator;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
-import org.dragonet.proxy.protocol.packets.InventoryTransactionPacket;
-import org.dragonet.proxy.protocol.type.InventoryTransactionAction;
-import org.dragonet.proxy.protocol.type.Slot;
-import org.dragonet.proxy.protocol.type.transaction.data.ReleaseItemData;
-import org.dragonet.proxy.protocol.type.transaction.data.TransactionData;
-import org.dragonet.proxy.protocol.type.transaction.data.UseItemData;
-import org.dragonet.proxy.protocol.type.transaction.data.UseItemOnEntityData;
-import org.dragonet.proxy.utilities.BlockPosition;
-import org.dragonet.proxy.utilities.DebugTools;
-import org.dragonet.proxy.utilities.NukkitMath;
+import org.dragonet.common.mcbedrock.protocol.packets.InventoryTransactionPacket;
+import org.dragonet.common.mcbedrock.protocol.type.InventoryTransactionAction;
+import org.dragonet.common.mcbedrock.protocol.type.Slot;
+import org.dragonet.common.mcbedrock.protocol.type.transaction.data.ReleaseItemData;
+import org.dragonet.common.mcbedrock.protocol.type.transaction.data.UseItemData;
+import org.dragonet.common.mcbedrock.protocol.type.transaction.data.UseItemOnEntityData;
+import org.dragonet.common.mcbedrock.utilities.BlockPosition;
 
 /**
  * Created on 2017/12/3.

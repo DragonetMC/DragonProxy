@@ -12,27 +12,23 @@
  */
 package org.dragonet.proxy.network.translator;
 
-import com.github.steveice10.mc.protocol.data.MagicValues;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockFace;
-import com.github.steveice10.mc.protocol.data.message.Message;
 import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
 import com.github.steveice10.opennbt.tag.builtin.IntTag;
 import com.github.steveice10.opennbt.tag.builtin.StringTag;
 import com.github.steveice10.opennbt.tag.builtin.Tag;
 
 import java.util.List;
-import org.dragonet.proxy.DragonProxy;
 
-import org.dragonet.proxy.data.itemsblocks.ItemEntry;
-import org.dragonet.proxy.data.nbt.tag.ListTag;
+import org.dragonet.common.mcbedrock.data.itemsblocks.ItemEntry;
+import org.dragonet.common.mcbedrock.data.nbt.tag.ListTag;
 import org.dragonet.proxy.network.translator.itemsblocks.*;
 
-import org.dragonet.proxy.protocol.type.Slot;
+import org.dragonet.common.mcbedrock.protocol.type.Slot;
 
 public class ItemBlockTranslator {
 
@@ -169,11 +165,11 @@ public class ItemBlockTranslator {
     }
 
     @SuppressWarnings("unchecked")
-    public static org.dragonet.proxy.data.nbt.tag.CompoundTag translateRawNBT(int id, Tag pcTag, org.dragonet.proxy.data.nbt.tag.CompoundTag target) {
+    public static org.dragonet.common.mcbedrock.data.nbt.tag.CompoundTag translateRawNBT(int id, Tag pcTag, org.dragonet.common.mcbedrock.data.nbt.tag.CompoundTag target) {
         if (pcTag != null) {
             String name = pcTag.getName() != null ? pcTag.getName() : "";
             if (target == null)
-                target = new org.dragonet.proxy.data.nbt.tag.CompoundTag(name);
+                target = new org.dragonet.common.mcbedrock.data.nbt.tag.CompoundTag(name);
             switch (pcTag.getClass().getSimpleName()) {
                 case "ByteArrayTag":
                     target.putByteArray(name, (byte[]) pcTag.getValue());
@@ -209,7 +205,7 @@ public class ItemBlockTranslator {
                 case "ListTag":
                     ListTag listTag = new ListTag();
                     for (Tag subTag : (List<Tag>) pcTag.getValue())
-                        listTag.add(translateRawNBT(0, subTag, new org.dragonet.proxy.data.nbt.tag.CompoundTag()));
+                        listTag.add(translateRawNBT(0, subTag, new org.dragonet.common.mcbedrock.data.nbt.tag.CompoundTag()));
                     target.putList(listTag);
                     break;
                 default:
@@ -221,10 +217,10 @@ public class ItemBlockTranslator {
     }
 
     //WIP
-    public static org.dragonet.proxy.data.nbt.tag.CompoundTag translateBlockEntityToPE(com.github.steveice10.opennbt.tag.builtin.CompoundTag input) {
+    public static org.dragonet.common.mcbedrock.data.nbt.tag.CompoundTag translateBlockEntityToPE(com.github.steveice10.opennbt.tag.builtin.CompoundTag input) {
         if (input == null)
             return null;
-        org.dragonet.proxy.data.nbt.tag.CompoundTag output = translateRawNBT(0, input, null);
+        org.dragonet.common.mcbedrock.data.nbt.tag.CompoundTag output = translateRawNBT(0, input, null);
         if (output.contains("id"))
             switch (output.getString("id")) {
                 case "minecraft:bed":
@@ -345,11 +341,11 @@ public class ItemBlockTranslator {
         return output;
     }
     
-    public static org.dragonet.proxy.data.nbt.tag.CompoundTag translateItemNBT(int id, Tag input, org.dragonet.proxy.data.nbt.tag.CompoundTag target) {
+    public static org.dragonet.common.mcbedrock.data.nbt.tag.CompoundTag translateItemNBT(int id, Tag input, org.dragonet.common.mcbedrock.data.nbt.tag.CompoundTag target) {
         if (input == null)
             return null;
         //do the magic
-        org.dragonet.proxy.data.nbt.tag.CompoundTag output = translateRawNBT(id, input, target);
+        org.dragonet.common.mcbedrock.data.nbt.tag.CompoundTag output = translateRawNBT(id, input, target);
         // 298 leather_helmet       CompoundTag { {color=IntTag(color) { 7039851 }} }
         // 299 leather_chestplate
         // 300 leather_leggings
@@ -357,7 +353,7 @@ public class ItemBlockTranslator {
         // 397 skull                CompoundTag { {=ListTag { [CompoundTag { {Signature=StringTag(Signature) { Dfpupzf34kyZaa52cSxbbJhrT2KQ+H3DXEz0Ivsws75/pK3RMglcQrT8MMvfcax79DPFsiVHLvO9TD7AH76Oev5+VxjpJKkx9vnSI1Dnl4cpQ/160cHkc1gJaJaVyQhG7x1epH7h1u87U1yiHLw07ri4YkyLk7Zqa4RgGrgNIOrpXgexJ6gepgb14kxO3y+C6mW/9QIKjjlyXXc1XVQc3kYkoWwHB1qatTzYmq4ZB0u50OyIMzcXR7CcrYelm0u+DAIYIcbhwmcpUE6sLkieNLCdlRB9Qi7Bs/tIKs5nVAD8TgEJEWVxxS7iGCirjcjZuk7GoTqleX0TMFvHXyQ6K86VxRafNT9u3znuiKGev40Wl3969/93HtVHvFisH9bdquW5r00zd49h3kQs8xa7gQ5oE3uZ2xWPzOTuHrjEiZu2U3MlT3bnTRuQGIPzDCsRHRseZPEKzObIgyN+UB+EUO2EEiPED42jiFv6j4QFFAYkqxahAbnGlXXJPZ0Vq2GmwPwlIBvxmPuMZT/U9ECEg+j2TsIE766eYCm4GBZwC46Q9061eSKzPMPPrrSapo7i30yeKPuL1M8SnXGTGPVpDEpr63yqmHOEu0HJwjoSSeyViP0nphXOdVGEhHja6MIqyUl6gB9pAaiIDKVWQpFNO6z000FPGw+GcaDT8rc1pdQ= }, Value=StringTag(Value) { eyJ0aW1lc3RhbXAiOjE1MTI5MjM1NTc4MjAsInByb2ZpbGVJZCI6ImVjNTYxNTM4ZjNmZDQ2MWRhZmY1MDg2YjIyMTU0YmNlIiwicHJvZmlsZU5hbWUiOiJBbGV4Iiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7fX0= }} }] }, Id=StringTag(Id) { ec561538-f3fd-461d-aff5-086b22154bce }, Name=StringTag(Name) { Alex }} }
         
         boolean handle = false;
-        org.dragonet.proxy.data.nbt.tag.CompoundTag display = new org.dragonet.proxy.data.nbt.tag.CompoundTag("display");
+        org.dragonet.common.mcbedrock.data.nbt.tag.CompoundTag display = new org.dragonet.common.mcbedrock.data.nbt.tag.CompoundTag("display");
         if (output.contains("Name")) {
             display.putString("Name", output.getString("Name"));
             output.remove("Name");

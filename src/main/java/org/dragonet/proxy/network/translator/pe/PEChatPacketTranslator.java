@@ -16,7 +16,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
 import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.IPEPacketTranslator;
-import org.dragonet.proxy.protocol.packets.TextPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.TextPacket;
 
 public class PEChatPacketTranslator implements IPEPacketTranslator<TextPacket> {
 

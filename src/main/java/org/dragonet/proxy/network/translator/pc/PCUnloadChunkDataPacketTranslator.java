@@ -17,10 +17,10 @@ import java.util.Arrays;
 
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.proxy.protocol.PEPacket;
-import org.dragonet.proxy.protocol.packets.FullChunkDataPacket;
-import org.dragonet.proxy.protocol.type.chunk.ChunkData;
-import org.dragonet.proxy.protocol.type.chunk.Section;
+import org.dragonet.common.mcbedrock.protocol.PEPacket;
+import org.dragonet.common.mcbedrock.protocol.packets.FullChunkDataPacket;
+import org.dragonet.common.mcbedrock.protocol.type.chunk.ChunkData;
+import org.dragonet.common.mcbedrock.protocol.type.chunk.Section;
 
 public class PCUnloadChunkDataPacketTranslator implements IPCPacketTranslator<ServerUnloadChunkPacket> {
 

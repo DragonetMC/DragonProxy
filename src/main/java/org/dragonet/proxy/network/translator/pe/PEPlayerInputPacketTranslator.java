@@ -12,13 +12,10 @@
  */
 package org.dragonet.proxy.network.translator.pe;
 
-import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientVehicleMovePacket;
 import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPEPacketTranslator;
-import org.dragonet.proxy.protocol.packets.PlayerInputPacket;
-import org.dragonet.proxy.utilities.DebugTools;
+import org.dragonet.common.mcbedrock.protocol.packets.PlayerInputPacket;
 
 public class PEPlayerInputPacketTranslator implements IPEPacketTranslator<PlayerInputPacket> {
 
