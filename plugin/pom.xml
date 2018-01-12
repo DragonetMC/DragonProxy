@@ -15,19 +15,13 @@
             <id>spigotMC-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
+        <repository>
+            <id>bungeecord-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
     </repositories>
 
     <dependencies>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20171018</version>
-        </dependency>
-        <dependency>
-            <groupId>com.auth0</groupId>
-            <artifactId>java-jwt</artifactId>
-            <version>3.3.0</version>
-        </dependency>
 
         <!--BungeeCord APIs-->
         <dependency>
@@ -70,6 +64,12 @@
             <groupId>org.dragonet</groupId>
             <artifactId>dragonproxy-protocol</artifactId>
             <version>1.0</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-api</artifactId>
+            <version>1.12-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
     </dependencies>
