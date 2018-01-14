@@ -50,6 +50,10 @@ public final class WindowCache {
         return windows.get(0);
     }
 
+    public Map<Integer, CachedWindow> getCachedWindows() {
+        return windows;
+    }
+
     // We do not do translations here, do it in InventoryTranslatorRegister
     public void cacheWindow(CachedWindow win) {
         windows.put(win.windowId, win);
@@ -83,7 +87,7 @@ public final class WindowCache {
         List<Packet> packets = null;
         packets = cachedItems.remove(windowId);
         if (packets == null) {
-            return null;
+            return new Packet[]{};
         }
         return packets.toArray(new Packet[0]);
     }

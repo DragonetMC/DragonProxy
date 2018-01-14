@@ -26,8 +26,8 @@ public class ChestWindowTranslator implements IInventoryTranslator {
 
     public boolean open(UpstreamSession session, CachedWindow window) {
         BlockPosition pos = new BlockPosition((int) session.getEntityCache().getClientEntity().x,
-            (int) session.getEntityCache().getClientEntity().y - 4,
-            (int) session.getEntityCache().getClientEntity().z);
+                (int) session.getEntityCache().getClientEntity().y - 4,
+                (int) session.getEntityCache().getClientEntity().z);
 
         session.getDataCache().put(CacheKey.WINDOW_OPENED_ID, window.windowId);
         session.getDataCache().put(CacheKey.WINDOW_BLOCK_POSITION, pos);
@@ -36,13 +36,21 @@ public class ChestWindowTranslator implements IInventoryTranslator {
         BlockEntityDataPacket blockEntityData = new BlockEntityDataPacket();
         blockEntityData.blockPosition = new BlockPosition(pos.x, pos.y, pos.z);
         blockEntityData.tag = ItemBlockTranslator.translateBlockEntityToPE(ItemBlockTranslator.newTileTag("Chest", pos.x, pos.y, pos.z));
+        if (window.size <= 27)
+        {
+            blockEntityData.tag.putInt("pairx", pos.x + 1);
+            BlockEntityDataPacket blockEntityData2 = new BlockEntityDataPacket();
+            blockEntityData2.blockPosition = new BlockPosition(pos.x+1, pos.y, pos.z);
+            blockEntityData2.tag = ItemBlockTranslator.translateBlockEntityToPE(ItemBlockTranslator.newTileTag("Chest", pos.x+1, pos.y, pos.z));
+            blockEntityData2.tag.putInt("pairx", pos.x);
+            session.sendPacket(blockEntityData2);
+        }
         session.sendPacket(blockEntityData);
 
         ContainerOpenPacket pk = new ContainerOpenPacket();
-        pk.eid = 1;
         pk.windowId = window.windowId;
         pk.type = window.size <= 27 ? InventoryType.PEInventory.CHEST : InventoryType.PEInventory.DOUBLE_CHEST;
-        pk.position = new BlockPosition(pos.x, pos.y, pos.z);
+        pk.position = pos;
         session.sendPacket(pk);
         return true;
     }
@@ -63,9 +71,8 @@ public class ChestWindowTranslator implements IInventoryTranslator {
         InventoryContentPacket pk = new InventoryContentPacket();
         pk.windowId = win.windowId;
         pk.items = new Slot[win.slots.length];
-        for (int i = 0; i < pk.items.length; i++) {
+        for (int i = 0; i < pk.items.length; i++)
             pk.items[i] = ItemBlockTranslator.translateSlotToPE(win.slots[i]);
-        }
         session.sendPacket(pk, true);
     }
 }

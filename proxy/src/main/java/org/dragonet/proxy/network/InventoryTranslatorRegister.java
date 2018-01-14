@@ -15,7 +15,6 @@ package org.dragonet.proxy.network;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.window.WindowType;
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientCloseWindowPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
@@ -23,12 +22,13 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSl
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
 import org.dragonet.common.data.inventory.ContainerId;
 import org.dragonet.common.data.inventory.Slot;
+import org.dragonet.common.maths.BlockPosition;
 import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.packets.ContainerClosePacket;
 import org.dragonet.protocol.packets.InventoryContentPacket;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
-import org.dragonet.proxy.network.translator.inv.ChestWindowTranslator;
+import org.dragonet.proxy.network.translator.inv.*;
 import org.dragonet.proxy.network.translator.IInventoryTranslator;
 
 public final class InventoryTranslatorRegister {
@@ -89,18 +89,18 @@ public final class InventoryTranslatorRegister {
         if (session.getDataCache().containsKey(CacheKey.WINDOW_OPENED_ID)) {
             // There is already a window opened
             int id = (int) session.getDataCache().remove(CacheKey.WINDOW_OPENED_ID);
+            // clean cache
+            session.getWindowCache().getCachedWindows().remove(id);
             if (byServer) {
                 session.sendPacket(new ContainerClosePacket(id), true);
             } else {
                 session.getDownstream().send(new ClientCloseWindowPacket(id));
             }
             if (session.getDataCache().containsKey(CacheKey.WINDOW_BLOCK_POSITION)) {
+                BlockPosition pos = (BlockPosition) session.getDataCache().get(CacheKey.WINDOW_BLOCK_POSITION);
                 // Already a block was replaced to Chest, reset it
-                session.sendFakeBlock(((Position) session.getDataCache().get(CacheKey.WINDOW_BLOCK_POSITION)).getX(),
-                    ((Position) session.getDataCache().get(CacheKey.WINDOW_BLOCK_POSITION)).getY(),
-                    ((Position) session.getDataCache().remove(CacheKey.WINDOW_BLOCK_POSITION)).getZ(), 1,
-                    // Set to stone since we don't know what it was, server will correct it once client interacts it
-                    0);
+                // Set to stone since we don't know what it was, server will correct it once client interacts it
+                session.sendFakeBlock(pos.x, pos.y, pos.z, 1, 0);
             }
         }
     }
