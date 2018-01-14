@@ -34,30 +34,34 @@ public class ChestWindowTranslator implements IInventoryTranslator {
         session.getDataCache().put(CacheKey.WINDOW_BLOCK_POSITION, pos);
         session.sendFakeBlock(pos.x, pos.y, pos.z, 54, 0);
 
+        try{
         BlockEntityDataPacket blockEntityData = new BlockEntityDataPacket();
         blockEntityData.blockPosition = new BlockPosition(pos.x, pos.y, pos.z);
-        blockEntityData.tag = ItemBlockTranslator.translateBlockEntityToPE(ItemBlockTranslator.newTileTag("Chest", pos.x, pos.y, pos.z));
-        if(window.size > 27 + 36){
+        blockEntityData.tag = ItemBlockTranslator.translateBlockEntityToPE(ItemBlockTranslator.newTileTag("minecraft:chest", pos.x, pos.y, pos.z));
+        if(window.size - 36 > 27){
             blockEntityData.tag.putInt("pairx", pos.x +1);
             blockEntityData.tag.putInt("pairz", pos.z);
         }
         session.sendPacket(blockEntityData);
 
-        if(window.size > 27 + 36){
+        if(window.size - 36 > 27){
             session.sendFakeBlock(pos.x + 1, pos.y, pos.z, 54, 0);
             BlockEntityDataPacket blockEntityData2 = new BlockEntityDataPacket();
             blockEntityData2.blockPosition = new BlockPosition(pos.x +1, pos.y, pos.z);
-            blockEntityData2.tag = ItemBlockTranslator.translateBlockEntityToPE(ItemBlockTranslator.newTileTag("Chest", pos.x +1, pos.y, pos.z));
+            blockEntityData2.tag = ItemBlockTranslator.translateBlockEntityToPE(ItemBlockTranslator.newTileTag("minecraft:chest", pos.x +1, pos.y, pos.z));
             blockEntityData2.tag.putInt("pairx", pos.x);
             blockEntityData2.tag.putInt("pairz", pos.z);
             session.sendPacket(blockEntityData2);
         }
-
+        
         ContainerOpenPacket pk = new ContainerOpenPacket();
         pk.windowId = window.windowId;
-        pk.type = window.size <= 27 ? InventoryType.PEInventory.CHEST : InventoryType.PEInventory.DOUBLE_CHEST;
+        pk.type = window.size - 36 <= 27 ? InventoryType.PEInventory.CHEST : InventoryType.PEInventory.DOUBLE_CHEST;
         pk.position = pos;
         session.sendPacket(pk);
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
         return true;
     }
 
