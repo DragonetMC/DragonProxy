@@ -22,3 +22,6 @@ nb-configuration.xml
 *.bat
 /config.yml
 /src/main/resources/buildNumber.properties
+/proxy/nbactions.xml
+/proxy/timings/
+/proxy/metrics.yml

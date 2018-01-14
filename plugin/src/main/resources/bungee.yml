@@ -1,0 +1,4 @@
+name: DragonProxy-ServerAddon
+main: org.dragonet.plugin.dpaddon.DPAddonBungee
+version: 0.1
+author: DefinitlyEvil
