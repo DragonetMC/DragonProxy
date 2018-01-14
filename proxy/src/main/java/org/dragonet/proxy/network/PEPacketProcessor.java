@@ -35,7 +35,7 @@ import org.dragonet.protocol.Protocol;
 
 import org.dragonet.proxy.DragonProxy;
 
-public class PEPacketProcessor implements Runnable {
+public class PEPacketProcessor {
 
     public final static int MAX_PACKETS_PER_CYCLE = 200;
 
@@ -67,8 +67,9 @@ public class PEPacketProcessor implements Runnable {
         packets.add(packet);
     }
 
-    public void run() {
+    public void onTick(){
         int cnt = 0;
+        Timings.playerNetworkReceiveTimer.startTiming();
         while (cnt < MAX_PACKETS_PER_CYCLE && !packets.isEmpty()) {
             cnt++;
             byte[] p = packets.pop();
@@ -86,6 +87,7 @@ public class PEPacketProcessor implements Runnable {
                     handlePacket(decoded);
                 }
         }
+        Timings.playerNetworkReceiveTimer.stopTiming();
     }
 
     // this method should be in UpstreamSession
