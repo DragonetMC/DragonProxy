@@ -97,10 +97,12 @@ public final class InventoryTranslatorRegister {
                 session.getDownstream().send(new ClientCloseWindowPacket(id));
             }
             if (session.getDataCache().containsKey(CacheKey.WINDOW_BLOCK_POSITION)) {
-                BlockPosition pos = (BlockPosition) session.getDataCache().get(CacheKey.WINDOW_BLOCK_POSITION);
                 // Already a block was replaced to Chest, reset it
-                // Set to stone since we don't know what it was, server will correct it once client interacts it
-                session.sendFakeBlock(pos.x, pos.y, pos.z, 1, 0);
+                BlockPosition pos = ((BlockPosition) session.getDataCache().get(CacheKey.WINDOW_BLOCK_POSITION));
+                //session.sendFakeBlock(pos.x, pos.y, pos.z, 1,// Set to stone since we don't know what it was, server will correct it once client interacts it
+                //    0);
+                //session.sendFakeBlock(pos.x + 1, pos.y, pos.z, 1,// Set to stone since we don't know what it was, server will correct it once client interacts it
+                //        0);
             }
         }
     }

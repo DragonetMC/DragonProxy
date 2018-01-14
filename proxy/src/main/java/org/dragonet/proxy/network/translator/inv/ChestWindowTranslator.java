@@ -25,47 +25,54 @@ import org.dragonet.protocol.packets.*;
 public class ChestWindowTranslator implements IInventoryTranslator {
 
     public boolean open(UpstreamSession session, CachedWindow window) {
-        
+
         System.out.println("size : " + window.size);
         if (window.size > 63)
             System.out.println("Double chest opened");
         else
             System.out.println("Simple chest opened");
-        
+
         BlockPosition pos = new BlockPosition((int) session.getEntityCache().getClientEntity().x,
                 (int) session.getEntityCache().getClientEntity().y + 4,
                 (int) session.getEntityCache().getClientEntity().z);
 
         session.getDataCache().put(CacheKey.WINDOW_OPENED_ID, window.windowId);
+        session.getDataCache().put(CacheKey.WINDOW_OPENED_SIZE, window.size - 36); //-36 for the player inv size
         session.getDataCache().put(CacheKey.WINDOW_BLOCK_POSITION, pos);
-        
+
         // sent the chest fakeblock
         session.sendFakeBlock(pos.x, pos.y, pos.z, 54, 0);
         //try for double chest
         if (window.size > 63)
             session.sendFakeBlock(pos.x + 1, pos.y, pos.z, 54, 0);
+        try {
+            BlockEntityDataPacket blockEntityData = new BlockEntityDataPacket();
+            blockEntityData.blockPosition = new BlockPosition(pos.x, pos.y, pos.z);
+            blockEntityData.tag = ItemBlockTranslator.translateBlockEntityToPE(ItemBlockTranslator.newTileTag("minecraft:chest", pos.x, pos.y, pos.z));
+            if (window.size - 36 > 27) {
+                blockEntityData.tag.putInt("pairx", pos.x + 1);
+                blockEntityData.tag.putInt("pairz", pos.z);
+            }
+            session.sendPacket(blockEntityData);
 
-        // send the fake block entity
-        BlockEntityDataPacket blockEntityData = new BlockEntityDataPacket();
-        blockEntityData.blockPosition = pos;
-        blockEntityData.tag = ItemBlockTranslator.translateBlockEntityToPE(ItemBlockTranslator.newTileTag("minecraft:chest", pos.x, pos.y, pos.z));
-        //try for double chest
-        if (window.size > 63)
-        {
-            blockEntityData.tag.putInt("pairx", pos.x + 1);
-            BlockEntityDataPacket blockEntityData2 = new BlockEntityDataPacket();
-            blockEntityData2.blockPosition = new BlockPosition(pos.x + 1, pos.y, pos.z);
-            blockEntityData2.tag = ItemBlockTranslator.translateBlockEntityToPE(ItemBlockTranslator.newTileTag("minecraft:chest", pos.x + 1, pos.y, pos.z));
-            blockEntityData2.tag.putInt("pairx", pos.x);
-            session.sendPacket(blockEntityData2);
+            if (window.size - 36 > 27) {
+                session.sendFakeBlock(pos.x + 1, pos.y, pos.z, 54, 0);
+                BlockEntityDataPacket blockEntityData2 = new BlockEntityDataPacket();
+                blockEntityData2.blockPosition = new BlockPosition(pos.x + 1, pos.y, pos.z);
+                blockEntityData2.tag = ItemBlockTranslator.translateBlockEntityToPE(ItemBlockTranslator.newTileTag("minecraft:chest", pos.x + 1, pos.y, pos.z));
+                blockEntityData2.tag.putInt("pairx", pos.x);
+                blockEntityData2.tag.putInt("pairz", pos.z);
+                session.sendPacket(blockEntityData2);
+            }
+
+            ContainerOpenPacket pk = new ContainerOpenPacket();
+            pk.windowId = window.windowId;
+            pk.type = 0;
+            pk.position = pos;
+            session.sendPacket(pk);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-        session.sendPacket(blockEntityData);
-
-        ContainerOpenPacket pk = new ContainerOpenPacket();
-        pk.windowId = window.windowId;
-        pk.type = InventoryType.PEInventory.CHEST;
-        pk.position = pos;
-        session.sendPacket(pk);
         return true;
     }
 

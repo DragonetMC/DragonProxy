@@ -12,8 +12,6 @@
  */
 package org.dragonet.proxy;
 
-import co.aikar.timings.Timings;
-import com.github.steveice10.mc.protocol.MinecraftConstants;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -25,16 +23,19 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.dragonet.common.data.blocks.Block;
 import org.dragonet.protocol.ProtocolInfo;
-import org.dragonet.proxy.network.SessionRegister;
-import org.dragonet.proxy.network.RaknetInterface;
-import org.dragonet.proxy.configuration.Lang;
-import org.dragonet.proxy.configuration.ServerConfig;
 import org.dragonet.proxy.commands.CommandRegister;
 import org.dragonet.proxy.commands.ConsoleCommandReader;
+import org.dragonet.proxy.configuration.Lang;
+import org.dragonet.proxy.configuration.ServerConfig;
+import org.dragonet.proxy.network.RaknetInterface;
+import org.dragonet.proxy.network.SessionRegister;
 import org.dragonet.proxy.utilities.Logger;
 import org.dragonet.proxy.utilities.MetricsManager;
-
 import org.yaml.snakeyaml.Yaml;
+
+import com.github.steveice10.mc.protocol.MinecraftConstants;
+
+import co.aikar.timings.Timings;
 
 public class DragonProxy {
 
@@ -132,20 +133,20 @@ public class DragonProxy {
 
         InputStream inputStream = this.getClass().getResourceAsStream("/buildNumber.properties");
         properties = new Properties();
-
-        if (inputStream != null) {
-            try {
-                properties.load(inputStream);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to read properties file", e);
-            } finally {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    // Ignore
+        
+                if (inputStream != null) {
+                    try {
+                        properties.load(inputStream);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Failed to read properties file", e);
+                    } finally {
+                        try {
+                            inputStream.close();
+                        } catch (IOException e) {
+                            // Ignore
+                        }
+                    }
                 }
-            }
-        }
         // Initialize console command reader
         console = new ConsoleCommandReader(this);
         console.startConsole();
