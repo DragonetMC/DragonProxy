@@ -21,9 +21,9 @@ import org.dragonet.protocol.PEPacket;
 public class PCOpenWindowPacketTranslator implements IPCPacketTranslator<ServerOpenWindowPacket> {
 
     public PEPacket[] translate(UpstreamSession session, ServerOpenWindowPacket packet) {
-        session.getProxy().getGeneralThreadPool().execute(() -> {
+//        session.getProxy().getGeneralThreadPool().execute(() -> {
             InventoryTranslatorRegister.open(session, packet);
-        });
+//        });
         return null;
     }
 }

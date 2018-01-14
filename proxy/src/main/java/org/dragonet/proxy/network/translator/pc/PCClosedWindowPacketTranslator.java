@@ -22,9 +22,9 @@ public class PCClosedWindowPacketTranslator implements IPCPacketTranslator<Serve
 
     public PEPacket[] translate(UpstreamSession session, ServerCloseWindowPacket packet) {
         System.out.println("Window " + packet.getWindowId() + " closed from server !");
-        session.getProxy().getGeneralThreadPool().execute(() -> {
+//        session.getProxy().getGeneralThreadPool().execute(() -> {
             InventoryTranslatorRegister.closeOpened(session, true);
-        });
+//        });
         return null;
     }
 }
