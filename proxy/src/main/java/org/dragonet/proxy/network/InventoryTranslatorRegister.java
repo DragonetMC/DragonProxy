@@ -15,7 +15,6 @@ package org.dragonet.proxy.network;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.window.WindowType;
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientCloseWindowPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
@@ -29,7 +28,7 @@ import org.dragonet.protocol.packets.ContainerClosePacket;
 import org.dragonet.protocol.packets.InventoryContentPacket;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
-import org.dragonet.proxy.network.translator.inv.ChestWindowTranslator;
+import org.dragonet.proxy.network.translator.inv.*;
 import org.dragonet.proxy.network.translator.IInventoryTranslator;
 
 public final class InventoryTranslatorRegister {
@@ -90,6 +89,8 @@ public final class InventoryTranslatorRegister {
         if (session.getDataCache().containsKey(CacheKey.WINDOW_OPENED_ID)) {
             // There is already a window opened
             int id = (int) session.getDataCache().remove(CacheKey.WINDOW_OPENED_ID);
+            // clean cache
+            session.getWindowCache().getCachedWindows().remove(id);
             if (byServer) {
                 session.sendPacket(new ContainerClosePacket(id), true);
             } else {

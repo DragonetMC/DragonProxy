@@ -68,22 +68,21 @@ public final class PacketTranslatorRegister {
 
         // Map
         PC_TO_PE_TRANSLATOR.put(ServerChunkDataPacket.class, new PCChunkDataPacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerExplosionPacket.class, new PCExplosionTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerUnloadChunkPacket.class, new PCUnloadChunkDataPacketTranslator());
-
         PC_TO_PE_TRANSLATOR.put(ServerUpdateTimePacket.class, new PCUpdateTimePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerBlockChangePacket.class, new PCBlockChangePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerMultiBlockChangePacket.class, new PCMultiBlockChangePacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerExplosionPacket.class, new PCExplosionTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerUnloadChunkPacket.class, new PCUnloadChunkDataPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlaySoundPacket.class, new PCPlaySoundPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayBuiltinSoundPacket.class, new PCSoundEventPacketTranslator());
 
         //
         // // Entity
-        PC_TO_PE_TRANSLATOR.put(ServerPlayerPositionRotationPacket.class, new PCPlayerPositionRotationPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerSpawnMobPacket.class, new PCSpawnMobPacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerPlayerListEntryPacket.class, new PCPlayerListItemPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerSpawnPlayerPacket.class, new PCSpawnPlayerPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerSpawnObjectPacket.class, new PCSpawnObjectPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerSpawnPaintingPacket.class, new PCSpawnPaintingPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerSpawnExpOrbPacket.class, new PCSpawnExpOrbPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityMetadataPacket.class, new PCEntityMetadataPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityDestroyPacket.class, new PCDestroyEntitiesPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityPositionRotationPacket.class, new PCEntityPositionRotationPacketTranslator());
@@ -93,17 +92,20 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerEntityEffectPacket.class, new PCEntityEffectPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityEquipmentPacket.class, new PCEntityEquipmentPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityRemoveEffectPacket.class, new PCEntityRemoveEffectPacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerPlayerHealthPacket.class, new PCUpdateHealthPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityAnimationPacket.class, new PCAnimationPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntitySetPassengersPacket.class, new PCEntitySetPassengerPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityHeadLookPacket.class, new PCEntityHeadLookPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityTeleportPacket.class, new PCEntityTeleportPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerUpdateTileEntityPacket.class, new PCUpdateTileEntityPacketTranslator());
+        
+        //
+        // // Player
+        PC_TO_PE_TRANSLATOR.put(ServerPlayerPositionRotationPacket.class, new PCPlayerPositionRotationPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerPlayerListEntryPacket.class, new PCPlayerListItemPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerPlayerHealthPacket.class, new PCUpdateHealthPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerRespawnPacket.class, new PCRespawnPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerSpawnPositionPacket.class, new PCSpawnPositionPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayerSetExperiencePacket.class, new PCSetExperiencePacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerSpawnPaintingPacket.class, new PCSpawnPaintingPacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerUpdateTileEntityPacket.class, new PCUpdateTileEntityPacketTranslator());
-        PC_TO_PE_TRANSLATOR.put(ServerSpawnExpOrbPacket.class, new PCSpawnExpOrbPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerBossBarPacket.class, new PCBossBarPacketTranslator());
 
         //
@@ -173,6 +175,7 @@ public final class PacketTranslatorRegister {
             try {
                 return target.translate(session, packet);
             } catch (Exception e) {
+                timing.stopTiming();
                 e.printStackTrace();
                 return null;
             }

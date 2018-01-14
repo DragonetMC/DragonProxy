@@ -54,10 +54,9 @@ public class ChestWindowTranslator implements IInventoryTranslator {
         }
 
         ContainerOpenPacket pk = new ContainerOpenPacket();
-        pk.eid = 1;
         pk.windowId = window.windowId;
-        pk.type = InventoryType.PEInventory.DOUBLE_CHEST;
-        pk.position = new BlockPosition(pos.x, pos.y, pos.z);
+        pk.type = window.size <= 27 ? InventoryType.PEInventory.CHEST : InventoryType.PEInventory.DOUBLE_CHEST;
+        pk.position = pos;
         session.sendPacket(pk);
         return true;
     }
@@ -78,9 +77,8 @@ public class ChestWindowTranslator implements IInventoryTranslator {
         InventoryContentPacket pk = new InventoryContentPacket();
         pk.windowId = win.windowId;
         pk.items = new Slot[win.slots.length];
-        for (int i = 0; i < pk.items.length; i++) {
+        for (int i = 0; i < pk.items.length; i++)
             pk.items[i] = ItemBlockTranslator.translateSlotToPE(win.slots[i]);
-        }
         session.sendPacket(pk, true);
     }
 }

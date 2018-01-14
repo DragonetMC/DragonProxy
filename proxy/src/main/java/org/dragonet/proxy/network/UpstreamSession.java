@@ -79,7 +79,6 @@ public class UpstreamSession {
     private List<PEPacket> cachedPackets;
     private final InetSocketAddress remoteAddress;
     private final PEPacketProcessor packetProcessor;
-    private final ScheduledFuture<?> packetProcessorScheule;
     private LoginChainDecoder profile;
     private String username;
     private IDownstreamSession downstream;
@@ -110,9 +109,7 @@ public class UpstreamSession {
         this.raknetID = raknetID;
         this.remoteAddress = remoteAddress;
         this.raknetClient = raknetClient;
-        packetProcessor = new PEPacketProcessor(this);
-        packetProcessorScheule = proxy.getGeneralThreadPool().scheduleAtFixedRate(packetProcessor, 10, 50,
-            TimeUnit.MILLISECONDS);
+        this.packetProcessor = new PEPacketProcessor(this);
     }
 
     public DragonProxy getProxy() {
@@ -274,7 +271,6 @@ public class UpstreamSession {
         if (downstream != null)
             downstream.disconnect();
         proxy.getSessionRegister().removeSession(this);
-        packetProcessorScheule.cancel(true);
     }
 
     public void authenticate(String email, String password) {
@@ -506,6 +502,8 @@ public class UpstreamSession {
 
     public void onTick() {
         entityCache.onTick();
+        if (packetProcessor != null)
+            packetProcessor.onTick();
         if (downstream != null)
             downstream.onTick();
     }
