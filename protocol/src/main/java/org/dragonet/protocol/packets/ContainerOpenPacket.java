@@ -12,7 +12,7 @@ public class ContainerOpenPacket extends PEPacket {
     public int windowId;
     public int type;
     public BlockPosition position;
-    public long eid;
+    public long eid = -1;
 
     @Override
     public int pid() {
