@@ -18,6 +18,15 @@ import org.dragonet.proxy.network.cache.CachedWindow;
 public interface IInventoryTranslator {
 
     /**
+     * Prepare a window on MCPE, spawn fakeblocks.
+     *
+     * @param session
+     * @param window
+     * @return Can that window be opened on MCPE?
+     */
+    boolean prepare(UpstreamSession session, CachedWindow window);
+
+    /**
      * Opens a window on MCPE.
      *
      * @param session

@@ -30,6 +30,10 @@ import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.inv.*;
 import org.dragonet.proxy.network.translator.IInventoryTranslator;
+import org.dragonet.proxy.DragonProxy;
+import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class InventoryTranslatorRegister {
 
@@ -68,17 +72,22 @@ public final class InventoryTranslatorRegister {
         if (TRANSLATORS.containsKey(win.getType())) {
             CachedWindow cached = new CachedWindow(win.getWindowId(), win.getType(), win.getSlots() + 36/* player inventory */);
             session.getWindowCache().cacheWindow(cached);
-            TRANSLATORS.get(win.getType()).open(session, cached);
-            com.github.steveice10.packetlib.packet.Packet[] items = session.getWindowCache().getCachedPackets(win.getWindowId());
-            for (com.github.steveice10.packetlib.packet.Packet item : items) {
-                if (item != null) {
-                    if (ServerWindowItemsPacket.class.isAssignableFrom(item.getClass())) {
-                        updateContent(session, (ServerWindowItemsPacket) item);
-                    } else {
-                        updateSlot(session, (ServerSetSlotPacket) item);
+            final IInventoryTranslator translator = TRANSLATORS.get(win.getType());
+            translator.prepare(session, cached);
+//            DragonProxy.getInstance().getGeneralThreadPool().schedule(() -> { // with this -> double chest, without -> content....
+                translator.open(session, cached);
+                com.github.steveice10.packetlib.packet.Packet[] items = session.getWindowCache().getCachedPackets(win.getWindowId());
+                System.out.println("items : " + items.length);
+                for (com.github.steveice10.packetlib.packet.Packet item : items) {
+                    if (item != null) {
+                        if (ServerWindowItemsPacket.class.isAssignableFrom(item.getClass())) {
+                            updateContent(session, (ServerWindowItemsPacket) item);
+                        } else {
+                            updateSlot(session, (ServerSetSlotPacket) item);
+                        }
                     }
                 }
-            }
+//            }, 100, TimeUnit.MILLISECONDS);
         } else {
             // Not supported
             session.getDownstream().send(new ClientCloseWindowPacket(win.getWindowId()));
@@ -97,12 +106,20 @@ public final class InventoryTranslatorRegister {
                 session.getDownstream().send(new ClientCloseWindowPacket(id));
             }
             if (session.getDataCache().containsKey(CacheKey.WINDOW_BLOCK_POSITION)) {
-                // Already a block was replaced to Chest, reset it
-                BlockPosition pos = ((BlockPosition) session.getDataCache().get(CacheKey.WINDOW_BLOCK_POSITION));
-                //session.sendFakeBlock(pos.x, pos.y, pos.z, 1,// Set to stone since we don't know what it was, server will correct it once client interacts it
-                //    0);
-                //session.sendFakeBlock(pos.x + 1, pos.y, pos.z, 1,// Set to stone since we don't know what it was, server will correct it once client interacts it
-                //        0);
+                if (session.getDataCache().get(CacheKey.WINDOW_BLOCK_POSITION) instanceof BlockPosition)
+                {
+                    BlockPosition pos = (BlockPosition) session.getDataCache().get(CacheKey.WINDOW_BLOCK_POSITION);
+                    // Already a block was replaced to Chest, reset it
+                    // Set to stone since we don't know what it was, server will correct it once client interacts it
+                    session.sendFakeBlock(pos.x, pos.y, pos.z, 1, 0);
+                }
+                else if (session.getDataCache().get(CacheKey.WINDOW_BLOCK_POSITION) instanceof ArrayList)
+                {
+                    for(BlockPosition pos : (List<BlockPosition>)session.getDataCache().get(CacheKey.WINDOW_BLOCK_POSITION))
+                    {
+                        session.sendFakeBlock(pos.x, pos.y, pos.z, 1, 0);
+                    }
+                }
             }
         }
     }

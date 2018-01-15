@@ -48,13 +48,13 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
         //        }
 
 
-        System.out.println(">>>>============================");
-        System.out.println("InventoryTransactionPacket type: \n" + DebugTools.getAllFields(packet));
-        System.out.println("-------------");
-        for (InventoryTransactionAction action : packet.actions) {
-            System.out.println(DebugTools.getAllFields(action));
-        }
-        System.out.println("<<<<============================");
+//        System.out.println(">>>>============================");
+//        System.out.println("InventoryTransactionPacket type: \n" + DebugTools.getAllFields(packet));
+//        System.out.println("-------------");
+//        for (InventoryTransactionAction action : packet.actions) {
+//            System.out.println(DebugTools.getAllFields(action));
+//        }
+//        System.out.println("<<<<============================");
 
         // /!\ THIS IS A SIMPLE HANDLING WITHOUT JAVA DENY TRANSACTION
         switch (packet.transactionType) {
@@ -114,8 +114,18 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                         ItemBlockTranslator.translateToPC(cursor),
                         WindowAction.CLICK_ITEM,
                         ClickItemParam.LEFT_CLICK
-                        );
-                System.out.println("WINDOWACTIONPACKET \n" + DebugTools.getAllFields(windowActionPacket));
+                    );
+                    System.out.println("WINDOWACTIONPACKET \n" + DebugTools.getAllFields(windowActionPacket));
+
+                    session.getDownstream().send(windowActionPacket);
+
+                    // after the previous one, we can detect SHIFT click or move items on mobile devices
+                    if (packet.actions.length == 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_CONTAINER && packet.actions[1].sourceType == InventoryTransactionAction.SOURCE_CONTAINER) {
+                        // mobile version: move item
+                        // desktop version: SHIFT-click item
+                        System.out.println("Move item from " + packet.actions[0].containerId + " slot " + packet.actions[0].slotId
+                            + " to " + packet.actions[1].containerId + " slot " + packet.actions[1].slotId);
+                    }
 
                 return new Packet[]{windowActionPacket};
             }

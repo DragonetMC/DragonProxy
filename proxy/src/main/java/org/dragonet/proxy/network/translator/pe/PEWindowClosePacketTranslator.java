@@ -22,9 +22,9 @@ public class PEWindowClosePacketTranslator implements IPEPacketTranslator<Contai
 
     public Packet[] translate(UpstreamSession session, ContainerClosePacket packet) {
         System.out.println("Window " + packet.windowId + " closed from client !");
-        session.getProxy().getGeneralThreadPool().execute(() -> {
+//        session.getProxy().getGeneralThreadPool().execute(() -> {
             InventoryTranslatorRegister.closeOpened(session, false);
-        });
+//        });
         return null;
     }
 }
