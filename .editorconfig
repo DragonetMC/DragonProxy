@@ -1,6 +1,15 @@
 # http://editorconfig.org/
+
+# Top-most EditorConfig file
 root = yes
 
+# Unix-style newlines with a newline ending every file
 [*]
-indent_size = 4
+end_of_line = lf
+insert_final_newline = true
+
+# Set the charset, and space indention
+[*.java]
+charset = utf-8
 indent_style = space
+indent_size = 4

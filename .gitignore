@@ -25,3 +25,4 @@ nb-configuration.xml
 /proxy/nbactions.xml
 /proxy/timings/
 /proxy/metrics.yml
+*/buildNumber.properties
