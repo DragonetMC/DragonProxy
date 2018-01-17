@@ -3,7 +3,7 @@ package org.dragonet.plugin.bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.dragonet.common.utilities.BinaryStream;
-import org.dragonet.plugin.plugin.dpaddon.DPAddonBukkit;
+import org.dragonet.plugin.dpaddon.DPAddonBukkit;
 import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.Protocol;
 

@@ -10,20 +10,14 @@
         <version>0.3.4.3-SNAPSHOT</version>
     </parent>
 
-    <!-- TODO: split into bungee and spigot submodules -->
     <artifactId>dragonproxy-plugin</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
-    <repositories>
-        <repository>
-            <id>spigotMC-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-        <repository>
-            <id>bungeecord-repo</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </repository>
-    </repositories>
+    <modules>
+        <module>spigot</module>
+        <module>bungee</module>
+        <module>universal</module>
+    </modules>
 
     <dependencies>
         <dependency>
@@ -32,54 +26,6 @@
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
-
-        <!--BungeeCord APIs-->
-        <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
-            <version>1.12-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
-            <version>1.12-SNAPSHOT</version>
-            <type>javadoc</type>
-            <scope>provided</scope>
-        </dependency>
-
-        <!--Spigot-API-->
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.12.2-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <configuration>
-                    <!-- TODO: relocate -->
-                    <relocations>
-                        <relocation>
-                        </relocation>
-                    </relocations>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

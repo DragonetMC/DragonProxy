@@ -10,7 +10,7 @@
  *
  * @author The Dragonet Team
  */
-package org.dragonet.plugin.plugin.dpaddon;
+package org.dragonet.plugin.dpaddon;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
