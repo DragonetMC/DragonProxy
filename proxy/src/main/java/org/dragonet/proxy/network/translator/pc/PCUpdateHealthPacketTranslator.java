@@ -33,8 +33,9 @@ public class PCUpdateHealthPacketTranslator implements IPCPacketTranslator<Serve
         CachedEntity peSelfPlayer = session.getEntityCache().getClientEntity();
 
         peSelfPlayer.attributes.put(PEEntityAttribute.HEALTH, PEEntityAttribute.findAttribute(PEEntityAttribute.HEALTH).setValue(newHealth));
+        if(peSelfPlayer.foodPacketCount==0){
         peSelfPlayer.attributes.put(PEEntityAttribute.FOOD, PEEntityAttribute.findAttribute(PEEntityAttribute.FOOD).setValue(packet.getFood()));
-
+        }
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
         pk.rtid = peSelfPlayer.proxyEid;
         pk.entries = peSelfPlayer.attributes.values();
