@@ -1,48 +1,30 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.dragonet.proxy</groupId>
+        <artifactId>dragonproxy-parent</artifactId>
+        <version>0.3.4.3-SNAPSHOT</version>
+    </parent>
+
     <artifactId>dragonproxy-proxy</artifactId>
-    <version>0.3.4.2</version>
-    <name>DragonProxy-Proxy</name>
-    <groupId>org.dragonet.proxy</groupId>
-  
+    <packaging>jar</packaging>
+
     <build>
         <finalName>dragonproxy-${project.version}</finalName>
-        <directory>${project.basedir}/target</directory>
-        <resources>
-            <resource>
-                <directory>${project.basedir}/src/main/resources</directory>
-            </resource>
-        </resources>
-        <defaultGoal>package</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.0</version>
                 <configuration>
-                    <transformers>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-                    </transformers>
-                    <filters>
-                        <filter>
-                            <artifact>*:*</artifact>
-                            <excludes>
-                                <exclude>junit:junit</exclude>
-                                <exclude>**/*.html</exclude>
-                                <exclude>**/*.txt</exclude>
-                            </excludes>
-                        </filter>
-                    </filters>
-                    <minimizeJar>true</minimizeJar>
+                    <!-- TODO: relocate -->
+                    <relocations>
+                        <relocation>
+                        </relocation>
+                    </relocations>
                 </configuration>
                 <executions>
                     <execution>
@@ -56,7 +38,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
                 <configuration>
                     <archive>
                         <manifestEntries>
@@ -74,7 +55,6 @@
                     </archive>
                 </configuration>
             </plugin>
-            
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
@@ -87,7 +67,6 @@
                         </goals>
                     </execution>
                 </executions>
-
                 <configuration>
                     <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
                     <prefix>git</prefix>
@@ -128,45 +107,32 @@
     <repositories>
         <repository>
             <id>sonatype</id>
-            <name>Sonatype Nexus</name>
-            <layout>default</layout>
             <url>https://oss.sonatype.org/content/repositories/public/</url>
         </repository>
         <repository>
             <id>egg82-ninja</id>
             <url>https://www.myget.org/F/egg82-java/maven/</url>
         </repository>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
     </repositories>
   
     <dependencies>
         <dependency>
-            <groupId>com.github.Steveice10</groupId>
-            <artifactId>MCAuthLib</artifactId>
-            <version>-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.Steveice10</groupId>
-            <artifactId>MCProtocolLib</artifactId>
-            <version>-SNAPSHOT</version>
+            <groupId>org.dragonet.proxy</groupId>
+            <artifactId>dragonproxy-protocol</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>1.19</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.10.0</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-nop</artifactId>
             <version>1.7.25</version>
+            <scope>compile</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -175,26 +141,11 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.dragonet</groupId>
-            <artifactId>dragonproxy-protocol</artifactId>
-            <version>1.0</version>
-            <type>jar</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-slf4j-impl</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.dragonet</groupId>
-            <artifactId>commons</artifactId>
-            <version>1.0</version>
-            <type>jar</type>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
+
 </project>

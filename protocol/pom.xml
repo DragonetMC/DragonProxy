@@ -1,10 +1,18 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.dragonet.proxy</groupId>
+        <artifactId>dragonproxy-parent</artifactId>
+        <version>0.3.4.3-SNAPSHOT</version>
+    </parent>
+
     <artifactId>dragonproxy-protocol</artifactId>
-    <version>1.0</version>
-    <name>DragonProxy-Protocol</name>
-    <groupId>org.dragonet</groupId>
-  
+    <packaging>jar</packaging>
+
     <repositories>
         <repository>
             <id>maven-repo</id>
@@ -14,21 +22,27 @@
   
     <dependencies>
         <dependency>
+            <groupId>org.dragonet.proxy</groupId>
+            <artifactId>dragonproxy-commons</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>net.marfgamer</groupId>
             <artifactId>jraknet</artifactId>
             <version>2.8.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.dragonet</groupId>
-            <artifactId>commons</artifactId>
-            <version>1.0</version>
-            <type>jar</type>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-slf4j-impl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
+
 </project>
