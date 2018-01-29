@@ -1,8 +1,10 @@
 package org.dragonet.proxy.network.translator.pe;
 
+import org.dragonet.common.data.entity.EntityType;
 import org.dragonet.common.data.inventory.ContainerId;
 import org.dragonet.common.data.inventory.Slot;
 import org.dragonet.common.maths.BlockPosition;
+import org.dragonet.protocol.packets.AddEntityPacket;
 import org.dragonet.protocol.packets.InventoryTransactionPacket;
 import org.dragonet.protocol.type.transaction.InventoryTransactionAction;
 import org.dragonet.protocol.type.transaction.data.ReleaseItemData;
@@ -19,6 +21,7 @@ import com.github.steveice10.mc.protocol.data.MagicValues;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
 import com.github.steveice10.mc.protocol.data.game.entity.player.InteractAction;
+import com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction;
 import com.github.steveice10.mc.protocol.data.game.window.ClickItemParam;
 import com.github.steveice10.mc.protocol.data.game.window.WindowAction;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockFace;
@@ -26,6 +29,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlaye
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerInteractEntityPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPlaceBlockPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerSwingArmPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerUseItemPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientWindowActionPacket;
 import com.github.steveice10.packetlib.packet.Packet;
 
@@ -136,8 +140,12 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
         case InventoryTransactionPacket.TYPE_USE_ITEM: //2
             System.out.println("TYPE_USE_ITEM");
             UseItemData useItemData = (UseItemData) packet.transactionData;
+            if(useItemData.itemInHand.id==346){
+                AddEntityPacket pk = new AddEntityPacket();
+                return new Packet[]{new ClientPlayerUseItemPacket(Hand.MAIN_HAND)};
+            }
             if (useItemData.blockPos.equals(new BlockPosition(0, 0, 0))) {
-                return null;
+                return new Packet[]{new ClientPlayerUseItemPacket(Hand.MAIN_HAND)};
             }
             switch (useItemData.actionType) {
             case InventoryTransactionPacket.USE_ITEM_ACTION_BREAK_BLOCK: //2
@@ -182,6 +190,10 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
             return new Packet[]{interractPacket};
         case InventoryTransactionPacket.TYPE_RELEASE_ITEM: //4
             System.out.println("TYPE_RELEASE_ITEM");
+            if(((ReleaseItemData)packet.transactionData).actionType==0){
+                return new Packet[]{new ClientPlayerUseItemPacket(Hand.MAIN_HAND), new ClientPlayerActionPacket(PlayerAction.RELEASE_USE_ITEM, new Position(0, 0, 0), BlockFace.DOWN)};
+            }
+
             ReleaseItemData releaseItemData = (ReleaseItemData) packet.transactionData;
             //                ClientPlayerActionPacket act = new ClientPlayerActionPacket(
             //                    com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction.DROP_ITEM,

@@ -15,8 +15,8 @@
 
     <repositories>
         <repository>
-            <id>spigotMC-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <id>BungeeCord-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
     </repositories>
 

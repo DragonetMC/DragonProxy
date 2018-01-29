@@ -36,7 +36,7 @@ public class PocketPotionEffect {
     public static final int INVISIBILITY = 14;
     // public static final int BLINDNESS = 15;
     // public static final int NIGHT_VISION = 16;
-    // public static final int HUNGER = 17;
+    public static final int HUNGER = 17;
     public static final int WEAKNESS = 18;
     public static final int POISON = 19;
     public static final int WITHER = 20;
@@ -62,6 +62,7 @@ public class PocketPotionEffect {
         EFFECTS.put(FIRE_RESISTANCE, new PocketPotionEffect(FIRE_RESISTANCE));
         EFFECTS.put(WATER_BREATHING, new PocketPotionEffect(WATER_BREATHING));
         EFFECTS.put(INVISIBILITY, new PocketPotionEffect(INVISIBILITY));
+        EFFECTS.put(HUNGER, new PocketPotionEffect(HUNGER));
         EFFECTS.put(WEAKNESS, new PocketPotionEffect(WEAKNESS));
         EFFECTS.put(POISON, new PocketPotionEffect(POISON));
         EFFECTS.put(WITHER, new PocketPotionEffect(WITHER));
