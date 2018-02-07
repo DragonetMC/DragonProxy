@@ -1,6 +1,6 @@
 package org.dragonet.common.gui;
 
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
 
 /**
  * Created on 2017/12/26.
@@ -9,8 +9,8 @@ public interface ModalFormComponent {
 
     String getType();
 
-    void serializeData(JSONObject out);
+    void serializeData(JsonObject out);
 
-    JSONObject serializeToJson();
+    JsonObject serializeToJson();
 
 }

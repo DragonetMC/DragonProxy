@@ -18,14 +18,19 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
+                <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
-                    <!-- TODO: relocate -->
-                    <relocations>
-                        <relocation>
-                        </relocation>
-                    </relocations>
+                    <finalName>dragonproxy-${project.version}-noshade</finalName>
+                    <archive>
+                        <manifestEntries>
+                            <Main-Class>org.dragonet.proxy.DragonProxy</Main-Class>
+                        </manifestEntries>
+                    </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -34,25 +39,8 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Main-Class>org.dragonet.proxy.DragonProxy</Main-Class>
-                            <Sealed>true</Sealed>
-                        </manifestEntries>
-                        <manifestSections>
-                            <manifestSection>
-                                <name>org/dragonet/proxy</name>
-                                <manifestEntries>
-                                    <Sealed>true</Sealed>
-                                </manifestEntries>
-                            </manifestSection>
-                        </manifestSections>
-                    </archive>
+                    <finalName>dragonproxy-${project.version}</finalName>
                 </configuration>
             </plugin>
             <plugin>
@@ -127,18 +115,6 @@
             <artifactId>snakeyaml</artifactId>
             <version>1.19</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-nop</artifactId>
-            <version>1.7.25</version>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>

@@ -14,6 +14,38 @@
     <inceptionYear>2016</inceptionYear>
     <url>https://dragonet.org/</url>
 
+    <organization>
+        <name>DragonetMC</name>
+        <url>https://github.com/DragonetMC/DragonProxy</url>
+    </organization>
+
+    <scm>
+        <connection>scm:git:https://github.com/DragonetMC/DragonProxy.git</connection>
+        <developerConnection>scm:git:git@github.com:DragonetMC/DragonProxy.git</developerConnection>
+        <url>https://github.com/DragonetMC/DragonProxy</url>
+    </scm>
+
+    <ciManagement>
+        <system>jenkins</system>
+        <url>https://ci.codemc.org/job/DragonProxy/</url>
+    </ciManagement>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/DragonetMC/DragonProxy/issues</url>
+    </issueManagement>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>codemc-snapshots</id>
+            <url>https://repo.codemc.org/repository/maven-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>codemc-releases</id>
+            <url>https://repo.codemc.org/repository/maven-releases/</url>
+        </repository>
+    </distributionManagement>
+
     <modules>
         <module>commons</module>
         <module>protocol</module>
@@ -28,7 +60,7 @@
     </properties>
   
     <build>
-        <defaultGoal>clean package</defaultGoal>
+        <defaultGoal>clean install</defaultGoal>
         <resources>
             <resource>
                 <directory>src/main/resources/</directory>
@@ -36,6 +68,16 @@
             </resource>
         </resources>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.0.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.2</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -47,24 +89,12 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.0</version>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.20.1</version>
                 <configuration>
-                    <transformers>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-                    </transformers>
-                    <filters>
-                        <filter>
-                            <artifact>*:*</artifact>
-                            <excludes>
-                                <exclude>junit:junit</exclude>
-                                <exclude>**/*.html</exclude>
-                                <exclude>**/*.txt</exclude>
-                            </excludes>
-                        </filter>
-                    </filters>
-                    <minimizeJar>true</minimizeJar>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <skip>true</skip> <!-- No unit tests to run atm -->
+                    <!-- Force the right file encoding during unit testing -->
+                    <argLine>-Dfile.encoding=${project.build.sourceEncoding} @{argLine}</argLine>
                 </configuration>
             </plugin>
             <plugin>
@@ -72,13 +102,65 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.0.2</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>aggregate</goal>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <show>public</show>
+                    <failOnError>false</failOnError>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <minimizeJar>true</minimizeJar>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
+            </plugin>
         </plugins>
     </build>
 
     <repositories>
         <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
         </repository>
     </repositories>
 

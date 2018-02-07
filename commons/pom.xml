@@ -12,12 +12,12 @@
 
     <artifactId>dragonproxy-commons</artifactId>
     <packaging>jar</packaging>
-  
+
     <dependencies>
         <dependency>
-            <groupId>com.github.Steveice10</groupId>
-            <artifactId>MCProtocolLib</artifactId>
-            <version>-SNAPSHOT</version>
+            <groupId>com.github.steveice10</groupId>
+            <artifactId>mcprotocollib</artifactId>
+            <version>1.12.2-2-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -36,18 +36,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>23.6-jre</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20171018</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>1.1.1</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

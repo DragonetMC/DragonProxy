@@ -1,6 +1,6 @@
 package org.dragonet.common.gui;
 
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
 
 /**
  * Created on 2017/12/26.
@@ -19,9 +19,9 @@ public abstract class BaseModalFormComponent implements ModalFormComponent {
     }
 
     @Override
-    public final JSONObject serializeToJson() {
-        JSONObject obj = new JSONObject();
-        obj.put("type", type);
+    public final JsonObject serializeToJson() {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("type", type);
         serializeData(obj);
         return obj;
     }

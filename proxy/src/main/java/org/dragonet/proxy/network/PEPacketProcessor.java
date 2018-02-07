@@ -19,13 +19,14 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 import com.github.steveice10.packetlib.packet.Packet;
+import com.google.gson.JsonArray;
+import org.dragonet.common.utilities.JsonUtil;
 import org.dragonet.protocol.packets.*;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.common.gui.CustomFormComponent;
 import org.dragonet.common.gui.InputComponent;
 import org.dragonet.common.gui.LabelComponent;
 import org.dragonet.common.utilities.BinaryStream;
-import org.json.JSONArray;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -118,7 +119,8 @@ public class PEPacketProcessor {
                 this.client.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
 
                 ModalFormResponsePacket formResponse = (ModalFormResponsePacket) packet;
-                JSONArray array = new JSONArray(formResponse.formData);
+
+                JsonArray array = JsonUtil.parseArray(formResponse.formData);
                 this.client.authenticate(array.get(2).toString(), array.get(3).toString());
                 return;
             }
