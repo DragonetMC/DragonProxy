@@ -48,7 +48,6 @@ public class StartGamePacket extends PEPacket {
     public int serverChunkTickRange;
     public boolean hasPlatformBroadcast;
     public int platformBroadcastMode;
-    public int xboxLiveBroadcastMode;
     public boolean xboxLiveBroadcastIntent;
 
     public String levelId;
@@ -102,11 +101,10 @@ public class StartGamePacket extends PEPacket {
         putBoolean(trustPlayersEnabled);
         putVarInt(defaultPlayerPermission);
         putVarInt(gamePublishSetting);
-        putVarInt(serverChunkTickRadius);
-        putVarInt(serverChunkTickRange);
+        putLInt(serverChunkTickRadius);
+        putInt(serverChunkTickRange);
         putBoolean(hasPlatformBroadcast);
         putVarInt(platformBroadcastMode);
-        putVarInt(xboxLiveBroadcastMode);
         putBoolean(xboxLiveBroadcastIntent);
 
         putString(levelId);
@@ -114,7 +112,6 @@ public class StartGamePacket extends PEPacket {
         putString(premiumWorldTemplateId);
         putBoolean(unknownBool);
         putLLong(currentTick);
-
         putVarInt(enchantmentSeed);
     }
 
@@ -156,7 +153,6 @@ public class StartGamePacket extends PEPacket {
         serverChunkTickRange = getInt();
         hasPlatformBroadcast = getBoolean();
         platformBroadcastMode = getVarInt();
-        xboxLiveBroadcastMode = getVarInt();
         xboxLiveBroadcastIntent = getBoolean();
 
         levelId = getString();
