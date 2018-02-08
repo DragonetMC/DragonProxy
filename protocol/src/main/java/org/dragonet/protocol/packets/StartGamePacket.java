@@ -43,7 +43,13 @@ public class StartGamePacket extends PEPacket {
     public boolean startWithMapEnabled;
     public boolean trustPlayersEnabled;
     public int defaultPlayerPermission;
+    public int gamePublishSetting;
+    public int serverChunkTickRadius = 4; //TODO (leave as default for now)
+    public int serverChunkTickRange;
+    public boolean hasPlatformBroadcast;
+    public int platformBroadcastMode;
     public int xboxLiveBroadcastMode;
+    public boolean xboxLiveBroadcastIntent;
 
     public String levelId;
     public String worldName;
@@ -95,7 +101,13 @@ public class StartGamePacket extends PEPacket {
         putBoolean(startWithMapEnabled);
         putBoolean(trustPlayersEnabled);
         putVarInt(defaultPlayerPermission);
+        putVarInt(gamePublishSetting);
+        putVarInt(serverChunkTickRadius);
+        putVarInt(serverChunkTickRange);
+        putBoolean(hasPlatformBroadcast);
+        putVarInt(platformBroadcastMode);
         putVarInt(xboxLiveBroadcastMode);
+        putBoolean(xboxLiveBroadcastIntent);
 
         putString(levelId);
         putString(worldName);
@@ -123,7 +135,7 @@ public class StartGamePacket extends PEPacket {
         generator = getVarInt();
         worldGamemode = getVarInt();
         difficulty = Difficulty.values()[getVarInt()];
-        spawnPosition = getBlockPosition();
+        spawnPosition = getSignedBlockPosition();
         achievementsDisabled = getBoolean();
         time = getVarInt();
         eduMode = getBoolean();
@@ -139,7 +151,13 @@ public class StartGamePacket extends PEPacket {
         startWithMapEnabled = getBoolean();
         trustPlayersEnabled = getBoolean();
         defaultPlayerPermission = getVarInt();
+        gamePublishSetting = getVarInt();
+        serverChunkTickRadius = getVarInt();
+        serverChunkTickRange = getInt();
+        hasPlatformBroadcast = getBoolean();
+        platformBroadcastMode = getVarInt();
         xboxLiveBroadcastMode = getVarInt();
+        xboxLiveBroadcastIntent = getBoolean();
 
         levelId = getString();
         worldName = getString();
