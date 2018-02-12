@@ -19,7 +19,7 @@
             <url>https://raw.githubusercontent.com/JRakNet/MavenRepository/master</url>
         </repository>
     </repositories>
-  
+
     <dependencies>
         <dependency>
             <groupId>org.dragonet.proxy</groupId>

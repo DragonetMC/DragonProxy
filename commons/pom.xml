@@ -12,12 +12,19 @@
 
     <artifactId>dragonproxy-commons</artifactId>
     <packaging>jar</packaging>
-  
+
+    <repositories>
+        <repository>
+            <id>CodeMC-repo</id>
+            <url>https://ci.codemc.org/plugin/repository/everything</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
-            <groupId>com.github.Steveice10</groupId>
-            <artifactId>MCProtocolLib</artifactId>
-            <version>-SNAPSHOT</version>
+            <groupId>com.github.steveice10</groupId>
+            <artifactId>mcprotocollib</artifactId>
+            <version>1.12.2-1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
