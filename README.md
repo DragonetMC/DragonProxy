@@ -26,8 +26,8 @@ See the tutorial in the [wiki](https://github.com/DragonetMC/DragonProxy/wiki).
 #### Supported Remote Server Types
 - For Java Edition Servers: `Bukkit`/`Spigot`/`Glowstone`/`SpongeVanilla`/`BungeeCord`
 - For Bedrock Servers: `MiNET`, `Nukkit`, `PocketMine-MP (and all forks)`
-- Not listed does **NOT** mean unsupported, just **untested**.
-  
+- Not listed does **NOT** mean unsupported, just **untested**. If your server uses standard Minecraft protocol, it should be work.
+
 ## Build Status
 Travis: [![TravisCI](https://travis-ci.org/DragonetMC/DragonProxy.svg?branch=master)](https://travis-ci.org/DragonetMC/DragonProxy)  
 Circle: [![CircleCI](https://circleci.com/gh/DragonetMC/DragonProxy/tree/master.svg?style=svg)](https://circleci.com/gh/DragonetMC/DragonProxy/tree/master)  
