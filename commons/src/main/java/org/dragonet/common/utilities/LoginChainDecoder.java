@@ -26,6 +26,8 @@ import java.util.logging.Logger;
  */
 public class LoginChainDecoder {
 
+    private static final Gson gson = new Gson();
+
     private static final String ENCODED_ROOT_CA_KEY;
     private static final KeyFactory EC_KEY_FACTORY;
 
@@ -38,6 +40,8 @@ public class LoginChainDecoder {
     public Skin skin;
     private boolean loginVerified = false;
 
+    public JsonObject extraData = null;
+
     public LoginChainDecoder(byte[] chainJWT, byte[] clientDataJWT) {
         this.chainJWT = chainJWT;
         this.clientDataJWT = clientDataJWT;
@@ -49,65 +53,55 @@ public class LoginChainDecoder {
      */
     public void decode() {
 
-        Gson gson = new Gson();
-
         Map<String, List<String>> map = gson.fromJson(new String(this.chainJWT, StandardCharsets.UTF_8),
-            new TypeToken<Map<String, List<String>>>() {
-            }.getType());
+                new TypeToken<Map<String, List<String>>>() {
+                }.getType());
         if (map.isEmpty() || !map.containsKey("chain") || map.get("chain").isEmpty())
             return;
 
         DecodedJWT clientJWT = JWT.decode(new String(this.clientDataJWT, StandardCharsets.UTF_8));
-
         List<DecodedJWT> chainJWTs = new ArrayList<>();
 
         // Add the JWT tokens to a chain
         for (String token : map.get("chain"))
             chainJWTs.add(JWT.decode(token));
-
         chainJWTs.add(clientJWT);
 
+        // first step, check if the public provided key can decode the received chain
         try {
-
             ECPublicKey prevPublicKey = null;
 
             for (DecodedJWT jwt : chainJWTs) {
 
                 JsonObject payload = gson.fromJson(new String(Base64.getDecoder().decode(jwt.getPayload())), JsonObject.class);
-
                 String encodedPublicKey = null;
                 ECPublicKey publicKey = null;
 
                 if (payload.has("identityPublicKey")) {
-
                     encodedPublicKey = payload.get("identityPublicKey").getAsString();
-
                     publicKey = (ECPublicKey) EC_KEY_FACTORY.generatePublic(
-                        new X509EncodedKeySpec(Base64.getDecoder().decode(encodedPublicKey))
+                            new X509EncodedKeySpec(Base64.getDecoder().decode(encodedPublicKey))
                     );
-
                 }
 
                 // Trust the root ca public key and use it to verify the chain
                 if (ENCODED_ROOT_CA_KEY.equals(encodedPublicKey) && payload.has("certificateAuthority")
-                    && payload.get("certificateAuthority").getAsBoolean()) {
+                        && payload.get("certificateAuthority").getAsBoolean()) {
                     prevPublicKey = publicKey;
                     continue;
                 }
 
                 // This will happen if the root ca key we have does not match the one presented by the client chain
                 if (prevPublicKey == null)
-                    throw new NullPointerException("No trusted public key found in chain");
+                    throw new NullPointerException("No trusted public key found in chain, is the client logged in or cracked");
 
                 // Throws a SignatureVerificationException if the verification failed
                 Algorithm.ECDSA384(prevPublicKey, null).verify(jwt);
 
                 // Verification was successful since no exception was thrown
-
                 // Set the previous public key to this one so that it can be used
                 // to verify the next JWT token in the chain
                 prevPublicKey = publicKey;
-
             }
 
             // The for loop successfully verified all JWT tokens with no exceptions thrown
@@ -121,38 +115,26 @@ public class LoginChainDecoder {
             e.printStackTrace();
         }
 
+        // step 2, extract player displayName and identity
         // This is in its own for loop due to the possibility that the chain verification failed
         for (DecodedJWT jwt : chainJWTs) {
-
             JsonObject payload = gson.fromJson(new String(Base64.getDecoder().decode(jwt.getPayload())), JsonObject.class);
-
             // Get the information we care about - The UUID and display name
             if (payload.has("extraData") && !payload.has("certificateAuthority")) {
-                JsonObject extra = payload.get("extraData").getAsJsonObject();
-                if (extra.has("displayName")) {
-                    this.username = extra.get("displayName").getAsString();
-                }
-                if (extra.has("identity")) {
-                    this.clientUniqueId = UUID.fromString(extra.get("identity").getAsString());
-                }
-
+                extraData = payload.get("extraData").getAsJsonObject();
+                if (extraData.has("displayName"))
+                    this.username = extraData.get("displayName").getAsString();
+                if (extraData.has("identity"))
+                    this.clientUniqueId = UUID.fromString(extraData.get("identity").getAsString());
                 break;
             }
-
         }
 
-        // client data
+        // step 3, extract LanguageCode and Skin
+        // client data & skin
         this.clientData = gson.fromJson(new String(Base64.getDecoder().decode(clientJWT.getPayload()), StandardCharsets.UTF_8), JsonObject.class);
-
         this.language = this.clientData.has("LanguageCode") ? this.clientData.get("LanguageCode").getAsString() : "en_US";
-
-        this.skin = new Skin(
-            this.clientData.get("SkinId").getAsString(),
-            this.clientData.has("SkinData") ? Base64.getDecoder().decode(this.clientData.get("SkinData").getAsString().replace("-_", "+/")) : new byte[0],
-            this.clientData.has("CapeData") ? Base64.getDecoder().decode(this.clientData.get("CapeData").getAsString().replace("-_", "+/")) : new byte[0],
-            this.clientData.get("SkinGeometryName").getAsString(),
-            this.clientData.has("SkinGeometry") ? Base64.getDecoder().decode(this.clientData.get("SkinGeometry").getAsString().replace("-_", "+/")) : new byte[0]
-        );
+        this.skin = Skin.read(this.clientData);
     }
 
     public boolean isLoginVerified() {

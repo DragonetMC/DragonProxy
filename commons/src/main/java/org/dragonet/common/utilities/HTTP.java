@@ -6,7 +6,7 @@
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
  *
- * You can view LICENCE file for details. 
+ * You can view LICENCE file for details.
  *
  * @author The Dragonet Team
  */
@@ -28,10 +28,6 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 public class HTTP {
-
-    public HTTP() {
-
-    }
 
     public static String performGetRequest(String url) {
         if (url == null)
