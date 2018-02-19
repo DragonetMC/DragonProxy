@@ -18,6 +18,10 @@
             <id>spigotMC-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
+        <repository>
+            <id>CodeMC-repo</id>
+            <url>https://ci.codemc.org/plugin/repository/everything</url>
+        </repository>
     </repositories>
 
     <dependencies>

@@ -38,6 +38,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
                 <configuration>
                     <archive>
                         <manifestEntries>
@@ -103,18 +104,18 @@
             </plugin>
         </plugins>
     </build>
-  
+
     <repositories>
         <repository>
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/repositories/public/</url>
         </repository>
         <repository>
-            <id>egg82-ninja</id>
-            <url>https://www.myget.org/F/egg82-java/maven/</url>
+            <id>CodeMC-repo</id>
+            <url>https://ci.codemc.org/plugin/repository/everything</url>
         </repository>
     </repositories>
-  
+
     <dependencies>
         <dependency>
             <groupId>org.dragonet.proxy</groupId>
