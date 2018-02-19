@@ -11,6 +11,9 @@ public class PlayerListEntry {
     public UUID uuid;
     public long eid;
     public String username;
+    public String thirdPartyName;
+    public String platform;
+    public String unk1;
     public Skin skin;
     public String xboxUserId;
 }

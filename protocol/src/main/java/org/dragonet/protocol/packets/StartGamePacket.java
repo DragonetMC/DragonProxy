@@ -45,10 +45,10 @@ public class StartGamePacket extends PEPacket {
     public int defaultPlayerPermission;
     public int gamePublishSetting;
     public int serverChunkTickRadius = 4; //TODO (leave as default for now)
-    public int serverChunkTickRange;
-    public boolean hasPlatformBroadcast;
-    public int platformBroadcastMode;
-    public boolean xboxLiveBroadcastIntent;
+    public int serverChunkTickRange = 0;
+    public boolean hasPlatformBroadcast = false;
+    public int platformBroadcastMode = 0;
+    public boolean xboxLiveBroadcastIntent = false;
 
     public String levelId;
     public String worldName;

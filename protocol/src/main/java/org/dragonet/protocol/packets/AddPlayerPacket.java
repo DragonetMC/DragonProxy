@@ -16,11 +16,11 @@ public class AddPlayerPacket extends PEPacket {
 
     public UUID uuid;
     public String username;
-    public String thirdpartyName;
-    public int platformID = 0;
+//    public String thirdpartyName;
+//    public int platformID = 0;
     public long eid;
     public long rtid;
-    public String platformChatID = "";
+//    public String platformChatID = "";
     public Vector3F position;
     public Vector3F motion;
     public float pitch;
@@ -43,11 +43,11 @@ public class AddPlayerPacket extends PEPacket {
     public void encodePayload() {
         putUUID(uuid);
         putString(username);
-        putString(thirdpartyName != null ? thirdpartyName : username);
-        putVarInt(platformID);
+//        putString(thirdpartyName != null ? thirdpartyName : username);
+//        putVarInt(platformID);
         putVarLong(eid);
         putUnsignedVarLong(rtid);
-        putString(platformChatID);
+//        putString(platformChatID);
         putVector3F(position);
         putVector3F(motion);
         putLFloat(pitch);
@@ -60,20 +60,20 @@ public class AddPlayerPacket extends PEPacket {
         } else {
             putUnsignedVarInt(0);
         }
-        putUnsignedVarInt(0); //Flags
-        putUnsignedVarInt(0); //Command permission
-        putUnsignedVarInt(0); //Action Permissions
-        putUnsignedVarInt(0); //Permission Level
-        putUnsignedVarInt(0); //Custom stored permissions
-        putLLong(0L);         //User Id
-        if (links != null && links.length > 0) {
-            putUnsignedVarInt(links.length);
-            for (PEEntityLink l : links) {
-                putEntityLink(l);
-            }
-        } else {
-            putUnsignedVarInt(0);
-        }
+//        putUnsignedVarInt(0); //Flags
+//        putUnsignedVarInt(0); //Command permission
+//        putUnsignedVarInt(0); //Action Permissions
+//        putUnsignedVarInt(0); //Permission Level
+//        putUnsignedVarInt(0); //Custom stored permissions
+//        putLLong(0L);         //User Id
+//        if (links != null && links.length > 0) {
+//            putUnsignedVarInt(links.length);
+//            for (PEEntityLink l : links) {
+//                putEntityLink(l);
+//            }
+//        } else {
+//            putUnsignedVarInt(0);
+//        }
     }
 
     @Override
@@ -91,20 +91,20 @@ public class AddPlayerPacket extends PEPacket {
         // meta = getEntityMetadata();
         meta = EntityMetaData.createDefault(); // TODO
 
-        getUnsignedVarInt();
-        getUnsignedVarInt();
-        getUnsignedVarInt();
-        getUnsignedVarInt();
-        getUnsignedVarInt();
-
-        getLLong();
-
-        int linkCount = (int) getUnsignedVarInt();
-        links = new PEEntityLink[linkCount];
-        if (linkCount > 0) {
-            for (int i = 0; i < linkCount; ++i) {
-                links[i] = getEntityLink();
-            }
-        }
+//        getUnsignedVarInt();
+//        getUnsignedVarInt();
+//        getUnsignedVarInt();
+//        getUnsignedVarInt();
+//        getUnsignedVarInt();
+//
+//        getLLong();
+//
+//        int linkCount = (int) getUnsignedVarInt();
+//        links = new PEEntityLink[linkCount];
+//        if (linkCount > 0) {
+//            for (int i = 0; i < linkCount; ++i) {
+//                links[i] = getEntityLink();
+//            }
+//        }
     }
 }
