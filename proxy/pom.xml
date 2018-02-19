@@ -19,13 +19,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <configuration>
-                    <!-- TODO: relocate -->
-                    <relocations>
-                        <relocation>
-                        </relocation>
-                    </relocations>
-                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
