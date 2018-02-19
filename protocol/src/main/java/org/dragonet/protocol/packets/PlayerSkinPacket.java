@@ -37,10 +37,10 @@ public class PlayerSkinPacket extends PEPacket {
         putString(skin.skinId);
         putString(oldSkinName);
         putString(newSkinName);
-        putByteArray(skin.skinData);
-        putByteArray(skin.capeData);
+        putString(skin.skinData);
+        putString(skin.capeData);
         putString(skin.geometryId);
-        putByteArray(skin.geometryData);
+        putString(skin.geometryData);
 
     }
 
