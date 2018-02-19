@@ -19,6 +19,9 @@ public class ServerConfig {
     public String lang = "default";
     public String udp_bind_ip = "0.0.0.0";
     public int udp_bind_port = 19132;
+    public String proxy_type = "NONE";
+    public String proxy_ip = "";
+    public int proxy_port = 8080;
     public String motd = "&aServer by DragonProxy";
     public String default_server = "NONE";
     public Map<String, RemoteServer> remote_servers;

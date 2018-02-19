@@ -19,6 +19,8 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 import com.github.steveice10.packetlib.packet.Packet;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import org.dragonet.protocol.packets.*;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.common.gui.CustomFormComponent;
@@ -34,6 +36,7 @@ import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.Protocol;
 
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.configuration.ServerConfig;
 
 public class PEPacketProcessor {
 
@@ -55,7 +58,21 @@ public class PEPacketProcessor {
     private final UpstreamSession client;
     private final Deque<byte[]> packets = new ArrayDeque<>();
 
+    private Proxy authProxy = null;
+
     public PEPacketProcessor(UpstreamSession client) {
+        ServerConfig config = DragonProxy.getInstance().getConfig();
+
+        if (config.proxy_type.equalsIgnoreCase("none") || config.proxy_type.equalsIgnoreCase("direct"))
+            authProxy = null;
+        else {
+            Proxy.Type type = Proxy.Type.valueOf(config.proxy_type.toUpperCase());
+            if (type != null)
+                authProxy = new Proxy(type, new InetSocketAddress(config.proxy_ip, config.proxy_port));
+            else
+                authProxy = null;
+        }
+
         this.client = client;
     }
 
@@ -67,7 +84,7 @@ public class PEPacketProcessor {
         packets.add(packet);
     }
 
-    public void onTick(){
+    public void onTick() {
         int cnt = 0;
         Timings.playerNetworkReceiveTimer.startTiming();
         while (cnt < MAX_PACKETS_PER_CYCLE && !packets.isEmpty()) {
@@ -119,14 +136,14 @@ public class PEPacketProcessor {
 
                 ModalFormResponsePacket formResponse = (ModalFormResponsePacket) packet;
                 JSONArray array = new JSONArray(formResponse.formData);
-                this.client.authenticate(array.get(2).toString(), array.get(3).toString());
+                this.client.authenticate(array.get(2).toString(), array.get(3).toString(), authProxy);
                 return;
             }
         }
 
         switch (packet.pid()) {
             case ProtocolInfo.BATCH_PACKET:
-                DragonProxy.getInstance().getLogger().debug("Received batch packet from client !"); 
+                DragonProxy.getInstance().getLogger().debug("Received batch packet from client !");
                 break;
             case ProtocolInfo.LOGIN_PACKET:
                 this.client.onLogin((LoginPacket) packet);

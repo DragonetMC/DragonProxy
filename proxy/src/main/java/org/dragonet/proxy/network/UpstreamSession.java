@@ -52,6 +52,7 @@ import org.dragonet.common.utilities.LoginChainDecoder;
 import org.dragonet.common.utilities.Zlib;
 
 import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -270,10 +271,13 @@ public class UpstreamSession {
         proxy.getSessionRegister().removeSession(this);
     }
 
-    public void authenticate(String email, String password) {
+    public void authenticate(String email, String password, Proxy authProxy) {
         proxy.getGeneralThreadPool().execute(() -> {
             try {
-                protocol = new MinecraftProtocol(email, password, false);
+                if (authProxy == null)
+                    protocol = new MinecraftProtocol(email, password, false, Proxy.NO_PROXY);
+                else
+                    protocol = new MinecraftProtocol(email, password, false, authProxy);
             } catch (RequestException ex) {
                 if (ex.getMessage().toLowerCase().contains("invalid")) {
                     sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_FAILD));
@@ -390,19 +394,19 @@ public class UpstreamSession {
             if (!CLSAuthenticationService.getInstance().authenticate(this)) {
                 if (getDataCache().containsKey("cls_link_server") && getDataCache().containsKey("cls_link_pin")) {
                     disconnect("You must link your Mojang account, please visit :\n"
-                             + (String)getDataCache().get("cls_link_server") + "\n"
-                             + "Your pin code is: " + (String)getDataCache().get("cls_link_pin"));
+                            + (String) getDataCache().get("cls_link_server") + "\n"
+                            + "Your pin code is: " + (String) getDataCache().get("cls_link_pin"));
                     return;
                 }
                 disconnect(proxy.getLang().get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_UNREACHABLE)));
-                proxy.getLogger() .severe(proxy.getLang()
-                                .get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_UNREACHABLE))
-                                .replace("§c", "").replace("§0", ""));
+                proxy.getLogger().severe(proxy.getLang()
+                        .get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_UNREACHABLE))
+                        .replace("§c", "").replace("§0", ""));
                 return;
             }
-            AuthenticationService authSvc = new AuthenticationService((String)dataCache.get("mojang_clientToken"));
-            authSvc.setUsername((String)dataCache.get("mojang_displayName"));
-            authSvc.setAccessToken((String)dataCache.get("mojang_accessToken"));
+            AuthenticationService authSvc = new AuthenticationService((String) dataCache.get("mojang_clientToken"));
+            authSvc.setUsername((String) dataCache.get("mojang_displayName"));
+            authSvc.setAccessToken((String) dataCache.get("mojang_accessToken"));
             try {
                 authSvc.login();
                 getDataCache().put("mojang_accessToken", authSvc.getAccessToken());

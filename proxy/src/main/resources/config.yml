@@ -14,6 +14,14 @@ lang: default
 udp_bind_ip: '0.0.0.0'
 udp_bind_port: 19132
 
+# Authentication proxy details
+# Proxy type. Can be NONE, HTTP, or SOCKS
+proxy_type: NONE
+# Proxy IP address
+proxy_ip: ''
+# Proxy port
+proxy_port: 8080
+
 
 # The MOTD (Message of the Day) that will be shown on the MCPE Server List
 motd: '&aServer by DragonProxy'
