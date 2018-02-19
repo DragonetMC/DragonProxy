@@ -38,8 +38,8 @@ public class PCSetSlotPacketTranslator implements IPCPacketTranslator<ServerSetS
             win.slots[packet.getSlot()] = packet.getItem();
             return InventoryTranslatorRegister.sendPlayerInventory(session); // Too lazy lol
         }
-        if (packet.getItem() != null)
-            System.out.println("Caching window " + packet.getWindowId() + " item " + packet.getItem().getId());
+//        if (packet.getItem() != null)
+//            System.out.println("Caching window " + packet.getWindowId() + " item " + packet.getItem().getId());
         InventoryTranslatorRegister.updateSlot(session, packet);
         return null;
     }

@@ -58,7 +58,7 @@ public class ChestWindowTranslator implements IInventoryTranslator {
             posList.add(pos2);
             session.getDataCache().put(CacheKey.WINDOW_BLOCK_POSITION, posList);
         }
-        System.out.println("ChestWindowTranslator.prepare " + window.windowId);
+//        System.out.println("ChestWindowTranslator.prepare " + window.windowId);
         return true;
     }
 
@@ -81,7 +81,7 @@ public class ChestWindowTranslator implements IInventoryTranslator {
         pk.type = 0;
         pk.position = pos;
         session.sendPacket(pk);
-        System.out.println("ChestWindowTranslator.open " + window.windowId);
+//        System.out.println("ChestWindowTranslator.open " + window.windowId);
         return true;
     }
 
