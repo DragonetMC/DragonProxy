@@ -11,10 +11,11 @@ A proxy for to allow **Minecraft: Bedrock** clients to connect to **Minecraft: J
 DragonProxy is a software placed between a Minecraft Bedrock client and a Java Minecraft server.
 
 ## What DragonProxy is NOT
-DragonProxy is __NOT a plugin__, __NOT a server__ like Spigot or Bungeecord, it's__ NOT a BOT__, __NOT a CHEAT__ (it's sometimes buggy but we are working on this).
+DragonProxy is __NOT a plugin__, __NOT a server__ like Spigot or Bungeecord, it's __NOT a BOT__, __NOT a CHEAT__ (it's sometimes buggy but we are working on this).
 
 ## Warning
 __Some servers anticheats trigger some movments cheat, use at your own risks.__
+If you get banned from a server, we do not take responsabilities.
 
 ## Features
 - Currently supporting Bedrock 1.2.10 and Java 1.12.2
@@ -28,8 +29,9 @@ __Some servers anticheats trigger some movments cheat, use at your own risks.__
 
 ![Screenshot](https://github.com/DragonetMC/DragonProxy/raw/master/screenshots/hypixel.png)
 
-## Installation
-Download [release](https://github.com/DragonetMC/DragonProxy/releases) / [snapshots](https://ci.codemc.org/view/DragonetMC/job/DragonProxy/)
+## Download
+ - [release](https://github.com/DragonetMC/DragonProxy/releases) : stable builds, low features
+ - [snapshots](https://ci.codemc.org/view/DragonetMC/job/DragonProxy/) : developments builds, unstable, latest features
 
 ## Compiling
  - clone from github
