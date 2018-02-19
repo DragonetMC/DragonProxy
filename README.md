@@ -7,11 +7,16 @@ Circle: [![CircleCI](https://circleci.com/gh/DragonetMC/DragonProxy/tree/master.
 
 A proxy for to allow **Minecraft: Bedrock** clients to connect to **Minecraft: Java Edition** servers.
 
-## What is DragonProxy
+## <span style="color:green">What is DragonProxy</span>
 DragonProxy is a software placed between a Minecraft Bedrock client and a Java Minecraft server.
 
-## What DragonProxy is NOT
+## <span style="color:red">What DragonProxy is NOT</span>
 DragonProxy is NOT a plugin, NOT a server like Spigot or Bungeecord, it's NOT a BOT, NOT a CHEAT (it's sometimes buggy but we are working on this).
+
+<span style="color:red">
+## Warning
+Some servers anticheats trigger some movments cheat, use at your own risks.
+</span>
 
 ## Features
 - Currently supporting Bedrock 1.2.10 and Java 1.12.2
@@ -34,17 +39,17 @@ Download [release](https://github.com/DragonetMC/DragonProxy/releases) / [snapsh
 
 ## Starting
  - to generate a config file, start with ```java -jar dragonproxy-x.x.x.jar``` (where x.x.x is the version)
- - stop the process
- - edit config.yml as needed
+ - stop the process with CTRL+C
+ - edit [config.yml](https://github.com/DragonetMC/DragonProxy/blob/master/proxy/src/main/resources/config.yml) as needed
  - then start again
 
 ## Windows 10 localhost problem
-If you try to run DragonProxy on the same computer you start Minecraft W10 Edition\n
+If you try to run DragonProxy on the same computer you start Minecraft W10 Edition
+
 you must [enable loopback for Minecraft protocol first](http://pmmp.readthedocs.io/en/rtfd/faq/connecting/win10localhostcantconnect.html).
 
 ## Supported Remote Server Types
 - For Java Edition Servers: `Bukkit`/`Spigot`/`Glowstone`/`SpongeVanilla`/`BungeeCord`
-- For Bedrock Servers: `MiNET`, `Nukkit`, `PocketMine-MP (and all forks)`
 - Not listed does **NOT** mean unsupported, just **untested**.
 
 ## Libraries used
