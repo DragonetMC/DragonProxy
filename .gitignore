@@ -27,3 +27,4 @@ nb-configuration.xml
 /proxy/metrics.yml
 */buildNumber.properties
 /proxy/config.yml
+/proxy/src/main/resources/buildNumber.properties

@@ -23,6 +23,7 @@ public class ServerConfig {
     public String default_server = "NONE";
     public Map<String, RemoteServer> remote_servers;
     public String mode = "cls";
+    public String cls_server = "http://auth.dragonet.org";
     public String command_prefix = "/";
     public int max_players = -1;
     public boolean log_console = false;

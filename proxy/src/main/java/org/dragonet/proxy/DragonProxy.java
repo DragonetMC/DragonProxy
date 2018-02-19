@@ -6,7 +6,7 @@
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
  *
- * You can view LICENCE file for details. 
+ * You can view LICENCE file for details.
  *
  * @author The Dragonet Team
  */
@@ -133,20 +133,19 @@ public class DragonProxy {
 
         InputStream inputStream = this.getClass().getResourceAsStream("/buildNumber.properties");
         properties = new Properties();
-        
-                if (inputStream != null) {
-                    try {
-                        properties.load(inputStream);
-                    } catch (IOException e) {
-                        throw new RuntimeException("Failed to read properties file", e);
-                    } finally {
-                        try {
-                            inputStream.close();
-                        } catch (IOException e) {
-                            // Ignore
-                        }
-                    }
+
+        if (inputStream != null)
+            try {
+                properties.load(inputStream);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to read properties file", e);
+            } finally {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    // Ignore
                 }
+            }
         // Initialize console command reader
         console = new ConsoleCommandReader(this);
         console.startConsole();
@@ -157,10 +156,10 @@ public class DragonProxy {
             logger.info("Saving console output enabled");
         else
             logger.info("Saving console output disabled");
-        
+
         // set logger mode
         logger.debug = config.log_debug;
-        
+
         // set logger colors mod
         logger.colorful = config.log_colors;
 
@@ -189,11 +188,11 @@ public class DragonProxy {
         authMode = config.mode.toLowerCase();
         if (!authMode.equals("cls") && !authMode.equals("online") && !authMode.equals("offline"))
             logger.severe("Invalid login 'mode' option detected, must be cls/online/offline. You set it to '" + authMode
-                + "'! ");
+                    + "'! ");
 
         // Init metrics (https://bstats.org/plugin/server-implementation/DragonProxy)
         MetricsManager.getInstance();
-        
+
         // Init session and command stuff
         sessionRegister = new SessionRegister(this);
         commandRegister = new CommandRegister(this);
@@ -204,7 +203,7 @@ public class DragonProxy {
         // Create thread pool
         logger.info(lang.get(Lang.INIT_CREATING_THREAD_POOL, config.thread_pool_size));
         generalThreadPool = Executors.newScheduledThreadPool(config.thread_pool_size);
-        
+
         // MOTD
         motd = config.motd;
         motd = motd.replace("&", "\u00a7");
@@ -213,8 +212,8 @@ public class DragonProxy {
         logger.info(lang.get(Lang.INIT_BINDING, config.udp_bind_ip, config.udp_bind_port));
         // RakNet.enableLogging();
         network = new RaknetInterface(this, config.udp_bind_ip, // IP
-            config.udp_bind_port, // Port
-            motd, config.max_players);
+                config.udp_bind_port, // Port
+                motd, config.max_players);
 
         ticker.start();
         logger.info(lang.get(Lang.INIT_DONE));
@@ -237,15 +236,13 @@ public class DragonProxy {
     }
 
     public void checkArguments(String[] args) {
-        if (args != null) {
-            for (String arg : args) {
+        if (args != null)
+            for (String arg : args)
                 if (arg.toLowerCase().contains("--debug")) {
                     debug = true;
                     getLogger().debug = true;
                     logger.info("Proxy is running in debug mode.");
                 }
-            }
-        }
     }
 
     public void shutdown() {

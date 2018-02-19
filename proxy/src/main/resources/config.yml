@@ -47,6 +47,9 @@ remote_servers:
 #           servers like Hypixel. 
 mode: online
 
+# CLS Server for authentication service
+cls_server: http://auth.dragonet.org
+
 # Should we authenticate connecting player sessions with xbox live?
 authenticate_players: true
 

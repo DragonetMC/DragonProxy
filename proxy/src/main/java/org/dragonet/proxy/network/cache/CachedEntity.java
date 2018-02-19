@@ -70,7 +70,7 @@ public class CachedEntity {
     public Slot leggings;
     public Slot boots;
     public Slot mainHand;
-    
+
     public int foodPacketCount = 0;
     public long lastFoodPacketTime;
 
