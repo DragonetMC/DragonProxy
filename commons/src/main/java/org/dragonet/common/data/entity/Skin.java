@@ -15,10 +15,10 @@ public class Skin {
 
     public final static Skin DEFAULT_SKIN;
 
-    public final String skinId;
+    public final String skinModel;
     public String skinData;
     public String capeData;
-    public String geometryId;
+    public String geometryModel;
     public String geometryData;
 
     static {
@@ -45,10 +45,10 @@ public class Skin {
     }
 
     public Skin(String skinId, String skinData, String capeData, String geometryId, String geometryData) {
-        this.skinId = skinId;
+        this.skinModel = skinId;
         this.skinData = skinData;
         this.capeData = capeData;
-        this.geometryId = geometryId;
+        this.geometryModel = geometryId;
         this.geometryData = geometryData;
     }
 
@@ -74,14 +74,14 @@ public class Skin {
     }
 
     public void write(BinaryStream dest) {
-        dest.putString(skinId);
+        dest.putString(skinModel);
         dest.putString(skinData);
         if (capeData != "") {
             dest.putLInt(1);
             dest.putString(capeData);
         } else
             dest.putLInt(0);
-        dest.putString(geometryId);
+        dest.putString(geometryModel);
         dest.putString(geometryData);
     }
 }

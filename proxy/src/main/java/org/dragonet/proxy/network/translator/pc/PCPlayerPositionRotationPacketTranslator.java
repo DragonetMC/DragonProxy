@@ -196,7 +196,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                     peEntries.add(peEntry);
 
                     entity.spawned = true;
-//                    session.sendPacket(skin);
+                    session.sendPacket(skin);
                 }
                 entity.spawn(session);
             }

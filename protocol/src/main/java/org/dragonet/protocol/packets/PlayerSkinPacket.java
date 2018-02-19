@@ -34,12 +34,12 @@ public class PlayerSkinPacket extends PEPacket {
         if (skin == null) {
             skin = Skin.DEFAULT_SKIN;
         }
-        putString(skin.skinId);
+        putString(skin.skinModel);
         putString(oldSkinName);
         putString(newSkinName);
         putString(skin.skinData);
         putString(skin.capeData);
-        putString(skin.geometryId);
+        putString(skin.geometryModel);
         putString(skin.geometryData);
 
     }
