@@ -70,13 +70,17 @@ public class Skin {
     }
 
     public static Skin read(BinaryStream source) {
-        return new Skin(source.getString(), source.getString(), source.getString(), source.getString(), source.getString());
+        return new Skin(source.getString(), source.getString(), source.getLInt() != 0 ? source.getString() : "", source.getString(), source.getString());
     }
 
     public void write(BinaryStream dest) {
         dest.putString(skinId);
         dest.putString(skinData);
-        dest.putString(capeData);
+        if (capeData != "") {
+            dest.putLInt(1);
+            dest.putString(capeData);
+        } else
+            dest.putLInt(0);
         dest.putString(geometryId);
         dest.putString(geometryData);
     }
