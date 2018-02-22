@@ -40,7 +40,7 @@ public class LoginChainDecoder {
     public Skin skin;
     private boolean loginVerified = false;
 
-    public JsonObject extraData = null;
+    private JsonObject extraData = null;
 
     public LoginChainDecoder(byte[] chainJWT, byte[] clientDataJWT) {
         this.chainJWT = chainJWT;
@@ -160,6 +160,20 @@ public class LoginChainDecoder {
             throw new RuntimeException(e);
         }
 
+    }
+
+    /**
+     * @return the chainJWT
+     */
+    public String getChainJWT() {
+        return new String(this.chainJWT, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * @return the clientDataJWT
+     */
+    public String getClientDataJWT() {
+        return new String(this.clientDataJWT, StandardCharsets.UTF_8);
     }
 
 }
