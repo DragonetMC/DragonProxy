@@ -189,13 +189,9 @@ public class BlockVector3 implements Cloneable {
     public boolean equals(Object ob) {
         if (ob == null) return false;
         if (ob == this) return true;
-
         if (!(ob instanceof BlockVector3)) return false;
 
-        return
-            this.x == ((BlockVector3) ob).x &&
-                this.y == ((BlockVector3) ob).y &&
-                this.z == ((BlockVector3) ob).z;
+        return this.x == ((BlockVector3) ob).x && this.y == ((BlockVector3) ob).y && this.z == ((BlockVector3) ob).z;
     }
 
     @Override
@@ -205,7 +201,7 @@ public class BlockVector3 implements Cloneable {
 
     @Override
     public String toString() {
-        return "BlockPosition(level=" + ",x=" + this.x + ",y=" + this.y + ",z=" + this.z + ")";
+        return "BlockPosition(x=" + this.x + ",y=" + this.y + ",z=" + this.z + ")";
     }
 
     @Override
@@ -213,7 +209,7 @@ public class BlockVector3 implements Cloneable {
         try {
             return (BlockVector3) super.clone();
         } catch (CloneNotSupportedException e) {
-            return null;
+            return new BlockVector3(this.x, this.y, this.z);
         }
     }
 
