@@ -15,6 +15,8 @@ public class PlayerSkinPacket extends PEPacket {
     public String oldSkinName = "";
     public String newSkinName = "";
     public Skin skin;
+    public String geometryModel;
+    public String geometryData;
 
     public PlayerSkinPacket() {
     }
@@ -32,15 +34,15 @@ public class PlayerSkinPacket extends PEPacket {
     public void encodePayload() {
         putUUID(uuid);
         if (skin == null) {
-            skin = Skin.DEFAULT_SKIN;
+            skin = Skin.DEFAULT_SKIN_STEVE;
         }
-        putString(skin.skinModel);
+        putString(skin.getModel());
         putString(oldSkinName);
         putString(newSkinName);
-        putString(skin.skinData);
-        putString(skin.capeData);
-        putString(skin.geometryModel);
-        putString(skin.geometryData);
+        putByteArray(skin.getData());
+        putByteArray(skin.getCape().getData());
+        putString(geometryModel);
+        putString(geometryData);
 
     }
 
