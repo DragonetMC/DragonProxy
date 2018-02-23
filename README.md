@@ -27,6 +27,15 @@ If you get banned from a server, we do not take responsabilities.
 - BocksEntities spawn
 - Inventory WIP
 
+## Known bugs :
+ - No chunk updates on world changing / teleport to far
+ - No creative inventory
+ - Movments on stairs/half blocks
+ - Some anticheat trigger bad movments
+
+## Won't fix/implements :
+ - Older protocol compatibility (including plugins like ViaVersion)
+
 ![Screenshot](https://github.com/DragonetMC/DragonProxy/raw/master/screenshots/hypixel.png)
 
 ## Download
@@ -57,3 +66,5 @@ If you try to run DragonProxy on the __same computer__ you start Minecraft W10 E
 ## Thanks :
 * [PocketMine-MP](https://github.com/pmmp/PocketMine-MP)
 * [Nukkit](https://github.com/NukkitX/Nukkit)
+* [MINET](https://github.com/NiclasOlofsson/MiNET)
+* [MinecraftCoalition](http://wiki.vg)
