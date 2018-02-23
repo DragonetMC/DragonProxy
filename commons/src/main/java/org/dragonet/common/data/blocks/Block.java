@@ -3,9 +3,9 @@ package org.dragonet.common.data.blocks;
 import org.dragonet.common.maths.AxisAlignedBB;
 
 import java.lang.reflect.Constructor;
-import org.dragonet.common.maths.Position;
+import org.dragonet.common.maths.BlockPosition;
 
-public class Block extends Position {
+public class Block extends BlockPosition {
     public static final int SLABS = 44;
     public static final int WOOD_STAIRS = 53;
     public static final int COBBLESTONE_STAIRS = 67;
@@ -63,7 +63,7 @@ public class Block extends Position {
         this.meta = (meta != null ? meta : 0);
     }
 
-    public static Block get(int id, Integer meta, Position pos) {
+    public static Block get(int id, Integer meta, BlockPosition pos) {
         Block block;
         try {
             Class c = list[id];
