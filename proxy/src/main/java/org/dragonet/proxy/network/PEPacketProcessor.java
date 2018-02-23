@@ -153,9 +153,6 @@ public class PEPacketProcessor {
                     this.client.postLogin();
 
                 break;
-            case ProtocolInfo.REQUEST_CHUNK_RADIUS_PACKET:
-                this.client.sendPacket(new ChunkRadiusUpdatedPacket(((RequestChunkRadiusPacket) packet).radius));
-                break;
             default:
                 if (this.client.getDownstream() == null || !this.client.getDownstream().isConnected())
                     break;

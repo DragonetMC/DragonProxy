@@ -39,9 +39,9 @@ public final class EntityMetaTranslator {
      * Following format was fetched from http://wiki.vg/Entities#Entity_meta_Format
          */
         EntityMetaData peMeta = EntityMetaData.createDefault();
-        try (Timing timing = Timings.getEntityTiming(type.name())) {
+//        try (Timing timing = Timings.getEntityTiming(type.name())) {
             if (pcMeta == null || type == EntityType.NONE) {
-                timing.stopTiming();
+//                timing.stopTiming();
                 return peMeta;
             }
     //        System.out.println("Entity + " + type);
@@ -416,11 +416,11 @@ public final class EntityMetaTranslator {
                     if (!handle)
                         DragonProxy.getInstance().getLogger().debug("Not supported entity meta (" + type.name() + ") : " + m.toString());
                 } catch (Exception p_Ex) {
-                    timing.stopTiming();
+//                    timing.stopTiming();
                     p_Ex.printStackTrace();
                 }
             }
-        }
+//        }
         return peMeta;
     }
 

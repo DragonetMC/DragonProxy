@@ -35,7 +35,7 @@ public class PCNotifyClientPacketTranslator implements IPCPacketTranslator<Serve
                 adv.setFlag(AdventureSettingsPacket.ALLOW_FLIGHT, gm.equals(GameMode.CREATIVE) || gm.equals(GameMode.SPECTATOR));
                 adv.setFlag(AdventureSettingsPacket.NO_CLIP, gm.equals(GameMode.SPECTATOR));
                 adv.setFlag(AdventureSettingsPacket.WORLD_BUILDER, !gm.equals(GameMode.SPECTATOR) || !gm.equals(GameMode.ADVENTURE));
-                adv.setFlag(AdventureSettingsPacket.FLYING, false);
+                adv.setFlag(AdventureSettingsPacket.FLYING, gm.equals(GameMode.SPECTATOR));
                 adv.setFlag(AdventureSettingsPacket.MUTED, false);
                 adv.eid = session.getEntityCache().getClientEntity().proxyEid;
                 adv.commandsPermission = AdventureSettingsPacket.PERMISSION_NORMAL;

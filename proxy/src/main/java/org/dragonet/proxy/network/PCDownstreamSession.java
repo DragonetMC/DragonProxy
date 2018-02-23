@@ -61,8 +61,7 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
         remoteClient.getSession().setWriteTimeout(5);
         remoteClient.getSession().addListener(new SessionAdapter() {
             public void connected(ConnectedEvent event) {
-                proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_REMOTE_CONNECTED, upstream.getUsername(),
-                    upstream.getRemoteAddress()));
+                proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_REMOTE_CONNECTED, upstream.getUsername(), upstream.getRemoteAddress()));
 
                 // Notify the server
 //                BinaryStream bis = new BinaryStream();
@@ -74,9 +73,11 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
             }
 
             public void disconnected(DisconnectedEvent event) {
+                System.out.println("DisconnectedEvent " + event.getReason());
                 upstream.disconnect(proxy.getLang().get(event.getReason()));
             }
             public void disconnecting(DisconnectingEvent event) {
+                System.out.println("DisconnectingEvent " + event.getReason());
                 upstream.disconnect(proxy.getLang().get(event.getReason()));
             }
 

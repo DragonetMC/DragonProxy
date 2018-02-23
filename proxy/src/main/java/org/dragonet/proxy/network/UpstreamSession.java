@@ -6,7 +6,7 @@
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
  *
- * You can view LICENCE file for details. 
+ * You can view LICENCE file for details.
  *
  * @author The Dragonet Team
  */
@@ -29,7 +29,6 @@ import org.dragonet.proxy.configuration.RemoteServer;
 import org.dragonet.proxy.utilities.CLSAuthenticationService;
 
 import org.dragonet.common.data.entity.EntityType;
-import org.dragonet.proxy.network.cache.BlockCache;
 import org.dragonet.proxy.network.cache.EntityCache;
 import org.dragonet.proxy.network.cache.WindowCache;
 import org.dragonet.protocol.PEPacket;
@@ -59,7 +58,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import org.dragonet.proxy.network.cache.ChunkCache;
 
 /**
  * Maintaince the connection between the proxy and Minecraft: Pocket Edition
@@ -86,11 +88,10 @@ public class UpstreamSession {
 	 * ==========================
      */
     private final Map<String, Object> dataCache = Collections.synchronizedMap(new HashMap<String, Object>());
-    private final Map<UUID, PlayerListEntry> playerInfoCache = Collections
-            .synchronizedMap(new HashMap<UUID, PlayerListEntry>());
+    private final Map<UUID, PlayerListEntry> playerInfoCache = Collections.synchronizedMap(new HashMap<UUID, PlayerListEntry>());
     private final EntityCache entityCache = new EntityCache(this);
     private final WindowCache windowCache = new WindowCache(this);
-    private final BlockCache blockCache = new BlockCache(this);
+    private final ChunkCache chunkCache = new ChunkCache(this);
     protected boolean connecting;
 
     /*
@@ -164,8 +165,8 @@ public class UpstreamSession {
         return windowCache;
     }
 
-    public BlockCache getBlockCache() {
-        return blockCache;
+    public ChunkCache getChunkCache() {
+        return chunkCache;
     }
 
     public void sendPacket(PEPacket packet) {
@@ -192,8 +193,7 @@ public class UpstreamSession {
 
             // handler.sendEncapsulated(identifier, encapsulated, RakNet.FLAG_NEED_ACK |
             // (overridedImmediate ? RakNet.PRIORITY_IMMEDIATE : RakNet.PRIORITY_NORMAL));
-            raknetClient.sendMessage(Reliability.RELIABLE_ORDERED, 0,
-                    new net.marfgamer.jraknet.Packet(Binary.appendBytes((byte) 0xfe, buffer)));
+            raknetClient.sendMessage(Reliability.RELIABLE_ORDERED, 0, new net.marfgamer.jraknet.Packet(Binary.appendBytes((byte) 0xfe, buffer)));
         }
     }
 
@@ -482,6 +482,7 @@ public class UpstreamSession {
 
     public void onTick() {
         entityCache.onTick();
+        chunkCache.onTick();
         if (packetProcessor != null)
             packetProcessor.onTick();
         if (downstream != null)

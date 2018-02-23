@@ -6,7 +6,7 @@
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
  *
- * You can view LICENCE file for details. 
+ * You can view LICENCE file for details.
  *
  * @author The Dragonet Team
  */
@@ -38,7 +38,6 @@ import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.protocol.PEPacket;
 import org.dragonet.common.data.entity.Skin;
 import org.dragonet.common.utilities.BinaryStream;
-
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -87,12 +86,21 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
 
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("DragonProxy");
-            ClientPluginMessagePacket ClientPluginMessagePacket = new ClientPluginMessagePacket("MC|Brand", out.toByteArray());
-            ((PCDownstreamSession) session.getDownstream()).send(ClientPluginMessagePacket);
+            ClientPluginMessagePacket clientPluginMessagePacket = new ClientPluginMessagePacket("MC|Brand", out.toByteArray());
+            ((PCDownstreamSession) session.getDownstream()).send(clientPluginMessagePacket);
 
             LoginPacket loginpacket = (LoginPacket) session.getDataCache().remove(CacheKey.PACKET_LOGIN_PACKET);
-            ClientSettingsPacket ClientSettingsPacket = new ClientSettingsPacket(loginpacket.decoded.language, 8, ChatVisibility.FULL, false, new SkinPart[]{}, Hand.OFF_HAND);
-            ((PCDownstreamSession) session.getDownstream()).send(ClientSettingsPacket);
+            String clientLanguage = loginpacket.decoded.clientData.has("LanguageCode") ? loginpacket.decoded.clientData.get("LanguageCode").getAsString() : "en_US";
+            session.getDataCache().put(CacheKey.PLAYER_LANGUAGE, clientLanguage);
+
+            ClientSettingsPacket clientSettingsPacket = new ClientSettingsPacket(
+                    clientLanguage,
+                    (int) session.getDataCache().getOrDefault(CacheKey.PLAYER_REQUESTED_CHUNK_RADIUS, 5),
+                    ChatVisibility.FULL,
+                    false,
+                    new SkinPart[]{},
+                    Hand.OFF_HAND);
+            ((PCDownstreamSession) session.getDownstream()).send(clientSettingsPacket);
 
             UpdateAttributesPacket attr = new UpdateAttributesPacket();
             attr.rtid = entityPlayer.proxyEid;
@@ -117,7 +125,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             adv.setFlag(AdventureSettingsPacket.ALLOW_FLIGHT, restored.getGameMode().equals(GameMode.CREATIVE) || restored.getGameMode().equals(GameMode.SPECTATOR));
             adv.setFlag(AdventureSettingsPacket.NO_CLIP, restored.getGameMode().equals(GameMode.SPECTATOR));
             adv.setFlag(AdventureSettingsPacket.WORLD_BUILDER, !restored.getGameMode().equals(GameMode.SPECTATOR) || !restored.getGameMode().equals(GameMode.ADVENTURE));
-            adv.setFlag(AdventureSettingsPacket.FLYING, false);
+            adv.setFlag(AdventureSettingsPacket.FLYING, restored.getGameMode().equals(GameMode.SPECTATOR));
             adv.setFlag(AdventureSettingsPacket.MUTED, false);
             //custom permission flags (not necessary for now when using LEVEL_PERMISSION setting)
 //			adv.setFlag(AdventureSettingsPacket.BUILD_AND_MINE, true);
@@ -185,18 +193,15 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                     continue;
                 if (entity.peType == EntityType.PLAYER) {
                     PlayerListEntry playerListEntry = session.getPlayerInfoCache().get(entity.playerUniqueId);
-                    PlayerSkinPacket skin = new PlayerSkinPacket(entity.playerUniqueId);
 
                     org.dragonet.protocol.type.PlayerListEntry peEntry = new org.dragonet.protocol.type.PlayerListEntry();
                     peEntry.uuid = entity.playerUniqueId;
                     peEntry.eid = entity.eid;
                     peEntry.username = playerListEntry.getProfile().getName();
-                    peEntry.skin = Skin.DEFAULT_SKIN;
+                    peEntry.skin = Skin.DEFAULT_SKIN_STEVE;
                     peEntry.xboxUserId = "null";
                     peEntries.add(peEntry);
 
-                    entity.spawned = true;
-                    session.sendPacket(skin);
                 }
                 entity.spawn(session);
             }
@@ -223,6 +228,8 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
         }
 
         entityPlayer.absoluteMove(packet.getX(), packet.getY() + entityPlayer.peType.getOffset(), packet.getZ(), packet.getYaw(), packet.getPitch());
+
+        session.getChunkCache().sendOrderedChunks();
 
         // send the confirmation
         ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());
