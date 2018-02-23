@@ -6,7 +6,7 @@
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
  *
- * You can view LICENCE file for details. 
+ * You can view LICENCE file for details.
  *
  * @author The Dragonet Team
  */
@@ -38,7 +38,8 @@ public final class CommandRegister {
         registerCommand("help", new HelpCommand("help"));
         registerCommand("kill", new KillCommand("kill")); // Bad things could happen
         registerCommand("test", new TestCommand("test")); // FOR TESTING
-        registerCommand("timings", new TimingsCommand("timings")); // FOR TESTING
+        registerCommand("timings", new TimingsCommand("timings"));
+        registerCommand("cache", new CacheCommand("cache"));
     }
 
     public void registerCommand(String command, Command console) {
@@ -70,7 +71,7 @@ public final class CommandRegister {
             proxy.getLogger().warning(proxy.getLang().get(Lang.COMMAND_NOT_FOUND));
             return;
         }
-        try(Timing timing = Timings.getCommandTiming(command)) {
+        try (Timing timing = Timings.getCommandTiming(command)) {
             command.execute(proxy, args);
         }
     }
