@@ -23,17 +23,16 @@ public class CacheCommand extends Command {
     }
 
     public void execute(DragonProxy proxy, String[] args) {
-        if (args.length == 0)
-        {
-            if (DragonProxy.getInstance().getSessionRegister().getAll().isEmpty()) {
-                DragonProxy.getInstance().getLogger().info("No session, no cache");
+        if (args.length == 0) {
+            if (proxy.getSessionRegister().getAll().isEmpty()) {
+                proxy.getLogger().info("No session, no cache");
                 return;
             }
-            DragonProxy.getInstance().getLogger().info("Display cache info per session");
-            for(UpstreamSession session : DragonProxy.getInstance().getSessionRegister().getAll().values()) {
-                DragonProxy.getInstance().getLogger().info("Session: " + session.getRaknetID() + " (" + session.getUsername() + ")");
-                DragonProxy.getInstance().getLogger().info("\tentities :" + session.getEntityCache().getEntities().size());
-                DragonProxy.getInstance().getLogger().info("\tchunks :" + session.getChunkCache().getChunks().size());
+            proxy.getLogger().info("Display cache info per session");
+            for(UpstreamSession session : proxy.getSessionRegister().getAll().values()) {
+                proxy.getLogger().info("Session: " + session.getRaknetID() + " (" + session.getUsername() + ")");
+                proxy.getLogger().info("\tentities :" + session.getEntityCache().getEntities().size());
+                proxy.getLogger().info("\tchunks :" + session.getChunkCache().getChunks().size());
             }
         }
     }

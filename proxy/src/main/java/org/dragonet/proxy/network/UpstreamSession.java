@@ -255,7 +255,7 @@ public class UpstreamSession {
             raknetClient.update(); //Force the DisconnectPacket to be sent before we close the connection
         }
         //Forceing the connection to close
-        getProxy().getNetwork().getRakServer().removeSession(getRaknetClient(), reason);
+        proxy.getNetwork().getRakServer().removeSession(getRaknetClient(), reason);
     }
 
     /**
@@ -312,7 +312,7 @@ public class UpstreamSession {
         getDataCache().put(CacheKey.PACKET_LOGIN_PACKET, packet);
 
         PlayStatusPacket status = new PlayStatusPacket();
-        DragonProxy.getInstance().getLogger().debug("CLIENT PROTOCOL = " + packet.protocol);
+        proxy.getLogger().debug("CLIENT PROTOCOL = " + packet.protocol);
         if (packet.protocol != ProtocolInfo.CURRENT_PROTOCOL) {
             status.status = PlayStatusPacket.LOGIN_FAILED_CLIENT;
             sendPacket(status, true);

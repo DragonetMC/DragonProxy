@@ -62,15 +62,15 @@ public class CLSAuthenticationService {
                         return true;
                     }
                 } catch (JsonSyntaxException ex) {
-                    DragonProxy.getInstance().getLogger().warning("An error occured on CLS server.");
+                    session.getProxy().getLogger().warning("An error occured on CLS server.");
                     return false;
                 }
             else {
-                DragonProxy.getInstance().getLogger().warning("Unable to connect to CLS server.");
+                session.getProxy().getLogger().warning("Unable to connect to CLS server.");
                 return false;
             }
         }
-        DragonProxy.getInstance().getLogger().warning("Trying to authenticate " + session.getUsername() + " with CLS server but Xbox Live not connected.");
+        session.getProxy().getLogger().warning("Trying to authenticate " + session.getUsername() + " with CLS server but Xbox Live not connected.");
         return false;
     }
 
@@ -86,11 +86,11 @@ public class CLSAuthenticationService {
                     if (result.has("success"))
                         return true;
                 } catch (JsonSyntaxException ex) {
-                    DragonProxy.getInstance().getLogger().warning("An error occured on CLS server.");
+                    session.getProxy().getLogger().warning("An error occured on CLS server.");
                     return false;
                 }
             else {
-                DragonProxy.getInstance().getLogger().warning("Unable to connect to CLS server.");
+                session.getProxy().getLogger().warning("Unable to connect to CLS server.");
                 return false;
             }
         }

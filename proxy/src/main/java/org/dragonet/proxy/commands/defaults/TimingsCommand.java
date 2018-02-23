@@ -24,14 +24,11 @@ public class TimingsCommand extends Command {
     }
 
     public void execute(DragonProxy proxy, String[] args) {
-        if (args.length == 0)
-        {
+        if (args.length == 0) {
             proxy.getLogger().info("Timings command (start / stop / paste / history)");
         }
-        else
-        {
-            switch(args[0])
-            {
+        else {
+            switch(args[0]) {
                 case "start":
                     Timings.setTimingsEnabled(true);
                     proxy.getLogger().info("Timings started !");

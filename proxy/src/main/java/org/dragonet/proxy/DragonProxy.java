@@ -39,7 +39,7 @@ import co.aikar.timings.Timings;
 
 public class DragonProxy {
 
-    public static final boolean IS_RELEASE = false; // DO NOT CHANGE, ONLY ON PRODUCTION
+    public static final boolean IS_RELEASE = false; // TODO: remove
 
     private static DragonProxy instance;
     private static String[] launchArgs;
@@ -191,7 +191,7 @@ public class DragonProxy {
                     + "'! ");
 
         // Init metrics (https://bstats.org/plugin/server-implementation/DragonProxy)
-        MetricsManager.getInstance();
+        new MetricsManager(this);
 
         // Init session and command stuff
         sessionRegister = new SessionRegister(this);
