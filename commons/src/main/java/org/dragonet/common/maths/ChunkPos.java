@@ -103,6 +103,22 @@ public class ChunkPos {
     }
 
     /**
+     * Get the Chunk coordinates of the Block with the given World coordinates
+     * relative to this chunk
+     */
+    public BlockPosition getBlockInChunk(int x, int y, int z) {
+        BlockPosition pos = new BlockPosition(x % 16, y % 16, z % 16);
+        //make sure the value is always positive
+        if (pos.x < 0)
+            pos.x = -pos.x;
+        if (pos.y < 0)
+            pos.y = -pos.y;
+        if (pos.z < 0)
+            pos.z = -pos.z;
+        return pos;
+    }
+
+    /**
      * Get the coordinates of the Block in the center of this chunk with the
      * given Y coordinate
      */
@@ -111,6 +127,6 @@ public class ChunkPos {
     }
 
     public String toString() {
-        return "[" + this.chunkXPos + ", " + this.chunkZPos + "]";
+        return ChunkPos.class.getSimpleName() + "[" + this.chunkXPos + ", " + this.chunkZPos + "]";
     }
 }
