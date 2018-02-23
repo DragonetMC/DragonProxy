@@ -21,8 +21,8 @@ public class AddEntityPacket extends PEPacket {
     public Vector3F motion;
     public float pitch;
     public float yaw;
-    public EntityMetaData meta;
     public Collection<PEEntityAttribute> attributes;
+    public EntityMetaData meta;
     public PEEntityLink[] links;
 
     public AddEntityPacket() {

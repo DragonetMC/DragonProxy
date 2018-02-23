@@ -17,7 +17,7 @@ public class AddItemEntityPacket extends PEPacket {
     public Vector3F position;
     public Vector3F motion;
     public EntityMetaData metadata;
-    public boolean unk1 = false;
+//    public boolean unk1 = false;
 
     public AddItemEntityPacket() {
 
@@ -34,14 +34,14 @@ public class AddItemEntityPacket extends PEPacket {
         putUnsignedVarLong(eid);
         putSlot(item);
         putVector3F(position);
-        putVector3F(position);
+        putVector3F(motion);
         if (metadata != null) {
             metadata.encode();
             put(metadata.getBuffer());
         } else {
             putUnsignedVarInt(0);
         }
-        putBoolean(unk1);
+//        putBoolean(unk1);
     }
 
     @Override
@@ -52,6 +52,6 @@ public class AddItemEntityPacket extends PEPacket {
         position = getVector3F();
         motion = getVector3F();
         metadata = EntityMetaData.from(this);
-        unk1 = getBoolean();
+//        unk1 = getBoolean();
     }
 }
