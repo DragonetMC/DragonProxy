@@ -16,7 +16,13 @@
     <repositories>
         <repository>
             <id>CodeMC-repo</id>
-            <url>https://ci.codemc.org/plugin/repository/everything</url>
+            <url>https://repo.codemc.org/repository/maven-public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
 
@@ -24,7 +30,7 @@
         <dependency>
             <groupId>com.github.steveice10</groupId>
             <artifactId>mcprotocollib</artifactId>
-            <version>1.12.2-1</version>
+            <version>1.12.2-3-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
