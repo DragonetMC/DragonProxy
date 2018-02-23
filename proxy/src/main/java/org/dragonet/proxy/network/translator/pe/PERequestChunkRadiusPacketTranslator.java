@@ -17,7 +17,7 @@ public class PERequestChunkRadiusPacketTranslator implements IPEPacketTranslator
     @Override
     public Packet[] translate(UpstreamSession session, RequestChunkRadiusPacket packet) {
         session.getDataCache().put(CacheKey.PLAYER_REQUESTED_CHUNK_RADIUS, packet.radius);
-        System.out.println("Requested chunk radius : " + packet.radius);
+//        System.out.println("Requested chunk radius : " + packet.radius);
         session.sendPacket(new ChunkRadiusUpdatedPacket(((RequestChunkRadiusPacket) packet).radius));
         session.getChunkCache().sendOrderedChunks();
         ClientSettingsPacket clientSettingsPacket = new ClientSettingsPacket(

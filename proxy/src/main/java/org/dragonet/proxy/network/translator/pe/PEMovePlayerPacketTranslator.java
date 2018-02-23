@@ -55,15 +55,21 @@ public class PEMovePlayerPacketTranslator implements IPEPacketTranslator<MovePla
             BlockPosition blockPos = new BlockPosition(NukkitMath.floorDouble(packet.position.x), NukkitMath.floorDouble(packet.position.y), NukkitMath.floorDouble(packet.position.z));
 //            System.out.println("move  " + packet.position.x + ", " + packet.position.y + ", " + packet.position.z);
 //            System.out.println("block " + blockPos.toString());
-            ItemEntry PEBlock = session.getChunkCache().translateBlock(blockPos.asPosition());
-            Block b = Block.get(PEBlock.getId(), PEBlock.getPEDamage(), blockPos);
-            if (b != null && b.collidesWithBB(session.getEntityCache().getClientEntity().boundingBox.clone())) {
-                DragonProxy.getInstance().getLogger().info("Player position : " + entity.x + ", " + entity.y + ", " + entity.z + " collide with " + b.getClass().getSimpleName() + " on " + blockPos.toString());
-                isColliding = true;
+            try {
+                ItemEntry PEBlock = session.getChunkCache().translateBlock(blockPos.asPosition());
+                if (PEBlock != null) {
+                    Block b = Block.get(PEBlock.getId(), PEBlock.getPEDamage(), blockPos);
+                    if (b != null && b.collidesWithBB(session.getEntityCache().getClientEntity().boundingBox.clone())) {
+                    DragonProxy.getInstance().getLogger().info("Player position : " + entity.x + ", " + entity.y + ", " + entity.z + " collide with " + b.getClass().getSimpleName() + " on " + blockPos.toString());
+                        isColliding = true;
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
 
+            entity.absoluteMove(pk.getX(), pk.getY(), pk.getZ(), (float) pk.getYaw(), (float) pk.getPitch());
             if (!isColliding) {
-                entity.absoluteMove(pk.getX(), pk.getY(), pk.getZ(), (float) pk.getYaw(), (float) pk.getPitch());
                 session.getDownstream().send(pk);
                 session.getChunkCache().sendOrderedChunks();
             }

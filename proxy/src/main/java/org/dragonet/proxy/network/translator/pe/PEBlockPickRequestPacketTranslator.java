@@ -29,7 +29,8 @@ public class PEBlockPickRequestPacketTranslator implements IPEPacketTranslator<B
         ItemStack item = session.getChunkCache().getBlock(new Position(packet.x, packet.y, packet.z));
         int selectedSlot = (int)session.getDataCache().getOrDefault(CacheKey.PLAYER_SELECTED_SLOT, 36);
         ClientCreativeInventoryActionPacket backPacket = new ClientCreativeInventoryActionPacket(selectedSlot + 36, item);
-        System.out.println("BlockPickRequestPacket " + DebugTools.getAllFields(packet));
+//        System.out.println("BlockPickRequestPacket " + DebugTools.getAllFields(packet));
+//        System.out.println("ItemStack " + DebugTools.getAllFields(item));
         return new Packet[]{backPacket};
     }
 
