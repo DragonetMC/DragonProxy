@@ -35,9 +35,12 @@ public class LoginChainDecoder {
     private final byte[] clientDataJWT;
     public String username;
     public UUID clientUniqueId;
+    public long clientId;
     public JsonObject clientData;
-    public String language;
     public Skin skin;
+    public String skinGeometryName;
+    public byte[] skinGeometry;
+
     private boolean loginVerified = false;
 
     private JsonObject extraData = null;
@@ -133,8 +136,20 @@ public class LoginChainDecoder {
         // step 3, extract LanguageCode and Skin
         // client data & skin
         this.clientData = gson.fromJson(new String(Base64.getDecoder().decode(clientJWT.getPayload()), StandardCharsets.UTF_8), JsonObject.class);
-        this.language = this.clientData.has("LanguageCode") ? this.clientData.get("LanguageCode").getAsString() : "en_US";
-        this.skin = Skin.read(this.clientData);
+
+        if (this.clientData.has("ClientRandomId")) this.clientId = this.clientData.get("ClientRandomId").getAsLong();
+        if (this.clientData.has("SkinData") && this.clientData.has("SkinId")) {
+            this.skin = new Skin(this.clientData.get("SkinData").getAsString(), this.clientData.get("SkinId").getAsString());
+
+            if (this.clientData.has("CapeData"))
+                this.skin.setCape(this.skin.new Cape(Base64.getDecoder().decode(this.clientData.get("CapeData").getAsString())));
+        }
+        else
+            this.skin = Skin.DEFAULT_SKIN_STEVE;
+
+        if (this.clientData.has("SkinGeometryName")) this.skinGeometryName = this.clientData.get("SkinGeometryName").getAsString();
+        if (this.clientData.has("SkinGeometry"))
+            this.skinGeometry = Base64.getDecoder().decode(this.clientData.get("SkinGeometry").getAsString());
     }
 
     public boolean isLoginVerified() {
