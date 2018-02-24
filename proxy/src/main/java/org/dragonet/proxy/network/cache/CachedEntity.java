@@ -38,7 +38,6 @@ import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.protocol.packets.*;
 import org.dragonet.common.maths.BlockPosition;
 
-
 public class CachedEntity {
 
     public long eid;
@@ -87,7 +86,7 @@ public class CachedEntity {
     public Map<Integer, PEEntityAttribute> attributes = Collections.synchronizedMap(new HashMap());
 
     public CachedEntity(long eid, long proxyEid, int pcType, EntityType peType, ObjectType objType, boolean player,
-                        UUID playerUniqueId) {
+            UUID playerUniqueId) {
         super();
 
         this.eid = eid;
@@ -123,7 +122,7 @@ public class CachedEntity {
             this.pitch = pitch;
             this.shouldMove = true;
             this.boundingBox.setBounds(x - radius, y, z - radius, x + radius, y + (this.getHeight() * this.scale), z
-                + radius);
+                    + radius);
         }
         return this;
     }
@@ -150,10 +149,9 @@ public class CachedEntity {
         return 0.6f;
     }
 
-    public void spawn(UpstreamSession session)
-    {
+    public void spawn(UpstreamSession session) {
         if (session.isSpawned()) {
-            if (this.peType == EntityType.PLAYER){
+            if (this.peType == EntityType.PLAYER) {
                 PlayerListEntry playerListEntry = session.getPlayerInfoCache().get(this.playerUniqueId);
                 AddPlayerPacket pk = new AddPlayerPacket();
                 pk.eid = this.proxyEid;
@@ -178,7 +176,7 @@ public class CachedEntity {
                 pk.motion = new Vector3F((float) this.motionX, (float) this.motionY, (float) this.motionZ);
                 this.spawned = true;
                 session.sendPacket(pk);
-            }  else if (this.peType == EntityType.PAINTING) {
+            } else if (this.peType == EntityType.PAINTING) {
                 AddPaintingPacket pk = new AddPaintingPacket();
                 pk.rtid = this.proxyEid;
                 pk.eid = this.proxyEid;
@@ -202,14 +200,27 @@ public class CachedEntity {
                 this.spawned = true;
                 session.sendPacket(pk);
             }
+            this.updateLinks(session);
             // Process equipments
             this.updateEquipment(session);
         }
     }
-    
-    public void updateEquipment(UpstreamSession session)
-    {
-        if (session.isSpawned()) {
+
+    public void updateLinks(UpstreamSession session) {
+        if (session.isSpawned())
+            if (!this.passengers.isEmpty())
+                for (long passenger : this.passengers) {
+                    SetEntityLinkPacket pk = new SetEntityLinkPacket();
+                    pk.riding = proxyEid;
+                    pk.rider = passenger;
+                    pk.type = SetEntityLinkPacket.TYPE_RIDE;
+                    pk.unknownByte = 0x00;
+                    session.sendPacket(pk);
+                }
+    }
+
+    public void updateEquipment(UpstreamSession session) {
+        if (session.isSpawned())
             if (this.helmet != null || this.chestplate != null || this.leggings != null || this.boots != null || this.mainHand != null) {
                 MobArmorEquipmentPacket aeq = new MobArmorEquipmentPacket();
                 aeq.rtid = this.proxyEid;
@@ -219,6 +230,5 @@ public class CachedEntity {
                 aeq.boots = this.boots;
                 session.sendPacket(aeq);
             }
-        }
-    } 
+    }
 }
