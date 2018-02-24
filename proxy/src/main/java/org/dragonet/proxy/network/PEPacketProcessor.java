@@ -37,6 +37,7 @@ import org.dragonet.protocol.Protocol;
 
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.ServerConfig;
+import org.json.JSONException;
 
 public class PEPacketProcessor {
 
@@ -138,13 +139,16 @@ public class PEPacketProcessor {
             }
 
             if (packet.pid() == ProtocolInfo.MODAL_FORM_RESPONSE_PACKET) {
+                try {
+                    this.client.sendChat(this.client.getProxy().getLang().get(Lang.MESSAGE_LOGIN_PROGRESS));
 
-                this.client.sendChat(this.client.getProxy().getLang().get(Lang.MESSAGE_LOGIN_PROGRESS));
-                this.client.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
-
-                ModalFormResponsePacket formResponse = (ModalFormResponsePacket) packet;
-                JSONArray array = new JSONArray(formResponse.formData);
-                this.client.authenticate(array.get(2).toString(), array.get(3).toString(), authProxy);
+                    ModalFormResponsePacket formResponse = (ModalFormResponsePacket) packet;
+                    JSONArray array = new JSONArray(formResponse.formData);
+                    this.client.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
+                    this.client.authenticate(array.get(2).toString(), array.get(3).toString(), authProxy);
+                } catch(JSONException ex) {
+                    this.client.sendChat(this.client.getProxy().getLang().get(Lang.MESSAGE_ONLINE_LOGIN_FAILD));
+                }
                 return;
             }
         }
