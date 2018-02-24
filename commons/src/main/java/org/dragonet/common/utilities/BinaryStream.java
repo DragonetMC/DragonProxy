@@ -203,14 +203,14 @@ public class BinaryStream {
     }
 
     public void putEntityLink(PEEntityLink link) {
-        putVarLong(link.eidFrom);
-        putVarLong(link.eidTo);
-        putByte((byte) (link.type & 0xFF));
-        putBoolean(link.bool);
+        putVarLong(link.riding);
+        putVarLong(link.rider);
+        putByte(link.type);
+        putByte(link.unknownByte);
     }
 
     public PEEntityLink getEntityLink() {
-        return new PEEntityLink(getVarLong(), getVarLong(), getByte(), getBoolean());
+        return new PEEntityLink(getVarLong(), getVarLong(), getByte(), getByte());
     }
 
     public Map<String, GameRule> getGameRules() {
