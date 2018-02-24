@@ -33,9 +33,10 @@ public class PCRespawnPacketTranslator implements IPCPacketTranslator<ServerResp
         CachedEntity entity = session.getEntityCache().getClientEntity();
         if (entity.dimention != packet.getDimension()) {
             // the player have changed dimention
-            DragonProxy.getInstance().getLogger().info(session.getUsername() + " change dim " + entity.dimention + " to " + packet.getDimension());
+//            DragonProxy.getInstance().getLogger().info(session.getUsername() + " change dim " + entity.dimention + " to " + packet.getDimension());
+//            entity.dimention = packet.getDimension();
 
-            // purge and despawn 
+            // purge and despawn
             session.getEntityCache().reset(true);
             session.getChunkCache().purge();
 

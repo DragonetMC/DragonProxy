@@ -352,6 +352,8 @@ public class ChunkCache {
     }
 
     private String pad(String string, int chars) {
+        if (chars < 0)
+            chars = -chars;
         if (string.length() > chars)
             return string.substring(0, chars);
         return String.format("%1$" + chars + "s", string);

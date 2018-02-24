@@ -30,14 +30,15 @@ public class PCBlockChangePacketTranslator implements IPCPacketTranslator<Server
         // Save glitchy items in cache
 //        Position blockPosition = new Position(pk.blockPosition.x, pk.blockPosition.y, pk.blockPosition.z);
 //        session.getBlockCache().checkBlock(entry.getId(), entry.getPEDamage(), blockPosition);
-
-            ItemEntry entry = session.getChunkCache().translateBlock(packet.getRecord().getPosition());
+        ItemEntry entry = session.getChunkCache().translateBlock(packet.getRecord().getPosition());
+        if (entry != null) {
             UpdateBlockPacket pk = new UpdateBlockPacket();
             pk.flags = UpdateBlockPacket.FLAG_NEIGHBORS;
             pk.data = entry.getPEDamage();
             pk.id = entry.getId();
             pk.blockPosition = new BlockPosition(packet.getRecord().getPosition());
             session.putCachePacket(pk);
+        }
         return null;
     }
 }

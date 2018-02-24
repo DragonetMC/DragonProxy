@@ -43,8 +43,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import org.dragonet.common.maths.BlockPosition;
+import org.dragonet.common.maths.ChunkPos;
 
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.common.maths.NukkitMath;
 
 public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTranslator<ServerPlayerPositionRotationPacket> {
 
@@ -206,10 +208,23 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             return null;
         }
 
+        float offset = 0.01f;
+        byte mode = MovePlayerPacket.MODE_NORMAL;
+        ChunkPos chunk = new ChunkPos(NukkitMath.ceilDouble(packet.getX()) >> 4, NukkitMath.ceilDouble(packet.getZ()) >> 4);
+        // check if destination is out of range
+        if (!session.getChunkCache().getLoadedChunks().contains(chunk)) {
+            mode = MovePlayerPacket.MODE_TELEPORT;
+            offset = 0.2f;
+//            System.out.println(packet.getX() + " " + packet.getZ());
+//            System.out.println("out of range !" + chunk.toString());
+            session.getChunkCache().sendOrderedChunks();
+//            session.getChunkCache().getDebugGrid();
+        }
+
         MovePlayerPacket pk = new MovePlayerPacket();
         pk.rtid = entityPlayer.proxyEid;
-        pk.mode = MovePlayerPacket.MODE_TELEPORT;
-        pk.position = new Vector3F((float) packet.getX(), (float) packet.getY() + EntityType.PLAYER.getOffset(), (float) packet.getZ());
+        pk.mode = mode;
+        pk.position = new Vector3F((float) packet.getX(), (float) packet.getY() + EntityType.PLAYER.getOffset() + offset, (float) packet.getZ());
         pk.yaw = packet.getYaw();
         pk.pitch = packet.getPitch();
         pk.headYaw = packet.getYaw();
@@ -219,6 +234,8 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             if (vehicle != null)
                 pk.ridingRuntimeId = vehicle.eid;
         }
+//        System.out.println("From server " + packet.getX() + " " + packet.getY() + " " + packet.getZ() + " ");
+//        System.out.println("Entity position " + entityPlayer.x + " " + (entityPlayer.y - EntityType.PLAYER.getOffset()) + " " + entityPlayer.z + " ");
         session.sendPacket(pk);
 
         // send the confirmation

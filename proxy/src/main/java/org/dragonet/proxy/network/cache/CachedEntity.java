@@ -121,8 +121,7 @@ public class CachedEntity {
             this.yaw = yaw;
             this.pitch = pitch;
             this.shouldMove = true;
-            this.boundingBox.setBounds(x - radius, y, z - radius, x + radius, y + (this.getHeight() * this.scale), z
-                    + radius);
+            this.boundingBox.setBounds(x - radius, y, z - radius, x + radius, y + (this.getHeight() * this.scale), z + radius);
         }
         return this;
     }
@@ -150,60 +149,58 @@ public class CachedEntity {
     }
 
     public void spawn(UpstreamSession session) {
-        if (session.isSpawned()) {
-            if (this.peType == EntityType.PLAYER) {
-                PlayerListEntry playerListEntry = session.getPlayerInfoCache().get(this.playerUniqueId);
-                AddPlayerPacket pk = new AddPlayerPacket();
-                pk.eid = this.proxyEid;
-                pk.rtid = this.proxyEid;
-                pk.uuid = this.playerUniqueId;
-                pk.position = new Vector3F((float) this.x, (float) this.y, (float) this.z);
-                pk.motion = Vector3F.ZERO;
-                pk.yaw = this.yaw;
-                pk.pitch = this.pitch;
-                pk.username = playerListEntry.getProfile().getName();
-                pk.meta = EntityMetaTranslator.translateToPE(session, this.pcMeta, this.peType);
-                pk.meta.set(EntityMetaData.Constants.DATA_NAMETAG, new ByteArrayMeta(playerListEntry.getProfile().getName())); //hacky for now
-                this.spawned = true;
-                session.sendPacket(pk);
-            } else if (this.peType == EntityType.ITEM) {
-                AddItemEntityPacket pk = new AddItemEntityPacket();
-                pk.rtid = this.proxyEid;
-                pk.eid = this.proxyEid;
-                pk.metadata = EntityMetaTranslator.translateToPE(session, this.pcMeta, this.peType);
-                pk.item = ((SlotMeta) pk.metadata.map.get(EntityMetaData.Constants.DATA_TYPE_SLOT)).slot;
-                pk.position = new Vector3F((float) this.x, (float) this.y + this.peType.getOffset(), (float) this.z);
-                pk.motion = new Vector3F((float) this.motionX, (float) this.motionY, (float) this.motionZ);
-                this.spawned = true;
-                session.sendPacket(pk);
-            } else if (this.peType == EntityType.PAINTING) {
-                AddPaintingPacket pk = new AddPaintingPacket();
-                pk.rtid = this.proxyEid;
-                pk.eid = this.proxyEid;
-                pk.pos = new BlockPosition((int) this.x, (int) this.y, (int) this.z);
-                pk.direction = 1;
-                pk.title = "Kebab";
-                this.spawned = true;
+        if (this.peType == EntityType.PLAYER) {
+            PlayerListEntry playerListEntry = session.getPlayerInfoCache().get(this.playerUniqueId);
+            AddPlayerPacket pk = new AddPlayerPacket();
+            pk.eid = this.proxyEid;
+            pk.rtid = this.proxyEid;
+            pk.uuid = this.playerUniqueId;
+            pk.position = new Vector3F((float) this.x, (float) this.y, (float) this.z);
+            pk.motion = Vector3F.ZERO;
+            pk.yaw = this.yaw;
+            pk.pitch = this.pitch;
+            pk.username = playerListEntry.getProfile().getName();
+            pk.meta = EntityMetaTranslator.translateToPE(session, this.pcMeta, this.peType);
+            pk.meta.set(EntityMetaData.Constants.DATA_NAMETAG, new ByteArrayMeta(playerListEntry.getProfile().getName())); //hacky for now
+            this.spawned = true;
+            session.sendPacket(pk);
+        } else if (this.peType == EntityType.ITEM) {
+            AddItemEntityPacket pk = new AddItemEntityPacket();
+            pk.rtid = this.proxyEid;
+            pk.eid = this.proxyEid;
+            pk.metadata = EntityMetaTranslator.translateToPE(session, this.pcMeta, this.peType);
+            pk.item = ((SlotMeta) pk.metadata.map.get(EntityMetaData.Constants.DATA_TYPE_SLOT)).slot;
+            pk.position = new Vector3F((float) this.x, (float) this.y + this.peType.getOffset(), (float) this.z);
+            pk.motion = new Vector3F((float) this.motionX, (float) this.motionY, (float) this.motionZ);
+            this.spawned = true;
+            session.sendPacket(pk);
+        } else if (this.peType == EntityType.PAINTING) {
+            AddPaintingPacket pk = new AddPaintingPacket();
+            pk.rtid = this.proxyEid;
+            pk.eid = this.proxyEid;
+            pk.pos = new BlockPosition((int) this.x, (int) this.y, (int) this.z);
+            pk.direction = 1;
+            pk.title = "Kebab";
+            this.spawned = true;
 //                session.sendPacket(pk); //BUGGY
-            } else if (this.peType != null) {
-                AddEntityPacket pk = new AddEntityPacket();
-                pk.rtid = this.proxyEid;
-                pk.eid = this.proxyEid;
-                pk.type = this.peType.getPeType();
-                pk.position = new Vector3F((float) this.x, (float) this.y - this.peType.getOffset(), (float) this.z);
-                pk.motion = new Vector3F((float) this.motionX, (float) this.motionY, (float) this.motionZ);
-                pk.yaw = this.yaw;
-                pk.pitch = this.pitch;
-                pk.meta = EntityMetaTranslator.translateToPE(session, this.pcMeta, this.peType);
-                // TODO: Hack for now. ;P
-                pk.attributes = this.attributes.values();
-                this.spawned = true;
-                session.sendPacket(pk);
-            }
-            this.updateLinks(session);
-            // Process equipments
-            this.updateEquipment(session);
+        } else if (this.peType != null) {
+            AddEntityPacket pk = new AddEntityPacket();
+            pk.rtid = this.proxyEid;
+            pk.eid = this.proxyEid;
+            pk.type = this.peType.getPeType();
+            pk.position = new Vector3F((float) this.x, (float) this.y - this.peType.getOffset(), (float) this.z);
+            pk.motion = new Vector3F((float) this.motionX, (float) this.motionY, (float) this.motionZ);
+            pk.yaw = this.yaw;
+            pk.pitch = this.pitch;
+            pk.meta = EntityMetaTranslator.translateToPE(session, this.pcMeta, this.peType);
+            // TODO: Hack for now. ;P
+            pk.attributes = this.attributes.values();
+            this.spawned = true;
+            session.sendPacket(pk);
         }
+        this.updateLinks(session);
+        // Process equipments
+        this.updateEquipment(session);
     }
 
     public void despawn(UpstreamSession session) {
@@ -213,28 +210,26 @@ public class CachedEntity {
     }
 
     public void updateLinks(UpstreamSession session) {
-        if (session.isSpawned())
-            if (!this.passengers.isEmpty())
-                for (long passenger : this.passengers) {
-                    SetEntityLinkPacket pk = new SetEntityLinkPacket();
-                    pk.riding = proxyEid;
-                    pk.rider = passenger;
-                    pk.type = SetEntityLinkPacket.TYPE_RIDE;
-                    pk.unknownByte = 0x00;
-                    session.sendPacket(pk);
-                }
+        if (!this.passengers.isEmpty())
+            for (long passenger : this.passengers) {
+                SetEntityLinkPacket pk = new SetEntityLinkPacket();
+                pk.riding = proxyEid;
+                pk.rider = passenger;
+                pk.type = SetEntityLinkPacket.TYPE_RIDE;
+                pk.unknownByte = 0x00;
+                session.sendPacket(pk);
+            }
     }
 
     public void updateEquipment(UpstreamSession session) {
-        if (session.isSpawned())
-            if (this.helmet != null || this.chestplate != null || this.leggings != null || this.boots != null || this.mainHand != null) {
-                MobArmorEquipmentPacket aeq = new MobArmorEquipmentPacket();
-                aeq.rtid = this.proxyEid;
-                aeq.helmet = this.helmet;
-                aeq.chestplate = this.chestplate;
-                aeq.leggings = this.leggings;
-                aeq.boots = this.boots;
-                session.sendPacket(aeq);
-            }
+        if (this.helmet != null || this.chestplate != null || this.leggings != null || this.boots != null || this.mainHand != null) {
+            MobArmorEquipmentPacket aeq = new MobArmorEquipmentPacket();
+            aeq.rtid = this.proxyEid;
+            aeq.helmet = this.helmet;
+            aeq.chestplate = this.chestplate;
+            aeq.leggings = this.leggings;
+            aeq.boots = this.boots;
+            session.sendPacket(aeq);
+        }
     }
 }
