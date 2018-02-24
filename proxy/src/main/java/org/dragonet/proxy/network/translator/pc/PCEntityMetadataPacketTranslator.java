@@ -6,7 +6,7 @@
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
  *
- * You can view LICENCE file for details. 
+ * You can view LICENCE file for details.
  *
  * @author The Dragonet Team
  */
@@ -27,7 +27,7 @@ public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<Ser
     public PEPacket[] translate(UpstreamSession session, ServerEntityMetadataPacket packet) {
         CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
         if (entity == null) {
-            if (packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID))
+            if (packet.getEntityId() == session.getEntityCache().getClientEntity().eid)
                 entity = session.getEntityCache().getClientEntity();
             else
                 return null;
