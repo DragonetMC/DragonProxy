@@ -31,8 +31,8 @@ public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<Ser
                 entity = session.getEntityCache().getClientEntity();
             else
                 return null;
-            System.out.println("!!!!!!!!!!!!!!! TRY TO update the player meta from PCEntityMetadataPacketTranslator");
-            return null;
+//            System.out.println("!!!!!!!!!!!!!!! TRY TO update the player meta from PCEntityMetadataPacketTranslator");
+//            return null;
         }
 
         entity.pcMeta = packet.getMetadata();
