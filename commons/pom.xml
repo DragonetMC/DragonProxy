@@ -29,6 +29,12 @@
     <dependencies>
         <dependency>
             <groupId>com.github.steveice10</groupId>
+            <artificatId>opennbt</artificatId>
+            <version>1.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.steveice10</groupId>
             <artifactId>mcprotocollib</artifactId>
             <version>1.12.2-3-SNAPSHOT</version>
             <scope>compile</scope>
