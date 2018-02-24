@@ -41,7 +41,6 @@ import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.packets.FullChunkDataPacket;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.CacheKey;
-import org.dragonet.proxy.utilities.NukkitMath;
 
 /**
  *
