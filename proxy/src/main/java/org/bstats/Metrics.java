@@ -1,8 +1,5 @@
 package org.bstats;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import javax.net.ssl.HttpsURLConnection;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -17,6 +14,8 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPOutputStream;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * bStats collects some data for plugin authors.
@@ -106,7 +105,7 @@ public class Metrics {
             JSONObject chart = customChart.getRequestJsonObject();
             if (chart == null) // If the chart is null, we skip it
                 continue;
-            customCharts.add(chart);
+            customCharts.put(chart);
         }
         data.put("customCharts", customCharts);
 
@@ -144,7 +143,7 @@ public class Metrics {
         final JSONObject data = getServerData();
 
         JSONArray pluginData = new JSONArray();
-        pluginData.add(getPluginData());
+        pluginData.put(getPluginData());
         data.put("plugins", pluginData);
 
         try {
@@ -464,7 +463,7 @@ public class Metrics {
                 return null;
             for (Map.Entry<String, Integer> entry : map.entrySet()) {
                 JSONArray categoryValues = new JSONArray();
-                categoryValues.add(entry.getValue());
+                categoryValues.put(entry.getValue());
                 values.put(entry.getKey(), categoryValues);
             }
             data.put("values", values);
@@ -505,7 +504,7 @@ public class Metrics {
                 allSkipped = false;
                 JSONArray categoryValues = new JSONArray();
                 for (int categoryValue : entry.getValue())
-                    categoryValues.add(categoryValue);
+                    categoryValues.put(categoryValue);
                 values.put(entry.getKey(), categoryValues);
             }
             if (allSkipped)
