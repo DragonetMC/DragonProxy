@@ -31,6 +31,7 @@ public class PEBlockPickRequestPacketTranslator implements IPEPacketTranslator<B
         ClientCreativeInventoryActionPacket backPacket = new ClientCreativeInventoryActionPacket(selectedSlot + 36, item);
 //        System.out.println("BlockPickRequestPacket " + DebugTools.getAllFields(packet));
 //        System.out.println("ItemStack " + DebugTools.getAllFields(item));
+        session.getChunkCache().getDebugGrid();
         return new Packet[]{backPacket};
     }
 

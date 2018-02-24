@@ -128,7 +128,11 @@ public class DragonProxy {
             config = new Yaml().loadAs(new FileInputStream(fileConfig), ServerConfig.class);
         } catch (IOException ex) {
             logger.severe("Failed to load configuration file! Make sure the file is writable.");
+            System.exit(1);
             ex.printStackTrace();
+        } catch (org.yaml.snakeyaml.error.YAMLException ex) {
+            logger.severe("Failed to load configuration file! Make sure it's up to date !");
+            System.exit(1);
         }
 
         InputStream inputStream = this.getClass().getResourceAsStream("/buildNumber.properties");
@@ -165,7 +169,15 @@ public class DragonProxy {
 
         // Put at the top instead
         if (!IS_RELEASE)
-            logger.warning("This is a development build. It may contain bugs. Do not use on production.\n");
+            logger.warning("This is a development build. It may contain bugs. Do not use on production.");
+
+        if (config.auto_login) {
+            logger.warning("******************************************");
+            logger.warning("");
+            logger.warning("\tYou're using autologin, make sure you are the only who can connect on this server !");
+            logger.warning("");
+            logger.warning("******************************************");
+        }
 
         // Check for startup arguments
         checkArguments(launchArgs);
@@ -213,7 +225,7 @@ public class DragonProxy {
         // RakNet.enableLogging();
         network = new RaknetInterface(this, config.udp_bind_ip, // IP
                 config.udp_bind_port, // Port
-                motd, config.max_players);
+                motd, config.auto_login ? 1 : config.max_players);
 
         ticker.start();
         logger.info(lang.get(Lang.INIT_DONE));

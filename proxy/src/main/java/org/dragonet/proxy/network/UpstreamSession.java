@@ -22,10 +22,8 @@ import com.github.steveice10.mc.protocol.data.game.setting.Difficulty;
 import net.marfgamer.jraknet.protocol.Reliability;
 import net.marfgamer.jraknet.session.RakNetClientSession;
 import org.dragonet.common.maths.Vector3F;
-import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
-import org.dragonet.proxy.configuration.RemoteServer;
 import org.dragonet.proxy.utilities.CLSAuthenticationService;
 
 import org.dragonet.common.data.entity.EntityType;
@@ -225,8 +223,8 @@ public class UpstreamSession {
         }
     }
 
-    public void connectToServer(RemoteServer server) {
-        if (server == null)
+    public void connectToServer(String address, int port) {
+        if (address == null)
             return;
         connecting = true;
         if (downstream != null && downstream.isConnected()) {
@@ -246,14 +244,9 @@ public class UpstreamSession {
              */
             return;
         }
-        if (server.getClass().isAssignableFrom(DesktopServer.class)) {
-            downstream = new PCDownstreamSession(proxy, this);
-            ((PCDownstreamSession) downstream).protocol = protocol;
-            downstream.connect(server.remote_addr, server.remote_port);
-        } else
-            // downstream = new PEDownstreamSession(proxy, this);
-            // ((PEDownstreamSession)downstream).connect((PocketServer) server);
-            disconnect("PE targets not supported yet");
+        downstream = new PCDownstreamSession(proxy, this);
+        ((PCDownstreamSession) downstream).protocol = protocol;
+        downstream.connect(address, port);
     }
 
     public void onConnected() {
@@ -313,9 +306,8 @@ public class UpstreamSession {
 
             sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_SUCCESS, username));
 
-            proxy.getLogger().info(
-                    proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_SUCCESS_CONSOLE, username, remoteAddress, username));
-            connectToServer(proxy.getConfig().remote_servers.get(proxy.getConfig().default_server));
+            proxy.getLogger().info( proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_SUCCESS_CONSOLE, username, remoteAddress, username));
+            connectToServer(proxy.getConfig().remote_server_addr, proxy.getConfig().remote_server_port);
         });
     }
 
@@ -437,12 +429,12 @@ public class UpstreamSession {
 
             protocol = new MinecraftProtocol(authSvc.getSelectedProfile(), authSvc.getAccessToken());
 
-            proxy.getLogger().debug("Initially joining [" + proxy.getConfig().default_server + "]... ");
-            connectToServer(proxy.getConfig().remote_servers.get(proxy.getConfig().default_server));
+            proxy.getLogger().debug("Initially joining [" + proxy.getConfig().remote_server_addr + "]... ");
+            connectToServer(proxy.getConfig().remote_server_addr, proxy.getConfig().remote_server_port);
         } else {
             protocol = new MinecraftProtocol(username);
-            proxy.getLogger().debug("Initially joining [" + proxy.getConfig().default_server + "]... ");
-            connectToServer(proxy.getConfig().remote_servers.get(proxy.getConfig().default_server));
+            proxy.getLogger().debug("Initially joining [" + proxy.getConfig().remote_server_addr + "]... ");
+            connectToServer(proxy.getConfig().remote_server_addr, proxy.getConfig().remote_server_port);
         }
     }
 

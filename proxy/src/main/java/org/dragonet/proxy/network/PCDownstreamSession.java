@@ -23,7 +23,6 @@ import com.github.steveice10.packetlib.event.session.SessionAdapter;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 import org.dragonet.protocol.PEPacket;
-import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
 
@@ -36,17 +35,11 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
 
     private final DragonProxy proxy;
     private final UpstreamSession upstream;
-    private DesktopServer serverInfo;
     private Client remoteClient;
 
     public PCDownstreamSession(DragonProxy proxy, UpstreamSession upstream) {
         this.proxy = proxy;
         this.upstream = upstream;
-    }
-
-    public void connect(DesktopServer serverInfo) {
-        this.serverInfo = serverInfo;
-        connect(serverInfo.remote_addr, serverInfo.remote_port);
     }
 
     public void connect(String addr, int port) {
@@ -142,9 +135,5 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
 
     public UpstreamSession getUpstream() {
         return upstream;
-    }
-
-    public DesktopServer getServerInfo() {
-        return serverInfo;
     }
 }

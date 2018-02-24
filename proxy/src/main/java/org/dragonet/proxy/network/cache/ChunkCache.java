@@ -62,7 +62,7 @@ public class ChunkCache {
     public void onTick() {
         //dequeue update blocks
         int counter = 0;
-        while(!updateQueue.isEmpty() && counter <= chunkPerTick) {
+        while (!updateQueue.isEmpty() && counter <= chunkPerTick) {
             session.sendPacket(updateQueue.poll());
             counter++;
         }
@@ -162,18 +162,10 @@ public class ChunkCache {
         int centerZ = (int) player.z >> 4;
 
         int radius = player.spawned ? (int) session.getDataCache().getOrDefault(CacheKey.PLAYER_REQUESTED_CHUNK_RADIUS, 5) : (int) Math.ceil(Math.sqrt(56));
-        int radiusSqr = radius * radius;
 
-        for (int x = centerX - radius; x <= centerX + radius; x++) {
-            int xx = x * x;
-            for (int z = centerZ - radius; z <= centerZ + radius; z++) {
-//                int distanceSqr = xx + z * z;
-//                if (distanceSqr > radiusSqr)
-//                    continue;
-
+        for (int x = centerX - radius; x <= centerX + radius; x++)
+            for (int z = centerZ - radius; z <= centerZ + radius; z++)
                 sendChunk(x, z, false);
-            }
-        }
     }
 
     public final ChunkData translateChunk(int columnX, int columnZ) {
@@ -248,5 +240,80 @@ public class ChunkCache {
 
     private final int dataIndex(int x, int y, int z) {
         return (x << 7) | (z << 3) | ((y & 0xF) >> 1);
+    }
+
+    //debug
+    public void getDebugGrid() {
+        CachedEntity player = session.getEntityCache().getClientEntity();
+        int viewDistance = (int) session.getDataCache().getOrDefault(CacheKey.PLAYER_REQUESTED_CHUNK_RADIUS, 5);
+
+        // center
+        int centerX = (int) player.x >> 4;
+        int centerZ = (int) player.z >> 4;
+        ChunkPos playerChunkPos = new ChunkPos(centerX, centerZ);
+
+        //find corners
+        int minX = 0;
+        int maxX = 0;
+        int minZ = 0;
+        int maxZ = 0;
+
+        for (ChunkPos pos : chunkCache.keySet()) {
+//            System.out.println(pos.toString());
+            if (pos.chunkXPos < minX)
+                minX = pos.chunkXPos;
+            if (pos.chunkXPos > maxX)
+                maxX = pos.chunkXPos;
+            if (pos.chunkZPos < minZ)
+                minZ = pos.chunkXPos;
+            if (pos.chunkZPos > maxZ)
+                maxZ = pos.chunkZPos;
+        }
+
+        int width = maxX - minX;
+        int height = maxZ - minZ;
+
+        String playerChunk = "x";
+        String emptyChunk = "⬚";
+        String cachedChunk = "⬜";
+        String loadedChunk = "⬛";
+
+        System.out.println("Player chunk : " + playerChunk + " (The chunk the player stands in)");
+        System.out.println("Empty chunk  : " + emptyChunk + " (Chunk not in cache)");
+        System.out.println("Cached chunk : " + cachedChunk + " (Chunk in cache not send to player)");
+        System.out.println("Loaded chunk : " + loadedChunk + " (Chunk in cache and sent to player)");
+
+        System.out.println("View Distance : " + viewDistance);
+        System.out.println("Player Chunk : " + playerChunkPos.toString());
+        System.out.println("Chunk grid : " + width + " / " + height);
+        System.out.println("Chunk X : " + minX + " to " + maxX);
+        System.out.println("Chunk Z : " + minZ + " to " + maxZ);
+
+        StringBuilder frame = new StringBuilder();
+        for (int z = minZ; z <= maxZ; z++) { //lines
+            StringBuilder line = new StringBuilder();
+            line.append(pad("" + z, 3) + " ");
+            for (int x = minZ; x <= maxX; x++) { //columns
+                ChunkPos chunkPos = new ChunkPos(x, z);
+                if (chunkCache.keySet().contains(chunkPos))
+                    if (chunkPos.equals(playerChunkPos))
+                        line.append(playerChunk);
+                    else if (loadedChunks.contains(chunkPos))
+                        line.append(loadedChunk);
+                    else
+                        line.append(cachedChunk);
+                else
+                    line.append(emptyChunk);
+                line.append(" ");
+            }
+            frame.append(line).append("\n");
+        }
+        System.out.println(frame.toString());
+    }
+
+    private String pad(String string, int chars) {
+        if (string.length() > chars)
+            return string.substring(0, chars);
+        return String.format("%1$" + chars + "s", string);
     }
 }

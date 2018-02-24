@@ -85,7 +85,8 @@ public final class Timings {
         setHistoryLength(72000);
 
         privacy = false;
-//        ignoredConfigSections.addAll(DragonProxy.getInstance().getConfig().getStringList("timings.ignore"));
+        ignoredConfigSections.add("online_username");
+        ignoredConfigSections.add("online_password");
 
         if (verboseEnabled)
             DragonProxy.getInstance().getLogger().info("Timings: \n" +

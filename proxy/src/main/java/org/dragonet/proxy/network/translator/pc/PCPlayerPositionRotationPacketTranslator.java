@@ -55,6 +55,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
         if (entityPlayer == null) {
             //disconnect (important missing data)
         }
+        entityPlayer.absoluteMove(packet.getX(), packet.getY() + entityPlayer.peType.getOffset(), packet.getZ(), packet.getYaw(), packet.getPitch());
 
         if (!session.isSpawned()) {
             if (session.getDataCache().get(CacheKey.PACKET_JOIN_GAME_PACKET) == null) {
@@ -83,6 +84,8 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 ret.difficulty = restored.getDifficulty();
                 session.sendPacket(ret, true);
             }
+
+            session.getChunkCache().sendOrderedChunks();
 
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("DragonProxy");
@@ -219,10 +222,6 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 pk.ridingRuntimeId = vehicle.eid;
         }
         session.sendPacket(pk);
-
-        entityPlayer.absoluteMove(packet.getX(), packet.getY() + entityPlayer.peType.getOffset(), packet.getZ(), packet.getYaw(), packet.getPitch());
-
-        session.getChunkCache().sendOrderedChunks();
 
         // send the confirmation
         ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());

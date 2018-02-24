@@ -116,16 +116,24 @@ public class PEPacketProcessor {
         if ("online_login_wait".equals(this.client.getDataCache().get(CacheKey.AUTHENTICATION_STATE))) {
             if (packet.pid() == ProtocolInfo.MOVE_PLAYER_PACKET) {
 
+                InputComponent username = new InputComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_USERNAME)).setPlaceholder("steve@example.com");
+                InputComponent password = new InputComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_PASSWORD)).setPlaceholder("123456");
+
+                if (this.client.getProxy().getConfig().auto_login) {
+                    username.setDefaultValue(this.client.getProxy().getConfig().online_username);
+                    password.setDefaultValue(this.client.getProxy().getConfig().online_password);
+                }
+
                 // client.getDataCache().put(CacheKey.AUTHENTICATION_STATE, "online_login");
                 ModalFormRequestPacket packetForm = new ModalFormRequestPacket();
                 CustomFormComponent form = new CustomFormComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_TITLE));
                 form.addComponent(new LabelComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_DESC)));
                 form.addComponent(new LabelComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_PROMPT)));
-                form.addComponent(new InputComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_USERNAME)).setPlaceholder("steve@example.com"));
-                form.addComponent(new InputComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_PASSWORD)).setPlaceholder("123456"));
+                form.addComponent(username);
+                form.addComponent(password);
                 packetForm.formId = 1;
                 packetForm.formData = form.serializeToJson().toString();
-                this.client.sendPacket(packetForm);
+                this.client.sendPacket(packetForm, true);
                 return;
             }
 
