@@ -342,8 +342,8 @@ public class UpstreamSession {
         if (proxy.getAuthMode().equals("online")) {
             proxy.getLogger().debug("Login online mode, sending placeholder datas");
             StartGamePacket pkStartGame = new StartGamePacket();
-            pkStartGame.eid = 1L; // well we use 1 now
-            pkStartGame.rtid = 1L;
+            pkStartGame.eid = getEntityCache().getClientEntity().proxyEid; // well we use 1 now
+            pkStartGame.rtid = getEntityCache().getClientEntity().proxyEid;
             pkStartGame.dimension = 0;
             pkStartGame.seed = 0;
             pkStartGame.generator = 1;

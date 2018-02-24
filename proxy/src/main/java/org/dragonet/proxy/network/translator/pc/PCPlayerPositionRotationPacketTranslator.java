@@ -185,8 +185,6 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             Set<org.dragonet.protocol.type.PlayerListEntry> peEntries = new HashSet();
 
             for (CachedEntity entity : session.getEntityCache().getEntities().values()) {
-                if (entity.eid == entityPlayer.eid) //never send ME (entry 1L)
-                    continue;
                 if (entity.peType == EntityType.PLAYER) {
                     PlayerListEntry playerListEntry = session.getPlayerInfoCache().get(entity.playerUniqueId);
 

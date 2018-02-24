@@ -58,26 +58,20 @@ public final class EntityCache {
     }
 
     public void reset(boolean clear) {
-//        for(CachedEntity entity : entities.values())
-//            entity.despawn(upstream);
+        for(CachedEntity entity : entities.values())
+            entity.despawn(upstream);
         if (clear) {
             entities.clear();
             mapRemoteToClient.clear();
             mapClientToRemote.clear();
         }
-        entities.put(1L, clientEntity);
-        mapClientToRemote.put(clientEntity.proxyEid, clientEntity.eid);
-        mapRemoteToClient.put(clientEntity.eid, clientEntity.proxyEid);
     }
 
     public CachedEntity getClientEntity() {
-        if (!entities.containsKey(1L))
-            entities.put(1L, new CachedEntity(1L, 1L, -1, EntityType.PLAYER, null, true, null));
-        return entities.get(1L);
+        return this.clientEntity;
     }
 
     public void updateClientEntity(ServerJoinGamePacket packet) {
-        CachedEntity clientEntity = entities.get(1L);
         clientEntity.eid = packet.getEntityId();
         clientEntity.dimention = packet.getDimension();
         mapClientToRemote.put(clientEntity.proxyEid, clientEntity.eid);
@@ -201,7 +195,7 @@ public final class EntityCache {
         long proxyEid = mapRemoteToClient.get(eid);
         return playerEntities.contains(proxyEid);
     }
-    
+
     public AtomicLong getNextAtomicLong()
     {
         return nextClientEntityId;
