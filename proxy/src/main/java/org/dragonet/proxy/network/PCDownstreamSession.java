@@ -94,7 +94,7 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
                     if (packets.length == 1) {
                         upstream.sendPacket(packets[0]);
                     } else {
-                        upstream.sendAllPackets(packets, true);
+                        upstream.sendAllPackets(packets, false);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

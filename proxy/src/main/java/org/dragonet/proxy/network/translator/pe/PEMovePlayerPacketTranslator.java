@@ -12,7 +12,6 @@
  */
 package org.dragonet.proxy.network.translator.pe;
 
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import org.dragonet.common.data.entity.EntityType;
 import org.dragonet.protocol.packets.MovePlayerPacket;
 import org.dragonet.proxy.network.UpstreamSession;

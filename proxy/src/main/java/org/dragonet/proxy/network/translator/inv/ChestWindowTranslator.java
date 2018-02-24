@@ -94,7 +94,7 @@ public class ChestWindowTranslator implements IInventoryTranslator {
         pk.item = ItemBlockTranslator.translateSlotToPE(win.slots[slotIndex]);
         pk.slotId = slotIndex;
         pk.windowId = win.windowId;
-        session.sendPacket(pk, true);
+        session.sendPacket(pk);
     }
 
     private void sendContent(UpstreamSession session, CachedWindow win) {
@@ -103,6 +103,6 @@ public class ChestWindowTranslator implements IInventoryTranslator {
         pk.items = new Slot[win.slots.length];
         for (int i = 0; i < pk.items.length; i++)
             pk.items[i] = ItemBlockTranslator.translateSlotToPE(win.slots[i]);
-        session.sendPacket(pk, true);
+        session.sendPacket(pk);
     }
 }

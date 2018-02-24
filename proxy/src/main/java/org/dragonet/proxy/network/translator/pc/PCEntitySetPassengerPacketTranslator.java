@@ -56,7 +56,7 @@ public class PCEntitySetPassengerPacketTranslator implements IPCPacketTranslator
                 pk.type = SetEntityLinkPacket.TYPE_REMOVE;
                 setRiding(session, rider, null);
                 pk.unknownByte = 0x00;
-                session.sendPacket(pk);
+                session.putCachePacket(pk);
 
                 itr.remove();
                 rider.riding = 0;
@@ -88,7 +88,7 @@ public class PCEntitySetPassengerPacketTranslator implements IPCPacketTranslator
             }
 
             pk.unknownByte = 0x00;
-            session.sendPacket(pk);
+            session.putCachePacket(pk);
 
             vehicle.passengers.add(rider.proxyEid);
             rider.riding = vehicle.proxyEid;
@@ -109,7 +109,7 @@ public class PCEntitySetPassengerPacketTranslator implements IPCPacketTranslator
         SetEntityDataPacket pk = new SetEntityDataPacket();
         pk.rtid = rider.proxyEid;
         pk.meta = peMeta;
-        session.sendPacket(pk);
+        session.putCachePacket(pk);
     }
 
     private Vector3F getSeatOffset(EntityType peType, int seat) {

@@ -52,6 +52,7 @@ import org.dragonet.common.utilities.Zlib;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -61,7 +62,10 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import org.dragonet.protocol.packets.BatchPacket;
+import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.cache.ChunkCache;
+import org.dragonet.proxy.utilities.DebugTools;
 
 /**
  * Maintaince the connection between the proxy and Minecraft: Pocket Edition
@@ -72,9 +76,9 @@ public class UpstreamSession {
     private final DragonProxy proxy;
     private final String raknetID;
     private final RakNetClientSession raknetClient;
-    private boolean loggedIn;
-    private boolean spawned;
-    private List<PEPacket> cachedPackets;
+    private boolean loggedIn = false;
+    private boolean spawned = false;
+    private Queue<PEPacket> cachedPackets = new ConcurrentLinkedQueue();
     private final InetSocketAddress remoteAddress;
     private final PEPacketProcessor packetProcessor;
     private LoginChainDecoder profile;
@@ -173,11 +177,20 @@ public class UpstreamSession {
         sendPacket(packet, false);
     }
 
-    public void sendPacket(PEPacket packet, boolean immediate) {
+    //if sending a packer before spawn, you should set high_priority to true !
+    public void sendPacket(PEPacket packet, boolean high_priority) {
         if (packet == null)
             return;
 
-        // System.out.println("Sending [" + packet.getClass().getSimpleName() + "] ");
+        //cache in case of not spawned and no high priority
+        if (!spawned && !high_priority) {
+            putCachePacket(packet);
+            return;
+        }
+
+        while (!cachedPackets.isEmpty())
+            sendPacket(cachedPackets.poll(), true); //TODO sendAllPackets
+
         try (Timing timing = Timings.getSendDataPacketTiming(packet)) {
 
             packet.encode();
@@ -190,23 +203,26 @@ public class UpstreamSession {
                 e.printStackTrace();
                 return;
             }
-
-            // handler.sendEncapsulated(identifier, encapsulated, RakNet.FLAG_NEED_ACK |
-            // (overridedImmediate ? RakNet.PRIORITY_IMMEDIATE : RakNet.PRIORITY_NORMAL));
             raknetClient.sendMessage(Reliability.RELIABLE_ORDERED, 0, new net.marfgamer.jraknet.Packet(Binary.appendBytes((byte) 0xfe, buffer)));
         }
     }
 
-    public void sendAllPackets(PEPacket[] packets, boolean immediate) {
-        if (packets.length < 5)
+    public void sendAllPackets(PEPacket[] packets, boolean high_priority) {
+        if (packets.length < 5 || true) //<- this disable batched packets
             for (PEPacket packet : packets)
-                sendPacket(packet);
-        /*
-			 * else { Batch batch = new BatchPacket(); boolean mustImmediate = immediate; if
-			 * (!mustImmediate) { for (PEPacket packet : packets) { if
-			 * (packet.isShouldSendImmidate()) { batch.packets.add(packet); mustImmediate =
-			 * true; break; } } } sendPacket(batch, mustImmediate); }
-         */
+                sendPacket(packet, high_priority);
+        else {
+            BatchPacket batchPacket = new BatchPacket();
+//            System.out.println("BatchPacket :");
+            for (PEPacket packet : packets) {
+//                System.out.println(" - " + packet.getClass().getSimpleName());
+                if (high_priority) {
+                    batchPacket.packets.add(packet);
+                    break;
+                }
+            }
+            sendPacket(batchPacket, high_priority);
+        }
     }
 
     public void connectToServer(RemoteServer server) {
@@ -215,21 +231,21 @@ public class UpstreamSession {
         connecting = true;
         if (downstream != null && downstream.isConnected()) {
             spawned = false;
-            cachedPackets = null;
-
+//            cachedPackets.clear();
             downstream.disconnect();
             // TODO: Send chat message about server change.
 
-            // Remove all loaded entities
+            // TODO: Remove all loaded entities
+            // TODO: Remove all loaded chunks
+            // TODO: clear all caches
             /*
-			 * BatchPacket batch = new BatchPacket();
-			 * this.entityCache.getEntities().entrySet().forEach((ent) -> { if(ent.getKey()
-			 * != 0){ batch.packets.add(new RemoveEntityPacket(ent.getKey())); } });
-			 * this.entityCache.reset(true); sendPacket(batch, true);
+            * BatchPacket batch = new BatchPacket();
+            * this.entityCache.getEntities().entrySet().forEach((ent) -> { if(ent.getKey()
+            * != 0){ batch.packets.add(new RemoveEntityPacket(ent.getKey())); } });
+            * this.entityCache.reset(true); sendPacket(batch, true);
              */
             return;
         }
-        cachedPackets = new LinkedList<>();
         if (server.getClass().isAssignableFrom(DesktopServer.class)) {
             downstream = new PCDownstreamSession(proxy, this);
             ((PCDownstreamSession) downstream).protocol = protocol;
@@ -251,7 +267,7 @@ public class UpstreamSession {
      */
     public void disconnect(String reason) {
         if (!connecting) {
-            sendPacket(new DisconnectPacket(false, reason));
+            sendPacket(new DisconnectPacket(false, reason), true);
             raknetClient.update(); //Force the DisconnectPacket to be sent before we close the connection
         }
         //Forceing the connection to close
@@ -337,13 +353,13 @@ public class UpstreamSession {
         this.username = profile.username;
 
         // Okay @dktapps ;)
-        sendPacket(new ResourcePacksInfoPacket());
+        sendPacket(new ResourcePacksInfoPacket(), true);
 
         // now wait for response
     }
 
     public void postLogin() {
-        sendPacket(new ResourcePackStackPacket());
+        sendPacket(new ResourcePackStackPacket(), true);
 
         loggedIn = true;
         proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, username, remoteAddress));
@@ -377,10 +393,10 @@ public class UpstreamSession {
                     Arrays.fill(data.sections[cy].blockIds, (byte) 1);
             }
             data.encode();
-            sendPacket(new FullChunkDataPacket(0, 0, data.getBuffer()));
-            sendPacket(new FullChunkDataPacket(0, -1, data.getBuffer()));
-            sendPacket(new FullChunkDataPacket(-1, 0, data.getBuffer()));
-            sendPacket(new FullChunkDataPacket(-1, -1, data.getBuffer()));
+            sendPacket(new FullChunkDataPacket(0, 0, data.getBuffer()), true);
+            sendPacket(new FullChunkDataPacket(0, -1, data.getBuffer()), true);
+            sendPacket(new FullChunkDataPacket(-1, 0, data.getBuffer()), true);
+            sendPacket(new FullChunkDataPacket(-1, -1, data.getBuffer()), true);
 
             dataCache.put(CacheKey.AUTHENTICATION_STATE, "online_login_wait");
 
@@ -431,15 +447,10 @@ public class UpstreamSession {
     }
 
     public void setSpawned() {
-        spawned = true;
-
-        if (cachedPackets != null) {
-            cachedPackets.stream().forEach(this::sendPacket);
-
+        if (!spawned) {
+            spawned = true;
             PlayStatusPacket play = new PlayStatusPacket(PlayStatusPacket.PLAYER_SPAWN);
-            sendPacket(play);
-
-            cachedPackets = null;
+            sendPacket(play, true);
         }
     }
 
@@ -462,22 +473,22 @@ public class UpstreamSession {
         pkBlock.data = meta;
         pkBlock.flags = UpdateBlockPacket.FLAG_NEIGHBORS;
         pkBlock.blockPosition = new BlockPosition(x, y, z);
-        sendPacket(pkBlock, true);
+        sendPacket(pkBlock);
     }
 
     public void handlePacketBinary(byte[] packet) {
         packetProcessor.putPacket(packet);
     }
 
-    public void putCachePacket(PEPacket p) {
-        if (p == null)
+    public void putCachePacket(PEPacket packet) {
+        if (packet == null)
             return;
-        if (spawned || cachedPackets == null) {
-            // System.out.println("Not caching since already spawned! ");
-            sendPacket(p);
+        if (spawned) {
+//            System.out.println("Not caching since already spawned! ");
+            sendPacket(packet);
             return;
         }
-        cachedPackets.add(p);
+        cachedPackets.offer(packet);
     }
 
     public void onTick() {

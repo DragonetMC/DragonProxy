@@ -48,6 +48,7 @@ import org.dragonet.proxy.DragonProxy;
 
 public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTranslator<ServerPlayerPositionRotationPacket> {
 
+    @Override
     public PEPacket[] translate(UpstreamSession session, ServerPlayerPositionRotationPacket packet) {
 
         CachedEntity entityPlayer = session.getEntityCache().getClientEntity();
@@ -61,8 +62,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 return null;
             }
 
-            ServerJoinGamePacket restored = (ServerJoinGamePacket) session.getDataCache()
-                    .remove(CacheKey.PACKET_JOIN_GAME_PACKET);
+            ServerJoinGamePacket restored = (ServerJoinGamePacket) session.getDataCache().remove(CacheKey.PACKET_JOIN_GAME_PACKET);
             if (!session.getProxy().getAuthMode().equalsIgnoreCase("online")) {
                 StartGamePacket ret = new StartGamePacket();
                 ret.rtid = entityPlayer.proxyEid;
@@ -81,7 +81,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 ret.defaultPlayerPermission = 2;
                 ret.premiumWorldTemplateId = "";
                 ret.difficulty = restored.getDifficulty();
-                session.sendPacket(ret);
+                session.sendPacket(ret, true);
             }
 
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -115,35 +115,35 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.MOVEMENT_SPEED));
             } else
                 attr.entries = entityPlayer.attributes.values();
-            session.sendPacket(attr);
+            session.sendPacket(attr, true);
 
             AdventureSettingsPacket adv = new AdventureSettingsPacket();
             //flags
             adv.setFlag(AdventureSettingsPacket.WORLD_IMMUTABLE, restored.getGameMode().equals(GameMode.ADVENTURE));
-//			adv.setFlag(AdventureSettingsPacket.NO_PVP, true);
-//			adv.setFlag(AdventureSettingsPacket.AUTO_JUMP, true);
+            //adv.setFlag(AdventureSettingsPacket.NO_PVP, true);
+            //adv.setFlag(AdventureSettingsPacket.AUTO_JUMP, true);
             adv.setFlag(AdventureSettingsPacket.ALLOW_FLIGHT, restored.getGameMode().equals(GameMode.CREATIVE) || restored.getGameMode().equals(GameMode.SPECTATOR));
             adv.setFlag(AdventureSettingsPacket.NO_CLIP, restored.getGameMode().equals(GameMode.SPECTATOR));
             adv.setFlag(AdventureSettingsPacket.WORLD_BUILDER, !restored.getGameMode().equals(GameMode.SPECTATOR) || !restored.getGameMode().equals(GameMode.ADVENTURE));
             adv.setFlag(AdventureSettingsPacket.FLYING, restored.getGameMode().equals(GameMode.SPECTATOR));
             adv.setFlag(AdventureSettingsPacket.MUTED, false);
             //custom permission flags (not necessary for now when using LEVEL_PERMISSION setting)
-//			adv.setFlag(AdventureSettingsPacket.BUILD_AND_MINE, true);
-//			adv.setFlag(AdventureSettingsPacket.DOORS_AND_SWITCHES, true);
-//			adv.setFlag(AdventureSettingsPacket.OPEN_CONTAINERS, true);
-//			adv.setFlag(AdventureSettingsPacket.ATTACK_PLAYERS, true);
-//			adv.setFlag(AdventureSettingsPacket.ATTACK_MOBS, true);
-//			adv.setFlag(AdventureSettingsPacket.OPERATOR, true);
-//			adv.setFlag(AdventureSettingsPacket.TELEPORT, true);
+            //adv.setFlag(AdventureSettingsPacket.BUILD_AND_MINE, true);adv.setFlag(AdventureSettingsPacket.BUILD_AND_MINE, true);
+            //adv.setFlag(AdventureSettingsPacket.DOORS_AND_SWITCHES, true);
+            //adv.setFlag(AdventureSettingsPacket.OPEN_CONTAINERS, true);
+            //adv.setFlag(AdventureSettingsPacket.ATTACK_PLAYERS, true);
+            //adv.setFlag(AdventureSettingsPacket.ATTACK_MOBS, true);
+            //adv.setFlag(AdventureSettingsPacket.OPERATOR, true);
+            //adv.setFlag(AdventureSettingsPacket.TELEPORT, true);
             adv.eid = entityPlayer.proxyEid;
             adv.commandsPermission = AdventureSettingsPacket.PERMISSION_NORMAL;     //TODO update this with server configiration
             adv.playerPermission = AdventureSettingsPacket.LEVEL_PERMISSION_MEMBER; //TODO update this with server configiration
-            session.sendPacket(adv);
+            session.sendPacket(adv, true);
 
             SetEntityDataPacket entityData = new SetEntityDataPacket();
             entityData.rtid = entityPlayer.proxyEid;
             entityData.meta = EntityMetaData.createDefault();
-            session.sendPacket(entityData);
+            session.sendPacket(entityData, true);
 
             if (session.getProxy().getAuthMode().equalsIgnoreCase("online")) {
 
@@ -160,14 +160,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                     if (vehicle != null)
                         pk.ridingRuntimeId = vehicle.eid;
                 }
-                session.sendPacket(pk);
-
-                /*ChangeDimensionPacket d = new ChangeDimensionPacket();
-                d.dimension = 0;
-				d.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET,
-						(float) packet.getZ());
-				session.sendPacket(d);
-				session.sendPacket(new PlayStatusPacket(PlayStatusPacket.PLAYER_SPAWN));*/
+                session.sendPacket(pk, true);
             }
 
             // Notify the server
@@ -201,7 +194,6 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                     peEntry.skin = Skin.DEFAULT_SKIN_STEVE;
                     peEntry.xboxUserId = "null";
                     peEntries.add(peEntry);
-
                 }
                 entity.spawn(session);
             }
@@ -226,6 +218,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             if (vehicle != null)
                 pk.ridingRuntimeId = vehicle.eid;
         }
+        session.sendPacket(pk);
 
         entityPlayer.absoluteMove(packet.getX(), packet.getY() + entityPlayer.peType.getOffset(), packet.getZ(), packet.getYaw(), packet.getPitch());
 
@@ -235,6 +228,6 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
         ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());
         ((PCDownstreamSession) session.getDownstream()).send(confirm);
 
-        return new PEPacket[]{pk};
+        return null;
     }
 }
