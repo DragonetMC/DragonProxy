@@ -50,20 +50,16 @@ import org.dragonet.common.utilities.Zlib;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.zip.Deflater;
 import org.dragonet.protocol.packets.BatchPacket;
-import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.cache.ChunkCache;
-import org.dragonet.proxy.utilities.DebugTools;
 
 /**
  * Maintaince the connection between the proxy and Minecraft: Pocket Edition
@@ -195,7 +191,7 @@ public class UpstreamSession {
 
             byte[] buffer;
             try {
-                buffer = Zlib.deflate(Binary.appendBytes(Binary.writeUnsignedVarInt(packet.getBuffer().length), packet.getBuffer()), 6);
+                buffer = Zlib.deflate(Binary.appendBytes(Binary.writeUnsignedVarInt(packet.getBuffer().length), packet.getBuffer()), Deflater.BEST_COMPRESSION);
             } catch (Exception e) {
                 timing.stopTiming();
                 e.printStackTrace();
@@ -229,19 +225,7 @@ public class UpstreamSession {
         connecting = true;
         if (downstream != null && downstream.isConnected()) {
             spawned = false;
-//            cachedPackets.clear();
             downstream.disconnect();
-            // TODO: Send chat message about server change.
-
-            // TODO: Remove all loaded entities
-            // TODO: Remove all loaded chunks
-            // TODO: clear all caches
-            /*
-            * BatchPacket batch = new BatchPacket();
-            * this.entityCache.getEntities().entrySet().forEach((ent) -> { if(ent.getKey()
-            * != 0){ batch.packets.add(new RemoveEntityPacket(ent.getKey())); } });
-            * this.entityCache.reset(true); sendPacket(batch, true);
-             */
             return;
         }
         downstream = new PCDownstreamSession(proxy, this);

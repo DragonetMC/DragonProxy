@@ -206,6 +206,12 @@ public class CachedEntity {
         }
     }
 
+    public void despawn(UpstreamSession session) {
+        if (session.isSpawned())
+            if (spawned)
+                session.sendPacket(new RemoveEntityPacket(this.proxyEid));
+    }
+
     public void updateLinks(UpstreamSession session) {
         if (session.isSpawned())
             if (!this.passengers.isEmpty())

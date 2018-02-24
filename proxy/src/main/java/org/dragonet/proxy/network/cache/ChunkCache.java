@@ -76,8 +76,11 @@ public class ChunkCache {
         return loadedChunks;
     }
 
-    public void clear() {
+    public void purge() {
         chunkCache.clear();
+        for(ChunkPos chunk : loadedChunks)
+            sendEmptyChunk(chunk.chunkXPos, chunk.chunkZPos);
+        loadedChunks.clear();
     }
 
     public void update(Column column) {
@@ -88,8 +91,13 @@ public class ChunkCache {
 
     public void remove(int x, int z) {
         ChunkPos columnPos = new ChunkPos(x, z);
+//        System.out.println("ChunkCache remove chunk " + columnPos.toString());
         if (chunkCache.containsKey(columnPos))
             chunkCache.remove(columnPos);
+        if (loadedChunks.contains(columnPos)) {
+            loadedChunks.remove(columnPos);
+            sendEmptyChunk(columnPos.chunkXPos, columnPos.chunkZPos);
+        }
     }
 
     public void sendChunk(int x, int z, boolean force) {
@@ -109,6 +117,19 @@ public class ChunkCache {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+    }
+
+    public void sendEmptyChunk(int x, int z) {
+        updateQueue.add(new FullChunkDataPacket(x, z, new byte[0]));
+    }
+
+    public void sendEmptyChunks(int radius) {
+        CachedEntity player = session.getEntityCache().getClientEntity();
+        int centerX = (int) player.x >> 4;
+        int centerZ = (int) player.z >> 4;
+        for (int x = -radius; x < radius; x++)
+            for (int z = -radius; z < radius; z++)
+                sendEmptyChunk(centerX + x, centerZ + z);
     }
 
     public void update(Position position, BlockState block) {
@@ -163,9 +184,22 @@ public class ChunkCache {
 
         int radius = player.spawned ? (int) session.getDataCache().getOrDefault(CacheKey.PLAYER_REQUESTED_CHUNK_RADIUS, 5) : (int) Math.ceil(Math.sqrt(56));
 
+        Set<ChunkPos> toLoad = new HashSet();
+
         for (int x = centerX - radius; x <= centerX + radius; x++)
             for (int z = centerZ - radius; z <= centerZ + radius; z++)
-                sendChunk(x, z, false);
+                toLoad.add(new ChunkPos(x, z));
+
+        for (ChunkPos chunk : toLoad)
+            sendChunk(chunk.chunkXPos, chunk.chunkZPos, false);
+
+        Set<ChunkPos> toUnLoad = new HashSet(loadedChunks);
+        toUnLoad.removeAll(toLoad);
+
+        for (ChunkPos chunk : toUnLoad)
+            sendEmptyChunk(chunk.chunkXPos, chunk.chunkZPos);
+
+        loadedChunks.removeAll(toUnLoad);
     }
 
     public final ChunkData translateChunk(int columnX, int columnZ) {
@@ -253,22 +287,23 @@ public class ChunkCache {
         ChunkPos playerChunkPos = new ChunkPos(centerX, centerZ);
 
         //find corners
-        int minX = 0;
-        int maxX = 0;
-        int minZ = 0;
-        int maxZ = 0;
+        int minX = centerX;
+        int maxX = centerX;
+        int minZ = centerZ;
+        int maxZ = centerZ;
 
         for (ChunkPos pos : chunkCache.keySet()) {
-//            System.out.println(pos.toString());
             if (pos.chunkXPos < minX)
                 minX = pos.chunkXPos;
             if (pos.chunkXPos > maxX)
                 maxX = pos.chunkXPos;
             if (pos.chunkZPos < minZ)
-                minZ = pos.chunkXPos;
+                minZ = pos.chunkZPos;
             if (pos.chunkZPos > maxZ)
                 maxZ = pos.chunkZPos;
         }
+
+        int serverViewDistance = maxX - centerX;
 
         int width = maxX - minX;
         int height = maxZ - minZ;
@@ -283,17 +318,22 @@ public class ChunkCache {
         System.out.println("Cached chunk : " + cachedChunk + " (Chunk in cache not send to player)");
         System.out.println("Loaded chunk : " + loadedChunk + " (Chunk in cache and sent to player)");
 
-        System.out.println("View Distance : " + viewDistance);
+        System.out.println("Player View Distance : " + viewDistance);
+        System.out.println("Server View Distance : " + serverViewDistance);
         System.out.println("Player Chunk : " + playerChunkPos.toString());
-        System.out.println("Chunk grid : " + width + " / " + height);
+        System.out.println("Chunk in cache : " + chunkCache.size());
+        System.out.println("Chunk loaded : " + loadedChunks.size());
+        System.out.println("Chunk grid : " + width + " * " + height + " = " + (width*height));
         System.out.println("Chunk X : " + minX + " to " + maxX);
         System.out.println("Chunk Z : " + minZ + " to " + maxZ);
 
         StringBuilder frame = new StringBuilder();
         for (int z = minZ; z <= maxZ; z++) { //lines
             StringBuilder line = new StringBuilder();
+            if (z == minZ)
+                line.append(pad("" + minX, 5)).append(pad("", width * 2 - 3)).append(pad("" + maxX, 3)).append("\n");
             line.append(pad("" + z, 3) + " ");
-            for (int x = minZ; x <= maxX; x++) { //columns
+            for (int x = minX; x <= maxX; x++) { //columns
                 ChunkPos chunkPos = new ChunkPos(x, z);
                 if (chunkCache.keySet().contains(chunkPos))
                     if (chunkPos.equals(playerChunkPos))
