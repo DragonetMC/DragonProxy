@@ -6,7 +6,7 @@
 
     <groupId>org.dragonet.proxy</groupId>
     <artifactId>dragonproxy-parent</artifactId>
-    <version>0.3.4.3-SNAPSHOT</version>
+    <version>0.3.4.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>DragonProxy</name>
