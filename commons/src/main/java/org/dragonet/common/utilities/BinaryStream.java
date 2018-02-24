@@ -209,9 +209,13 @@ public class BinaryStream {
         putByte(link.unknownByte);
     }
 
-    public PEEntityLink getEntityLink() {
-        return new PEEntityLink(getVarLong(), getVarLong(), getByte(), getByte());
-    }
+//    public PEEntityLink getEntityLink() {
+//        return new PEEntityLink(
+//                getVarLong(),
+//                getVarLong(),
+//                getByte(),
+//                getByte());
+//    }
 
     public Map<String, GameRule> getGameRules() {
         int count = (int) getUnsignedVarInt();
