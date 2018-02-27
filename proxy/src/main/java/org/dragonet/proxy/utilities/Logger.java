@@ -23,7 +23,7 @@ public class Logger {
 
     public Logger(DragonProxy proxy) {
         this.proxy = proxy;
-        logger = LogManager.getLogger("DragonProxy");
+        logger = LogManager.getLogger(DragonProxy.class);
     }
 
     public void info(String message) {
