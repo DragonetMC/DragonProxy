@@ -32,8 +32,7 @@ import org.dragonet.proxy.network.RaknetInterface;
 import org.dragonet.proxy.network.SessionRegister;
 import org.dragonet.proxy.utilities.Logger;
 import org.dragonet.proxy.utilities.MetricsManager;
-import org.pf4j.DefaultPluginManager;
-import org.pf4j.PluginManager;
+import org.dragonet.proxy.utilities.PluginManager;
 import org.yaml.snakeyaml.Yaml;
 
 import com.github.steveice10.mc.protocol.MinecraftConstants;
@@ -239,7 +238,7 @@ public class DragonProxy {
         pluginfolder.mkdirs();
         
         // create the plugin manager
-        pluginManager = new DefaultPluginManager(pluginfolder.toPath());
+        pluginManager = new PluginManager(pluginfolder.toPath());
         eventManager = new EventManager(this);
         
         // start and load all plugins of application
