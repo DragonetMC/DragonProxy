@@ -24,6 +24,7 @@ public class Logger {
     public Logger(DragonProxy proxy) {
         this.proxy = proxy;
         logger = LogManager.getLogger(DragonProxy.class);
+        //todo enable or disable log file
     }
 
     public void info(String message) {
@@ -33,7 +34,7 @@ public class Logger {
     public void warning(String message) {
       logger.warn(message);
     }
-    
+
     public void error(String message) {
       logger.error(message);
     }

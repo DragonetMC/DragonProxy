@@ -39,7 +39,7 @@ public class ConsoleCommandReader {
                         if (command == null || command.trim().length() == 0) {
                             continue;
                         }
-
+                        proxy.getLogger().info("[Console] Execute command /" + command);
                         proxy.getCommandRegister().callCommand(command);
                     } catch (Exception ex) {
                         logger.fatal("Error while executing command: " + ex);
