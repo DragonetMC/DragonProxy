@@ -99,6 +99,10 @@
     </build>
 
     <repositories>
+	    <repository>
+            <id>mavencentral</id>
+            <url>http://central.maven.org/maven2/</url>
+        </repository>
         <repository>
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/repositories/public/</url>
@@ -144,6 +148,12 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.2.3</version>
+            <scope>compile</scope>
+        </dependency>
+		<dependency>
+            <groupId>org.pf4j</groupId>
+            <artifactId>pf4j</artifactId>
+            <version>2.2.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

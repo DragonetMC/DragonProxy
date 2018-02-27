@@ -27,10 +27,13 @@ import org.dragonet.proxy.commands.CommandRegister;
 import org.dragonet.proxy.commands.ConsoleCommandReader;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.ServerConfig;
+import org.dragonet.proxy.events.EventManager;
 import org.dragonet.proxy.network.RaknetInterface;
 import org.dragonet.proxy.network.SessionRegister;
 import org.dragonet.proxy.utilities.Logger;
 import org.dragonet.proxy.utilities.MetricsManager;
+import org.pf4j.DefaultPluginManager;
+import org.pf4j.PluginManager;
 import org.yaml.snakeyaml.Yaml;
 
 import com.github.steveice10.mc.protocol.MinecraftConstants;
@@ -58,6 +61,8 @@ public class DragonProxy {
     private ConsoleCommandReader console;
     private String motd;
     private boolean debug = false;
+    private PluginManager pluginManager;
+    private EventManager eventManager;
 
     public static void main(String[] args) {
         launchArgs = args;
@@ -89,6 +94,15 @@ public class DragonProxy {
     public RaknetInterface getNetwork() {
         return network;
     }
+    
+    public PluginManager getPluginManager() {
+        return pluginManager;
+    }
+    
+    public EventManager getEventManager() {
+        return eventManager;
+    }
+
 
     public boolean isShuttingDown() {
         return shuttingDown;
@@ -111,6 +125,7 @@ public class DragonProxy {
     }
 
     private DragonProxy() {
+        instance = this;
         logger = new Logger(this);
 
         try {
@@ -220,6 +235,17 @@ public class DragonProxy {
         motd = config.motd;
         motd = motd.replace("&", "\u00a7");
 
+        File pluginfolder = new File("plugins");
+        pluginfolder.mkdirs();
+        
+        // create the plugin manager
+        pluginManager = new DefaultPluginManager(pluginfolder.toPath());
+        eventManager = new EventManager(this);
+        
+        // start and load all plugins of application
+        pluginManager.loadPlugins();
+        pluginManager.startPlugins();
+        
         // Bind
         logger.info(lang.get(Lang.INIT_BINDING, config.udp_bind_ip, config.udp_bind_port));
         // RakNet.enableLogging();
@@ -260,6 +286,8 @@ public class DragonProxy {
     public void shutdown() {
         logger.info(lang.get(Lang.SHUTTING_DOWN));
 
+        pluginManager.stopPlugins();
+        
         debug = false;
         this.shuttingDown = true;
         network.shutdown();

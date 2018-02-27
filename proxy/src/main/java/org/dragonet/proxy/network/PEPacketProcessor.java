@@ -37,6 +37,7 @@ import org.dragonet.protocol.Protocol;
 
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.ServerConfig;
+import org.dragonet.proxy.events.defaults.packets.PacketfromPlayerEvent;
 import org.json.JSONException;
 
 public class PEPacketProcessor {
@@ -113,6 +114,12 @@ public class PEPacketProcessor {
         if (packet == null)
             return;
 
+        PacketfromPlayerEvent packetEvent = new PacketfromPlayerEvent(client, packet);
+        client.getProxy().getEventManager().callEvent(packetEvent);
+        if(packetEvent.isCancelled​()){
+            return;
+        }
+        
         // Wait for player logginig in
         if ("online_login_wait".equals(this.client.getDataCache().get(CacheKey.AUTHENTICATION_STATE))) {
             if (packet.pid() == ProtocolInfo.MOVE_PLAYER_PACKET) {

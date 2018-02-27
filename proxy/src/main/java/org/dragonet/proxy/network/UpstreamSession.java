@@ -24,6 +24,11 @@ import net.marfgamer.jraknet.session.RakNetClientSession;
 import org.dragonet.common.maths.Vector3F;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
+import org.dragonet.proxy.events.defaults.packets.PackettoPlayerEvent;
+import org.dragonet.proxy.events.defaults.player.PlayerAuthenticationEvent;
+import org.dragonet.proxy.events.defaults.player.PlayerKickEvent;
+import org.dragonet.proxy.events.defaults.player.PlayerLoginEvent;
+import org.dragonet.proxy.events.defaults.player.PlayerQuitEvent;
 import org.dragonet.proxy.utilities.CLSAuthenticationService;
 
 import org.dragonet.common.data.entity.EntityType;
@@ -81,9 +86,9 @@ public class UpstreamSession {
 
     /*
      * =============================================================================
-	 * ========================== | Caches for Protocol Compatibility | /*
-	 * =============================================================================
-	 * ==========================
+     * ========================== | Caches for Protocol Compatibility | /*
+     * =============================================================================
+     * ==========================
      */
     private final Map<String, Object> dataCache = Collections.synchronizedMap(new HashMap<String, Object>());
     private final Map<UUID, PlayerListEntry> playerInfoCache = Collections.synchronizedMap(new HashMap<UUID, PlayerListEntry>());
@@ -93,8 +98,8 @@ public class UpstreamSession {
     protected boolean connecting;
 
     /*
-	 * =============================================================================
-	 * ==========================
+     * =============================================================================
+     * ==========================
      */
     private MinecraftProtocol protocol;
 
@@ -176,6 +181,10 @@ public class UpstreamSession {
         if (packet == null)
             return;
 
+        PackettoPlayerEvent packetEvent = new PackettoPlayerEvent(this, packet);
+        proxy.getEventManager().callEvent(packetEvent);
+        packet = packetEvent.getPacket();
+        
         //cache in case of not spawned and no high priority
         if (!spawned && !high_priority) {
             putCachePacket(packet);
@@ -207,9 +216,9 @@ public class UpstreamSession {
                 sendPacket(packet, high_priority);
         else {
             BatchPacket batchPacket = new BatchPacket();
-//            System.out.println("BatchPacket :");
+            //            System.out.println("BatchPacket :");
             for (PEPacket packet : packets) {
-//                System.out.println(" - " + packet.getClass().getSimpleName());
+                //                System.out.println(" - " + packet.getClass().getSimpleName());
                 if (high_priority) {
                     batchPacket.packets.add(packet);
                     break;
@@ -243,7 +252,10 @@ public class UpstreamSession {
      * @param reason
      */
     public void disconnect(String reason) {
+        PlayerKickEvent kickEvent = new PlayerKickEvent(this);
+        proxy.getEventManager().callEvent(kickEvent);
         if (!connecting) {
+            if(kickEvent.isCancelled​())return; //not cancellable for pre pre login phase
             sendPacket(new DisconnectPacket(false, reason), true);
             raknetClient.update(); //Force the DisconnectPacket to be sent before we close the connection
         }
@@ -257,6 +269,9 @@ public class UpstreamSession {
      * @param reason The reason of disconnection.
      */
     public void onDisconnect(String reason) {
+        PlayerQuitEvent playerQuit = new PlayerQuitEvent(this);
+        proxy.getEventManager().callEvent(playerQuit);
+        
         proxy.getLogger().info(proxy.getLang().get(Lang.CLIENT_DISCONNECTED,
                 proxy.getAuthMode().equals("cls") ? "unknown" : username, remoteAddress, reason));
         if (downstream != null)
@@ -331,6 +346,9 @@ public class UpstreamSession {
         // Okay @dktapps ;)
         sendPacket(new ResourcePacksInfoPacket(), true);
 
+        PlayerLoginEvent loginEvent = new PlayerLoginEvent(this);
+        proxy.getEventManager().callEvent(loginEvent);
+
         // now wait for response
     }
 
@@ -339,6 +357,10 @@ public class UpstreamSession {
 
         loggedIn = true;
         proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_CLIENT_CONNECTED, username, remoteAddress));
+        PlayerAuthenticationEvent authEvent = new PlayerAuthenticationEvent(this);
+        proxy.getEventManager().callEvent(authEvent);
+        if(authEvent.isCancelled​())return;
+        
         if (proxy.getAuthMode().equals("online")) {
             proxy.getLogger().debug("Login online mode, sending placeholder datas");
             StartGamePacket pkStartGame = new StartGamePacket();
@@ -460,7 +482,7 @@ public class UpstreamSession {
         if (packet == null)
             return;
         if (spawned) {
-//            System.out.println("Not caching since already spawned! ");
+            //            System.out.println("Not caching since already spawned! ");
             sendPacket(packet);
             return;
         }
