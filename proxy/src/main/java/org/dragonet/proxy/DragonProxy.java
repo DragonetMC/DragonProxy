@@ -130,11 +130,11 @@ public class DragonProxy {
             }
             config = new Yaml().loadAs(new FileInputStream(fileConfig), ServerConfig.class);
         } catch (IOException ex) {
-            logger.severe("Failed to load configuration file! Make sure the file is writable.");
+            logger.fatal("Failed to load configuration file! Make sure the file is writable.");
             System.exit(1);
             ex.printStackTrace();
         } catch (org.yaml.snakeyaml.error.YAMLException ex) {
-            logger.severe("Failed to load configuration file! Make sure it's up to date !");
+            logger.fatal("Failed to load configuration file! Make sure it's up to date !");
             System.exit(1);
         }
 
@@ -157,18 +157,8 @@ public class DragonProxy {
         console = new ConsoleCommandReader(this);
         console.startConsole();
 
-        // Should we save console log? Set it in config file
-        if (config.log_console)
-//            console.startFile("console.log"); TODO
-            logger.info("Saving console output enabled");
-        else
-            logger.info("Saving console output disabled");
-
         // set logger mode
         logger.debug = config.log_debug;
-
-        // set logger colors mod
-        logger.colorful = config.log_colors;
 
         // Put at the top instead
         if (!IS_RELEASE)
@@ -189,7 +179,7 @@ public class DragonProxy {
         try {
             lang = new Lang(config.lang);
         } catch (IOException ex) {
-            logger.severe("Failed to load language file: " + config.lang + "!");
+            logger.fatal("Failed to load language file: " + config.lang + "!");
             ex.printStackTrace();
         }
 
@@ -206,7 +196,7 @@ public class DragonProxy {
 
         authMode = config.mode.toLowerCase();
         if (!authMode.equals("cls") && !authMode.equals("online") && !authMode.equals("offline"))
-            logger.severe("Invalid login 'mode' option detected, must be cls/online/offline. You set it to '" + authMode
+            logger.fatal("Invalid login 'mode' option detected, must be cls/online/offline. You set it to '" + authMode
                     + "'! ");
 
         // Init metrics (https://bstats.org/plugin/server-implementation/DragonProxy)
