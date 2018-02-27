@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO" packages="org.dragonet.proxy">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout>
+                <pattern>%highlight{[%d{HH:mm:ss}][%-5level]: %msg%n}{FATAL=bright red blink, ERROR=bright red, WARN=yellow, INFO=green, DEBUG=cyan, TRACE=black bright}<!--
+              -->%xEx{ansi(At=black,bold More=black,bold StackTraceElement.MethodName=bold,underline ExtraClassInfo.Inexact=black,bold ExtraClassInfo.Container=black,bold ExtraClassInfo.ContainerSeparator=black,bold ExtraClassInfo.Location=black,bold ExtraClassInfo.Version=black,bold)}</pattern>
+            </PatternLayout>
+        </Console>
+        <RollingRandomAccessFile name="File" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz" immediateFlush="false">
+            <PatternLayout>
+                <pattern>[%d{yyyy-MM-dd HH:mm:ss}][%-5level]: %msg%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <OnStartupTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy max="1000"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <Loggers>
+        <AsyncRoot level="info" includeLocation="true">
+            <AppenderRef ref="File"/>
+        </AsyncRoot>
+        <AsyncLogger name="org.dragonet.proxy" level="info" includeLocation="true">
+            <AppenderRef ref="Console"/>
+        </AsyncLogger>
+        <!-- disable anoying racknet log.info -->
+        <AsyncLogger name="net.marfgamer.jraknet.server" level="warn" includeLocation="false">
+            <AppenderRef ref="RollingRandomAccessFile"/>
+        </AsyncLogger>
+    </Loggers>
+</Configuration>

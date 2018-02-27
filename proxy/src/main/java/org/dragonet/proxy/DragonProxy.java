@@ -39,6 +39,8 @@ import org.yaml.snakeyaml.Yaml;
 import com.github.steveice10.mc.protocol.MinecraftConstants;
 
 import co.aikar.timings.Timings;
+import org.apache.commons.lang3.SystemUtils;
+import org.dragonet.common.utilities.SkinFetcher;
 
 public class DragonProxy {
 
@@ -57,6 +59,7 @@ public class DragonProxy {
     private boolean shuttingDown;
     private ScheduledExecutorService generalThreadPool;
     private CommandRegister commandRegister;
+    private SkinFetcher skinFetcher;
     private String authMode;
     private ConsoleCommandReader console;
     private String motd;
@@ -142,11 +145,11 @@ public class DragonProxy {
             }
             config = new Yaml().loadAs(new FileInputStream(fileConfig), ServerConfig.class);
         } catch (IOException ex) {
-            logger.severe("Failed to load configuration file! Make sure the file is writable.");
+            logger.fatal("Failed to load configuration file! Make sure the file is writable.");
             System.exit(1);
             ex.printStackTrace();
         } catch (org.yaml.snakeyaml.error.YAMLException ex) {
-            logger.severe("Failed to load configuration file! Make sure it's up to date !");
+            logger.fatal("Failed to load configuration file! Make sure it's up to date !");
             System.exit(1);
         }
 
@@ -169,18 +172,8 @@ public class DragonProxy {
         console = new ConsoleCommandReader(this);
         console.startConsole();
 
-        // Should we save console log? Set it in config file
-        if (config.log_console)
-//            console.startFile("console.log"); TODO
-            logger.info("Saving console output enabled");
-        else
-            logger.info("Saving console output disabled");
-
         // set logger mode
         logger.debug = config.log_debug;
-
-        // set logger colors mod
-        logger.colorful = config.log_colors;
 
         // Put at the top instead
         if (!IS_RELEASE)
@@ -201,7 +194,7 @@ public class DragonProxy {
         try {
             lang = new Lang(config.lang);
         } catch (IOException ex) {
-            logger.severe("Failed to load language file: " + config.lang + "!");
+            logger.fatal("Failed to load language file: " + config.lang + "!");
             ex.printStackTrace();
         }
 
@@ -212,9 +205,13 @@ public class DragonProxy {
         logger.info(lang.get(Lang.INIT_LOADING, version));
         logger.info(lang.get(Lang.INIT_MC_PC_SUPPORT, MinecraftConstants.GAME_VERSION));
         logger.info(lang.get(Lang.INIT_MC_PE_SUPPORT, ProtocolInfo.MINECRAFT_VERSION));
+        logger.info("Java version : " + SystemUtils.JAVA_VERSION);
+        logger.info("System arch : " + SystemUtils.OS_ARCH);
+        logger.info("System os : " + SystemUtils.OS_NAME + " " + SystemUtils.OS_VERSION);
+
         authMode = config.mode.toLowerCase();
         if (!authMode.equals("cls") && !authMode.equals("online") && !authMode.equals("offline"))
-            logger.severe("Invalid login 'mode' option detected, must be cls/online/offline. You set it to '" + authMode
+            logger.fatal("Invalid login 'mode' option detected, must be cls/online/offline. You set it to '" + authMode
                     + "'! ");
 
         // Init metrics (https://bstats.org/plugin/server-implementation/DragonProxy)
@@ -223,6 +220,7 @@ public class DragonProxy {
         // Init session and command stuff
         sessionRegister = new SessionRegister(this);
         commandRegister = new CommandRegister(this);
+        skinFetcher = new SkinFetcher();
 
         // Init block handling
         Block.init();
@@ -300,5 +298,12 @@ public class DragonProxy {
         Timings.stopServer();
         System.out.println("Goodbye!");
         System.exit(0);
+    }
+
+    /**
+     * @return the skinFetcher
+     */
+    public SkinFetcher getSkinFetcher() {
+        return skinFetcher;
     }
 }

@@ -1,5 +1,9 @@
 package org.dragonet.common.data.entity;
 
+import com.github.steveice10.mc.auth.data.GameProfile.TextureModel;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
@@ -7,6 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Base64;
 import javax.imageio.ImageIO;
@@ -17,6 +22,7 @@ import javax.imageio.stream.ImageInputStream;
  */
 public class Skin {
 
+    //TODO enum (steve / alex / custom)
     public static final Skin DEFAULT_SKIN_STEVE;
     public static final Skin DEFAULT_SKIN_ALEX;
 
@@ -26,6 +32,10 @@ public class Skin {
     public static final String MODEL_STEVE = "Standard_Steve";
     public static final String MODEL_ALEX = "Standard_Alex";
 
+    public static final String GEOMETRY_STEVE = "geometry.humanoid.custom";
+    public static final String GEOMETRY_ALEX = "geometry.humanoid.customSlim";
+    public static final String GEOMETRY_DATA;
+
     private byte[] data = new byte[SINGLE_SKIN_SIZE];
     private String model;
     private Cape cape = new Cape(new byte[0]);  //default no cape
@@ -34,18 +44,28 @@ public class Skin {
         BufferedImage steve = null;
         BufferedImage alex = null;
         try {
-            steve = ImageIO.read(Skin.class.getResourceAsStream("/steve.png"));
+            steve = ImageIO.read(Skin.class.getResourceAsStream("/skins/steve.png"));
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             DEFAULT_SKIN_STEVE = new Skin(steve);
         }
         try {
-            alex = ImageIO.read(Skin.class.getResourceAsStream("/alex.png"));
+            alex = ImageIO.read(Skin.class.getResourceAsStream("/skins/alex.png"));
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             DEFAULT_SKIN_ALEX = new Skin(alex, MODEL_ALEX);
+        }
+        JsonObject geometry = null;
+        try {
+            InputStream ins = Skin.class.getResourceAsStream("/skins/geometry.json");
+            InputStreamReader inr = new InputStreamReader(ins, "UTF-8");
+            geometry = new Gson().fromJson(inr, JsonObject.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            GEOMETRY_DATA = geometry.toString();
         }
     }
 
@@ -180,6 +200,12 @@ public class Skin {
 
     public boolean isValid() {
         return this.data.length == SINGLE_SKIN_SIZE || this.data.length == DOUBLE_SKIN_SIZE;
+    }
+
+    public static String getModelFromJava(TextureModel textureModel) {
+        if (textureModel.equals(TextureModel.SLIM))
+            return MODEL_ALEX;
+        return MODEL_STEVE;
     }
 
     public class Cape {

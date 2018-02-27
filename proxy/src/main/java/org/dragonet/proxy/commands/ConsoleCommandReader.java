@@ -31,21 +31,19 @@ public class ConsoleCommandReader {
         Thread thread = new Thread(new Runnable() {
             public void run() {
                 String command = "";
-                while (!proxy.isShuttingDown()) {
+                while (!proxy.isShuttingDown())
                     try {
 //                        System.out.print(">");
                         command = new Scanner(System.in).nextLine();
 
-                        if (command == null || command.trim().length() == 0) {
+                        if (command == null || command.trim().length() == 0)
                             continue;
-                        }
-
+                        proxy.getLogger().info("[Console] Execute command /" + command);
                         proxy.getCommandRegister().callCommand(command);
                     } catch (Exception ex) {
-                        logger.severe("Error while executing command: " + ex);
+                        logger.fatal("Error while executing command: " + ex);
                         ex.printStackTrace();
                     }
-                }
             }
         });
 

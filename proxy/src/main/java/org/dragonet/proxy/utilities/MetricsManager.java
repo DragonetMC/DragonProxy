@@ -20,7 +20,7 @@ public class MetricsManager {
         try {
             config = new PropertiesConfig("/metrics.yml", "metrics.yml", true);
         } catch (IOException ex) {
-            proxy.getLogger().severe("Failed to load configuration file! Make sure the file is writable.");
+            proxy.getLogger().fatal("Failed to load configuration file! Make sure the file is writable.");
             ex.printStackTrace();
         }
 
@@ -50,7 +50,7 @@ public class MetricsManager {
 
             metrics.addCustomChart(new Metrics.SingleLineChart("players", () -> proxy.getSessionRegister().getAll().size()));
             metrics.addCustomChart(new Metrics.SimplePie("online_mode", () -> proxy.getAuthMode().equals("online") ? "online" : "offline"));
-            
+
             metrics.addCustomChart(new Metrics.SimplePie("proxy_version", () -> proxy.getVersion()));
 
             metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
