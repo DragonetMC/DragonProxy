@@ -50,7 +50,7 @@ public class MetricsManager {
 
             metrics.addCustomChart(new Metrics.SingleLineChart("players", () -> proxy.getSessionRegister().getAll().size()));
             metrics.addCustomChart(new Metrics.SimplePie("online_mode", () -> proxy.getAuthMode().equals("online") ? "online" : "offline"));
-            
+
             metrics.addCustomChart(new Metrics.SimplePie("proxy_version", () -> proxy.getVersion()));
 
             metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
