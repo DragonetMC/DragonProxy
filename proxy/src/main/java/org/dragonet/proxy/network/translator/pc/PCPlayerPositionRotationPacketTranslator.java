@@ -12,6 +12,7 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
+import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
@@ -57,7 +58,6 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
         if (entityPlayer == null) {
             //disconnect (important missing data)
         }
-        entityPlayer.absoluteMove(packet.getX(), packet.getY() + entityPlayer.peType.getOffset(), packet.getZ(), packet.getYaw(), packet.getPitch());
 
         if (!session.isSpawned()) {
             if (session.getDataCache().get(CacheKey.PACKET_JOIN_GAME_PACKET) == null) {

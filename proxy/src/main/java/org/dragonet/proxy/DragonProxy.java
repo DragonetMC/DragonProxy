@@ -36,6 +36,8 @@ import org.yaml.snakeyaml.Yaml;
 import com.github.steveice10.mc.protocol.MinecraftConstants;
 
 import co.aikar.timings.Timings;
+import org.apache.commons.lang3.SystemUtils;
+import org.dragonet.common.utilities.SkinFetcher;
 
 public class DragonProxy {
 
@@ -54,6 +56,7 @@ public class DragonProxy {
     private boolean shuttingDown;
     private ScheduledExecutorService generalThreadPool;
     private CommandRegister commandRegister;
+    private SkinFetcher skinFetcher;
     private String authMode;
     private ConsoleCommandReader console;
     private String motd;
@@ -197,6 +200,10 @@ public class DragonProxy {
         logger.info(lang.get(Lang.INIT_LOADING, version));
         logger.info(lang.get(Lang.INIT_MC_PC_SUPPORT, MinecraftConstants.GAME_VERSION));
         logger.info(lang.get(Lang.INIT_MC_PE_SUPPORT, ProtocolInfo.MINECRAFT_VERSION));
+        logger.info("Java version : " + SystemUtils.JAVA_VERSION);
+        logger.info("System arch : " + SystemUtils.OS_ARCH);
+        logger.info("System os : " + SystemUtils.OS_NAME + " " + SystemUtils.OS_VERSION);
+
         authMode = config.mode.toLowerCase();
         if (!authMode.equals("cls") && !authMode.equals("online") && !authMode.equals("offline"))
             logger.severe("Invalid login 'mode' option detected, must be cls/online/offline. You set it to '" + authMode
@@ -208,6 +215,7 @@ public class DragonProxy {
         // Init session and command stuff
         sessionRegister = new SessionRegister(this);
         commandRegister = new CommandRegister(this);
+        skinFetcher = new SkinFetcher();
 
         // Init block handling
         Block.init();
@@ -272,5 +280,12 @@ public class DragonProxy {
         Timings.stopServer();
         System.out.println("Goodbye!");
         System.exit(0);
+    }
+
+    /**
+     * @return the skinFetcher
+     */
+    public SkinFetcher getSkinFetcher() {
+        return skinFetcher;
     }
 }
