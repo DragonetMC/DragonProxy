@@ -24,27 +24,27 @@ public class Logger {
     public Logger(DragonProxy proxy) {
         this.proxy = proxy;
         logger = LogManager.getLogger(DragonProxy.class);
+        //todo enable or disable log file
     }
 
     public void info(String message) {
-      logger.info(message);
+        logger.info(message);
     }
 
     public void warning(String message) {
-      logger.warn(message);
+        logger.warn(message);
     }
-    
+
     public void error(String message) {
-      logger.error(message);
+        logger.error(message);
     }
 
     public void fatal(String message) {
-      logger.fatal(message);
+        logger.fatal(message);
     }
 
     public void debug(String message) {
-        if (debug) {
+        if (debug)
             logger.debug(message);
-        }
     }
 }
