@@ -391,7 +391,7 @@ public class UpstreamSession {
                     return;
                 }
                 disconnect(proxy.getLang().get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_UNREACHABLE)));
-                proxy.getLogger().severe(proxy.getLang()
+                proxy.getLogger().fatal(proxy.getLang()
                         .get(Lang.MESSAGE_SERVER_ERROR, proxy.getLang().get(Lang.ERROR_CLS_UNREACHABLE))
                         .replace("§c", "").replace("§0", ""));
                 return;

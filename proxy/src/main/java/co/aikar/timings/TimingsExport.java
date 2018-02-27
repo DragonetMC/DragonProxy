@@ -198,7 +198,7 @@ public class TimingsExport extends Thread {
                 if (this.sender != null)
                     this.sender.sendChat("Timings upload error " + con.getResponseCode() + con.getResponseMessage() + " !");
                 if (response != null)
-                    DragonProxy.getInstance().getLogger().severe(response);
+                    DragonProxy.getInstance().getLogger().fatal(response);
                 return;
             }
 
@@ -226,7 +226,7 @@ public class TimingsExport extends Thread {
             if (this.sender != null)
                 this.sender.sendChat("Timings error !");
             if (response != null)
-                DragonProxy.getInstance().getLogger().severe(response);
+                DragonProxy.getInstance().getLogger().fatal(response);
             exception.printStackTrace();
 //            DragonProxy.getInstance().getLogger().logException(exception);
         }

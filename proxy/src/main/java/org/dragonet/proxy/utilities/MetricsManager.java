@@ -20,7 +20,7 @@ public class MetricsManager {
         try {
             config = new PropertiesConfig("/metrics.yml", "metrics.yml", true);
         } catch (IOException ex) {
-            proxy.getLogger().severe("Failed to load configuration file! Make sure the file is writable.");
+            proxy.getLogger().fatal("Failed to load configuration file! Make sure the file is writable.");
             ex.printStackTrace();
         }
 
