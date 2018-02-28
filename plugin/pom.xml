@@ -19,34 +19,4 @@
         <module>universal</module>
     </modules>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <finalName>${project.artifactId}-${project.version}-noshade</finalName>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <finalName>${project.artifactId}-${project.version}-runnable</finalName>
-                    <!-- TODO: relocate libraries -->
-                    <relocations>
-                    </relocations>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>

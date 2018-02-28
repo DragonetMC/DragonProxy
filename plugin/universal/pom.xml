@@ -11,20 +11,38 @@
     </parent>
 
     <artifactId>dragonproxy-plugin-universal</artifactId>
-    <packaging>jar</packaging>
+
+    <!-- Hacky stuff to change the shaded jar filename -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>
             <groupId>org.dragonet.proxy</groupId>
             <artifactId>dragonproxy-plugin-spigot</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.dragonet.proxy</groupId>
             <artifactId>dragonproxy-plugin-bungee</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 

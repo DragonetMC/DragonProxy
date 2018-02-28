@@ -2,6 +2,7 @@ package org.bstats;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.ByteArrayOutputStream;
@@ -106,7 +107,7 @@ public class Metrics {
             JsonObject chart = customChart.getRequestJsonObject();
             if (chart == null) // If the chart is null, we skip it
                 continue;
-            customCharts.put(chart);
+            customCharts.add(chart);
         }
         data.add("customCharts", customCharts);
 
@@ -464,7 +465,7 @@ public class Metrics {
                 return null;
             for (Map.Entry<String, Integer> entry : map.entrySet()) {
                 JsonArray categoryValues = new JsonArray();
-                categoryValues.add(entry.getValue());
+                categoryValues.add(new JsonPrimitive(entry.getValue()));
                 values.add(entry.getKey(), categoryValues);
             }
             data.add("values", values);
@@ -505,7 +506,7 @@ public class Metrics {
                 allSkipped = false;
                 JsonArray categoryValues = new JsonArray();
                 for (int categoryValue : entry.getValue())
-                    categoryValues.add(categoryValue);
+                    categoryValues.add(new JsonPrimitive(categoryValue));
                 values.add(entry.getKey(), categoryValues);
             }
             if (allSkipped)

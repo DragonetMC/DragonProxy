@@ -20,6 +20,7 @@ import java.util.Deque;
 
 import com.github.steveice10.packetlib.packet.Packet;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonParseException;
 import org.dragonet.common.utilities.JsonUtil;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -146,7 +147,7 @@ public class PEPacketProcessor {
                     JsonArray array = JsonUtil.parseArray(formResponse.formData);
                     this.client.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
                     this.client.authenticate(array.get(2).toString(), array.get(3).toString(), authProxy);
-                } catch(JSONException ex) {
+                } catch(JsonParseException ex) {
                     this.client.sendChat(this.client.getProxy().getLang().get(Lang.MESSAGE_ONLINE_LOGIN_FAILD));
                 }
                 return;
