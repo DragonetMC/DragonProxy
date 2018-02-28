@@ -43,7 +43,12 @@ public class StartGamePacket extends PEPacket {
     public boolean startWithMapEnabled;
     public boolean trustPlayersEnabled;
     public int defaultPlayerPermission;
-    public int xboxLiveBroadcastMode;
+    public int gamePublishSetting;
+    public int serverChunkTickRadius = 4; //TODO (leave as default for now)
+    public int serverChunkTickRange = 0;
+    public boolean hasPlatformBroadcast = false;
+    public int platformBroadcastMode = 0;
+    public boolean xboxLiveBroadcastIntent = false;
 
     public String levelId;
     public String worldName;
@@ -95,14 +100,18 @@ public class StartGamePacket extends PEPacket {
         putBoolean(startWithMapEnabled);
         putBoolean(trustPlayersEnabled);
         putVarInt(defaultPlayerPermission);
-        putVarInt(xboxLiveBroadcastMode);
+        putVarInt(gamePublishSetting);
+        putLInt(serverChunkTickRadius);
+        putInt(serverChunkTickRange);
+        putBoolean(hasPlatformBroadcast);
+        putVarInt(platformBroadcastMode);
+        putBoolean(xboxLiveBroadcastIntent);
 
         putString(levelId);
         putString(worldName);
         putString(premiumWorldTemplateId);
         putBoolean(unknownBool);
         putLLong(currentTick);
-
         putVarInt(enchantmentSeed);
     }
 
@@ -123,7 +132,7 @@ public class StartGamePacket extends PEPacket {
         generator = getVarInt();
         worldGamemode = getVarInt();
         difficulty = Difficulty.values()[getVarInt()];
-        spawnPosition = getBlockPosition();
+        spawnPosition = getSignedBlockPosition();
         achievementsDisabled = getBoolean();
         time = getVarInt();
         eduMode = getBoolean();
@@ -139,7 +148,12 @@ public class StartGamePacket extends PEPacket {
         startWithMapEnabled = getBoolean();
         trustPlayersEnabled = getBoolean();
         defaultPlayerPermission = getVarInt();
-        xboxLiveBroadcastMode = getVarInt();
+        gamePublishSetting = getVarInt();
+        serverChunkTickRadius = getVarInt();
+        serverChunkTickRange = getInt();
+        hasPlatformBroadcast = getBoolean();
+        platformBroadcastMode = getVarInt();
+        xboxLiveBroadcastIntent = getBoolean();
 
         levelId = getString();
         worldName = getString();

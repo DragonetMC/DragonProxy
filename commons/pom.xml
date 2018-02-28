@@ -7,17 +7,30 @@
     <parent>
         <groupId>org.dragonet.proxy</groupId>
         <artifactId>dragonproxy-parent</artifactId>
-        <version>0.3.4.3-SNAPSHOT</version>
+        <version>0.3.4.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>dragonproxy-commons</artifactId>
     <packaging>jar</packaging>
 
+    <repositories>
+        <repository>
+            <id>CodeMC-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>com.github.steveice10</groupId>
             <artifactId>mcprotocollib</artifactId>
-            <version>1.12.2-2-SNAPSHOT</version>
+            <version>1.12.2-3-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -35,7 +48,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>23.6-jre</version>
+            <version>24.0-jre</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

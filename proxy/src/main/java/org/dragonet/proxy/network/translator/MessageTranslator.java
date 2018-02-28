@@ -45,8 +45,7 @@ public final class MessageTranslator {
         return build.toString();
     }
     
-    public static String translate(String message)
-    {
+    public static String translate(String message) {
         return translate(Message.fromString(message));
     }
 

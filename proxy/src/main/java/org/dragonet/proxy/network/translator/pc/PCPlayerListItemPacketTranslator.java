@@ -38,7 +38,7 @@ public class PCPlayerListItemPacketTranslator implements IPCPacketTranslator<Ser
                 peEntry.uuid = entry.getProfile().getId();
                 peEntry.eid = 1;
                 peEntry.username = entry.getProfile().getName();
-                peEntry.skin = Skin.DEFAULT_SKIN;
+                peEntry.skin = Skin.DEFAULT_SKIN_STEVE;
                 peEntry.xboxUserId = entry.getProfile().getId().toString();
                 peEntries.add(peEntry);
             }
@@ -53,7 +53,7 @@ public class PCPlayerListItemPacketTranslator implements IPCPacketTranslator<Ser
                 peEntry.uuid = entry.getProfile().getId();
                 peEntry.eid = 1;
                 peEntry.username = entry.getProfile().getName();
-                peEntry.skin = Skin.DEFAULT_SKIN;
+                peEntry.skin = Skin.DEFAULT_SKIN_STEVE;
                 peEntry.xboxUserId = entry.getProfile().getId().toString();
                 peEntries.add(peEntry);
             }

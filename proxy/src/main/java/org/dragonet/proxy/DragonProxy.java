@@ -6,7 +6,7 @@
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
  *
- * You can view LICENCE file for details. 
+ * You can view LICENCE file for details.
  *
  * @author The Dragonet Team
  */
@@ -36,10 +36,12 @@ import org.yaml.snakeyaml.Yaml;
 import com.github.steveice10.mc.protocol.MinecraftConstants;
 
 import co.aikar.timings.Timings;
+import org.apache.commons.lang3.SystemUtils;
+import org.dragonet.common.utilities.SkinFetcher;
 
 public class DragonProxy {
 
-    public static final boolean IS_RELEASE = false; // DO NOT CHANGE, ONLY ON PRODUCTION
+    public static final boolean IS_RELEASE = false; // TODO: remove
 
     private static DragonProxy instance;
     private static String[] launchArgs;
@@ -54,6 +56,7 @@ public class DragonProxy {
     private boolean shuttingDown;
     private ScheduledExecutorService generalThreadPool;
     private CommandRegister commandRegister;
+    private SkinFetcher skinFetcher;
     private String authMode;
     private ConsoleCommandReader console;
     private String motd;
@@ -128,25 +131,28 @@ public class DragonProxy {
             config = new Yaml().loadAs(new FileInputStream(fileConfig), ServerConfig.class);
         } catch (IOException ex) {
             logger.severe("Failed to load configuration file! Make sure the file is writable.");
+            System.exit(1);
             ex.printStackTrace();
+        } catch (org.yaml.snakeyaml.error.YAMLException ex) {
+            logger.severe("Failed to load configuration file! Make sure it's up to date !");
+            System.exit(1);
         }
 
         InputStream inputStream = this.getClass().getResourceAsStream("/buildNumber.properties");
         properties = new Properties();
-        
-                if (inputStream != null) {
-                    try {
-                        properties.load(inputStream);
-                    } catch (IOException e) {
-                        throw new RuntimeException("Failed to read properties file", e);
-                    } finally {
-                        try {
-                            inputStream.close();
-                        } catch (IOException e) {
-                            // Ignore
-                        }
-                    }
+
+        if (inputStream != null)
+            try {
+                properties.load(inputStream);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to read properties file", e);
+            } finally {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    // Ignore
                 }
+            }
         // Initialize console command reader
         console = new ConsoleCommandReader(this);
         console.startConsole();
@@ -157,16 +163,24 @@ public class DragonProxy {
             logger.info("Saving console output enabled");
         else
             logger.info("Saving console output disabled");
-        
+
         // set logger mode
         logger.debug = config.log_debug;
-        
+
         // set logger colors mod
         logger.colorful = config.log_colors;
 
         // Put at the top instead
         if (!IS_RELEASE)
-            logger.warning("This is a development build. It may contain bugs. Do not use on production.\n");
+            logger.warning("This is a development build. It may contain bugs. Do not use on production.");
+
+        if (config.auto_login) {
+            logger.warning("******************************************");
+            logger.warning("");
+            logger.warning("\tYou're using autologin, make sure you are the only who can connect on this server !");
+            logger.warning("");
+            logger.warning("******************************************");
+        }
 
         // Check for startup arguments
         checkArguments(launchArgs);
@@ -186,17 +200,22 @@ public class DragonProxy {
         logger.info(lang.get(Lang.INIT_LOADING, version));
         logger.info(lang.get(Lang.INIT_MC_PC_SUPPORT, MinecraftConstants.GAME_VERSION));
         logger.info(lang.get(Lang.INIT_MC_PE_SUPPORT, ProtocolInfo.MINECRAFT_VERSION));
+        logger.info("Java version : " + SystemUtils.JAVA_VERSION);
+        logger.info("System arch : " + SystemUtils.OS_ARCH);
+        logger.info("System os : " + SystemUtils.OS_NAME + " " + SystemUtils.OS_VERSION);
+
         authMode = config.mode.toLowerCase();
         if (!authMode.equals("cls") && !authMode.equals("online") && !authMode.equals("offline"))
             logger.severe("Invalid login 'mode' option detected, must be cls/online/offline. You set it to '" + authMode
-                + "'! ");
+                    + "'! ");
 
         // Init metrics (https://bstats.org/plugin/server-implementation/DragonProxy)
-        MetricsManager.getInstance();
-        
+        new MetricsManager(this);
+
         // Init session and command stuff
         sessionRegister = new SessionRegister(this);
         commandRegister = new CommandRegister(this);
+        skinFetcher = new SkinFetcher();
 
         // Init block handling
         Block.init();
@@ -204,7 +223,7 @@ public class DragonProxy {
         // Create thread pool
         logger.info(lang.get(Lang.INIT_CREATING_THREAD_POOL, config.thread_pool_size));
         generalThreadPool = Executors.newScheduledThreadPool(config.thread_pool_size);
-        
+
         // MOTD
         motd = config.motd;
         motd = motd.replace("&", "\u00a7");
@@ -213,8 +232,8 @@ public class DragonProxy {
         logger.info(lang.get(Lang.INIT_BINDING, config.udp_bind_ip, config.udp_bind_port));
         // RakNet.enableLogging();
         network = new RaknetInterface(this, config.udp_bind_ip, // IP
-            config.udp_bind_port, // Port
-            motd, config.max_players);
+                config.udp_bind_port, // Port
+                motd, config.auto_login ? 1 : config.max_players);
 
         ticker.start();
         logger.info(lang.get(Lang.INIT_DONE));
@@ -237,15 +256,13 @@ public class DragonProxy {
     }
 
     public void checkArguments(String[] args) {
-        if (args != null) {
-            for (String arg : args) {
+        if (args != null)
+            for (String arg : args)
                 if (arg.toLowerCase().contains("--debug")) {
                     debug = true;
                     getLogger().debug = true;
                     logger.info("Proxy is running in debug mode.");
                 }
-            }
-        }
     }
 
     public void shutdown() {
@@ -263,5 +280,12 @@ public class DragonProxy {
         Timings.stopServer();
         System.out.println("Goodbye!");
         System.exit(0);
+    }
+
+    /**
+     * @return the skinFetcher
+     */
+    public SkinFetcher getSkinFetcher() {
+        return skinFetcher;
     }
 }

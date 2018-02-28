@@ -6,7 +6,7 @@
 
     <groupId>org.dragonet.proxy</groupId>
     <artifactId>dragonproxy-parent</artifactId>
-    <version>0.3.4.3-SNAPSHOT</version>
+    <version>0.3.4.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>DragonProxy</name>
@@ -58,7 +58,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
-  
+
     <build>
         <defaultGoal>clean install</defaultGoal>
         <resources>
@@ -156,12 +156,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <repositories>
-        <repository>
-            <id>codemc-repo</id>
-            <url>https://repo.codemc.org/repository/maven-public/</url>
-        </repository>
-    </repositories>
 
 </project>

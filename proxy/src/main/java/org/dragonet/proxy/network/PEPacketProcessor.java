@@ -21,6 +21,8 @@ import java.util.Deque;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.google.gson.JsonArray;
 import org.dragonet.common.utilities.JsonUtil;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import org.dragonet.protocol.packets.*;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.common.gui.CustomFormComponent;
@@ -35,6 +37,7 @@ import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.Protocol;
 
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.configuration.ServerConfig;
 
 public class PEPacketProcessor {
 
@@ -56,7 +59,21 @@ public class PEPacketProcessor {
     private final UpstreamSession client;
     private final Deque<byte[]> packets = new ArrayDeque<>();
 
+    private Proxy authProxy = null;
+
     public PEPacketProcessor(UpstreamSession client) {
+        ServerConfig config = DragonProxy.getInstance().getConfig();
+
+        if (config.proxy_type.equalsIgnoreCase("none") || config.proxy_type.equalsIgnoreCase("direct"))
+            authProxy = null;
+        else {
+            Proxy.Type type = Proxy.Type.valueOf(config.proxy_type.toUpperCase());
+            if (type != null)
+                authProxy = new Proxy(type, new InetSocketAddress(config.proxy_ip, config.proxy_port));
+            else
+                authProxy = null;
+        }
+
         this.client = client;
     }
 
@@ -68,7 +85,7 @@ public class PEPacketProcessor {
         packets.add(packet);
     }
 
-    public void onTick(){
+    public void onTick() {
         int cnt = 0;
         Timings.playerNetworkReceiveTimer.startTiming();
         while (cnt < MAX_PACKETS_PER_CYCLE && !packets.isEmpty()) {
@@ -100,35 +117,45 @@ public class PEPacketProcessor {
         if ("online_login_wait".equals(this.client.getDataCache().get(CacheKey.AUTHENTICATION_STATE))) {
             if (packet.pid() == ProtocolInfo.MOVE_PLAYER_PACKET) {
 
+                InputComponent username = new InputComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_USERNAME)).setPlaceholder("steve@example.com");
+                InputComponent password = new InputComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_PASSWORD)).setPlaceholder("123456");
+
+                if (this.client.getProxy().getConfig().auto_login) {
+                    username.setDefaultValue(this.client.getProxy().getConfig().online_username);
+                    password.setDefaultValue(this.client.getProxy().getConfig().online_password);
+                }
+
                 // client.getDataCache().put(CacheKey.AUTHENTICATION_STATE, "online_login");
                 ModalFormRequestPacket packetForm = new ModalFormRequestPacket();
                 CustomFormComponent form = new CustomFormComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_TITLE));
                 form.addComponent(new LabelComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_DESC)));
                 form.addComponent(new LabelComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_PROMPT)));
-                form.addComponent(new InputComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_USERNAME)).setPlaceholder("steve@example.com"));
-                form.addComponent(new InputComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_PASSWORD)).setPlaceholder("123456"));
+                form.addComponent(username);
+                form.addComponent(password);
                 packetForm.formId = 1;
                 packetForm.formData = form.serializeToJson().toString();
-                this.client.sendPacket(packetForm);
+                this.client.sendPacket(packetForm, true);
                 return;
             }
 
             if (packet.pid() == ProtocolInfo.MODAL_FORM_RESPONSE_PACKET) {
+                try {
+                    this.client.sendChat(this.client.getProxy().getLang().get(Lang.MESSAGE_LOGIN_PROGRESS));
 
-                this.client.sendChat(this.client.getProxy().getLang().get(Lang.MESSAGE_LOGIN_PROGRESS));
-                this.client.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
-
-                ModalFormResponsePacket formResponse = (ModalFormResponsePacket) packet;
-
-                JsonArray array = JsonUtil.parseArray(formResponse.formData);
-                this.client.authenticate(array.get(2).toString(), array.get(3).toString());
+                    ModalFormResponsePacket formResponse = (ModalFormResponsePacket) packet;
+                    JsonArray array = JsonUtil.parseArray(formResponse.formData);
+                    this.client.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
+                    this.client.authenticate(array.get(2).toString(), array.get(3).toString(), authProxy);
+                } catch(JSONException ex) {
+                    this.client.sendChat(this.client.getProxy().getLang().get(Lang.MESSAGE_ONLINE_LOGIN_FAILD));
+                }
                 return;
             }
         }
 
         switch (packet.pid()) {
             case ProtocolInfo.BATCH_PACKET:
-                DragonProxy.getInstance().getLogger().debug("Received batch packet from client !"); 
+                DragonProxy.getInstance().getLogger().debug("Received batch packet from client !");
                 break;
             case ProtocolInfo.LOGIN_PACKET:
                 this.client.onLogin((LoginPacket) packet);
@@ -137,9 +164,6 @@ public class PEPacketProcessor {
                 if (!this.client.isLoggedIn())
                     this.client.postLogin();
 
-                break;
-            case ProtocolInfo.REQUEST_CHUNK_RADIUS_PACKET:
-                this.client.sendPacket(new ChunkRadiusUpdatedPacket(((RequestChunkRadiusPacket) packet).radius));
                 break;
             default:
                 if (this.client.getDownstream() == null || !this.client.getDownstream().isConnected())

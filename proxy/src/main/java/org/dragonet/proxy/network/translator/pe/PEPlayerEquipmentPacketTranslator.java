@@ -17,6 +17,7 @@ import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.IPEPacketTranslator;
 import org.dragonet.protocol.packets.MobEquipmentPacket;
+import org.dragonet.proxy.network.CacheKey;
 
 public class PEPlayerEquipmentPacketTranslator implements IPEPacketTranslator<MobEquipmentPacket> {
 
@@ -26,6 +27,7 @@ public class PEPlayerEquipmentPacketTranslator implements IPEPacketTranslator<Mo
             return null;
         }
         if (packet.windowId == 0) {
+            session.getDataCache().put(CacheKey.PLAYER_SELECTED_SLOT, packet.hotbarSlot);
             return new Packet[]{new ClientPlayerChangeHeldItemPacket(packet.hotbarSlot)};
         }
         return null;

@@ -23,7 +23,6 @@ import com.github.steveice10.packetlib.event.session.SessionAdapter;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 import org.dragonet.protocol.PEPacket;
-import org.dragonet.proxy.DesktopServer;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
 
@@ -36,17 +35,11 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
 
     private final DragonProxy proxy;
     private final UpstreamSession upstream;
-    private DesktopServer serverInfo;
     private Client remoteClient;
 
     public PCDownstreamSession(DragonProxy proxy, UpstreamSession upstream) {
         this.proxy = proxy;
         this.upstream = upstream;
-    }
-
-    public void connect(DesktopServer serverInfo) {
-        this.serverInfo = serverInfo;
-        connect(serverInfo.remote_addr, serverInfo.remote_port);
     }
 
     public void connect(String addr, int port) {
@@ -61,8 +54,7 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
         remoteClient.getSession().setWriteTimeout(5);
         remoteClient.getSession().addListener(new SessionAdapter() {
             public void connected(ConnectedEvent event) {
-                proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_REMOTE_CONNECTED, upstream.getUsername(),
-                    upstream.getRemoteAddress()));
+                proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_REMOTE_CONNECTED, upstream.getUsername(), upstream.getRemoteAddress()));
 
                 // Notify the server
 //                BinaryStream bis = new BinaryStream();
@@ -74,9 +66,11 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
             }
 
             public void disconnected(DisconnectedEvent event) {
+                System.out.println("DisconnectedEvent " + event.getReason());
                 upstream.disconnect(proxy.getLang().get(event.getReason()));
             }
             public void disconnecting(DisconnectingEvent event) {
+                System.out.println("DisconnectingEvent " + event.getReason());
                 upstream.disconnect(proxy.getLang().get(event.getReason()));
             }
 
@@ -93,7 +87,7 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
                     if (packets.length == 1) {
                         upstream.sendPacket(packets[0]);
                     } else {
-                        upstream.sendAllPackets(packets, true);
+                        upstream.sendAllPackets(packets, false);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -141,9 +135,5 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
 
     public UpstreamSession getUpstream() {
         return upstream;
-    }
-
-    public DesktopServer getServerInfo() {
-        return serverInfo;
     }
 }

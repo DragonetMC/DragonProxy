@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.dragonet.proxy</groupId>
         <artifactId>dragonproxy-parent</artifactId>
-        <version>0.3.4.3-SNAPSHOT</version>
+        <version>0.3.4.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>dragonproxy-proxy</artifactId>
@@ -39,6 +39,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
                 <configuration>
                     <finalName>dragonproxy-${project.version}</finalName>
                 </configuration>
@@ -91,18 +96,24 @@
             </plugin>
         </plugins>
     </build>
-  
+
     <repositories>
         <repository>
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/repositories/public/</url>
         </repository>
         <repository>
-            <id>egg82-ninja</id>
-            <url>https://www.myget.org/F/egg82-java/maven/</url>
+            <id>CodeMC-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
-  
+
     <dependencies>
         <dependency>
             <groupId>org.dragonet.proxy</groupId>

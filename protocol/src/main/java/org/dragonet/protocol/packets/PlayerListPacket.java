@@ -34,13 +34,15 @@ public class PlayerListPacket extends PEPacket {
                 if (type == TYPE_ADD) {
                     putUnsignedVarLong(e.eid);
                     putString(e.username);
-                    e.skin.write(this);
+                    this.putSkin(e.skin);
+                    this.putByteArray(e.skin.getCape().getData());
+                    this.putString(e.geometryModel);
+                    this.putByteArray(e.geometryData);
                     putString(e.xboxUserId);
                 }
             }
-        } else {
+        } else
             putUnsignedVarInt(0);
-        }
     }
 
     @Override
@@ -48,17 +50,16 @@ public class PlayerListPacket extends PEPacket {
         type = (byte) (getByte() & 0xFF);
         int len = (int) getUnsignedVarInt();
         entries = new PlayerListEntry[len];
-        if (len > 0) {
+        if (len > 0)
             for (int i = 0; i < len; i++) {
                 entries[i] = new PlayerListEntry();
                 entries[i].uuid = getUUID();
                 if (type == TYPE_ADD) {
                     entries[i].eid = getVarLong();
                     entries[i].username = getString();
-                    entries[i].skin = Skin.read(this);
+                    entries[i].skin = getSkin();
                     entries[i].xboxUserId = getString();
                 }
             }
-        }
     }
 }

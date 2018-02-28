@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.dragonet.proxy</groupId>
         <artifactId>dragonproxy-plugin</artifactId>
-        <version>0.3.4.3-SNAPSHOT</version>
+        <version>0.3.4.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>dragonproxy-plugin-spigot</artifactId>
@@ -17,6 +17,16 @@
         <repository>
             <id>spigotMC-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>CodeMC-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
 

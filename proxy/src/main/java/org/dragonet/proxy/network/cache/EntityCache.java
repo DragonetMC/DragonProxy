@@ -32,9 +32,9 @@ import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 public final class EntityCache {
 
     private final UpstreamSession upstream;
+    private final CachedEntity clientEntity;
     // proxy eid -> entity
-    private final Map<Long, CachedEntity> entities = Collections
-        .synchronizedMap(new HashMap<>());
+    private final Map<Long, CachedEntity> entities = Collections.synchronizedMap(new HashMap<>());
     // pro
     private final Set<Long> playerEntities = Collections.synchronizedSet(new HashSet<Long>());
 
@@ -45,6 +45,7 @@ public final class EntityCache {
 
     public EntityCache(UpstreamSession upstream) {
         this.upstream = upstream;
+        this.clientEntity = new CachedEntity(1L, 1L, -1, EntityType.PLAYER, null, true, null);
         reset(false);
     }
 
@@ -57,29 +58,20 @@ public final class EntityCache {
     }
 
     public void reset(boolean clear) {
-        CachedEntity clientEntity = null;
-        if (entities.containsKey(1L))
-            clientEntity = entities.get(1L); //store the session
+        for(CachedEntity entity : entities.values())
+            entity.despawn(upstream);
         if (clear) {
             entities.clear();
             mapRemoteToClient.clear();
             mapClientToRemote.clear();
         }
-        if (clientEntity == null) // if the session it null, create one
-            clientEntity = new CachedEntity(1L, 1L, -1, EntityType.PLAYER, null, true, null);
-        entities.put(1L, clientEntity);
-        mapClientToRemote.put(clientEntity.proxyEid, clientEntity.eid);
-        mapRemoteToClient.put(clientEntity.eid, clientEntity.proxyEid);
     }
 
     public CachedEntity getClientEntity() {
-        if (!entities.containsKey(1L))
-            entities.put(1L, new CachedEntity(1L, 1L, -1, EntityType.PLAYER, null, true, null));
-        return entities.get(1L);
+        return this.clientEntity;
     }
 
     public void updateClientEntity(ServerJoinGamePacket packet) {
-        CachedEntity clientEntity = entities.get(1L);
         clientEntity.eid = packet.getEntityId();
         clientEntity.dimention = packet.getDimension();
         mapClientToRemote.put(clientEntity.proxyEid, clientEntity.eid);
@@ -203,7 +195,7 @@ public final class EntityCache {
         long proxyEid = mapRemoteToClient.get(eid);
         return playerEntities.contains(proxyEid);
     }
-    
+
     public AtomicLong getNextAtomicLong()
     {
         return nextClientEntityId;

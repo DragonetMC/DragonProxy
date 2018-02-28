@@ -10,28 +10,17 @@ import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.PropertiesConfig;
 
 /**
- *
  * @author Epic
  */
 public class MetricsManager {
-
     private PropertiesConfig config;
 
-    private static MetricsManager instance;
-
-    public static MetricsManager getInstance() {
-        if (instance == null)
-            instance = new MetricsManager();
-        return instance;
-    }
-
-    private MetricsManager() {
+    public MetricsManager(DragonProxy proxy) {
         // Get the config file
-
         try {
             config = new PropertiesConfig("/metrics.yml", "metrics.yml", true);
         } catch (IOException ex) {
-            DragonProxy.getInstance().getLogger().severe("Failed to load configuration file! Make sure the file is writable.");
+            proxy.getLogger().severe("Failed to load configuration file! Make sure the file is writable.");
             ex.printStackTrace();
         }
 
@@ -47,8 +36,7 @@ public class MetricsManager {
 
             try {
                 config.save();
-            } catch (IOException ignored) {
-            }
+            } catch (IOException ignored) {}
         }
 
         // Load the data
@@ -60,10 +48,10 @@ public class MetricsManager {
 
             metrics.addCustomChart(new Metrics.SimplePie("minecraft_version", () -> MinecraftConstants.GAME_VERSION));
 
-            metrics.addCustomChart(new Metrics.SingleLineChart("players", () -> DragonProxy.getInstance().getSessionRegister().getAll().size()));
-            metrics.addCustomChart(new Metrics.SimplePie("online_mode", () -> DragonProxy.getInstance().getAuthMode().equals("online") ? "online" : "offline"));
-            
-            metrics.addCustomChart(new Metrics.SimplePie("proxy_version", () -> DragonProxy.getInstance().getVersion()));
+            metrics.addCustomChart(new Metrics.SingleLineChart("players", () -> proxy.getSessionRegister().getAll().size()));
+            metrics.addCustomChart(new Metrics.SimplePie("online_mode", () -> proxy.getAuthMode().equals("online") ? "online" : "offline"));
+
+            metrics.addCustomChart(new Metrics.SimplePie("proxy_version", () -> proxy.getVersion()));
 
             metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
                 Map<String, Map<String, Integer>> map = new HashMap<>();

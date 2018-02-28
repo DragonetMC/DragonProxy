@@ -46,84 +46,86 @@ public final class Timings {
 
     public static final FullServerTickTiming fullServerTickTimer;
     public static final Timing timingsTickTimer;
-    public static final Timing pluginEventTimer;
+//    public static final Timing pluginEventTimer;
 
     public static final Timing connectionTimer;
-    public static final Timing schedulerTimer;
-    public static final Timing schedulerAsyncTimer;
-    public static final Timing schedulerSyncTimer;
+//    public static final Timing schedulerTimer;
+//    public static final Timing schedulerAsyncTimer;
+//    public static final Timing schedulerSyncTimer;
     public static final Timing commandTimer;
-    public static final Timing serverCommandTimer;
-    public static final Timing levelSaveTimer;
+//    public static final Timing serverCommandTimer;
+//    public static final Timing levelSaveTimer;
 
     public static final Timing playerNetworkSendTimer;
     public static final Timing playerNetworkReceiveTimer;
-    public static final Timing playerChunkOrderTimer;
+//    public static final Timing playerChunkOrderTimer;
     public static final Timing playerChunkSendTimer;
-    public static final Timing playerCommandTimer;
+//    public static final Timing playerCommandTimer;
 
     public static final Timing tickEntityTimer;
     public static final Timing tickBlockEntityTimer;
-    public static final Timing entityMoveTimer;
-    public static final Timing entityBaseTickTimer;
-    public static final Timing livingEntityBaseTickTimer;
+//    public static final Timing entityMoveTimer;
+//    public static final Timing entityBaseTickTimer;
+//    public static final Timing livingEntityBaseTickTimer;
+//
+//    public static final Timing generationTimer;
+//    public static final Timing populationTimer;
+//    public static final Timing generationCallbackTimer;
+//
+//    public static final Timing permissibleCalculationTimer;
+//    public static final Timing permissionDefaultTimer;
 
-    public static final Timing generationTimer;
-    public static final Timing populationTimer;
-    public static final Timing generationCallbackTimer;
-
-    public static final Timing permissibleCalculationTimer;
-    public static final Timing permissionDefaultTimer;
-    
     public static final Timing pcPacketTranslatorTimer;
     public static final Timing pePacketTranslatorTimer;
 
     static {
         setTimingsEnabled(true);
-        setVerboseEnabled(true);
+        setVerboseEnabled(false);
         setHistoryInterval(6000);
         setHistoryLength(72000);
 
         privacy = false;
-//        ignoredConfigSections.addAll(DragonProxy.getInstance().getConfig().getStringList("timings.ignore"));
+        ignoredConfigSections.add("online_username");
+        ignoredConfigSections.add("online_password");
 
-        DragonProxy.getInstance().getLogger().debug("Timings: \n" +
-                "Enabled - " + isTimingsEnabled() + "\n" +
-                "Verbose - " + isVerboseEnabled() + "\n" +
-                "History Interval - " + getHistoryInterval() + "\n" +
-                "History Length - " + getHistoryLength());
+        if (verboseEnabled)
+            DragonProxy.getInstance().getLogger().info("Timings: \n" +
+                    "Enabled - " + isTimingsEnabled() + "\n" +
+                    "Verbose - " + isVerboseEnabled() + "\n" +
+                    "History Interval - " + getHistoryInterval() + "\n" +
+                    "History Length - " + getHistoryLength());
 
         fullServerTickTimer = new FullServerTickTiming();
         timingsTickTimer = TimingsManager.getTiming(DEFAULT_GROUP.name, "Timings Tick", fullServerTickTimer);
-        pluginEventTimer = TimingsManager.getTiming("Plugin Events");
+//        pluginEventTimer = TimingsManager.getTiming("Plugin Events");
 
         connectionTimer = TimingsManager.getTiming("Connection Handler");
-        schedulerTimer = TimingsManager.getTiming("Scheduler");
-        schedulerAsyncTimer = TimingsManager.getTiming("## Scheduler - Async Tasks");
-        schedulerSyncTimer = TimingsManager.getTiming("## Scheduler - Sync Tasks");
+//        schedulerTimer = TimingsManager.getTiming("Scheduler");
+//        schedulerAsyncTimer = TimingsManager.getTiming("## Scheduler - Async Tasks");
+//        schedulerSyncTimer = TimingsManager.getTiming("## Scheduler - Sync Tasks");
         commandTimer = TimingsManager.getTiming("Commands");
-        serverCommandTimer = TimingsManager.getTiming("Server Command");
-        levelSaveTimer = TimingsManager.getTiming("Level Save");
+//        serverCommandTimer = TimingsManager.getTiming("Server Command");
+//        levelSaveTimer = TimingsManager.getTiming("Level Save");
 
-        playerNetworkSendTimer = TimingsManager.getTiming("Player Network Send");
-        playerNetworkReceiveTimer = TimingsManager.getTiming("Player Network Receive");
-        playerChunkOrderTimer = TimingsManager.getTiming("Player Order Chunks");
+        playerNetworkSendTimer = TimingsManager.getTiming(DEFAULT_GROUP.name, "Player Network Send", connectionTimer);
+        playerNetworkReceiveTimer = TimingsManager.getTiming(DEFAULT_GROUP.name, "Player Network Receive", connectionTimer);
+//        playerChunkOrderTimer = TimingsManager.getTiming("Player Order Chunks");
         playerChunkSendTimer = TimingsManager.getTiming("Player Send Chunks");
-        playerCommandTimer = TimingsManager.getTiming("Player Command");
+//        playerCommandTimer = TimingsManager.getTiming("Player Command");
 
         tickEntityTimer = TimingsManager.getTiming("## Entity Tick");
         tickBlockEntityTimer = TimingsManager.getTiming("## BlockEntity Tick");
-        entityMoveTimer = TimingsManager.getTiming("## Entity Move");
-        entityBaseTickTimer = TimingsManager.getTiming("## Entity Base Tick");
-        livingEntityBaseTickTimer = TimingsManager.getTiming("## LivingEntity Base Tick");
+//        entityMoveTimer = TimingsManager.getTiming("## Entity Move");
+//        entityBaseTickTimer = TimingsManager.getTiming("## Entity Base Tick");
+//        livingEntityBaseTickTimer = TimingsManager.getTiming("## LivingEntity Base Tick");
+//
+//        generationTimer = TimingsManager.getTiming("Level Generation");
+//        populationTimer = TimingsManager.getTiming("Level Population");
+//        generationCallbackTimer = TimingsManager.getTiming("Level Generation Callback");
+//
+//        permissibleCalculationTimer = TimingsManager.getTiming("Permissible Calculation");
+//        permissionDefaultTimer = TimingsManager.getTiming("Default Permission Calculation");
 
-        generationTimer = TimingsManager.getTiming("Level Generation");
-        populationTimer = TimingsManager.getTiming("Level Population");
-        generationCallbackTimer = TimingsManager.getTiming("Level Generation Callback");
-
-        permissibleCalculationTimer = TimingsManager.getTiming("Permissible Calculation");
-        permissionDefaultTimer = TimingsManager.getTiming("Default Permission Calculation");
-        
         pcPacketTranslatorTimer = TimingsManager.getTiming("## PC Packet Translator");
         pePacketTranslatorTimer = TimingsManager.getTiming("## PE Packet Translator");
     }
@@ -202,56 +204,44 @@ public final class Timings {
 
 
     public static Timing getCommandTiming(Command command) {
+        if (!isTimingsEnabled()) return commandTimer;
+        if (verboseEnabled) DragonProxy.getInstance().getLogger().info("getCommandTiming " + command.getName() + " hit");
         return TimingsManager.getTiming(DEFAULT_GROUP.name, "Command: " + command.getName(), commandTimer);
     }
 
-//    public static Timing getTaskTiming(TaskHandler handler, long period) {
-//        String repeating = " ";
-//        if (period > 0) {
-//            repeating += "(interval:" + period + ")";
-//        } else {
-//            repeating += "(Single)";
-//        }
-//
-//        if (handler.getTask() instanceof PluginTask) {
-//            String owner = ((PluginTask) handler.getTask()).getOwner().getName();
-//            return TimingsManager.getTiming(owner, "PluginTask: " + handler.getTaskId() + repeating, schedulerSyncTimer);
-//        } else if (!handler.isAsynchronous()) {
-//            return TimingsManager.getTiming(DEFAULT_GROUP.name, "Task: " + handler.getTaskId() + repeating, schedulerSyncTimer);
-//        } else {
-//            return null;
-//        }
-//    }
-//
-//    public static Timing getPluginEventTiming(Class<? extends Event> event, Listener listener, EventExecutor executor, Plugin plugin) {
-//        Timing group = TimingsManager.getTiming(plugin.getName(), "Combined Total", pluginEventTimer);
-//
-//        return TimingsManager.getTiming(plugin.getName(), "Event: " + listener.getClass().getName() + "."
-//                + (executor instanceof MethodEventExecutor ? ((MethodEventExecutor) executor).getMethod().getName() : "???")
-//                + " (" + event.getSimpleName() + ")", group);
-//    }
-//
     public static Timing getEntityTiming(String type) {
+        if (!isTimingsEnabled()) return tickEntityTimer;
+        if (verboseEnabled) DragonProxy.getInstance().getLogger().info("getEntityTiming " + type + " hit");
         return TimingsManager.getTiming(DEFAULT_GROUP.name, "## Entity Tick: " + type, tickEntityTimer);
     }
 
     public static Timing getBlockEntityTiming(String type) {
+        if (!isTimingsEnabled()) return tickBlockEntityTimer;
+        if (verboseEnabled) DragonProxy.getInstance().getLogger().info("getBlockEntityTiming " + type + " hit");
         return TimingsManager.getTiming(DEFAULT_GROUP.name, "## BlockEntity Tick: " + type, tickBlockEntityTimer);
     }
 //
     public static Timing getReceiveDataPacketTiming(PEPacket pk) {
+        if (!isTimingsEnabled()) return playerNetworkReceiveTimer;
+        if (verboseEnabled) DragonProxy.getInstance().getLogger().info("getReceiveDataPacketTiming " + pk.getClass().getSimpleName() + " hit");
         return TimingsManager.getTiming(DEFAULT_GROUP.name, "## Receive Packet: " + pk.getClass().getSimpleName(), playerNetworkReceiveTimer);
     }
 
     public static Timing getSendDataPacketTiming(PEPacket pk) {
+        if (!isTimingsEnabled()) return playerNetworkSendTimer;
+        if (verboseEnabled) DragonProxy.getInstance().getLogger().info("getSendDataPacketTiming " + pk.getClass().getSimpleName() + " hit");
         return TimingsManager.getTiming(DEFAULT_GROUP.name, "## Send Packet: " + pk.getClass().getSimpleName(), playerNetworkSendTimer);
     }
 
     public static Timing getPcPacketTranslatorTiming(IPCPacketTranslator translator) {
+        if (!isTimingsEnabled()) return pcPacketTranslatorTimer;
+        if (verboseEnabled) DragonProxy.getInstance().getLogger().info("getPcPacketTranslatorTiming " + translator.getClass().getSimpleName() + " hit");
         return TimingsManager.getTiming(DEFAULT_GROUP.name, "## Send Packet: " + translator.getClass().getSimpleName(), pcPacketTranslatorTimer);
     }
 
     public static Timing getPePacketTranslatorTiming(IPEPacketTranslator translator) {
+        if (!isTimingsEnabled()) return pePacketTranslatorTimer;
+        if (verboseEnabled) DragonProxy.getInstance().getLogger().info("getPePacketTranslatorTiming " + translator.getClass().getSimpleName() + " hit");
         return TimingsManager.getTiming(DEFAULT_GROUP.name, "## Send Packet: " + translator.getClass().getSimpleName(), pePacketTranslatorTimer);
     }
 

@@ -78,9 +78,12 @@ public final class Protocol {
         packets.put(SET_TITLE_PACKET, SetTitlePacket.class);
         packets.put(SPAWN_EXPERIENCE_ORB_PACKET, SpawnExperienceOrb.class);
         packets.put(EXPLODE_PACKET, ExplodePacket.class);
+        packets.put(ENTITY_FALL_PACKET, EntityFallPacket.class);
 
         packets.put(MODAL_FORM_REQUEST_PACKET, ModalFormRequestPacket.class);
         packets.put(MODAL_FORM_RESPONSE_PACKET, ModalFormResponsePacket.class);
+        packets.put(SERVER_SETTINGS_REQUEST_PACKET, ServerSettingsRequestPacket.class);
+        packets.put(SERVER_SETTINGS_RESPONSE_PACKET, ServerSettingsResponsePacket.class);
 
         packets.put(CONTAINER_OPEN_PACKET, ContainerOpenPacket.class);
         packets.put(CONTAINER_CLOSE_PACKET, ContainerClosePacket.class);
@@ -91,7 +94,7 @@ public final class Protocol {
         packets.put(RESOURCE_PACKS_INFO_PACKET, ResourcePacksInfoPacket.class);
         packets.put(RESOURCE_PACK_CLIENT_RESPONSE_PACKET, ResourcePackClientResponsePacket.class);
         packets.put(RESOURCE_PACK_STACK_PACKET, ResourcePackStackPacket.class);
-        
+
         packets.put(BATCH_PACKET, BatchPacket.class);
     }
 

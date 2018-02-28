@@ -241,11 +241,9 @@ public class ItemBlockTranslator {
                     break;
                 case "minecraft:sign":
                     output.putString("id", "Sign");
-                    if (output.contains("Text1") && output.contains("Text2") && output.contains("Text3") && output.contains("Text4"))
-                    {
+                    if (output.contains("Text1") && output.contains("Text2") && output.contains("Text3") && output.contains("Text4")) {
                         StringBuilder signText = new StringBuilder();
-                        for (int line = 1; line <= 4; line++)
-                        {
+                        for (int line = 1; line <= 4; line++) {
                             String lineText = output.getString("Text" + line);
                             if (MessageTranslator.isMessage(lineText))
                                 signText.append(MessageTranslator.translate(lineText));
@@ -264,9 +262,7 @@ public class ItemBlockTranslator {
                     output.remove("Data");
                     FlowerPot item = FlowerPot.byName(output.getString("Item"));
                     if (item != null)
-                    {
                         output.putShort("item", item.getId());
-                    }
                     else
                         output.putShort("item", 0);
                     output.remove("Item");
@@ -333,7 +329,7 @@ public class ItemBlockTranslator {
                 case "minecraft:brewing_stand":
                     output.putString("id", "BrewingStand");
                     break;
-                default :
+                default:
 //                    DragonProxy.getInstance().getLogger().debug("Block entitiy not handled : " + output.getString("id") + " " + output.toString());
                     return null;
             }
@@ -341,7 +337,7 @@ public class ItemBlockTranslator {
 //            System.out.println("translateBlockEntityToPE " + output.toString());
         return output;
     }
-    
+
     public static org.dragonet.common.data.nbt.tag.CompoundTag translateItemNBT(int id, Tag input, org.dragonet.common.data.nbt.tag.CompoundTag target) {
         if (input == null)
             return null;
@@ -352,7 +348,7 @@ public class ItemBlockTranslator {
         // 300 leather_leggings
         // 301 leather_boots
         // 397 skull                CompoundTag { {=ListTag { [CompoundTag { {Signature=StringTag(Signature) { Dfpupzf34kyZaa52cSxbbJhrT2KQ+H3DXEz0Ivsws75/pK3RMglcQrT8MMvfcax79DPFsiVHLvO9TD7AH76Oev5+VxjpJKkx9vnSI1Dnl4cpQ/160cHkc1gJaJaVyQhG7x1epH7h1u87U1yiHLw07ri4YkyLk7Zqa4RgGrgNIOrpXgexJ6gepgb14kxO3y+C6mW/9QIKjjlyXXc1XVQc3kYkoWwHB1qatTzYmq4ZB0u50OyIMzcXR7CcrYelm0u+DAIYIcbhwmcpUE6sLkieNLCdlRB9Qi7Bs/tIKs5nVAD8TgEJEWVxxS7iGCirjcjZuk7GoTqleX0TMFvHXyQ6K86VxRafNT9u3znuiKGev40Wl3969/93HtVHvFisH9bdquW5r00zd49h3kQs8xa7gQ5oE3uZ2xWPzOTuHrjEiZu2U3MlT3bnTRuQGIPzDCsRHRseZPEKzObIgyN+UB+EUO2EEiPED42jiFv6j4QFFAYkqxahAbnGlXXJPZ0Vq2GmwPwlIBvxmPuMZT/U9ECEg+j2TsIE766eYCm4GBZwC46Q9061eSKzPMPPrrSapo7i30yeKPuL1M8SnXGTGPVpDEpr63yqmHOEu0HJwjoSSeyViP0nphXOdVGEhHja6MIqyUl6gB9pAaiIDKVWQpFNO6z000FPGw+GcaDT8rc1pdQ= }, Value=StringTag(Value) { eyJ0aW1lc3RhbXAiOjE1MTI5MjM1NTc4MjAsInByb2ZpbGVJZCI6ImVjNTYxNTM4ZjNmZDQ2MWRhZmY1MDg2YjIyMTU0YmNlIiwicHJvZmlsZU5hbWUiOiJBbGV4Iiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7fX0= }} }] }, Id=StringTag(Id) { ec561538-f3fd-461d-aff5-086b22154bce }, Name=StringTag(Name) { Alex }} }
-        
+
         boolean handle = false;
         org.dragonet.common.data.nbt.tag.CompoundTag display = new org.dragonet.common.data.nbt.tag.CompoundTag("display");
         if (output.contains("Name")) {
@@ -365,7 +361,7 @@ public class ItemBlockTranslator {
             output.remove("Lore");
             handle = true;
         }
-        
+
         if (!display.isEmpty())
             output.putCompound("display", display);
 
@@ -377,6 +373,10 @@ public class ItemBlockTranslator {
     public static ItemStack translateToPC(Slot slot) {
         ItemEntry entry = translateToPC(slot.id, slot.damage);
         return new ItemStack(entry.getId(), slot.count, entry.getPCDamage() != null ? entry.getPCDamage() : slot.damage); //TODO NBT
+    }
+
+    public static ItemStack translateToPC(ItemEntry itemEntry) {
+        return new ItemStack(itemEntry.getId(), 1, itemEntry.getPCDamage() != null ? itemEntry.getPCDamage() : itemEntry.getPCDamage());
     }
 
     private static void swap(int pcId, int peId) {
@@ -462,7 +462,7 @@ public class ItemBlockTranslator {
             input = 3;
         return input;
     }
-    
+
     public enum FlowerPot {
         empty(0),
         red_flower(1),
@@ -486,26 +486,21 @@ public class ItemBlockTranslator {
         deadbush(11),
         fern(12),
         cactus(13);
-        
+
         private int id;
-        
-        private FlowerPot(int id)
-        {
-            
+
+        private FlowerPot(int id) {
+
         }
-        
-        public int getId()
-        {
+
+        public int getId() {
             return this.id;
         }
-        
-        public static FlowerPot byName(String value)
-        {
+
+        public static FlowerPot byName(String value) {
             for (FlowerPot entry : values())
-            {
                 if (("minecraft:" + entry.name()).equals(value))
                     return entry;
-            }
 //            DragonProxy.getInstance().getLogger().debug("FlowerPot item not found : " + value);
             return null;
         }

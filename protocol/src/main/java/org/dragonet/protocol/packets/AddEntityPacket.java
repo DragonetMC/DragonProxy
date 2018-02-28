@@ -21,8 +21,8 @@ public class AddEntityPacket extends PEPacket {
     public Vector3F motion;
     public float pitch;
     public float yaw;
-    public EntityMetaData meta;
     public Collection<PEEntityAttribute> attributes;
+    public EntityMetaData meta;
     public PEEntityLink[] links;
 
     public AddEntityPacket() {
@@ -78,15 +78,15 @@ public class AddEntityPacket extends PEPacket {
      */
     @Override
     public void decodePayload() {
-        eid = getVarLong();
-        rtid = getUnsignedVarLong();
-        type = (int) getUnsignedVarInt();
-        position = getVector3F();
-        motion = getVector3F();
-        pitch = getLFloat();
-        yaw = getLFloat();
-
-        int lenAttr = (int) getUnsignedVarInt();
+//        eid = getVarLong();
+//        rtid = getUnsignedVarLong();
+//        type = (int) getUnsignedVarInt();
+//        position = getVector3F();
+//        motion = getVector3F();
+//        pitch = getLFloat();
+//        yaw = getLFloat();
+//
+//        int lenAttr = (int) getUnsignedVarInt();
 
 //        attributes = new PEEntityAttribute[lenAttr];
 //        if (lenAttr > 0) {
@@ -105,12 +105,12 @@ public class AddEntityPacket extends PEPacket {
 //        }
 
         // TODO: read meta!!
-        int lenLinks = (int) getUnsignedVarInt();
-        links = new PEEntityLink[lenLinks];
-        if (lenLinks > 0) {
-            for (int i = 0; i < lenLinks; i++) {
-                links[i] = getEntityLink();
-            }
-        }
+//        int lenLinks = (int) getUnsignedVarInt();
+//        links = new PEEntityLink[lenLinks];
+//        if (lenLinks > 0) {
+//            for (int i = 0; i < lenLinks; i++) {
+//                links[i] = getEntityLink();
+//            }
+//        }
     }
 }

@@ -28,9 +28,8 @@ public class BlockPosition {
         this.y = pos.getY();
         this.z = pos.getZ();
     }
-    
-    public Vector3F toVector3F()
-    {
+
+    public Vector3F toVector3F() {
         return new Vector3F(x, y, z);
     }
 
@@ -39,9 +38,8 @@ public class BlockPosition {
         if (this == obj)
             return true;
 
-        if (!(obj instanceof BlockPosition)) {
+        if (!(obj instanceof BlockPosition))
             return false;
-        }
 
         BlockPosition other = (BlockPosition) obj;
 
@@ -52,11 +50,14 @@ public class BlockPosition {
     public int hashCode() {
         return Objects.hash(x, y, z);
     }
-    
+
     @Override
-    public String toString()
-    {
+    public String toString() {
         return x + "/" + y + "/" + z;
+    }
+
+    public Position asPosition() {
+        return new Position(x, y, z);
     }
 
 }

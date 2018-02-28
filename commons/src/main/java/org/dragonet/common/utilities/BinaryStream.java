@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import org.dragonet.common.data.entity.Skin;
 
 /**
  * author: MagicDroidX Nukkit Project
@@ -202,15 +203,19 @@ public class BinaryStream {
     }
 
     public void putEntityLink(PEEntityLink link) {
-        putVarLong(link.eidFrom);
-        putVarLong(link.eidTo);
-        putByte((byte) (link.type & 0xFF));
-        putBoolean(link.bool);
+        putVarLong(link.riding);
+        putVarLong(link.rider);
+        putByte(link.type);
+        putByte(link.unknownByte);
     }
 
-    public PEEntityLink getEntityLink() {
-        return new PEEntityLink(getVarLong(), getVarLong(), getByte(), getBoolean());
-    }
+//    public PEEntityLink getEntityLink() {
+//        return new PEEntityLink(
+//                getVarLong(),
+//                getVarLong(),
+//                getByte(),
+//                getByte());
+//    }
 
     public Map<String, GameRule> getGameRules() {
         int count = (int) getUnsignedVarInt();
@@ -286,6 +291,17 @@ public class BinaryStream {
 
     public UUID getUUID() {
         return Binary.readUUID(this.get(16));
+    }
+
+    public void putSkin(Skin skin) {
+        this.putString(skin.getModel());
+        this.putByteArray(skin.getData());
+    }
+
+    public Skin getSkin() {
+        String modelId = this.getString();
+        byte[] skinData = this.getByteArray();
+        return new Skin(skinData, modelId);
     }
 
     public Slot getSlot() {

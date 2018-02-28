@@ -2,10 +2,13 @@ package org.dragonet.protocol.packets;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.zip.Deflater;
+import org.dragonet.common.utilities.Binary;
 import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.Protocol;
 import org.dragonet.protocol.ProtocolInfo;
-import org.dragonet.common.utilities.BinaryStream;
 import org.dragonet.common.utilities.Zlib;
 
 /**
@@ -13,7 +16,7 @@ import org.dragonet.common.utilities.Zlib;
  */
 public class BatchPacket extends PEPacket {
 
-    public PEPacket[] data;
+    public List<PEPacket> packets = new ArrayList();
 
     @Override
     public int pid() {
@@ -23,6 +26,7 @@ public class BatchPacket extends PEPacket {
     @Override
     public void decodePayload() {
         byte[] data;
+        // decompression should be handled async
         try {
             data = Zlib.inflate(this.get(), 64 * 1024 * 1024);
         } catch (Exception e) {
@@ -30,25 +34,10 @@ public class BatchPacket extends PEPacket {
         }
 
         int len = data.length;
-        BinaryStream stream = new BinaryStream(data);
         try {
-            List<PEPacket> packets = new ArrayList<>();
-            while (stream.offset < len) {
-                byte[] buf = stream.getByteArray();
-
-                if (Protocol.packets.containsKey(buf[0])) {
-                    Class<? extends PEPacket> c = Protocol.packets.get(buf[0]);
-                    try {
-                        PEPacket pk = c.newInstance();
-                        pk.setBuffer(buf, 3); //skip 2 more bytes
-                        pk.decode();
-                        packets.add(pk);
-                    } catch (SecurityException | InstantiationException | IllegalAccessException
-                            | IllegalArgumentException ex) {
-                        ex.printStackTrace();
-                        return;
-                    }
-                }
+            while (offset < len) {
+                byte[] buf = getByteArray();
+                packets.add(Protocol.decodeSingle(buf));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,6 +47,23 @@ public class BatchPacket extends PEPacket {
 
     @Override
     public void encodePayload() {
-//        not ready now
+        byte[][] payload = new byte[packets.size() * 2][];
+        int size = 0;
+        for (int i = 0; i < packets.size(); i++) {
+            PEPacket p = packets.get(i);
+            if (!p.isEncoded()) {
+                p.encode();
+            }
+            byte[] buf = p.getBuffer();
+            payload[i * 2] = Binary.writeUnsignedVarInt(buf.length);
+            payload[i * 2 + 1] = buf;
+        }
+
+        //compression should be processed async
+        try {
+            putByteArray(Zlib.deflate(Binary.appendBytes(payload), Deflater.BEST_SPEED));
+        } catch (Exception ex) {
+            Logger.getLogger(BatchPacket.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

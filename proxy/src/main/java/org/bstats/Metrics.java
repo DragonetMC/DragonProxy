@@ -106,7 +106,7 @@ public class Metrics {
             JsonObject chart = customChart.getRequestJsonObject();
             if (chart == null) // If the chart is null, we skip it
                 continue;
-            customCharts.add(chart);
+            customCharts.put(chart);
         }
         data.add("customCharts", customCharts);
 

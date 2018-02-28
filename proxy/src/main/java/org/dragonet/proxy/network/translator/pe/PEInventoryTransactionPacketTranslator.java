@@ -63,7 +63,7 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
         // /!\ THIS IS A SIMPLE HANDLING WITHOUT JAVA DENY TRANSACTION
         switch (packet.transactionType) {
         case InventoryTransactionPacket.TYPE_NORMAL: //0 INVENTORY & CHEST
-            System.out.println("TYPE_NORMAL");
+//            System.out.println("TYPE_NORMAL");
             Slot cursor = null;
             if (packet.actions.length <= 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_WORLD && packet.actions[1].containerId == ContainerId.INVENTORY.getId()) //main inventory
             {
@@ -108,7 +108,7 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                         slot += size;
                     }
                 }
-                System.out.println("interact in chest (" + packet.actions[0].containerId + ") slot JE: " + slot + " BE:" + slotBE);
+//                System.out.println("interact in chest (" + packet.actions[0].containerId + ") slot JE: " + slot + " BE:" + slotBE);
 
                 // send action to server
                 ClientWindowActionPacket windowActionPacket = new ClientWindowActionPacket(
@@ -119,7 +119,7 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                         WindowAction.CLICK_ITEM,
                         ClickItemParam.LEFT_CLICK
                     );
-                    System.out.println("WINDOWACTIONPACKET \n" + DebugTools.getAllFields(windowActionPacket));
+//                    System.out.println("WINDOWACTIONPACKET \n" + DebugTools.getAllFields(windowActionPacket));
 
                     session.getDownstream().send(windowActionPacket);
 
@@ -127,18 +127,18 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                     if (packet.actions.length == 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_CONTAINER && packet.actions[1].sourceType == InventoryTransactionAction.SOURCE_CONTAINER) {
                         // mobile version: move item
                         // desktop version: SHIFT-click item
-                        System.out.println("Move item from " + packet.actions[0].containerId + " slot " + packet.actions[0].slotId
-                            + " to " + packet.actions[1].containerId + " slot " + packet.actions[1].slotId);
+//                        System.out.println("Move item from " + packet.actions[0].containerId + " slot " + packet.actions[0].slotId
+//                            + " to " + packet.actions[1].containerId + " slot " + packet.actions[1].slotId);
                     }
 
                 return new Packet[]{windowActionPacket};
             }
             return null; // it's okay to return null
         case InventoryTransactionPacket.TYPE_MISMATCH: //1
-            System.out.println("TYPE_MISMATCH");
+//            System.out.println("TYPE_MISMATCH");
             break;
         case InventoryTransactionPacket.TYPE_USE_ITEM: //2
-            System.out.println("TYPE_USE_ITEM");
+//            System.out.println("TYPE_USE_ITEM");
             UseItemData useItemData = (UseItemData) packet.transactionData;
             if(useItemData.itemInHand.id==346){
                 AddEntityPacket pk = new AddEntityPacket();
@@ -173,7 +173,7 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
 
             }
         case InventoryTransactionPacket.TYPE_USE_ITEM_ON_ENTITY: //3
-            System.out.println("TYPE_USE_ITEM_ON_ENTITY");
+//            System.out.println("TYPE_USE_ITEM_ON_ENTITY");
             UseItemOnEntityData useItemOnEntityData = (UseItemOnEntityData) packet.transactionData;
             CachedEntity cachedEntity = session.getEntityCache().getByLocalEID(useItemOnEntityData.entityRuntimeId);
             if (cachedEntity == null) {
@@ -189,7 +189,7 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                     );
             return new Packet[]{interractPacket};
         case InventoryTransactionPacket.TYPE_RELEASE_ITEM: //4
-            System.out.println("TYPE_RELEASE_ITEM");
+//            System.out.println("TYPE_RELEASE_ITEM");
             if(((ReleaseItemData)packet.transactionData).actionType==0){
                 return new Packet[]{new ClientPlayerUseItemPacket(Hand.MAIN_HAND), new ClientPlayerActionPacket(PlayerAction.RELEASE_USE_ITEM, new Position(0, 0, 0), BlockFace.DOWN)};
             }

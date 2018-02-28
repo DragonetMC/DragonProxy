@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.dragonet.proxy</groupId>
         <artifactId>dragonproxy-parent</artifactId>
-        <version>0.3.4.3-SNAPSHOT</version>
+        <version>0.3.4.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>dragonproxy-protocol</artifactId>
@@ -18,8 +18,18 @@
             <id>maven-repo</id>
             <url>https://raw.githubusercontent.com/JRakNet/MavenRepository/master</url>
         </repository>
+        <repository>
+            <id>CodeMC-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
     </repositories>
-  
+
     <dependencies>
         <dependency>
             <groupId>org.dragonet.proxy</groupId>

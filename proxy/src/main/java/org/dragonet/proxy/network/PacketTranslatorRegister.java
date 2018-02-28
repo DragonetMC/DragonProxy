@@ -97,7 +97,7 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerEntityHeadLookPacket.class, new PCEntityHeadLookPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityTeleportPacket.class, new PCEntityTeleportPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerUpdateTileEntityPacket.class, new PCUpdateTileEntityPacketTranslator());
-        
+
         //
         // // Player
         PC_TO_PE_TRANSLATOR.put(ServerPlayerPositionRotationPacket.class, new PCPlayerPositionRotationPacketTranslator());
@@ -123,25 +123,26 @@ public final class PacketTranslatorRegister {
     static {
         // Map
         PE_TO_PC_TRANSLATOR.put(LevelSoundEventPacket.class, new PESoundEventPacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(RequestChunkRadiusPacket.class, new PERequestChunkRadiusPacketTranslator());
 
         // Chat
         PE_TO_PC_TRANSLATOR.put(TextPacket.class, new PEChatPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(CommandRequestPacket.class, new PECommandRequestPacketTranslator());
 
         // Entity
-        // PE_TO_PC_TRANSLATOR.put(UseItem.class, new PEUseItemPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(MovePlayerPacket.class, new PEMovePlayerPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(PlayerActionPacket.class, new PEPlayerActionPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(InteractPacket.class, new PEInteractPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(AdventureSettingsPacket.class, new PEAdventureSettingsPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(PlayerInputPacket.class, new PEPlayerInputPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(EntityEventPacket.class, new PEEntityEventPacketTranslator());
-        
+
         // Inventory
         PE_TO_PC_TRANSLATOR.put(ContainerClosePacket.class, new PEWindowClosePacketTranslator());
         PE_TO_PC_TRANSLATOR.put(MobEquipmentPacket.class, new PEPlayerEquipmentPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(InventoryTransactionPacket.class, new PEInventoryTransactionPacketTranslator());
         PE_TO_PC_TRANSLATOR.put(BlockPickRequestPacket.class, new PEBlockPickRequestPacketTranslator());
+        PE_TO_PC_TRANSLATOR.put(PlayerHotbarPacket.class, new PEPlayerHotbarPacketTranslator());
 
         // Player
         PE_TO_PC_TRANSLATOR.put(AnimatePacket.class, new PEAnimatePacketTranslator());
@@ -154,15 +155,15 @@ public final class PacketTranslatorRegister {
         if (target == null)
             return null;
 
-        try (Timing timing = Timings.getPcPacketTranslatorTiming(target)) {
+//        try (Timing timing = Timings.getPcPacketTranslatorTiming(target)) {
             try {
                 return target.translate(session, packet);
             } catch (Exception e) {
-                timing.stopTiming();
+//                timing.stopTiming();
                 e.printStackTrace();
                 return null;
             }
-        }
+//        }
     }
 
     public static Packet[] translateToPC(UpstreamSession session, PEPacket packet) {
@@ -172,14 +173,14 @@ public final class PacketTranslatorRegister {
         if (target == null)
             return null;
 
-        try (Timing timing = Timings.getPePacketTranslatorTiming(target)) {
+//        try (Timing timing = Timings.getPePacketTranslatorTiming(target)) {
             try {
                 return target.translate(session, packet);
             } catch (Exception e) {
-                timing.stopTiming();
+//                timing.stopTiming();
                 e.printStackTrace();
                 return null;
             }
-        }
+//        }
     }
 }

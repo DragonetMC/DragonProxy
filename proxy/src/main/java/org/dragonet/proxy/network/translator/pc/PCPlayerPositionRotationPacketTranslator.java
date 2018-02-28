@@ -6,12 +6,13 @@
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
  *
- * You can view LICENCE file for details. 
+ * You can view LICENCE file for details.
  *
  * @author The Dragonet Team
  */
 package org.dragonet.proxy.network.translator.pc;
 
+import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
@@ -39,16 +40,18 @@ import org.dragonet.protocol.PEPacket;
 import org.dragonet.common.data.entity.Skin;
 import org.dragonet.common.utilities.BinaryStream;
 
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import org.dragonet.common.maths.BlockPosition;
+import org.dragonet.common.maths.ChunkPos;
 
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.common.maths.NukkitMath;
 
 public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTranslator<ServerPlayerPositionRotationPacket> {
 
+    @Override
     public PEPacket[] translate(UpstreamSession session, ServerPlayerPositionRotationPacket packet) {
 
         CachedEntity entityPlayer = session.getEntityCache().getClientEntity();
@@ -62,8 +65,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 return null;
             }
 
-            ServerJoinGamePacket restored = (ServerJoinGamePacket) session.getDataCache()
-                    .remove(CacheKey.PACKET_JOIN_GAME_PACKET);
+            ServerJoinGamePacket restored = (ServerJoinGamePacket) session.getDataCache().remove(CacheKey.PACKET_JOIN_GAME_PACKET);
             if (!session.getProxy().getAuthMode().equalsIgnoreCase("online")) {
                 StartGamePacket ret = new StartGamePacket();
                 ret.rtid = entityPlayer.proxyEid;
@@ -82,17 +84,28 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 ret.defaultPlayerPermission = 2;
                 ret.premiumWorldTemplateId = "";
                 ret.difficulty = restored.getDifficulty();
-                session.sendPacket(ret);
+                session.sendPacket(ret, true);
             }
+
+            session.getChunkCache().sendOrderedChunks();
 
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("DragonProxy");
-            ClientPluginMessagePacket ClientPluginMessagePacket = new ClientPluginMessagePacket("MC|Brand", out.toByteArray());
-            ((PCDownstreamSession) session.getDownstream()).send(ClientPluginMessagePacket);
+            ClientPluginMessagePacket clientPluginMessagePacket = new ClientPluginMessagePacket("MC|Brand", out.toByteArray());
+            ((PCDownstreamSession) session.getDownstream()).send(clientPluginMessagePacket);
 
             LoginPacket loginpacket = (LoginPacket) session.getDataCache().remove(CacheKey.PACKET_LOGIN_PACKET);
-            ClientSettingsPacket ClientSettingsPacket = new ClientSettingsPacket(loginpacket.decoded.language, 8, ChatVisibility.FULL, false, new SkinPart[]{}, Hand.OFF_HAND);
-            ((PCDownstreamSession) session.getDownstream()).send(ClientSettingsPacket);
+            String clientLanguage = loginpacket.decoded.clientData.has("LanguageCode") ? loginpacket.decoded.clientData.get("LanguageCode").getAsString() : "en_US";
+            session.getDataCache().put(CacheKey.PLAYER_LANGUAGE, clientLanguage);
+
+            ClientSettingsPacket clientSettingsPacket = new ClientSettingsPacket(
+                    clientLanguage,
+                    (int) session.getDataCache().getOrDefault(CacheKey.PLAYER_REQUESTED_CHUNK_RADIUS, 5),
+                    ChatVisibility.FULL,
+                    false,
+                    new SkinPart[]{},
+                    Hand.OFF_HAND);
+            ((PCDownstreamSession) session.getDownstream()).send(clientSettingsPacket);
 
             UpdateAttributesPacket attr = new UpdateAttributesPacket();
             attr.rtid = entityPlayer.proxyEid;
@@ -107,35 +120,35 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.MOVEMENT_SPEED));
             } else
                 attr.entries = entityPlayer.attributes.values();
-            session.sendPacket(attr);
+            session.sendPacket(attr, true);
 
             AdventureSettingsPacket adv = new AdventureSettingsPacket();
             //flags
             adv.setFlag(AdventureSettingsPacket.WORLD_IMMUTABLE, restored.getGameMode().equals(GameMode.ADVENTURE));
-//			adv.setFlag(AdventureSettingsPacket.NO_PVP, true);
-//			adv.setFlag(AdventureSettingsPacket.AUTO_JUMP, true);
+            //adv.setFlag(AdventureSettingsPacket.NO_PVP, true);
+            //adv.setFlag(AdventureSettingsPacket.AUTO_JUMP, true);
             adv.setFlag(AdventureSettingsPacket.ALLOW_FLIGHT, restored.getGameMode().equals(GameMode.CREATIVE) || restored.getGameMode().equals(GameMode.SPECTATOR));
             adv.setFlag(AdventureSettingsPacket.NO_CLIP, restored.getGameMode().equals(GameMode.SPECTATOR));
             adv.setFlag(AdventureSettingsPacket.WORLD_BUILDER, !restored.getGameMode().equals(GameMode.SPECTATOR) || !restored.getGameMode().equals(GameMode.ADVENTURE));
-            adv.setFlag(AdventureSettingsPacket.FLYING, false);
+            adv.setFlag(AdventureSettingsPacket.FLYING, restored.getGameMode().equals(GameMode.SPECTATOR));
             adv.setFlag(AdventureSettingsPacket.MUTED, false);
             //custom permission flags (not necessary for now when using LEVEL_PERMISSION setting)
-//			adv.setFlag(AdventureSettingsPacket.BUILD_AND_MINE, true);
-//			adv.setFlag(AdventureSettingsPacket.DOORS_AND_SWITCHES, true);
-//			adv.setFlag(AdventureSettingsPacket.OPEN_CONTAINERS, true);
-//			adv.setFlag(AdventureSettingsPacket.ATTACK_PLAYERS, true);
-//			adv.setFlag(AdventureSettingsPacket.ATTACK_MOBS, true);
-//			adv.setFlag(AdventureSettingsPacket.OPERATOR, true);
-//			adv.setFlag(AdventureSettingsPacket.TELEPORT, true);
+            //adv.setFlag(AdventureSettingsPacket.BUILD_AND_MINE, true);adv.setFlag(AdventureSettingsPacket.BUILD_AND_MINE, true);
+            //adv.setFlag(AdventureSettingsPacket.DOORS_AND_SWITCHES, true);
+            //adv.setFlag(AdventureSettingsPacket.OPEN_CONTAINERS, true);
+            //adv.setFlag(AdventureSettingsPacket.ATTACK_PLAYERS, true);
+            //adv.setFlag(AdventureSettingsPacket.ATTACK_MOBS, true);
+            //adv.setFlag(AdventureSettingsPacket.OPERATOR, true);
+            //adv.setFlag(AdventureSettingsPacket.TELEPORT, true);
             adv.eid = entityPlayer.proxyEid;
             adv.commandsPermission = AdventureSettingsPacket.PERMISSION_NORMAL;     //TODO update this with server configiration
             adv.playerPermission = AdventureSettingsPacket.LEVEL_PERMISSION_MEMBER; //TODO update this with server configiration
-            session.sendPacket(adv);
+            session.sendPacket(adv, true);
 
             SetEntityDataPacket entityData = new SetEntityDataPacket();
             entityData.rtid = entityPlayer.proxyEid;
             entityData.meta = EntityMetaData.createDefault();
-            session.sendPacket(entityData);
+            session.sendPacket(entityData, true);
 
             if (session.getProxy().getAuthMode().equalsIgnoreCase("online")) {
 
@@ -152,14 +165,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                     if (vehicle != null)
                         pk.ridingRuntimeId = vehicle.eid;
                 }
-                session.sendPacket(pk);
-
-                /*ChangeDimensionPacket d = new ChangeDimensionPacket();
-                d.dimension = 0;
-				d.position = new Vector3F((float) packet.getX(), (float) packet.getY() + Constants.PLAYER_HEAD_OFFSET,
-						(float) packet.getZ());
-				session.sendPacket(d);
-				session.sendPacket(new PlayStatusPacket(PlayStatusPacket.PLAYER_SPAWN));*/
+                session.sendPacket(pk, true);
             }
 
             // Notify the server
@@ -181,22 +187,16 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             Set<org.dragonet.protocol.type.PlayerListEntry> peEntries = new HashSet();
 
             for (CachedEntity entity : session.getEntityCache().getEntities().values()) {
-                if (entity.eid == entityPlayer.eid) //never send ME (entry 1L)
-                    continue;
                 if (entity.peType == EntityType.PLAYER) {
                     PlayerListEntry playerListEntry = session.getPlayerInfoCache().get(entity.playerUniqueId);
-                    PlayerSkinPacket skin = new PlayerSkinPacket(entity.playerUniqueId);
 
                     org.dragonet.protocol.type.PlayerListEntry peEntry = new org.dragonet.protocol.type.PlayerListEntry();
                     peEntry.uuid = entity.playerUniqueId;
                     peEntry.eid = entity.eid;
                     peEntry.username = playerListEntry.getProfile().getName();
-                    peEntry.skin = Skin.DEFAULT_SKIN;
+                    peEntry.skin = Skin.DEFAULT_SKIN_STEVE;
                     peEntry.xboxUserId = "null";
                     peEntries.add(peEntry);
-
-                    entity.spawned = true;
-                    session.sendPacket(skin);
                 }
                 entity.spawn(session);
             }
@@ -208,10 +208,23 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             return null;
         }
 
+        float offset = 0.01f;
+        byte mode = MovePlayerPacket.MODE_NORMAL;
+        ChunkPos chunk = new ChunkPos(NukkitMath.ceilDouble(packet.getX()) >> 4, NukkitMath.ceilDouble(packet.getZ()) >> 4);
+        // check if destination is out of range
+        if (!session.getChunkCache().getLoadedChunks().contains(chunk)) {
+            mode = MovePlayerPacket.MODE_TELEPORT;
+            offset = 0.2f;
+//            System.out.println(packet.getX() + " " + packet.getZ());
+//            System.out.println("out of range !" + chunk.toString());
+            session.getChunkCache().sendOrderedChunks();
+//            session.getChunkCache().getDebugGrid();
+        }
+
         MovePlayerPacket pk = new MovePlayerPacket();
         pk.rtid = entityPlayer.proxyEid;
-        pk.mode = MovePlayerPacket.MODE_TELEPORT;
-        pk.position = new Vector3F((float) packet.getX(), (float) packet.getY() + EntityType.PLAYER.getOffset(), (float) packet.getZ());
+        pk.mode = mode;
+        pk.position = new Vector3F((float) packet.getX(), (float) packet.getY() + EntityType.PLAYER.getOffset() + offset, (float) packet.getZ());
         pk.yaw = packet.getYaw();
         pk.pitch = packet.getPitch();
         pk.headYaw = packet.getYaw();
@@ -221,13 +234,14 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             if (vehicle != null)
                 pk.ridingRuntimeId = vehicle.eid;
         }
-
-        entityPlayer.absoluteMove(packet.getX(), packet.getY() + entityPlayer.peType.getOffset(), packet.getZ(), packet.getYaw(), packet.getPitch());
+//        System.out.println("From server " + packet.getX() + " " + packet.getY() + " " + packet.getZ() + " ");
+//        System.out.println("Entity position " + entityPlayer.x + " " + (entityPlayer.y - EntityType.PLAYER.getOffset()) + " " + entityPlayer.z + " ");
+        session.sendPacket(pk);
 
         // send the confirmation
         ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());
         ((PCDownstreamSession) session.getDownstream()).send(confirm);
 
-        return new PEPacket[]{pk};
+        return null;
     }
 }

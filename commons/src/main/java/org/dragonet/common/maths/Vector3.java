@@ -354,4 +354,8 @@ public class Vector3 implements Cloneable {
     public BlockVector3 asBlockVector3() {
         return new BlockVector3(this.getFloorX(), this.getFloorY(), this.getFloorZ());
     }
+
+    public Position asPosition() {
+        return new Position(this.getFloorX(), this.getFloorY(), this.getFloorZ());
+    }
 }
