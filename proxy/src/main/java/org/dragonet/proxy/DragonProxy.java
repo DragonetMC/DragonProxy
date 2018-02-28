@@ -29,7 +29,7 @@ import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.configuration.ServerConfig;
 import org.dragonet.proxy.network.RaknetInterface;
 import org.dragonet.proxy.network.SessionRegister;
-import org.dragonet.proxy.utilities.Logger;
+import org.dragonet.proxy.utilities.ProxyLogger;
 import org.dragonet.proxy.utilities.MetricsManager;
 import org.yaml.snakeyaml.Yaml;
 
@@ -47,7 +47,7 @@ public class DragonProxy {
     private static String[] launchArgs;
     private final Properties properties;
     private String version;
-    private Logger logger;
+    private ProxyLogger logger;
     private final TickerThread ticker = new TickerThread(this);
     private ServerConfig config;
     private Lang lang;
@@ -73,7 +73,7 @@ public class DragonProxy {
         return instance;
     }
 
-    public Logger getLogger() {
+    public ProxyLogger getLogger() {
         return logger;
     }
 
@@ -114,7 +114,7 @@ public class DragonProxy {
     }
 
     private DragonProxy() {
-        logger = new Logger(this);
+        logger = new ProxyLogger(this);
 
         try {
             File fileConfig = new File("config.yml");
@@ -130,11 +130,11 @@ public class DragonProxy {
             }
             config = new Yaml().loadAs(new FileInputStream(fileConfig), ServerConfig.class);
         } catch (IOException ex) {
-            logger.severe("Failed to load configuration file! Make sure the file is writable.");
-            System.exit(1);
+            logger.info("Failed to load configuration file! Make sure the file is writable.");
             ex.printStackTrace();
+            System.exit(1);
         } catch (org.yaml.snakeyaml.error.YAMLException ex) {
-            logger.severe("Failed to load configuration file! Make sure it's up to date !");
+            logger.info("Failed to load configuration file! Make sure it's up to date !");
             System.exit(1);
         }
 
@@ -157,13 +157,6 @@ public class DragonProxy {
         console = new ConsoleCommandReader(this);
         console.startConsole();
 
-        // Should we save console log? Set it in config file
-        if (config.log_console)
-//            console.startFile("console.log"); TODO
-            logger.info("Saving console output enabled");
-        else
-            logger.info("Saving console output disabled");
-
         // set logger mode
         logger.debug = config.log_debug;
 
@@ -172,14 +165,14 @@ public class DragonProxy {
 
         // Put at the top instead
         if (!IS_RELEASE)
-            logger.warning("This is a development build. It may contain bugs. Do not use on production.");
+            logger.info("This is a development build. It may contain bugs. Do not use on production.");
 
         if (config.auto_login) {
-            logger.warning("******************************************");
-            logger.warning("");
-            logger.warning("\tYou're using autologin, make sure you are the only who can connect on this server !");
-            logger.warning("");
-            logger.warning("******************************************");
+            logger.info("******************************************");
+            logger.info("");
+            logger.info("\tYou're using autologin, make sure you are the only who can connect on this server !");
+            logger.info("");
+            logger.info("******************************************");
         }
 
         // Check for startup arguments
@@ -189,7 +182,7 @@ public class DragonProxy {
         try {
             lang = new Lang(config.lang);
         } catch (IOException ex) {
-            logger.severe("Failed to load language file: " + config.lang + "!");
+            logger.info("Failed to load language file: " + config.lang + "!");
             ex.printStackTrace();
         }
 
@@ -206,7 +199,7 @@ public class DragonProxy {
 
         authMode = config.mode.toLowerCase();
         if (!authMode.equals("cls") && !authMode.equals("online") && !authMode.equals("offline"))
-            logger.severe("Invalid login 'mode' option detected, must be cls/online/offline. You set it to '" + authMode
+            logger.info("Invalid login 'mode' option detected, must be cls/online/offline. You set it to '" + authMode
                     + "'! ");
 
         // Init metrics (https://bstats.org/plugin/server-implementation/DragonProxy)
@@ -274,11 +267,12 @@ public class DragonProxy {
         try {
             Thread.sleep(2000); // Wait for all clients disconnected
         } catch (Exception ex) {
-            System.out.println("Exception while shutting down!");
+            logger.info("Exception while shutting down!");
             ex.printStackTrace();
         }
         Timings.stopServer();
         System.out.println("Goodbye!");
+        logger.stop();
         System.exit(0);
     }
 
