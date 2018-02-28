@@ -36,6 +36,8 @@ import org.yaml.snakeyaml.Yaml;
 import com.github.steveice10.mc.protocol.MinecraftConstants;
 
 import co.aikar.timings.Timings;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang3.SystemUtils;
 import org.dragonet.common.utilities.SkinFetcher;
 
@@ -230,6 +232,13 @@ public class DragonProxy {
 
         ticker.start();
         logger.info(lang.get(Lang.INIT_DONE));
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                shutdown();
+            }
+        });
     }
 
     public Properties getProperties() {
