@@ -276,6 +276,7 @@ public class UpstreamSession {
                 else
                     protocol = new MinecraftProtocol(email, password, false, authProxy);
             } catch (RequestException ex) {
+                ex.printStackTrace();
                 if (ex.getMessage().toLowerCase().contains("invalid")) {
                     sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_FAILD));
                     disconnect(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_FAILD));
