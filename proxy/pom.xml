@@ -133,17 +133,11 @@
             <artifactId>slf4j-nop</artifactId>
             <version>1.7.25</version>
             <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry</artifactId>
+            <version>1.7.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
