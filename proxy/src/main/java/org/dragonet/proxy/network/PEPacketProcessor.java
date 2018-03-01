@@ -146,7 +146,7 @@ public class PEPacketProcessor {
                     JSONArray array = new JSONArray(formResponse.formData);
                     this.client.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
                     this.client.authenticate(array.get(2).toString(), array.get(3).toString(), authProxy);
-                } catch(JSONException ex) {
+                } catch (JSONException ex) {
                     this.client.sendChat(this.client.getProxy().getLang().get(Lang.MESSAGE_ONLINE_LOGIN_FAILD));
                 }
                 return;
@@ -175,13 +175,15 @@ public class PEPacketProcessor {
                     bis.putByteArray(packet.getBuffer());
                     ClientPluginMessagePacket msg = new ClientPluginMessagePacket("DragonProxy", bis.getBuffer());
                     client.getDownstream().send(msg);
-                } else {
-                    Packet[] translated = PacketTranslatorRegister.translateToPC(this.client, packet);
-                    if (translated == null || translated.length == 0)
-                        break;
+                } else
+                    // IMPORTANT Do not send packet until client is connected !
+                    if (client.isSpawned()) {
+                        Packet[] translated = PacketTranslatorRegister.translateToPC(this.client, packet);
+                        if (translated == null || translated.length == 0)
+                            break;
 
-                    client.getDownstream().send(translated);
-                }
+                        client.getDownstream().send(translated);
+                    }
                 break;
         }
     }

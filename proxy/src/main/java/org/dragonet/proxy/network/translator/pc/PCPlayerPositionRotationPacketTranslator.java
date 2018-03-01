@@ -87,6 +87,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 session.sendPacket(ret, true);
             }
 
+            entityPlayer.absoluteMove(packet.getX(), packet.getY() + entityPlayer.peType.getOffset() + 0.1f, packet.getZ(), packet.getYaw(), packet.getPitch());
             session.getChunkCache().sendOrderedChunks();
 
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -176,7 +177,6 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
 
             session.setSpawned();
 
-            entityPlayer.absoluteMove(packet.getX(), packet.getY() + entityPlayer.peType.getOffset() + 0.1f, packet.getZ(), packet.getYaw(), packet.getPitch());
             DragonProxy.getInstance().getLogger().info("Spawning " + session.getUsername() + " in world " + entityPlayer.dimention + " at " + entityPlayer.x + "/" + entityPlayer.y + "/" + entityPlayer.z);
 
             // send the confirmation
