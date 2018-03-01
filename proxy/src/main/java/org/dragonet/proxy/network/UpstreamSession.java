@@ -185,10 +185,12 @@ public class UpstreamSession {
         if (packet == null)
             return;
 
-        PackettoPlayerEvent packetEvent = new PackettoPlayerEvent(this, packet);
-        proxy.getEventManager().callEvent(packetEvent);
-        packet = packetEvent.getPacket();
-        
+        if(!proxy.getConfig().disable_packet_events){
+            PackettoPlayerEvent packetEvent = new PackettoPlayerEvent(this, packet);
+            proxy.getEventManager().callEvent(packetEvent);
+            packet = packetEvent.getPacket();
+        }
+
         //cache in case of not spawned and no high priority
         if (!spawned && !high_priority) {
             putCachePacket(packet);
@@ -275,7 +277,7 @@ public class UpstreamSession {
     public void onDisconnect(String reason) {
         PlayerQuitEvent playerQuit = new PlayerQuitEvent(this);
         proxy.getEventManager().callEvent(playerQuit);
-        
+
         proxy.getLogger().info(proxy.getLang().get(Lang.CLIENT_DISCONNECTED,
                 proxy.getAuthMode().equals("cls") ? "unknown" : username, remoteAddress, reason));
         if (downstream != null)
@@ -365,7 +367,7 @@ public class UpstreamSession {
         PlayerAuthenticationEvent authEvent = new PlayerAuthenticationEvent(this);
         proxy.getEventManager().callEvent(authEvent);
         if(authEvent.isCancelled​())return;
-        
+
         if (proxy.getAuthMode().equals("online")) {
             proxy.getLogger().debug("Login online mode, sending placeholder datas");
             StartGamePacket pkStartGame = new StartGamePacket();
