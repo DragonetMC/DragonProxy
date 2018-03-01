@@ -13,18 +13,15 @@
 package org.dragonet.proxy.commands;
 
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.utilities.Logger;
 
 import java.util.Scanner;
 
 public class ConsoleCommandReader {
 
-    private final Logger logger;
     private final DragonProxy proxy;
 
     public ConsoleCommandReader(DragonProxy proxy) {
         this.proxy = proxy;
-        this.logger = proxy.getLogger();
     }
 
     public void startConsole() {
@@ -39,10 +36,10 @@ public class ConsoleCommandReader {
                         if (command == null || command.trim().length() == 0) {
                             continue;
                         }
-
+                        proxy.getLogger().info("[Console] Executing command: " + command);
                         proxy.getCommandRegister().callCommand(command);
                     } catch (Exception ex) {
-                        logger.severe("Error while executing command: " + ex);
+                        proxy.getLogger().severe("Error while executing command: " + ex);
                         ex.printStackTrace();
                     }
                 }

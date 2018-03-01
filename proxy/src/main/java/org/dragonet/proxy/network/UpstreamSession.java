@@ -172,6 +172,10 @@ public class UpstreamSession {
         return chunkCache;
     }
 
+    public MinecraftProtocol getProtocol() {
+        return protocol;
+    }
+
     public void sendPacket(PEPacket packet) {
         sendPacket(packet, false);
     }
@@ -287,6 +291,7 @@ public class UpstreamSession {
                 else
                     protocol = new MinecraftProtocol(email, password, false, authProxy);
             } catch (RequestException ex) {
+                ex.printStackTrace();
                 if (ex.getMessage().toLowerCase().contains("invalid")) {
                     sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_FAILD));
                     disconnect(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_FAILD));
@@ -305,7 +310,7 @@ public class UpstreamSession {
 
             sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_SUCCESS, username));
 
-            proxy.getLogger().info( proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_SUCCESS_CONSOLE, username, remoteAddress, username));
+            proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_SUCCESS_CONSOLE, username, remoteAddress, username));
             connectToServer(proxy.getConfig().remote_server_addr, proxy.getConfig().remote_server_port);
         });
     }
