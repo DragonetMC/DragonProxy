@@ -208,6 +208,9 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             return null;
         }
 
+        entityPlayer.absoluteMove(packet.getX(), packet.getY() + entityPlayer.peType.getOffset() + 0.1f, packet.getZ(), packet.getYaw(), packet.getPitch());
+        session.getChunkCache().sendOrderedChunks();
+
         float offset = 0.01f;
         byte mode = MovePlayerPacket.MODE_NORMAL;
         ChunkPos chunk = new ChunkPos(NukkitMath.ceilDouble(packet.getX()) >> 4, NukkitMath.ceilDouble(packet.getZ()) >> 4);
