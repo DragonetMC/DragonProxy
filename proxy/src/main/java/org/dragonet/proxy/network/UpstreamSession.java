@@ -72,31 +72,25 @@ public class UpstreamSession {
     private final RakNetClientSession raknetClient;
     private boolean loggedIn = false;
     private boolean spawned = false;
+    private boolean connecting = false;
     private Queue<PEPacket> cachedPackets = new ConcurrentLinkedQueue();
     private final InetSocketAddress remoteAddress;
     private final PEPacketProcessor packetProcessor;
     private LoginChainDecoder profile;
     private String username;
     private IDownstreamSession downstream;
+    private MinecraftProtocol protocol;
 
     /*
      * =============================================================================
-	 * ========================== | Caches for Protocol Compatibility | /*
-	 * =============================================================================
-	 * ==========================
+     * =================== | Caches for Protocol Compatibility | ==================
+     * =============================================================================
      */
     private final Map<String, Object> dataCache = Collections.synchronizedMap(new HashMap<String, Object>());
     private final Map<UUID, PlayerListEntry> playerInfoCache = Collections.synchronizedMap(new HashMap<UUID, PlayerListEntry>());
     private final EntityCache entityCache = new EntityCache(this);
     private final WindowCache windowCache = new WindowCache(this);
     private final ChunkCache chunkCache = new ChunkCache(this);
-    protected boolean connecting;
-
-    /*
-	 * =============================================================================
-	 * ==========================
-     */
-    private MinecraftProtocol protocol;
 
     public UpstreamSession(DragonProxy proxy, String raknetID, RakNetClientSession raknetClient,
             InetSocketAddress remoteAddress) {
@@ -212,13 +206,12 @@ public class UpstreamSession {
         else {
             BatchPacket batchPacket = new BatchPacket();
 //            System.out.println("BatchPacket :");
-            for (PEPacket packet : packets) {
+            for (PEPacket packet : packets)
 //                System.out.println(" - " + packet.getClass().getSimpleName());
                 if (high_priority) {
                     batchPacket.packets.add(packet);
                     break;
                 }
-            }
             sendPacket(batchPacket, high_priority);
         }
     }

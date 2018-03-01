@@ -160,7 +160,7 @@ public class ItemBlockTranslator {
         ItemEntry entry = translateToPE(item.getId(), item.getData());
         slot.id = entry.getId();
         slot.damage = entry.getPEDamage() != null ? entry.getPEDamage() : item.getData();
-        slot.count = (item.getAmount() & 0xff);
+        slot.count = item.getAmount();
         slot.tag = translateItemNBT(item.getId(), item.getNBT(), null);
         return slot;
     }
@@ -372,7 +372,7 @@ public class ItemBlockTranslator {
 
     public static ItemStack translateToPC(Slot slot) {
         ItemEntry entry = translateToPC(slot.id, slot.damage);
-        return new ItemStack(entry.getId(), slot.count, entry.getPCDamage() != null ? entry.getPCDamage() : slot.damage); //TODO NBT
+        return new ItemStack(entry.getId(), slot.count, entry.getPCDamage() != null ? entry.getPCDamage() : slot.damage); //TODO NBT PE -> PC
     }
 
     public static ItemStack translateToPC(ItemEntry itemEntry) {

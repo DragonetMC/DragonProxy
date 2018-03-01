@@ -22,6 +22,7 @@ import java.util.Map;
 public class CachedWindow {
 
     public final int windowId;
+    public boolean isOpen = false;
     /**
      * The type of this window on remote side, -1 for player inventory.
      */

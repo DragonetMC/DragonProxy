@@ -22,12 +22,12 @@ public final class CacheKey {
     public static final String PLAYER_EID = "player_entity_id";
     public static final String PLAYER_SELECTED_SLOT = "player_selected_slot";
     public static final String AUTHENTICATION_STATE = "auth_state";
-    public static final String WINDOW_OPENED_ID = "window_opened_id";
-    public static final String WINDOW_OPENED_SIZE = "window_opened_size";
+    public static final String CURRENT_WINDOW_ID = "window_opened_id";
+    public static final String CURRENT_WINDOW_SIZE = "window_opened_size";
 
     // Positions
     public static final String BLOCK_BREAKING_POSITION = "block_breaking_position";
-    public static final String WINDOW_BLOCK_POSITION = "window_block_position";
+    public static final String CURRENT_WINDOW_POSITION = "window_block_position";
 
     // Settings
     public static final String PLAYER_LANGUAGE = "player_language";
