@@ -54,7 +54,7 @@ If you get banned from a server, we do not take responsabilities.
 If you try to run DragonProxy on the __same computer__ you start Minecraft W10 Edition, you must [enable loopback for Minecraft protocol first](http://pmmp.readthedocs.io/en/rtfd/faq/connecting/win10localhostcantconnect.html).
 
 ## Libraries used
-* [JRakNet by the MarfGamer](https://github.com/JRakNet/JRakNet)
+* [JRakNet by Whirvis](https://github.com/JRakNet/JRakNet)
 * [MCProtocolLib by Steveice10](https://github.com/Steveice10/MCProtocolLib)
 
 ## Thanks :
