@@ -23,10 +23,12 @@ If you get banned from a server, we do not take responsabilities.
 - Block break / place supported
 - Entities spawn move and equipment
 - BocksEntities spawn
-- Inventory WIP
+- Chests
+
+## Work in progressHoverEpic-patch-1
+see https://github.com/DragonetMC/DragonProxy/issues/132
 
 ## Known bugs
- - No chunk updates on world changing / teleport to far
  - No creative inventory
  - Movments on stairs/half blocks
  - Some anticheat trigger bad movments
@@ -51,7 +53,7 @@ If you get banned from a server, we do not take responsabilities.
  - then start again
 
 ## Windows 10 localhost problem
-If you try to run DragonProxy on the __same computer__ you start Minecraft W10 Edition, you must [enable loopback for Minecraft protocol first](http://pmmp.readthedocs.io/en/rtfd/faq/connecting/win10localhostcantconnect.html).
+If you try to run DragonProxy on the __same computer__ you start Minecraft W10 Edition, you must [enable loopback for Minecraft protocol](http://pmmp.readthedocs.io/en/rtfd/faq/connecting/win10localhostcantconnect.html) first.
 
 ## Libraries used
 * [JRakNet by Whirvis](https://github.com/JRakNet/JRakNet)
