@@ -131,7 +131,6 @@
                 <configuration>
                     <show>public</show>
                     <failOnError>false</failOnError>
-                    <skip>true</skip>
                 </configuration>
             </plugin>
             <plugin>

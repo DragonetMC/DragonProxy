@@ -6,6 +6,7 @@
             </pattern>
         </encoder>
     </appender>
+    <logger name="net.marfgamer.jraknet" level="warn" />
     <root level="info">
         <appender-ref ref="STDOUT"/>
     </root>

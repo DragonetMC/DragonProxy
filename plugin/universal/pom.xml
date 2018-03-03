@@ -27,7 +27,14 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                    <minimizeJar>false</minimizeJar> <!-- Don't minimize or the final jar would be empty! -->
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
                 </configuration>
             </plugin>
         </plugins>
