@@ -70,3 +70,6 @@ log_debug: false
 # Recommanded at least 8 threads.
 # If you using this software at home, you can set to lower value like 8 or 12.
 thread_pool_size: 8
+
+# Disables Packet events to save performance.
+disable_packet_events: true
