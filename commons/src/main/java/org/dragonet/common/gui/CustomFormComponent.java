@@ -1,7 +1,7 @@
 package org.dragonet.common.gui;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +30,10 @@ public class CustomFormComponent extends BaseModalFormComponent {
     }
 
     @Override
-    public void serializeData(JSONObject out) {
-        out.put("title", title);
-        JSONArray content = new JSONArray();
-        components.forEach((c) -> content.put(c.serializeToJson()));
-        out.put("content", content);
+    public void serializeData(JsonObject out) {
+        out.addProperty("title", title);
+        JsonArray content = new JsonArray();
+        components.forEach((c) -> content.add(c.serializeToJson()));
+        out.add("content", content);
     }
 }

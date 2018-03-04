@@ -1,7 +1,7 @@
 package org.dragonet.common.gui;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
+import org.dragonet.common.utilities.JsonUtil;
 
 import java.util.List;
 
@@ -20,8 +20,8 @@ public class DropDownComponent extends BaseModalFormComponent {
     }
 
     @Override
-    public void serializeData(JSONObject out) {
-        out.put("text", text);
-        out.put("options", new JSONArray(options));
+    public void serializeData(JsonObject out) {
+        out.addProperty("text", text);
+        out.add("options", JsonUtil.toArray(options));
     }
 }

@@ -1,18 +1,18 @@
 package org.dragonet.plugin.bukkit.events;
 
+import com.google.gson.JsonArray;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.dragonet.plugin.bukkit.BedrockPlayer;
-import org.json.JSONArray;
 
 public class ModalFormResponseEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
 
     private final BedrockPlayer bedrockPlayer;
 
-    private final JSONArray values;
+    private final JsonArray values;
 
-    public ModalFormResponseEvent(BedrockPlayer player, JSONArray values) {
+    public ModalFormResponseEvent(BedrockPlayer player, JsonArray values) {
         this.bedrockPlayer = player;
         this.values = values;
     }
@@ -21,7 +21,7 @@ public class ModalFormResponseEvent extends Event {
         return bedrockPlayer;
     }
 
-    public JSONArray getValues() {
+    public JsonArray getValues() {
         return values;
     }
 

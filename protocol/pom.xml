@@ -11,22 +11,11 @@
     </parent>
 
     <artifactId>dragonproxy-protocol</artifactId>
-    <packaging>jar</packaging>
 
     <repositories>
         <repository>
             <id>maven-repo</id>
             <url>https://raw.githubusercontent.com/JRakNet/MavenRepository/master</url>
-        </repository>
-        <repository>
-            <id>CodeMC-repo</id>
-            <url>https://repo.codemc.org/repository/maven-public</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
         </repository>
     </repositories>
 
@@ -35,14 +24,16 @@
             <groupId>org.dragonet.proxy</groupId>
             <artifactId>dragonproxy-commons</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.marfgamer</groupId>
             <artifactId>jraknet</artifactId>
             <version>2.8.4</version>
-            <scope>compile</scope>
             <exclusions>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-handler</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>

@@ -1,5 +1,9 @@
 package org.bstats;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
 import javax.net.ssl.HttpsURLConnection;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -14,8 +18,6 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPOutputStream;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  * bStats collects some data for plugin authors.
@@ -95,19 +97,19 @@ public class Metrics {
      *
      * @return The plugin specific data.
      */
-    private JSONObject getPluginData() {
-        JSONObject data = new JSONObject();
+    private JsonObject getPluginData() {
+        JsonObject data = new JsonObject();
 
-        data.put("pluginName", name); // Append the name of the server software
-        JSONArray customCharts = new JSONArray();
+        data.addProperty("pluginName", name); // Append the name of the server software
+        JsonArray customCharts = new JsonArray();
         for (CustomChart customChart : charts) {
             // Add the data of the custom charts
-            JSONObject chart = customChart.getRequestJsonObject();
+            JsonObject chart = customChart.getRequestJsonObject();
             if (chart == null) // If the chart is null, we skip it
                 continue;
-            customCharts.put(chart);
+            customCharts.add(chart);
         }
-        data.put("customCharts", customCharts);
+        data.add("customCharts", customCharts);
 
         return data;
     }
@@ -117,21 +119,21 @@ public class Metrics {
      *
      * @return The server specific data.
      */
-    private JSONObject getServerData() {
+    private JsonObject getServerData() {
         // OS specific data
         String osName = System.getProperty("os.name");
         String osArch = System.getProperty("os.arch");
         String osVersion = System.getProperty("os.version");
         int coreCount = Runtime.getRuntime().availableProcessors();
 
-        JSONObject data = new JSONObject();
+        JsonObject data = new JsonObject();
 
-        data.put("serverUUID", serverUUID);
+        data.addProperty("serverUUID", serverUUID);
 
-        data.put("osName", osName);
-        data.put("osArch", osArch);
-        data.put("osVersion", osVersion);
-        data.put("coreCount", coreCount);
+        data.addProperty("osName", osName);
+        data.addProperty("osArch", osArch);
+        data.addProperty("osVersion", osVersion);
+        data.addProperty("coreCount", coreCount);
 
         return data;
     }
@@ -140,11 +142,11 @@ public class Metrics {
      * Collects the data and sends it afterwards.
      */
     private void submitData() {
-        final JSONObject data = getServerData();
+        final JsonObject data = getServerData();
 
-        JSONArray pluginData = new JSONArray();
-        pluginData.put(getPluginData());
-        data.put("plugins", pluginData);
+        JsonArray pluginData = new JsonArray();
+        pluginData.add(getPluginData());
+        data.add("plugins", pluginData);
 
         try {
             // We are still in the Thread of the timer, so nothing get blocked :)
@@ -162,7 +164,7 @@ public class Metrics {
      * @param data The data to send.
      * @throws Exception If the request failed.
      */
-    private static void sendData(JSONObject data) throws Exception {
+    private static void sendData(JsonObject data) throws Exception {
         if (data == null)
             throw new IllegalArgumentException("Data cannot be null!");
         HttpsURLConnection connection = (HttpsURLConnection) new URL(URL).openConnection();
@@ -225,15 +227,15 @@ public class Metrics {
             this.chartId = chartId;
         }
 
-        private JSONObject getRequestJsonObject() {
-            JSONObject chart = new JSONObject();
-            chart.put("chartId", chartId);
+        private JsonObject getRequestJsonObject() {
+            JsonObject chart = new JsonObject();
+            chart.addProperty("chartId", chartId);
             try {
-                JSONObject data = getChartData();
+                JsonObject data = getChartData();
                 if (data == null)
                     // If the data is null we don't send the chart.
                     return null;
-                chart.put("data", data);
+                chart.add("data", data);
             } catch (Throwable t) {
                 if (logFailedRequests)
                     logger.log(Level.WARNING, "Failed to get data for custom chart with id " + chartId, t);
@@ -242,7 +244,7 @@ public class Metrics {
             return chart;
         }
 
-        protected abstract JSONObject getChartData() throws Exception;
+        protected abstract JsonObject getChartData() throws Exception;
 
     }
 
@@ -265,13 +267,13 @@ public class Metrics {
         }
 
         @Override
-        protected JSONObject getChartData() throws Exception {
-            JSONObject data = new JSONObject();
+        protected JsonObject getChartData() throws Exception {
+            JsonObject data = new JsonObject();
             String value = callable.call();
             if (value == null || value.isEmpty())
                 // Null = skip the chart
                 return null;
-            data.put("value", value);
+            data.addProperty("value", value);
             return data;
         }
     }
@@ -295,9 +297,9 @@ public class Metrics {
         }
 
         @Override
-        protected JSONObject getChartData() throws Exception {
-            JSONObject data = new JSONObject();
-            JSONObject values = new JSONObject();
+        protected JsonObject getChartData() throws Exception {
+            JsonObject data = new JsonObject();
+            JsonObject values = new JsonObject();
             Map<String, Integer> map = callable.call();
             if (map == null || map.isEmpty())
                 // Null = skip the chart
@@ -307,12 +309,12 @@ public class Metrics {
                 if (entry.getValue() == 0)
                     continue; // Skip this invalid
                 allSkipped = false;
-                values.put(entry.getKey(), entry.getValue());
+                values.addProperty(entry.getKey(), entry.getValue());
             }
             if (allSkipped)
                 // Null = skip the chart
                 return null;
-            data.put("values", values);
+            data.add("values", values);
             return data;
         }
     }
@@ -336,30 +338,30 @@ public class Metrics {
         }
 
         @Override
-        public JSONObject getChartData() throws Exception {
-            JSONObject data = new JSONObject();
-            JSONObject values = new JSONObject();
+        public JsonObject getChartData() throws Exception {
+            JsonObject data = new JsonObject();
+            JsonObject values = new JsonObject();
             Map<String, Map<String, Integer>> map = callable.call();
             if (map == null || map.isEmpty())
                 // Null = skip the chart
                 return null;
             boolean reallyAllSkipped = true;
             for (Map.Entry<String, Map<String, Integer>> entryValues : map.entrySet()) {
-                JSONObject value = new JSONObject();
+                JsonObject value = new JsonObject();
                 boolean allSkipped = true;
                 for (Map.Entry<String, Integer> valueEntry : map.get(entryValues.getKey()).entrySet()) {
-                    value.put(valueEntry.getKey(), valueEntry.getValue());
+                    value.addProperty(valueEntry.getKey(), valueEntry.getValue());
                     allSkipped = false;
                 }
                 if (!allSkipped) {
                     reallyAllSkipped = false;
-                    values.put(entryValues.getKey(), value);
+                    values.add(entryValues.getKey(), value);
                 }
             }
             if (reallyAllSkipped)
                 // Null = skip the chart
                 return null;
-            data.put("values", values);
+            data.add("values", values);
             return data;
         }
     }
@@ -383,13 +385,13 @@ public class Metrics {
         }
 
         @Override
-        protected JSONObject getChartData() throws Exception {
-            JSONObject data = new JSONObject();
+        protected JsonObject getChartData() throws Exception {
+            JsonObject data = new JsonObject();
             int value = callable.call();
             if (value == 0)
                 // Null = skip the chart
                 return null;
-            data.put("value", value);
+            data.addProperty("value", value);
             return data;
         }
     }
@@ -413,9 +415,9 @@ public class Metrics {
         }
 
         @Override
-        protected JSONObject getChartData() throws Exception {
-            JSONObject data = new JSONObject();
-            JSONObject values = new JSONObject();
+        protected JsonObject getChartData() throws Exception {
+            JsonObject data = new JsonObject();
+            JsonObject values = new JsonObject();
             Map<String, Integer> map = callable.call();
             if (map == null || map.isEmpty())
                 // Null = skip the chart
@@ -425,12 +427,12 @@ public class Metrics {
                 if (entry.getValue() == 0)
                     continue; // Skip this invalid
                 allSkipped = false;
-                values.put(entry.getKey(), entry.getValue());
+                values.addProperty(entry.getKey(), entry.getValue());
             }
             if (allSkipped)
                 // Null = skip the chart
                 return null;
-            data.put("values", values);
+            data.add("values", values);
             return data;
         }
     }
@@ -454,19 +456,19 @@ public class Metrics {
         }
 
         @Override
-        protected JSONObject getChartData() throws Exception {
-            JSONObject data = new JSONObject();
-            JSONObject values = new JSONObject();
+        protected JsonObject getChartData() throws Exception {
+            JsonObject data = new JsonObject();
+            JsonObject values = new JsonObject();
             Map<String, Integer> map = callable.call();
             if (map == null || map.isEmpty())
                 // Null = skip the chart
                 return null;
             for (Map.Entry<String, Integer> entry : map.entrySet()) {
-                JSONArray categoryValues = new JSONArray();
-                categoryValues.put(entry.getValue());
-                values.put(entry.getKey(), categoryValues);
+                JsonArray categoryValues = new JsonArray();
+                categoryValues.add(new JsonPrimitive(entry.getValue()));
+                values.add(entry.getKey(), categoryValues);
             }
-            data.put("values", values);
+            data.add("values", values);
             return data;
         }
     }
@@ -490,9 +492,9 @@ public class Metrics {
         }
 
         @Override
-        protected JSONObject getChartData() throws Exception {
-            JSONObject data = new JSONObject();
-            JSONObject values = new JSONObject();
+        protected JsonObject getChartData() throws Exception {
+            JsonObject data = new JsonObject();
+            JsonObject values = new JsonObject();
             Map<String, int[]> map = callable.call();
             if (map == null || map.isEmpty())
                 // Null = skip the chart
@@ -502,15 +504,15 @@ public class Metrics {
                 if (entry.getValue().length == 0)
                     continue; // Skip this invalid
                 allSkipped = false;
-                JSONArray categoryValues = new JSONArray();
+                JsonArray categoryValues = new JsonArray();
                 for (int categoryValue : entry.getValue())
-                    categoryValues.put(categoryValue);
-                values.put(entry.getKey(), categoryValues);
+                    categoryValues.add(new JsonPrimitive(categoryValue));
+                values.add(entry.getKey(), categoryValues);
             }
             if (allSkipped)
                 // Null = skip the chart
                 return null;
-            data.put("values", values);
+            data.add("values", values);
             return data;
         }
     }
