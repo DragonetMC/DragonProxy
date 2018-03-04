@@ -11,6 +11,5 @@
     </parent>
 
     <artifactId>dragonproxy-api</artifactId>
-    <packaging>jar</packaging>
 
 </project>

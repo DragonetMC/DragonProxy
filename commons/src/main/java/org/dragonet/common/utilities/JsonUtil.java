@@ -1,9 +1,7 @@
 package org.dragonet.common.utilities;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.common.collect.Lists;
+import com.google.gson.*;
 
 import java.util.*;
 import java.util.function.Function;
@@ -17,10 +15,16 @@ import java.util.function.Function;
 public class JsonUtil {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
+    public static JsonArray parseArray(String json) {
+        return new JsonParser().parse(json).getAsJsonArray();
+    }
+
+    public static JsonArray toArray(Collection<?> collection) {
+        return GSON.toJsonTree(Lists.newArrayList(collection)).getAsJsonArray();
+    }
+
     public static JsonArray toArray(Object... objects) {
-        List array = new ArrayList();
-        Collections.addAll(array, objects);
-        return GSON.toJsonTree(array).getAsJsonArray();
+        return GSON.toJsonTree(Lists.newArrayList(objects)).getAsJsonArray();
     }
 
     public static JsonObject toObject(Object object) {

@@ -1,6 +1,6 @@
 package org.dragonet.common.gui;
 
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
 
 /**
  * Created on 2017/12/26.
@@ -29,13 +29,13 @@ public class InputComponent extends BaseModalFormComponent {
     }
 
     @Override
-    public void serializeData(JSONObject out) {
-        out.put("text", text);
+    public void serializeData(JsonObject out) {
+        out.addProperty("text", text);
         if (defaultValue != null) {
-            out.put("default", defaultValue);
+            out.addProperty("default", defaultValue);
         }
         if (placeholder != null) {
-            out.put("placeholder", placeholder);
+            out.addProperty("placeholder", placeholder);
         }
     }
 }

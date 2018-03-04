@@ -35,4 +35,5 @@ public class ServerConfig {
     public boolean log_debug = false;
     public boolean authenticate_players = true;
     public int thread_pool_size = 8;
+    public Boolean disable_packet_events = true;
 }

@@ -1,6 +1,6 @@
 package org.dragonet.common.gui;
 
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
 
 /**
  * Created on 2017/12/26.
@@ -19,7 +19,7 @@ public class LabelComponent extends BaseModalFormComponent {
     }
 
     @Override
-    public void serializeData(JSONObject out) {
-        out.put("text", text);
+    public void serializeData(JsonObject out) {
+        out.addProperty("text", text);
     }
 }
