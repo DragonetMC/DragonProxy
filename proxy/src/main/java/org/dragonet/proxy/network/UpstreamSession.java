@@ -19,8 +19,8 @@ import com.github.steveice10.mc.auth.service.AuthenticationService;
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.data.game.setting.Difficulty;
-import net.marfgamer.jraknet.protocol.Reliability;
-import net.marfgamer.jraknet.session.RakNetClientSession;
+import com.whirvis.jraknet.protocol.Reliability;
+import com.whirvis.jraknet.session.RakNetClientSession;
 import org.dragonet.common.maths.Vector3F;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
@@ -195,7 +195,7 @@ public class UpstreamSession {
                 e.printStackTrace();
                 return;
             }
-            raknetClient.sendMessage(Reliability.RELIABLE_ORDERED, 0, new net.marfgamer.jraknet.Packet(Binary.appendBytes((byte) 0xfe, buffer)));
+            raknetClient.sendMessage(Reliability.RELIABLE_ORDERED, 0, new com.whirvis.jraknet.Packet(Binary.appendBytes((byte) 0xfe, buffer)));
         }
     }
 
