@@ -40,7 +40,6 @@ import org.dragonet.protocol.Protocol;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.ServerConfig;
 import org.dragonet.proxy.events.defaults.packets.PacketfromPlayerEvent;
-import org.json.JSONException;
 
 public class PEPacketProcessor {
 
