@@ -11,35 +11,13 @@
     </parent>
 
     <artifactId>dragonproxy-plugin-universal</artifactId>
-    <packaging>jar</packaging>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.dragonet.proxy</groupId>
-            <artifactId>dragonproxy-plugin-spigot</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.dragonet.proxy</groupId>
-            <artifactId>dragonproxy-plugin-bungee</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
-
+    <!-- Hacky stuff to change the shaded jar filename -->
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <configuration>
-                    <!-- TODO: relocate -->
-                    <relocations>
-                        <relocation>
-                        </relocation>
-                    </relocations>
-                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -48,8 +26,31 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <minimizeJar>false</minimizeJar> <!-- Don't minimize or the final jar would be empty! -->
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.dragonet.proxy</groupId>
+            <artifactId>dragonproxy-plugin-spigot</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.dragonet.proxy</groupId>
+            <artifactId>dragonproxy-plugin-bungee</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>

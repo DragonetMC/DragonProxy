@@ -19,13 +19,4 @@
         <module>universal</module>
     </modules>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.dragonet.proxy</groupId>
-            <artifactId>dragonproxy-protocol</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
-
 </project>

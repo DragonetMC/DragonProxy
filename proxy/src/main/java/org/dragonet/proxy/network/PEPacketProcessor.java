@@ -19,6 +19,9 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 import com.github.steveice10.packetlib.packet.Packet;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParseException;
+import org.dragonet.common.utilities.JsonUtil;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import org.dragonet.protocol.packets.*;
@@ -27,7 +30,6 @@ import org.dragonet.common.gui.CustomFormComponent;
 import org.dragonet.common.gui.InputComponent;
 import org.dragonet.common.gui.LabelComponent;
 import org.dragonet.common.utilities.BinaryStream;
-import org.json.JSONArray;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -37,7 +39,6 @@ import org.dragonet.protocol.Protocol;
 
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.ServerConfig;
-import org.json.JSONException;
 
 public class PEPacketProcessor {
 
@@ -143,10 +144,10 @@ public class PEPacketProcessor {
                     this.client.sendChat(this.client.getProxy().getLang().get(Lang.MESSAGE_LOGIN_PROGRESS));
 
                     ModalFormResponsePacket formResponse = (ModalFormResponsePacket) packet;
-                    JSONArray array = new JSONArray(formResponse.formData);
+                    JsonArray array = JsonUtil.parseArray(formResponse.formData);
                     this.client.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
                     this.client.authenticate(array.get(2).toString(), array.get(3).toString(), authProxy);
-                } catch (JSONException ex) {
+                } catch(JsonParseException ex) {
                     this.client.sendChat(this.client.getProxy().getLang().get(Lang.MESSAGE_ONLINE_LOGIN_FAILD));
                 }
                 return;
