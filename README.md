@@ -38,7 +38,7 @@ If you get banned from a server, we do not take responsabilities.
 
 ## Download
  - [release](https://github.com/DragonetMC/DragonProxy/releases) : stable builds, low features
- - [snapshots](https://ci.codemc.org/view/DragonetMC/job/DragonProxy/) : developments builds, unstable, latest features
+ - [snapshots](https://ci.codemc.org/view/DragonetMC/job/DragonProxy/lastSuccessfulBuild/artifact/proxy/target/)(take first jar) : developments builds, unstable, latest features
 
 ## Compiling
  - clone from github
