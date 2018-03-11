@@ -156,7 +156,7 @@ public class PEPacketProcessor {
                     JsonArray array = JsonUtil.parseArray(formResponse.formData);
                     this.client.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
                     this.client.authenticate(array.get(2).getAsString(), array.get(3).getAsString(), authProxy);
-                } catch(JsonParseException ex) {
+                } catch(Exception ex) {
                     this.client.sendChat(this.client.getProxy().getLang().get(Lang.MESSAGE_ONLINE_LOGIN_FAILD));
                 }
                 return;

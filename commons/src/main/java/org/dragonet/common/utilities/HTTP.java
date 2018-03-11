@@ -122,4 +122,55 @@ public class HTTP {
                 }
         }
     }
+
+    public static String performPostRequest(String url, String params) {
+        if (url == null)
+            throw new IllegalArgumentException("URL cannot be null.");
+
+        InputStream in = null;
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setConnectTimeout(15000);
+            connection.setReadTimeout(15000);
+            connection.setUseCaches(false);
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
+
+            byte[] out = params.getBytes(StandardCharsets.UTF_8);
+            int length = out.length;
+            connection.setFixedLengthStreamingMode(length);
+            connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+            connection.connect();
+            try (OutputStream os = connection.getOutputStream()) {
+                os.write(out);
+            }
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == 200)
+                in = connection.getInputStream();
+            else
+                in = connection.getErrorStream();
+
+            if (in != null) {
+                int data = -1;
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+                while ((data = in.read()) != -1)
+                    bos.write(data);
+
+                return new String(bos.toByteArray(), CharsetUtil.UTF_8);
+            } else
+                return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            if (in != null)
+                try {
+                    in.close();
+                } catch (IOException e) {
+                }
+        }
+    }
 }

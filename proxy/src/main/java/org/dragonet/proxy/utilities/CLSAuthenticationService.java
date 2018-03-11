@@ -43,10 +43,10 @@ public class CLSAuthenticationService {
 
     public boolean authenticate(UpstreamSession session) {
         if (session.getProfile().isLoginVerified()) {
-            Map<String, String> postData = new HashMap();
-            postData.put("chain", session.getProfile().getChainJWT());
-            postData.put("token", session.getProfile().getClientDataJWT());
-            String rawResult = HTTP.performPostRequest(this.clsServer + "/api/v1/authenticate", postData);
+            CLSAuthenticateRequest request = new CLSAuthenticateRequest();
+            request.chain = session.getProfile().getChainJWT();
+            request.token = session.getProfile().getClientDataJWT();
+            String rawResult = HTTP.performPostRequest(this.clsServer + "/api/v1/authenticate", gson.toJson(request));
             if (rawResult != null)
                 try {
                     JsonObject result = gson.fromJson(rawResult, JsonObject.class);
@@ -75,11 +75,11 @@ public class CLSAuthenticationService {
     }
 
     public boolean refresh(UpstreamSession session, String newAccessToken) {
-        if (session.getDataCache().containsKey("mojang_clientToken") && session.getDataCache().containsKey("mojang_uuid")) {
-            Map<String, String> postData = new HashMap();
-            postData.put("uuid", (String) session.getDataCache().get("mojang_uuid"));
-            postData.put("accessToken", newAccessToken);
-            String rawResult = HTTP.performPostRequest(this.clsServer + "/api/v1/refresh", postData);
+        if (session.getDataCache().containsKey("mojang_uuid")) {
+            CLSRefreshRequest request = new CLSRefreshRequest();
+            request.uuid = (String) session.getDataCache().get("mojang_uuid");
+            request.accessToken = newAccessToken;
+            String rawResult = HTTP.performPostRequest(this.clsServer + "/api/v1/refresh", gson.toJson(request));
             if (rawResult != null)
                 try {
                     JsonObject result = gson.fromJson(rawResult, JsonObject.class);
@@ -96,4 +96,15 @@ public class CLSAuthenticationService {
         }
         return false;
     }
+
+    public class CLSRefreshRequest {
+        private String uuid;
+        private String accessToken;
+    }
+
+    public class CLSAuthenticateRequest {
+        private String chain;
+        private String token;
+    }
+
 }
