@@ -1,7 +1,7 @@
 package org.dragonet.protocol.type.transaction.data;
 
 import org.dragonet.common.data.inventory.Slot;
-import org.dragonet.common.maths.BlockPosition;
+import org.dragonet.common.maths.Vector3F;
 
 /**
  * @author CreeperFace
@@ -12,7 +12,7 @@ public class UseItemOnEntityData implements TransactionData {
     public int actionType;
     public int hotbarSlot;
     public Slot itemInHand;
-    public BlockPosition vector1;
-    public BlockPosition vector2;
+    public Vector3F playerPos;
+    public Vector3F clickPos;
 
 }
