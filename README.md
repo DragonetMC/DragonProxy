@@ -40,7 +40,7 @@ see https://github.com/DragonetMC/DragonProxy/issues/132
 
 ## Download
  - [release](https://github.com/DragonetMC/DragonProxy/releases) : stable builds, low features
- - [snapshots](https://ci.codemc.org/view/DragonetMC/job/DragonProxy/lastSuccessfulBuild/artifact/proxy/target/)(take first jar) : developments builds, unstable, latest features
+ - [snapshots](https://ci.codemc.org/job/DragonetMC/job/DragonProxy/lastSuccessfulBuild/)(take first jar) : developments builds, unstable, latest features
 
 ## Compiling
  - clone from github
