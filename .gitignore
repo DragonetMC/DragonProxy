@@ -26,5 +26,6 @@ nb-configuration.xml
 /proxy/timings/
 /proxy/metrics.yml
 */buildNumber.properties
+*/pom.xml.versionsBackup
 /proxy/config.yml
 /proxy/src/main/resources/buildNumber.properties
