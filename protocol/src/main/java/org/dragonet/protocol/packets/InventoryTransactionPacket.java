@@ -76,8 +76,8 @@ public class InventoryTransactionPacket extends PEPacket {
                 this.putUnsignedVarInt(useItemOnEntityData.actionType);
                 this.putVarInt(useItemOnEntityData.hotbarSlot);
                 this.putSlot(useItemOnEntityData.itemInHand);
-                this.putBlockPosition(useItemOnEntityData.vector1);
-                this.putBlockPosition(useItemOnEntityData.vector2);
+                this.putVector3F(useItemOnEntityData.playerPos);
+                this.putVector3F(useItemOnEntityData.clickPos);
                 break;
             case TYPE_RELEASE_ITEM:
                 ReleaseItemData releaseItemData = (ReleaseItemData) this.transactionData;
@@ -126,8 +126,8 @@ public class InventoryTransactionPacket extends PEPacket {
                 useItemOnEntityData.actionType = (int) this.getUnsignedVarInt();
                 useItemOnEntityData.hotbarSlot = this.getVarInt();
                 useItemOnEntityData.itemInHand = this.getSlot();
-                useItemOnEntityData.vector1 = this.getBlockPosition();
-                useItemOnEntityData.vector2 = this.getBlockPosition();
+                useItemOnEntityData.playerPos = this.getVector3F();
+                useItemOnEntityData.clickPos = this.getVector3F();
 
                 this.transactionData = useItemOnEntityData;
                 break;
