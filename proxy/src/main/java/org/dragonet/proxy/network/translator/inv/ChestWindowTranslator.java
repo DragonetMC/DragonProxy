@@ -14,6 +14,7 @@ package org.dragonet.proxy.network.translator.inv;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.dragonet.common.data.inventory.InventoryType;
 import org.dragonet.common.data.inventory.Slot;
 import org.dragonet.common.maths.BlockPosition;
@@ -31,7 +32,7 @@ public class ChestWindowTranslator implements IInventoryTranslator {
                 (int) session.getEntityCache().getClientEntity().y - 4,
                 (int) session.getEntityCache().getClientEntity().z);
 
-        session.getDataCache().put(CacheKey.WINDOW_BLOCK_POSITION, pos);
+        session.getDataCache().put(CacheKey.CURRENT_WINDOW_POSITION, pos);
         session.sendFakeBlock(pos.x, pos.y, pos.z, 54, 0);
 
         BlockEntityDataPacket blockEntityData = new BlockEntityDataPacket();
@@ -56,21 +57,13 @@ public class ChestWindowTranslator implements IInventoryTranslator {
             ArrayList<BlockPosition> posList = new ArrayList<>();
             posList.add(pos);
             posList.add(pos2);
-            session.getDataCache().put(CacheKey.WINDOW_BLOCK_POSITION, posList);
+            session.getDataCache().put(CacheKey.CURRENT_WINDOW_POSITION, posList);
         }
 //        System.out.println("ChestWindowTranslator.prepare " + window.windowId);
         return true;
     }
 
     public boolean open(UpstreamSession session, CachedWindow window) {
-
-//        System.out.println("size : " + window.size);
-//        if (window.size - 36 > 27)
-//            System.out.println("Double chest opened");
-//        else
-//            System.out.println("Simple chest opened");
-        session.getDataCache().put(CacheKey.WINDOW_OPENED_ID, window.windowId);
-        session.getDataCache().put(CacheKey.WINDOW_OPENED_SIZE, window.size - 36); //-36 for the player inv size
 
         BlockPosition pos = new BlockPosition((int) session.getEntityCache().getClientEntity().x,
                 (int) session.getEntityCache().getClientEntity().y - 4,
@@ -80,7 +73,7 @@ public class ChestWindowTranslator implements IInventoryTranslator {
         pk.windowId = window.windowId;
         pk.type = 0;
         pk.position = pos;
-        session.sendPacket(pk);
+        session.putCachePacket(pk);
 //        System.out.println("ChestWindowTranslator.open " + window.windowId);
         return true;
     }
@@ -94,7 +87,7 @@ public class ChestWindowTranslator implements IInventoryTranslator {
         pk.item = ItemBlockTranslator.translateSlotToPE(win.slots[slotIndex]);
         pk.slotId = slotIndex;
         pk.windowId = win.windowId;
-        session.sendPacket(pk);
+        session.putCachePacket(pk);
     }
 
     private void sendContent(UpstreamSession session, CachedWindow win) {
@@ -103,6 +96,6 @@ public class ChestWindowTranslator implements IInventoryTranslator {
         pk.items = new Slot[win.slots.length];
         for (int i = 0; i < pk.items.length; i++)
             pk.items[i] = ItemBlockTranslator.translateSlotToPE(win.slots[i]);
-        session.sendPacket(pk);
+        session.putCachePacket(pk);
     }
 }

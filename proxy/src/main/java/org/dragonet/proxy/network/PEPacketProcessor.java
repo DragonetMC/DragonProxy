@@ -19,6 +19,9 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 import com.github.steveice10.packetlib.packet.Packet;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParseException;
+import org.dragonet.common.utilities.JsonUtil;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import org.dragonet.protocol.packets.*;
@@ -27,7 +30,6 @@ import org.dragonet.common.gui.CustomFormComponent;
 import org.dragonet.common.gui.InputComponent;
 import org.dragonet.common.gui.LabelComponent;
 import org.dragonet.common.utilities.BinaryStream;
-import org.json.JSONArray;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -37,7 +39,7 @@ import org.dragonet.protocol.Protocol;
 
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.ServerConfig;
-import org.json.JSONException;
+import org.dragonet.proxy.events.defaults.packets.PacketfromPlayerEvent;
 
 public class PEPacketProcessor {
 
@@ -113,6 +115,14 @@ public class PEPacketProcessor {
         if (packet == null)
             return;
 
+        if(!client.getProxy().getConfig().disable_packet_events){
+            PacketfromPlayerEvent packetEvent = new PacketfromPlayerEvent(client, packet);
+            client.getProxy().getEventManager().callEvent(packetEvent);
+            if(packetEvent.isCancelled()){
+                return;
+            }
+        }
+
         // Wait for player logginig in
         if ("online_login_wait".equals(this.client.getDataCache().get(CacheKey.AUTHENTICATION_STATE))) {
             if (packet.pid() == ProtocolInfo.MOVE_PLAYER_PACKET) {
@@ -143,10 +153,10 @@ public class PEPacketProcessor {
                     this.client.sendChat(this.client.getProxy().getLang().get(Lang.MESSAGE_LOGIN_PROGRESS));
 
                     ModalFormResponsePacket formResponse = (ModalFormResponsePacket) packet;
-                    JSONArray array = new JSONArray(formResponse.formData);
+                    JsonArray array = JsonUtil.parseArray(formResponse.formData);
                     this.client.getDataCache().remove(CacheKey.AUTHENTICATION_STATE);
-                    this.client.authenticate(array.get(2).toString(), array.get(3).toString(), authProxy);
-                } catch (JSONException ex) {
+                    this.client.authenticate(array.get(2).getAsString(), array.get(3).getAsString(), authProxy);
+                } catch(JsonParseException ex) {
                     this.client.sendChat(this.client.getProxy().getLang().get(Lang.MESSAGE_ONLINE_LOGIN_FAILD));
                 }
                 return;
@@ -154,37 +164,37 @@ public class PEPacketProcessor {
         }
 
         switch (packet.pid()) {
-            case ProtocolInfo.BATCH_PACKET:
-                DragonProxy.getInstance().getLogger().debug("Received batch packet from client !");
-                break;
-            case ProtocolInfo.LOGIN_PACKET:
-                this.client.onLogin((LoginPacket) packet);
-                break;
-            case ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET:
-                if (!this.client.isLoggedIn())
-                    this.client.postLogin();
+        case ProtocolInfo.BATCH_PACKET:
+            DragonProxy.getInstance().getLogger().debug("Received batch packet from client !");
+            break;
+        case ProtocolInfo.LOGIN_PACKET:
+            this.client.onLogin((LoginPacket) packet);
+            break;
+        case ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET:
+            if (!this.client.isLoggedIn())
+                this.client.postLogin();
 
+            break;
+        default:
+            if (this.client.getDownstream() == null || !this.client.getDownstream().isConnected())
                 break;
-            default:
-                if (this.client.getDownstream() == null || !this.client.getDownstream().isConnected())
-                    break;
 
-                if (enableForward.get() && FORWARDED_PACKETS.contains(packet.getClass())) {
-                    BinaryStream bis = new BinaryStream();
-                    bis.putString("PacketForward");
-                    bis.putByteArray(packet.getBuffer());
-                    ClientPluginMessagePacket msg = new ClientPluginMessagePacket("DragonProxy", bis.getBuffer());
-                    client.getDownstream().send(msg);
-                } else
-                    // IMPORTANT Do not send packet until client is connected !
-                    if (client.isSpawned()) {
-                        Packet[] translated = PacketTranslatorRegister.translateToPC(this.client, packet);
-                        if (translated == null || translated.length == 0)
-                            break;
+            if (enableForward.get() && FORWARDED_PACKETS.contains(packet.getClass())) {
+                BinaryStream bis = new BinaryStream();
+                bis.putString("PacketForward");
+                bis.putByteArray(packet.getBuffer());
+                ClientPluginMessagePacket msg = new ClientPluginMessagePacket("DragonProxy", bis.getBuffer());
+                client.getDownstream().send(msg);
+            } else
+                // IMPORTANT Do not send packet until client is connected !
+                if (client.isSpawned()) {
+                    Packet[] translated = PacketTranslatorRegister.translateToPC(this.client, packet);
+                    if (translated == null || translated.length == 0)
+                        break;
 
-                        client.getDownstream().send(translated);
-                    }
-                break;
+                    client.getDownstream().send(translated);
+                }
+            break;
         }
     }
 

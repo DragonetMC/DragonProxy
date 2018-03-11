@@ -40,7 +40,10 @@ public class PCSetSlotPacketTranslator implements IPCPacketTranslator<ServerSetS
         }
 //        if (packet.getItem() != null)
 //            System.out.println("Caching window " + packet.getWindowId() + " item " + packet.getItem().getId());
-        InventoryTranslatorRegister.updateSlot(session, packet);
+        if (win.isOpen)
+            InventoryTranslatorRegister.updateSlot(session, packet);
+        else
+            session.getWindowCache().newCachedPacket(packet.getWindowId(), packet);
         return null;
     }
 }

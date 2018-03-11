@@ -17,12 +17,12 @@ import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import net.marfgamer.jraknet.RakNetPacket;
-import net.marfgamer.jraknet.identifier.MinecraftIdentifier;
-import net.marfgamer.jraknet.server.RakNetServer;
-import net.marfgamer.jraknet.server.RakNetServerListener;
-import net.marfgamer.jraknet.server.ServerPing;
-import net.marfgamer.jraknet.session.RakNetClientSession;
+import com.whirvis.jraknet.RakNetPacket;
+import com.whirvis.jraknet.identifier.MinecraftIdentifier;
+import com.whirvis.jraknet.server.RakNetServer;
+import com.whirvis.jraknet.server.RakNetServerListener;
+import com.whirvis.jraknet.server.ServerPing;
+import com.whirvis.jraknet.session.RakNetClientSession;
 import org.dragonet.protocol.ProtocolInfo;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
