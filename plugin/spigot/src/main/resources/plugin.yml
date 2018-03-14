@@ -1,4 +1,10 @@
 name: DragonProxy-ServerAddon
-main: org.dragonet.plugin.dpaddon.DPAddonBukkit
+main: org.dragonet.plugin.bukkit.DPAddonBukkit
 version: 0.1
-author: DefinitlyEvil
+author: [DefinitlyEvil, Epic]
+commands:
+   form:
+      description: DragonProxy form test command
+      usage: /<command>
+      permission: dragonproxy.form
+      permission-message: You don't have <permission>

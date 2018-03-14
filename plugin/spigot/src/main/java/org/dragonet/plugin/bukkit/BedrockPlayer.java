@@ -4,7 +4,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.dragonet.common.gui.ModalFormComponent;
 import org.dragonet.common.utilities.BinaryStream;
-import org.dragonet.plugin.dpaddon.DPAddonBukkit;
 import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.packets.ModalFormRequestPacket;
 
@@ -58,14 +57,17 @@ public class BedrockPlayer {
 
     // static
     public static void createForPlayer(Player player) {
-        if(player.hasMetadata("BedrockPlayer")) throw new IllegalStateException("Bedrock player meta already created! ");
+        if(player.hasMetadata("BedrockPlayer")) {
+            DPAddonBukkit.getInstance().getLogger().info("BedrockPlayer " + player.getName() + " already have the Bedrock Metadata");
+            return;
+        }
         player.setMetadata("BedrockPlayer", new FixedMetadataValue(
                 DPAddonBukkit.getInstance(),
                 new BedrockPlayer(player)
         ));
     }
 
-    public static BedrockPlayer get(Player player) {
+    public static BedrockPlayer getForPlayer(Player player) {
         if(!player.hasMetadata("BedrockPlayer")) return null;
         return (BedrockPlayer) player.getMetadata("BedrockPlayer").get(0).value();
     }

@@ -10,7 +10,7 @@
  *
  * @author The Dragonet Team
  */
-package org.dragonet.plugin.dpaddon;
+package org.dragonet.plugin.bukkit;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,11 +18,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.dragonet.common.utilities.BinaryStream;
-import org.dragonet.plugin.bukkit.BedrockPlayer;
-import org.dragonet.plugin.bukkit.DPPluginMessageListener;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
+import org.dragonet.plugin.bukkit.commands.DragonProxyFormCommand;
+import org.dragonet.plugin.bukkit.events.ModalFormResponseEvent;
 
 public class DPAddonBukkit extends JavaPlugin implements Listener {
 
@@ -34,7 +35,7 @@ public class DPAddonBukkit extends JavaPlugin implements Listener {
 
     private DPPluginMessageListener pluginMessageListener;
 
-    private final Set<Player> bedrockPlayers = new HashSet<>();
+    private final Set<UUID> bedrockPlayers = new HashSet<>();
 
     @Override
     public void onEnable() {
@@ -46,11 +47,12 @@ public class DPAddonBukkit extends JavaPlugin implements Listener {
         pluginMessageListener = new DPPluginMessageListener(this);
         getServer().getMessenger().registerIncomingPluginChannel(this, "DragonProxy", pluginMessageListener);
         getServer().getMessenger().registerOutgoingPluginChannel(this, "DragonProxy");
+        this.getCommand("form").setExecutor(new DragonProxyFormCommand(this));
     }
 
     public void detectedBedrockPlayer(Player player) {
-        getLogger().info("Detected bedrock player: " + player.getName());
-        bedrockPlayers.add(player);
+        getLogger().info("Detected bedrock player: " + player.getName() + " " + player.getUniqueId().toString());
+        bedrockPlayers.add(player.getUniqueId());
 
         BedrockPlayer.createForPlayer(player);
 
@@ -62,13 +64,20 @@ public class DPAddonBukkit extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onPlayerLeft(PlayerQuitEvent e) {
-        if(bedrockPlayers.contains(e.getPlayer())) {
-            bedrockPlayers.remove(e.getPlayer());
+    public void onPlayerLeft(PlayerQuitEvent event) {
+        if(bedrockPlayers.contains(event.getPlayer().getUniqueId())) {
+            if (bedrockPlayers.remove(event.getPlayer().getUniqueId())) {
+                getLogger().info("Disconnected Bedrock player " + event.getPlayer().getUniqueId().toString());
+            }
         }
     }
 
-    public boolean isPlayerFromBedrock(Player player) {
-        return bedrockPlayers.contains(player);
+    @EventHandler
+    public void onModalFormResponse(ModalFormResponseEvent event) {
+        getLogger().info("Player " + event.getBedrockPlayer().getPlayer().getName() + " validate form " + event.getValues());
+    }
+
+    public boolean isBedrockPlayer(UUID uuid) {
+        return bedrockPlayers.contains(uuid);
     }
 }

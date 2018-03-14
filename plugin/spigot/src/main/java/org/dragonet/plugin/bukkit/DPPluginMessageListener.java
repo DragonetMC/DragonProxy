@@ -3,7 +3,6 @@ package org.dragonet.plugin.bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.dragonet.common.utilities.BinaryStream;
-import org.dragonet.plugin.dpaddon.DPAddonBukkit;
 import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.Protocol;
 
@@ -30,7 +29,7 @@ public class DPPluginMessageListener implements PluginMessageListener {
     private void processPacketForward(Player player, byte[] buffer) {
         final PEPacket packet = Protocol.decodeSingle(buffer);
         if(packet == null) return;
-        BedrockPlayer bedrockPlayer = BedrockPlayer.get(player);
+        BedrockPlayer bedrockPlayer = BedrockPlayer.getForPlayer(player);
         if(bedrockPlayer == null) {
             player.kickPlayer("Non-bedrock player sent packet forward packets!? ");
             return;
