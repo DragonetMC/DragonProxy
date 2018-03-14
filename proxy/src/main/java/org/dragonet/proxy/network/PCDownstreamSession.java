@@ -13,12 +13,15 @@
 package org.dragonet.proxy.network;
 
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
+import com.github.steveice10.mc.protocol.data.SubProtocol;
+import com.github.steveice10.mc.protocol.packet.handshake.client.HandshakePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
 import com.github.steveice10.packetlib.Client;
 import com.github.steveice10.packetlib.event.session.ConnectedEvent;
 import com.github.steveice10.packetlib.event.session.DisconnectedEvent;
 import com.github.steveice10.packetlib.event.session.DisconnectingEvent;
 import com.github.steveice10.packetlib.event.session.PacketReceivedEvent;
+import com.github.steveice10.packetlib.event.session.PacketSendingEvent;
 import com.github.steveice10.packetlib.event.session.SessionAdapter;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
@@ -53,27 +56,38 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
         remoteClient.getSession().setReadTimeout(5);
         remoteClient.getSession().setWriteTimeout(5);
         remoteClient.getSession().addListener(new SessionAdapter() {
+
+            @Override
             public void connected(ConnectedEvent event) {
                 proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_REMOTE_CONNECTED, upstream.getUsername(), upstream.getRemoteAddress()));
-
-                // Notify the server
-//                BinaryStream bis = new BinaryStream();
-//                bis.putString("Notification"); // command
-//                ClientPluginMessagePacket pluginMessage = new ClientPluginMessagePacket("DragonProxy", bis.get());
-//                send(pluginMessage);
-
                 upstream.onConnected();
             }
 
+            @Override
+            public void packetSending(PacketSendingEvent event) {
+                if(proxy.getAuthMode().equalsIgnoreCase("hybrid")) {
+                    if (protocol.getSubProtocol() == SubProtocol.HANDSHAKE && event.getPacket() instanceof HandshakePacket) {
+                        HandshakePacket packet = event.getPacket();
+                        String host = remoteClient.getSession().getHost() + "\0" + upstream.getProfile().getChainJWT() + "\0" + upstream.getProfile().getClientDataJWT();
+                        packet = new HandshakePacket(packet.getProtocolVersion(), host, packet.getPort(), packet.getIntent());
+                        event.setPacket(packet);
+                    }
+                }
+            }
+
+            @Override
             public void disconnected(DisconnectedEvent event) {
                 System.out.println("DisconnectedEvent " + event.getCause() + " " + event.getReason());
                 upstream.disconnect(proxy.getLang().get(event.getReason()));
             }
+
+            @Override
             public void disconnecting(DisconnectingEvent event) {
                 System.out.println("DisconnectingEvent " + event.getCause() + " " + event.getReason());
                 upstream.disconnect(proxy.getLang().get(event.getReason()));
             }
 
+            @Override
             public void packetReceived(PacketReceivedEvent event) {
                 // Handle the packet
                 try {

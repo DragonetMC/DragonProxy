@@ -33,6 +33,10 @@ remote_server_port: 25565
 # online  : Traditional login screen by DragonProxy.
 # offline : Run the server in offline mode so you can't join premium servers like Hypixel.
 # cls     : Use our Central login System to link you Mojang and Microsoft account, COMMING SOON !
+# hybrid  : Only available for server owners who wanted to enable both
+#           Mojang accounts and xbox accounts.
+#           Use `online` mode for servers that are not yours.
+#           To use this, you MUST properly install and configure the addon to your BungeeCord server!!
 mode: online
 
 # Autologin credentials if you are alone on the server.

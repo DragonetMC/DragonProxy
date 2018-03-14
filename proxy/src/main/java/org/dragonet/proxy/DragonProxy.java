@@ -96,11 +96,11 @@ public class DragonProxy {
     public RaknetInterface getNetwork() {
         return network;
     }
-    
+
     public PluginManager getPluginManager() {
         return pluginManager;
     }
-    
+
     public EventManager getEventManager() {
         return eventManager;
     }
@@ -212,7 +212,7 @@ public class DragonProxy {
         logger.info("System os : " + SystemUtils.OS_NAME + " " + SystemUtils.OS_VERSION);
 
         authMode = config.mode.toLowerCase();
-        if (!authMode.equals("cls") && !authMode.equals("online") && !authMode.equals("offline"))
+        if (!authMode.equals("cls") && !authMode.equals("online") && !authMode.equals("offline") && !authMode.equals("hybrid"))
             logger.info("Invalid login 'mode' option detected, must be cls/online/offline. You set it to '" + authMode
                     + "'! ");
 
@@ -237,15 +237,15 @@ public class DragonProxy {
 
         File pluginfolder = new File("plugins");
         pluginfolder.mkdirs();
-        
+
         // create the plugin manager
         pluginManager = new PluginManager(pluginfolder.toPath());
         eventManager = new EventManager(this);
-        
+
         // start and load all plugins of application
         pluginManager.loadPlugins();
         pluginManager.startPlugins();
-        
+
         // Bind
         logger.info(lang.get(Lang.INIT_BINDING, config.udp_bind_ip, config.udp_bind_port));
         // RakNet.enableLogging();
