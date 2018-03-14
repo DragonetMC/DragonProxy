@@ -19,11 +19,11 @@ public class PCSetTitlePacketTranslator implements IPCPacketTranslator<ServerTit
                 break;
             case TITLE:
                 titlePacket.action = SetTitlePacket.SET_TITLE;
-                titlePacket.text = packet.getTitle().getFullText();
+                titlePacket.text = packet.getTitle().getText();
                 break;
             case SUBTITLE:
                 titlePacket.action = SetTitlePacket.SET_SUBTITLE;
-                titlePacket.text = packet.getSubtitle().getFullText();
+                titlePacket.text = packet.getSubtitle().getText();
                 break;
             case RESET:
             case CLEAR:
