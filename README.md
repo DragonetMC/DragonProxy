@@ -52,6 +52,13 @@ see https://github.com/DragonetMC/DragonProxy/issues/132
  - edit [config.yml](https://github.com/DragonetMC/DragonProxy/blob/master/proxy/src/main/resources/config.yml) as needed
  - then start again
 
+## Plugin setup
+DragonProxy plugins are optionnals. Warning : the hybrid auth is only implemented for bungeecord.
+
+The bungeecord plugin is used to auth players in hybrid auth mode.
+
+The bukkit plugin is used to send custom packets to the Bedrock client.
+
 ## Windows 10 localhost problem
 If you try to run DragonProxy on the __same computer__ you start Minecraft W10 Edition, you must [enable loopback for Minecraft protocol](http://pmmp.readthedocs.io/en/rtfd/faq/connecting/win10localhostcantconnect.html) first.
 
