@@ -1,4 +1,4 @@
 name: DragonProxy-ServerAddon
-main: org.dragonet.plugin.dpaddon.DPAddonBungee
+main: org.dragonet.plugin.bungeecord.DPAddonBungee
 version: 0.1
-author: DefinitlyEvil
+authors: ["DefinitlyEvil", "Epic"]

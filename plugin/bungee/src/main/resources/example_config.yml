@@ -1,0 +1,4 @@
+#Config file for DragonProxy plugin addon
+
+#DragonProxy IP, disable auth for these IPs
+auth_bypass_ip: ["127.0.0.1"]
