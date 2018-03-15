@@ -66,38 +66,40 @@ public class DPAddonBungee extends Plugin implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerPreLogin(PreLoginEvent event) {
-        event.registerIntent(this);
-        ProxyServer.getInstance().getScheduler().runAsync(this, new Runnable() {
-            @Override
-            public void run() {
-                String extraDataInHandshake = ((InitialHandler) event.getConnection()).getExtraDataInHandshake();
-                List<String> bypassIPs = config.getConfiguration().getStringList("auth_bypass_ip");
+        if (ProxyServer.getInstance().getConfig().isOnlineMode()) {
+            event.registerIntent(this);
+            ProxyServer.getInstance().getScheduler().runAsync(this, new Runnable() {
+                @Override
+                public void run() {
+                    String extraDataInHandshake = ((InitialHandler) event.getConnection()).getExtraDataInHandshake();
+                    List<String> bypassIPs = config.getConfiguration().getStringList("auth_bypass_ip");
 
-                if (!bypassIPs.isEmpty() && bypassIPs.contains(event.getConnection().getAddress().getHostString())) { // check if IP
-                    String[] xboxliveProfileParts = extraDataInHandshake.split("\0");
-                    if (xboxliveProfileParts.length == 3) {
-                        LoginChainDecoder decoder = new LoginChainDecoder(xboxliveProfileParts[1].getBytes(), xboxliveProfileParts[2].getBytes());
-                        try {
-                            decoder.decode(); //verify login chain, extract players UUID and name
-                        } catch (NullPointerException ex) {
+                    if (!bypassIPs.isEmpty() && bypassIPs.contains(event.getConnection().getAddress().getHostString())) { // check if IP
+                        String[] xboxliveProfileParts = extraDataInHandshake.split("\0");
+                        if (xboxliveProfileParts.length == 3) {
+                            LoginChainDecoder decoder = new LoginChainDecoder(xboxliveProfileParts[1].getBytes(), xboxliveProfileParts[2].getBytes());
+                            try {
+                                decoder.decode(); //verify login chain, extract players UUID and name
+                            } catch (NullPointerException ex) {
 
-                        }
-                        if (decoder.isLoginVerified()) {
-                            ReflectedClass initialHandler = new ReflectedClass(event.getConnection());
-                            initialHandler.setField("name", decoder.username);
-                            initialHandler.setField("uniqueId", decoder.clientUniqueId);
-                            event.getConnection().setOnlineMode(false);
-                            getLogger().info("Bedrock player " + decoder.username + " injected in InitialHandler !");
-                            bedrockPlayers.add(event.getConnection().getUniqueId());
-                        } else {
-                            getLogger().info("Bedrock player Fail to verify XBox Identity " + decoder.username);
-                            event.getConnection().disconnect(TextComponent.fromLegacyText("Fail to verify XBox Identity, please login to XboxLive and retry."));
+                            }
+                            if (decoder.isLoginVerified()) {
+                                ReflectedClass initialHandler = new ReflectedClass(event.getConnection());
+                                initialHandler.setField("name", decoder.username);
+                                initialHandler.setField("uniqueId", decoder.clientUniqueId);
+                                event.getConnection().setOnlineMode(false);
+                                getLogger().info("Bedrock player " + decoder.username + " injected in InitialHandler !");
+                                bedrockPlayers.add(event.getConnection().getUniqueId());
+                            } else {
+                                getLogger().info("Bedrock player Fail to verify XBox Identity " + decoder.username);
+                                event.getConnection().disconnect(TextComponent.fromLegacyText("Fail to verify XBox Identity, please login to XboxLive and retry."));
+                            }
                         }
                     }
+                    event.completeIntent(instance);
                 }
-                event.completeIntent(instance);
-            }
-        });
+            });
+        }
     }
 
     @EventHandler
