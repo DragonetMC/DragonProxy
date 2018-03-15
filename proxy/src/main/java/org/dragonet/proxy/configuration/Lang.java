@@ -66,7 +66,12 @@ public class Lang extends PropertiesConfig {
     }
 
     public String get(String key) {
-        return getConfig().getProperty(key).replace("[PROJNAME]", getConfig().getProperty("project_name"));
+        String str = getConfig().getProperty(key);
+        if(str == null)
+            return key;
+
+        str = str.replace("[PROJNAME]", getConfig().getProperty("project_name"));
+        return str;
     }
 
     public String get(String key, Object... repl) {
