@@ -30,7 +30,7 @@ remote_server_addr: 'mc.hypixel.net'
 remote_server_port: 25565
 
 # Ping passthrough
-# Relay the player count and total from the remote server
+# Relay the motd, player count and total from the remote server
 ping_passthrough: false
 
 # Server Authentication Modes
