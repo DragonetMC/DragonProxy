@@ -131,24 +131,23 @@ public class RaknetInterface implements RakNetServerListener {
         if (maxPlayers == -1)
             maxPlayers = Integer.MAX_VALUE;
 
-        ServerStatusInfo info = PingThread.getInstance().getInfo();
-        if(!DragonProxy.getInstance().getConfig().ping_passthrough || info == null) {
-            rakServer.setIdentifier(
-                new MinecraftIdentifier(serverName, ProtocolInfo.CURRENT_PROTOCOL, ProtocolInfo.MINECRAFT_VERSION_NETWORK,
-                    players, maxPlayers, serverId, "DragonProxy", "Survival"));
-        } else {
-            try {
+        if (DragonProxy.getInstance().getConfig().ping_passthrough && PingThread.getInstance() != null) {
+            ServerStatusInfo info = PingThread.getInstance().getInfo();
+            if (info == null) {
+                // server offline, should probably do something
+            } else {
                 String motd = MessageTranslator.translate(info.getDescription())
-                    .replace("§k", "") // disabled due to &r not working (?)
-                    .replace("\n", ""); // multiline is not supported atm
+                        .replace("§k", "") // disabled due to &r not working (?)
+                        .replace("\n", ""); // multiline is not supported atm
                 rakServer.setIdentifier(
-                    new MinecraftIdentifier(motd, ProtocolInfo.CURRENT_PROTOCOL, ProtocolInfo.MINECRAFT_VERSION_NETWORK,
-                        info.getPlayerInfo().getOnlinePlayers(), info.getPlayerInfo().getMaxPlayers(), serverId, "DragonProxy", "Survival"));
-            } catch (Exception e){
-                e.printStackTrace();
+                        new MinecraftIdentifier(motd, ProtocolInfo.CURRENT_PROTOCOL, ProtocolInfo.MINECRAFT_VERSION_NETWORK,
+                                info.getPlayerInfo().getOnlinePlayers(), info.getPlayerInfo().getMaxPlayers(), serverId, "DragonProxy", "Survival"));
             }
+        } else {
+            rakServer.setIdentifier(
+                    new MinecraftIdentifier(serverName, ProtocolInfo.CURRENT_PROTOCOL, ProtocolInfo.MINECRAFT_VERSION_NETWORK,
+                            players, maxPlayers, serverId, "DragonProxy", "Survival"));
         }
-
 
         if (!rakServer.isBroadcastingEnabled())
             rakServer.setBroadcastingEnabled(true);

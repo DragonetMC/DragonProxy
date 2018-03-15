@@ -254,8 +254,11 @@ public class DragonProxy {
                 config.udp_bind_port, // Port
                 motd, config.auto_login ? 1 : config.max_players);
 
+        if (DragonProxy.getInstance().getConfig().ping_passthrough)
+            new PingThread();
+
         ticker.start();
-        new PingThread();
+
         logger.info(lang.get(Lang.INIT_DONE));
 
 //        Runtime.getRuntime().addShutdownHook(new Thread() {

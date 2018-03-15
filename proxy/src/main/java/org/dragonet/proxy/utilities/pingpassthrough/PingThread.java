@@ -35,6 +35,7 @@ public class PingThread implements Runnable{
         this.client = new Client(DragonProxy.getInstance().getConfig().remote_server_addr, DragonProxy.getInstance().getConfig().remote_server_port, new MinecraftProtocol(SubProtocol.STATUS), new TcpSessionFactory());
         this.client.getSession().setFlag(MinecraftConstants.SERVER_INFO_HANDLER_KEY, (ServerInfoHandler) (session, info) -> {
             this.info = info;
+            this.client.getSession().disconnect(null);
         });
     }
 
