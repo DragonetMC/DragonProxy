@@ -36,4 +36,6 @@ public class ServerConfig {
     public boolean authenticate_players = true;
     public int thread_pool_size = 8;
     public Boolean disable_packet_events = true;
+    public boolean ping_passthrough = true;
+
 }

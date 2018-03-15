@@ -33,6 +33,7 @@ import org.dragonet.proxy.network.SessionRegister;
 import org.dragonet.proxy.utilities.ProxyLogger;
 import org.dragonet.proxy.utilities.MetricsManager;
 import org.dragonet.proxy.utilities.PluginManager;
+import org.dragonet.proxy.utilities.pingpassthrough.PingThread;
 import org.yaml.snakeyaml.Yaml;
 
 import com.github.steveice10.mc.protocol.MinecraftConstants;
@@ -254,6 +255,7 @@ public class DragonProxy {
                 motd, config.auto_login ? 1 : config.max_players);
 
         ticker.start();
+        new PingThread();
         logger.info(lang.get(Lang.INIT_DONE));
 
 //        Runtime.getRuntime().addShutdownHook(new Thread() {

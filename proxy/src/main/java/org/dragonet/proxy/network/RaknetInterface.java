@@ -17,6 +17,8 @@ import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import com.github.steveice10.mc.protocol.data.message.Message;
+import com.github.steveice10.mc.protocol.data.status.ServerStatusInfo;
 import com.whirvis.jraknet.RakNetPacket;
 import com.whirvis.jraknet.identifier.MinecraftIdentifier;
 import com.whirvis.jraknet.server.RakNetServer;
@@ -26,6 +28,8 @@ import com.whirvis.jraknet.session.RakNetClientSession;
 import org.dragonet.protocol.ProtocolInfo;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
+import org.dragonet.proxy.network.translator.MessageTranslator;
+import org.dragonet.proxy.utilities.pingpassthrough.PingThread;
 
 public class RaknetInterface implements RakNetServerListener {
 
@@ -126,9 +130,26 @@ public class RaknetInterface implements RakNetServerListener {
     public void setBroadcastName(String serverName, int players, int maxPlayers) {
         if (maxPlayers == -1)
             maxPlayers = Integer.MAX_VALUE;
-        rakServer.setIdentifier(
+
+        ServerStatusInfo info = PingThread.getInstance().getInfo();
+        if(!DragonProxy.getInstance().getConfig().ping_passthrough || info == null) {
+            rakServer.setIdentifier(
                 new MinecraftIdentifier(serverName, ProtocolInfo.CURRENT_PROTOCOL, ProtocolInfo.MINECRAFT_VERSION_NETWORK,
-                        players, maxPlayers, serverId, "DragonProxy", "Survival"));
+                    players, maxPlayers, serverId, "DragonProxy", "Survival"));
+        } else {
+            try {
+                String motd = MessageTranslator.translate(info.getDescription())
+                    .replace("§k", "") // disabled due to &r not working (?)
+                    .replace("\n", ""); // multiline is not supported atm
+                rakServer.setIdentifier(
+                    new MinecraftIdentifier(motd, ProtocolInfo.CURRENT_PROTOCOL, ProtocolInfo.MINECRAFT_VERSION_NETWORK,
+                        info.getPlayerInfo().getOnlinePlayers(), info.getPlayerInfo().getMaxPlayers(), serverId, "DragonProxy", "Survival"));
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+
         if (!rakServer.isBroadcastingEnabled())
             rakServer.setBroadcastingEnabled(true);
     }
