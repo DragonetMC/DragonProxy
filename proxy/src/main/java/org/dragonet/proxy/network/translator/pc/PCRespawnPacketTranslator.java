@@ -14,6 +14,8 @@ package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerRespawnPacket;
+import java.util.ArrayList;
+import org.dragonet.common.data.entity.PEEntityAttribute;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
@@ -24,6 +26,7 @@ import org.dragonet.protocol.packets.PlayStatusPacket;
 import org.dragonet.protocol.packets.RemoveEntityPacket;
 import org.dragonet.protocol.packets.SetDifficultyPacket;
 import org.dragonet.protocol.packets.SetPlayerGameTypePacket;
+import org.dragonet.protocol.packets.UpdateAttributesPacket;
 import org.dragonet.proxy.DragonProxy;
 
 public class PCRespawnPacketTranslator implements IPCPacketTranslator<ServerRespawnPacket> {
@@ -44,6 +47,16 @@ public class PCRespawnPacketTranslator implements IPCPacketTranslator<ServerResp
             SetPlayerGameTypePacket pkgm = new SetPlayerGameTypePacket();
             pkgm.gamemode = packet.getGameMode() == GameMode.CREATIVE ? 1 : 0;
             session.sendPacket(pkgm);
+
+            // send entity attributes
+            UpdateAttributesPacket attr = new UpdateAttributesPacket();
+            attr.rtid = entity.proxyEid;
+            if (entity.attributes.isEmpty()) {
+                attr.entries = new ArrayList();
+                attr.entries.addAll(PEEntityAttribute.getDefault());
+            } else
+                attr.entries = entity.attributes.values();
+            session.sendPacket(attr, true);
 
             // send new adventure settings
             AdventureSettingsPacket adv = new AdventureSettingsPacket();

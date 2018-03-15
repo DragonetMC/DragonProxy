@@ -112,13 +112,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             attr.rtid = entityPlayer.proxyEid;
             if (entityPlayer.attributes.isEmpty()) {
                 attr.entries = new ArrayList();
-                attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.ABSORPTION));
-                attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.EXHAUSTION));
-                attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.HUNGER));
-                attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE_LEVEL));
-                attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE));
-                attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE_LEVEL));
-                attr.entries.add(PEEntityAttribute.findAttribute(PEEntityAttribute.MOVEMENT_SPEED));
+                attr.entries.addAll(PEEntityAttribute.getDefault());
             } else
                 attr.entries = entityPlayer.attributes.values();
             session.sendPacket(attr, true);

@@ -1,6 +1,10 @@
 package org.dragonet.common.data.entity;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created on 2017/10/21.
@@ -91,6 +95,10 @@ public class PEEntityAttribute {
     public PEEntityAttribute setValue(float currentValue) {
         this.currentValue = currentValue;
         return this;
+    }
+
+    public static ArrayList<PEEntityAttribute> getDefault() {
+        return new ArrayList(attributes.values());
     }
 
     public PEEntityAttribute clone() {
