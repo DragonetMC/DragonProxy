@@ -66,6 +66,11 @@ If you try to run DragonProxy on the __same computer__ you start Minecraft W10 E
 * [JRakNet by Whirvis](https://github.com/JRakNet/JRakNet)
 * [MCProtocolLib by Steveice10](https://github.com/Steveice10/MCProtocolLib)
 
+## Plugin developement (DragonProxy plugins)
+A frenchy did a small plugin in a [video](https://www.youtube.com/playlist?list=PL1_LASKNkFJtc2q46yvD35EvraArSrICh)
+
+The plugin API is not made, wait for it !
+
 ## Thanks :
 * [PocketMine-MP](https://github.com/pmmp/PocketMine-MP)
 * [Nukkit](https://github.com/NukkitX/Nukkit)
