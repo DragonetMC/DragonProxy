@@ -17,14 +17,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.dragonet.proxy.DragonProxy;
 
 public class SessionRegister {
 
     private final DragonProxy proxy;
-    private final Map<String, UpstreamSession> clients = Collections
-        .synchronizedMap(new HashMap<String, UpstreamSession>());
+    private final Map<String, UpstreamSession> clients = new ConcurrentHashMap();
 
     public SessionRegister(DragonProxy proxy) {
         this.proxy = proxy;
@@ -32,11 +32,7 @@ public class SessionRegister {
 
     public void onTick() {
         Timings.connectionTimer.startTiming();
-        Iterator<Map.Entry<String, UpstreamSession>> iterator = clients.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, UpstreamSession> ent = iterator.next();
-            ent.getValue().onTick();
-        }
+        clients.values().parallelStream().forEach((session) -> {session.onTick();});
         Timings.connectionTimer.stopTiming();
     }
 
