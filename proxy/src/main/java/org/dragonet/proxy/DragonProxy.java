@@ -49,23 +49,24 @@ public class DragonProxy {
     private static DragonProxy instance;
     private static String[] launchArgs;
     private final Properties properties;
+    private boolean isContainer = false;
     private String version;
     private ProxyLogger logger;
     private final TickerThread ticker = new TickerThread(this);
     private ServerConfig config;
     private Lang lang;
-    private SessionRegister sessionRegister;
-    private RaknetInterface network;
+    private final SessionRegister sessionRegister;
+    private final RaknetInterface network;
     private boolean shuttingDown;
-    private ScheduledExecutorService generalThreadPool;
-    private CommandRegister commandRegister;
-    private SkinFetcher skinFetcher;
-    private String authMode;
+    private final ScheduledExecutorService generalThreadPool;
+    private final CommandRegister commandRegister;
+    private final SkinFetcher skinFetcher;
+    private final String authMode;
     private ConsoleCommandReader console;
     private String motd;
     private boolean debug = false;
-    private PluginManager pluginManager;
-    private EventManager eventManager;
+    private final PluginManager pluginManager;
+    private final EventManager eventManager;
 
     public static void main(String[] args) {
         launchArgs = args;
@@ -205,6 +206,15 @@ public class DragonProxy {
         version = properties.getProperty("git.build.version");
         if (properties.containsKey("git.commit.id.describe"))
             version += " (" + properties.getProperty("git.commit.id.describe") + ")";
+
+        // Check profile, used for docker profile
+        if (System.getProperties().containsKey("org.dragonet.proxy.profile")) {
+            if (System.getProperties().get("org.dragonet.proxy.profile").equals("container")) {
+                isContainer = true;
+                version += "-docker";
+            }
+        }
+
         logger.info(lang.get(Lang.INIT_LOADING, version));
         logger.info(lang.get(Lang.INIT_MC_PC_SUPPORT, MinecraftConstants.GAME_VERSION));
         logger.info(lang.get(Lang.INIT_MC_PE_SUPPORT, ProtocolInfo.MINECRAFT_VERSION));
@@ -261,12 +271,12 @@ public class DragonProxy {
 
         logger.info(lang.get(Lang.INIT_DONE));
 
-//        Runtime.getRuntime().addShutdownHook(new Thread() {
-//            @Override
-//            public void run() {
-//                shutdown();
-//            }
-//        });
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                shutdown();
+            }
+        });
     }
 
     public Properties getProperties() {
@@ -299,7 +309,7 @@ public class DragonProxy {
         logger.info(lang.get(Lang.SHUTTING_DOWN));
 
         pluginManager.stopPlugins();
-        
+
         debug = false;
         this.shuttingDown = true;
         network.shutdown();

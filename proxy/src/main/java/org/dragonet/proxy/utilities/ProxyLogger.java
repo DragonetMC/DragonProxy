@@ -67,7 +67,7 @@ public class ProxyLogger {
             File logFile = new File(logDir, "latest.log");
             int maxLogFileSize = 20;//Mo
             if (logFile.exists() && (logFile.length() / 1024L * 1024L) > maxLogFileSize)
-                logger.warning("Your config file is larger than " + maxLogFileSize + "Mo, you should backup and clean it !");
+                logger.warning("Your log file is larger than " + maxLogFileSize + "Mo, you should backup and clean it !");
             FileHandler fileHandler = new FileHandler(logFile.getCanonicalPath(), true);
             fileHandler.setLevel(Level.INFO);
             fileHandler.setFormatter(new SimpleFormatter() {
