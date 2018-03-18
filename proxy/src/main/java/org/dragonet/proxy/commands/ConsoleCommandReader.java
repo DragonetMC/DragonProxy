@@ -31,13 +31,16 @@ public class ConsoleCommandReader {
                 while (!proxy.isShuttingDown()) {
                     try {
 //                        System.out.print(">");
-                        command = new Scanner(System.in).nextLine();
+                        Scanner scanner = new Scanner(System.in);
+                        if (scanner.hasNext()) {
+                            command = scanner.nextLine();
 
-                        if (command == null || command.trim().length() == 0) {
-                            continue;
+                            if (command != null || command.trim().length() != 0) {
+                                proxy.getLogger().info("[Console] Executing command: " + command);
+                                proxy.getCommandRegister().callCommand(command);
+                            }
                         }
-                        proxy.getLogger().info("[Console] Executing command: " + command);
-                        proxy.getCommandRegister().callCommand(command);
+                        Thread.sleep(50);
                     } catch (Exception ex) {
                         proxy.getLogger().severe("Error while executing command: " + ex);
                         ex.printStackTrace();
