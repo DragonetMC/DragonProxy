@@ -63,7 +63,11 @@ import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.zip.Deflater;
+import org.dragonet.common.data.blocks.BlockEnum;
+import org.dragonet.common.data.inventory.ContainerId;
+import org.dragonet.common.data.inventory.Slot;
 import org.dragonet.protocol.packets.BatchPacket;
+import org.dragonet.protocol.packets.InventoryContentPacket;
 import org.dragonet.proxy.network.cache.ChunkCache;
 
 /**
@@ -258,8 +262,6 @@ public class UpstreamSession {
             sendPacket(new DisconnectPacket(false, reason), true);
             raknetClient.update(); //Force the DisconnectPacket to be sent before we close the connection
         }
-        //Forceing the connection to close
-        proxy.getNetwork().getRakServer().removeSession(getRaknetClient(), reason);
     }
 
     /**
@@ -472,6 +474,13 @@ public class UpstreamSession {
         pkBlock.flags = UpdateBlockPacket.FLAG_NEIGHBORS;
         pkBlock.blockPosition = new BlockPosition(x, y, z);
         sendPacket(pkBlock);
+    }
+
+    public void sendCreativeInventory() {
+        InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
+        inventoryContentPacket.windowId = ContainerId.CREATIVE.getId();
+        inventoryContentPacket.items = BlockEnum.getBlocks().stream().toArray(Slot[]::new);
+        sendPacket(inventoryContentPacket);
     }
 
     public void handlePacketBinary(byte[] packet) {

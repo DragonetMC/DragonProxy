@@ -88,11 +88,11 @@ public class ProxyLogger {
         }
 
         //Sentry
-        if (System.getProperties().containsKey("SENTRY_CLIENT_KEY")) {
+        if (System.getenv().containsKey("DP_SENTRY_CLIENT_KEY")) {
             Handler sentryHandler = new io.sentry.jul.SentryHandler();
             sentryHandler.setLevel(Level.SEVERE);
             logger.addHandler(sentryHandler);
-            Sentry.init(System.getProperties().getProperty("SENTRY_CLIENT_KEY"));
+            Sentry.init(System.getenv().get("DP_SENTRY_CLIENT_KEY"));
         }
     }
 

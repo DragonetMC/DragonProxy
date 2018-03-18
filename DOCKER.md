@@ -16,7 +16,8 @@ docker run --rm -ti -p 19132:19132 -p 19132:19132/udp dragonet/dragonproxy:<vers
  - VERIFY check if XboxLive accounts are signed
  - CLS_SERVER the CLS server to contact in CLS mode
  - THREADS thread pool size
- - SENTRY_CLIENT_KEY the sentry DSN
+ - DP_SENTRY_CLIENT_KEY the sentry DSN
+ - DP_DEBUG_LOGGING debug profiles login
 
 # Volumes
  - /home/proxy/logs extrenal logs dir

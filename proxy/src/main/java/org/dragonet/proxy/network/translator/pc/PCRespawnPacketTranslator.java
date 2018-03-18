@@ -36,7 +36,7 @@ public class PCRespawnPacketTranslator implements IPCPacketTranslator<ServerResp
         CachedEntity entity = session.getEntityCache().getClientEntity();
         if (entity.dimention != packet.getDimension()) {
             // the player have changed dimention
-//            DragonProxy.getInstance().getLogger().info(session.getUsername() + " change dim " + entity.dimention + " to " + packet.getDimension());
+            DragonProxy.getInstance().getLogger().info(session.getUsername() + " change dim " + entity.dimention + " to " + packet.getDimension());
 //            entity.dimention = packet.getDimension();
 
             // purge and despawn
@@ -47,16 +47,6 @@ public class PCRespawnPacketTranslator implements IPCPacketTranslator<ServerResp
             SetPlayerGameTypePacket pkgm = new SetPlayerGameTypePacket();
             pkgm.gamemode = packet.getGameMode() == GameMode.CREATIVE ? 1 : 0;
             session.sendPacket(pkgm);
-
-            // send entity attributes
-            UpdateAttributesPacket attr = new UpdateAttributesPacket();
-            attr.rtid = entity.proxyEid;
-            if (entity.attributes.isEmpty()) {
-                attr.entries = new ArrayList();
-                attr.entries.addAll(PEEntityAttribute.getDefault());
-            } else
-                attr.entries = entity.attributes.values();
-            session.sendPacket(attr, true);
 
             // send new adventure settings
             AdventureSettingsPacket adv = new AdventureSettingsPacket();
@@ -70,6 +60,16 @@ public class PCRespawnPacketTranslator implements IPCPacketTranslator<ServerResp
             adv.commandsPermission = AdventureSettingsPacket.PERMISSION_NORMAL;
             adv.playerPermission = AdventureSettingsPacket.LEVEL_PERMISSION_MEMBER;
             session.sendPacket(adv);
+
+            // send entity attributes
+            UpdateAttributesPacket attr = new UpdateAttributesPacket();
+            attr.rtid = entity.proxyEid;
+            if (entity.attributes.isEmpty()) {
+                attr.entries = new ArrayList();
+                attr.entries.addAll(PEEntityAttribute.getDefault());
+            } else
+                attr.entries = entity.attributes.values();
+            session.sendPacket(attr);
 
             //set world difficulty
             session.sendPacket(new SetDifficultyPacket(packet.getDifficulty()));

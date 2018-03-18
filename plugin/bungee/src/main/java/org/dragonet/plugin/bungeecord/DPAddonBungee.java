@@ -12,6 +12,10 @@
  */
 package org.dragonet.plugin.bungeecord;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import org.dragonet.common.utilities.BinaryStream;
 import org.dragonet.common.utilities.LoginChainDecoder;
 
@@ -22,6 +26,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PreLoginEvent;
@@ -41,6 +46,7 @@ public class DPAddonBungee extends Plugin implements Listener {
 
     private static DPAddonBungee instance;
     private Config config;
+//    private List<InetAddress> whitelist = new ArrayList();
 
     public final Set<UUID> bedrockPlayers = Collections.synchronizedSet(new HashSet<>());
 
@@ -57,6 +63,14 @@ public class DPAddonBungee extends Plugin implements Listener {
         config = new Config(this);
         config.load("config.yml");
 
+//        List<String> bypassIPs = config.getConfiguration().getStringList("auth_bypass_ip");
+//        for(String ip : bypassIPs) {
+//            try {
+//                whitelist.add(InetAddress.getByName("0.0.0.0"));
+//            } catch (UnknownHostException ex) {
+//                Logger.getLogger(DPAddonBungee.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
     }
 
     @Override
@@ -76,8 +90,8 @@ public class DPAddonBungee extends Plugin implements Listener {
 
                     if (!bypassIPs.isEmpty() && bypassIPs.contains(event.getConnection().getAddress().getHostString())) { // check if IP
                         String[] xboxliveProfileParts = extraDataInHandshake.split("\0");
-                        if (xboxliveProfileParts.length == 3) {
-                            LoginChainDecoder decoder = new LoginChainDecoder(xboxliveProfileParts[1].getBytes(), xboxliveProfileParts[2].getBytes());
+                        if (xboxliveProfileParts.length == 2) {
+                            LoginChainDecoder decoder = new LoginChainDecoder(xboxliveProfileParts[1].getBytes(), null);
                             try {
                                 decoder.decode(); //verify login chain, extract players UUID and name
                             } catch (NullPointerException ex) {
@@ -88,7 +102,7 @@ public class DPAddonBungee extends Plugin implements Listener {
                                 initialHandler.setField("name", decoder.username);
                                 initialHandler.setField("uniqueId", decoder.clientUniqueId);
                                 event.getConnection().setOnlineMode(false);
-                                getLogger().info("Bedrock player " + decoder.username + " injected in InitialHandler !");
+                                getLogger().info("Bedrock player " + decoder.username + " uuid : " + decoder.clientUniqueId + " injected in InitialHandler !");
                                 bedrockPlayers.add(event.getConnection().getUniqueId());
                             } else {
                                 getLogger().info("Bedrock player Fail to verify XBox Identity " + decoder.username);

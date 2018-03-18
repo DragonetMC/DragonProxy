@@ -7,6 +7,8 @@ import com.google.common.io.ByteStreams;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import org.dragonet.common.data.entity.Skin;
 
 import java.io.InputStream;
@@ -31,10 +33,15 @@ public class LoginChainDecoder {
     private static final String ENCODED_ROOT_CA_KEY;
     private static final KeyFactory EC_KEY_FACTORY;
 
+    private final boolean log_profiles_files;
+
+    // login data
     private final byte[] chainJWT;
-    private final byte[] clientDataJWT;
     public String username;
     public UUID clientUniqueId;
+
+    // player data
+    private final byte[] clientDataJWT;
     public long clientId;
     public JsonObject clientData;
     public Skin skin;
@@ -48,6 +55,9 @@ public class LoginChainDecoder {
     public LoginChainDecoder(byte[] chainJWT, byte[] clientDataJWT) {
         this.chainJWT = chainJWT;
         this.clientDataJWT = clientDataJWT;
+        log_profiles_files = System.getenv().containsKey("DP_DEBUG_LOGGING");
+        if (log_profiles_files)
+            Logger.getLogger(this.getClass().getSimpleName()).info("Logging accounts files for debugging.");
     }
 
     /**
@@ -62,13 +72,17 @@ public class LoginChainDecoder {
         if (map.isEmpty() || !map.containsKey("chain") || map.get("chain").isEmpty())
             return;
 
-        DecodedJWT clientJWT = JWT.decode(new String(this.clientDataJWT, StandardCharsets.UTF_8));
         List<DecodedJWT> chainJWTs = new ArrayList<>();
 
         // Add the JWT tokens to a chain
         for (String token : map.get("chain"))
             chainJWTs.add(JWT.decode(token));
-        chainJWTs.add(clientJWT);
+
+        DecodedJWT clientJWT = null;
+        if (this.clientDataJWT != null) {
+            clientJWT = JWT.decode(new String(this.clientDataJWT, StandardCharsets.UTF_8));
+            chainJWTs.add(clientJWT);
+        }
 
         // first step, check if the public provided key can decode the received chain
         try {
@@ -133,23 +147,66 @@ public class LoginChainDecoder {
             }
         }
 
+        //debug purpose
+        if (log_profiles_files) {
+            try {
+                BufferedWriter writer1 = new BufferedWriter(new FileWriter("logs/" + username + ".rawChainJTW"));
+                writer1.write(getChainJWT());
+                writer1.close();
+
+                BufferedWriter writer = new BufferedWriter(new FileWriter("logs/" + username + ".rawClientDataJTW"));
+                writer.write(getClientDataJWT());
+                writer.close();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+            //debug purpose
+            int index = 0;
+            for (DecodedJWT jwt : chainJWTs) {
+                JsonObject payload = gson.fromJson(new String(Base64.getDecoder().decode(jwt.getPayload())), JsonObject.class);
+                try {
+                    BufferedWriter writer = new BufferedWriter(new FileWriter("logs/" + username + "_" + index + ".decodedChain"));
+                    writer.write(payload.toString());
+                    writer.close();
+                    index++;
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+
         // step 3, extract LanguageCode and Skin
         // client data & skin
-        this.clientData = gson.fromJson(new String(Base64.getDecoder().decode(clientJWT.getPayload()), StandardCharsets.UTF_8), JsonObject.class);
+        if (clientJWT != null) {
+            this.clientData = gson.fromJson(new String(Base64.getDecoder().decode(clientJWT.getPayload()), StandardCharsets.UTF_8), JsonObject.class);
 
-        if (this.clientData.has("ClientRandomId")) this.clientId = this.clientData.get("ClientRandomId").getAsLong();
-        if (this.clientData.has("SkinData") && this.clientData.has("SkinId")) {
-            this.skin = new Skin(this.clientData.get("SkinData").getAsString(), this.clientData.get("SkinId").getAsString());
+            //debug purpose
+            if (log_profiles_files) {
+                try {
+                    BufferedWriter writer1 = new BufferedWriter(new FileWriter("logs/" + username + ".decodedData"));
+                    writer1.write(this.clientData.toString());
+                    writer1.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
 
-            if (this.clientData.has("CapeData"))
-                this.skin.setCape(this.skin.new Cape(Base64.getDecoder().decode(this.clientData.get("CapeData").getAsString())));
+            if (this.clientData.has("ClientRandomId"))
+                this.clientId = this.clientData.get("ClientRandomId").getAsLong();
+            if (this.clientData.has("SkinData") && this.clientData.has("SkinId")) {
+                this.skin = new Skin(this.clientData.get("SkinData").getAsString(), this.clientData.get("SkinId").getAsString());
+
+                if (this.clientData.has("CapeData"))
+                    this.skin.setCape(this.skin.new Cape(Base64.getDecoder().decode(this.clientData.get("CapeData").getAsString())));
+            } else
+                this.skin = Skin.DEFAULT_SKIN_STEVE;
+
+            if (this.clientData.has("SkinGeometryName"))
+                this.skinGeometryName = this.clientData.get("SkinGeometryName").getAsString();
+            if (this.clientData.has("SkinGeometry"))
+                this.skinGeometry = Base64.getDecoder().decode(this.clientData.get("SkinGeometry").getAsString());
         }
-        else
-            this.skin = Skin.DEFAULT_SKIN_STEVE;
-
-        if (this.clientData.has("SkinGeometryName")) this.skinGeometryName = this.clientData.get("SkinGeometryName").getAsString();
-        if (this.clientData.has("SkinGeometry"))
-            this.skinGeometry = Base64.getDecoder().decode(this.clientData.get("SkinGeometry").getAsString());
     }
 
     public boolean isLoginVerified() {
@@ -188,7 +245,9 @@ public class LoginChainDecoder {
      * @return the clientDataJWT
      */
     public String getClientDataJWT() {
-        return new String(this.clientDataJWT, StandardCharsets.UTF_8);
+        if (this.clientDataJWT != null)
+            return new String(this.clientDataJWT, StandardCharsets.UTF_8);
+        return null;
     }
 
 }

@@ -68,7 +68,7 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
                 if(proxy.getAuthMode().equalsIgnoreCase("hybrid")) {
                     if (protocol.getSubProtocol() == SubProtocol.HANDSHAKE && event.getPacket() instanceof HandshakePacket) {
                         HandshakePacket packet = event.getPacket();
-                        String host = remoteClient.getSession().getHost() + "\0" + upstream.getProfile().getChainJWT() + "\0" + upstream.getProfile().getClientDataJWT();
+                        String host = remoteClient.getSession().getHost() + "\0" + upstream.getProfile().getChainJWT();
                         packet = new HandshakePacket(packet.getProtocolVersion(), host, packet.getPort(), packet.getIntent());
                         event.setPacket(packet);
                     }
