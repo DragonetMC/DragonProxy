@@ -143,7 +143,7 @@ public class ChunkCache {
                 if (chunk != null)
                     chunk.getBlocks().set(blockPos.x, blockPos.y, blockPos.z, block);
             } catch (java.lang.ArrayIndexOutOfBoundsException ex) {
-                this.session.getProxy().getLogger().severe("update(" + position.toString() + ", " + block.toString() + ")) fail to get chunk " + (position.getX() >> 4) + "/" + (position.getY() >> 4) + "/" + (position.getZ() >> 4));
+                this.session.getProxy().getLogger().info("update(" + position.toString() + ", " + block.toString() + ")) fail to get chunk " + (position.getX() >> 4) + "/" + (position.getY() >> 4) + "/" + (position.getZ() >> 4));
                 ex.printStackTrace();
             }
         //enqueue block update
@@ -161,7 +161,7 @@ public class ChunkCache {
                     return ItemBlockTranslator.translateToPE(block.getId(), block.getData());
                 }
             } catch (java.lang.ArrayIndexOutOfBoundsException ex) {
-                this.session.getProxy().getLogger().severe("getBlock(" + position.toString() + ")) fail to get chunk " + (position.getX() >> 4) + "/" + (position.getY() >> 4) + "/" + (position.getZ() >> 4));
+                this.session.getProxy().getLogger().info("getBlock(" + position.toString() + ")) fail to get chunk " + (position.getX() >> 4) + "/" + (position.getY() >> 4) + "/" + (position.getZ() >> 4));
                 ex.printStackTrace();
             }
         return null;
