@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # extract project version
-VERSION=$(mvn -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec -q | tr '[:upper:]' '[:lower:]')
+VERSION=$(cat pom.xml | grep "^    <version>.*</version>$" | awk -F'[><]' '{print $3}' | tr '[:upper:]' '[:lower:]')
 echo "Project version : $VERSION"
 
 # build Docker image
