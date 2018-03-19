@@ -271,12 +271,12 @@ public class DragonProxy {
 
         logger.info(lang.get(Lang.INIT_DONE));
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                shutdown();
-            }
-        });
+//        Runtime.getRuntime().addShutdownHook(new Thread() {
+//            @Override
+//            public void run() {
+//                shutdown();
+//            }
+//        });
     }
 
     public Properties getProperties() {
