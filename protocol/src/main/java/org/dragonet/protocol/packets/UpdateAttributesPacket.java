@@ -26,11 +26,11 @@ public class UpdateAttributesPacket extends PEPacket {
     @Override
     public void encodePayload() {
         putUnsignedVarLong(rtid);
-        System.out.println("PEEntityAttribute entity " + rtid);
+//        System.out.println("PEEntityAttribute entity " + rtid);
         if (entries != null && entries.size() > 0) {
             putUnsignedVarInt(entries.size());
             for (PEEntityAttribute attr : entries) {
-                System.out.println("PEEntityAttribute " + attr.name + " : " + attr.currentValue);
+//                System.out.println("PEEntityAttribute " + attr.name + " : " + attr.currentValue);
                 putLFloat(attr.min);
                 putLFloat(attr.max);
                 putLFloat(attr.currentValue);
