@@ -2,3 +2,4 @@ name: DragonProxy-ServerAddon
 main: org.dragonet.plugin.bungeecord.DPAddonBungee
 version: 0.1
 authors: ["DefinitlyEvil", "Epic"]
+softdepend: ["LuckPerms"]
