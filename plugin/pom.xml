@@ -19,4 +19,12 @@
         <module>universal</module>
     </modules>
 
+    <dependencies>
+    	<dependency>
+    		<groupId>me.lucko.luckperms</groupId>
+    		<artifactId>luckperms-api</artifactId>
+    		<version>4.1</version>
+    		<scope>provided</scope>
+    	</dependency>
+    </dependencies>
 </project>

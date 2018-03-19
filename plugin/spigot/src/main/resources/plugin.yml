@@ -2,6 +2,7 @@ name: DragonProxy-ServerAddon
 main: org.dragonet.plugin.bukkit.DPAddonBukkit
 version: 0.1
 author: [DefinitlyEvil, Epic]
+softdepend: [LuckPerms]
 commands:
    form:
       description: DragonProxy form test command
