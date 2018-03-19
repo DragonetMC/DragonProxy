@@ -6,12 +6,12 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.dragonet.plugin.bungeecord.DPAddonBungee;
 
 public class BedrockClientContextCalculator implements ContextCalculator<ProxiedPlayer> {
-  @Override
-  public MutableContextSet giveApplicableContext(ProxiedPlayer subject,
-      MutableContextSet accumulator) {
-    accumulator.add("bedrock-client", Boolean
-        .toString(DPAddonBungee.getInstance().bedrockPlayers.contains(subject.getUniqueId())));
+    @Override
+    public MutableContextSet giveApplicableContext(ProxiedPlayer subject,
+            MutableContextSet accumulator) {
+        accumulator.add("bedrock-client", Boolean.toString(
+                DPAddonBungee.getInstance().bedrockPlayers.contains(subject.getUniqueId())));
 
-    return accumulator;
-  }
+        return accumulator;
+    }
 }

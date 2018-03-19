@@ -6,12 +6,11 @@ import org.bukkit.entity.Player;
 import org.dragonet.plugin.bukkit.DPAddonBukkit;
 
 public class BedrockClientContextCalculator implements ContextCalculator<Player> {
-  @Override
-  public MutableContextSet giveApplicableContext(Player subject,
-      MutableContextSet accumulator) {
-    accumulator.add("bedrock-client", Boolean
-        .toString(DPAddonBukkit.getInstance().bedrockPlayers.contains(subject.getUniqueId())));
+    @Override
+    public MutableContextSet giveApplicableContext(Player subject, MutableContextSet accumulator) {
+        accumulator.add("bedrock-client", Boolean.toString(
+                DPAddonBukkit.getInstance().bedrockPlayers.contains(subject.getUniqueId())));
 
-    return accumulator;
-  }
+        return accumulator;
+    }
 }
