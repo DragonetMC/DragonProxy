@@ -18,12 +18,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.dragonet.common.utilities.BinaryStream;
-
+import org.dragonet.plugin.bukkit.commands.DragonProxyFormCommand;
+import org.dragonet.plugin.bukkit.compat.luckperms.LuckPermsCompat;
+import org.dragonet.plugin.bukkit.events.ModalFormResponseEvent;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import org.dragonet.plugin.bukkit.commands.DragonProxyFormCommand;
-import org.dragonet.plugin.bukkit.events.ModalFormResponseEvent;
 
 public class DPAddonBukkit extends JavaPlugin implements Listener {
 
@@ -35,7 +35,11 @@ public class DPAddonBukkit extends JavaPlugin implements Listener {
 
     private DPPluginMessageListener pluginMessageListener;
 
-    private final Set<UUID> bedrockPlayers = new HashSet<>();
+    public final Set<UUID> bedrockPlayers = new HashSet<>();
+    
+    private boolean isPluginLoaded(String pluginName) {
+      return getServer().getPluginManager().getPlugin(pluginName) != null;
+  }
 
     @Override
     public void onEnable() {
@@ -48,6 +52,10 @@ public class DPAddonBukkit extends JavaPlugin implements Listener {
         getServer().getMessenger().registerIncomingPluginChannel(this, "DragonProxy", pluginMessageListener);
         getServer().getMessenger().registerOutgoingPluginChannel(this, "DragonProxy");
         this.getCommand("form").setExecutor(new DragonProxyFormCommand(this));
+        
+        if (isPluginLoaded("LuckPerms")) {
+            LuckPermsCompat.addContextCalculator();
+        }
     }
 
     public void detectedBedrockPlayer(Player player) {

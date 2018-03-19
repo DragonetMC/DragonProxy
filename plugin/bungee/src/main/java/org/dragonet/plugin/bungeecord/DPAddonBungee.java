@@ -12,35 +12,27 @@
  */
 package org.dragonet.plugin.bungeecord;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+import net.md_5.bungee.api.event.PreLoginEvent;
+import net.md_5.bungee.api.event.ServerConnectedEvent;
+import net.md_5.bungee.api.event.ServerSwitchEvent;
+import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.connection.InitialHandler;
+import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 import org.dragonet.common.utilities.BinaryStream;
 import org.dragonet.common.utilities.LoginChainDecoder;
-
+import org.dragonet.common.utilities.ReflectedClass;
+import org.dragonet.plugin.bungeecord.compat.luckperms.LuckPermsCompat;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.event.PreLoginEvent;
-import net.md_5.bungee.connection.InitialHandler;
-import net.md_5.bungee.api.event.PlayerDisconnectEvent;
-import net.md_5.bungee.api.event.PlayerHandshakeEvent;
-import net.md_5.bungee.api.event.ServerConnectedEvent;
-import net.md_5.bungee.api.event.ServerSwitchEvent;
-import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.config.Configuration;
-import net.md_5.bungee.event.EventHandler;
-import net.md_5.bungee.event.EventPriority;
-import org.dragonet.common.utilities.ReflectedClass;
 
 public class DPAddonBungee extends Plugin implements Listener {
 
@@ -53,6 +45,10 @@ public class DPAddonBungee extends Plugin implements Listener {
     public static DPAddonBungee getInstance() {
         return instance;
     }
+    
+    private boolean isPluginLoaded(String pluginName) {
+      return getProxy().getPluginManager().getPlugin(pluginName) != null;
+  }
 
     @Override
     public void onLoad() {
@@ -71,6 +67,10 @@ public class DPAddonBungee extends Plugin implements Listener {
 //                Logger.getLogger(DPAddonBungee.class.getName()).log(Level.SEVERE, null, ex);
 //            }
 //        }
+        
+        if (isPluginLoaded("LuckPerms")) {
+            LuckPermsCompat.addContextCalculator();
+        }
     }
 
     @Override
