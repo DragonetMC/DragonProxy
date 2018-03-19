@@ -43,6 +43,8 @@ public class PCNotifyClientPacketTranslator implements IPCPacketTranslator<Serve
 
                 session.sendPacket(pkgm);
                 session.sendPacket(adv);
+                if (gm == GameMode.CREATIVE)
+                    session.sendCreativeInventory();
                 break;
             case START_RAIN:
                 LevelEventPacket evtStartRain = new LevelEventPacket();

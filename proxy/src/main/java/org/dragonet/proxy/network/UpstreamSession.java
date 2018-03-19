@@ -477,10 +477,32 @@ public class UpstreamSession {
     }
 
     public void sendCreativeInventory() {
-        InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
-        inventoryContentPacket.windowId = ContainerId.CREATIVE.getId();
-        inventoryContentPacket.items = BlockEnum.getBlocks().stream().toArray(Slot[]::new);
-        sendPacket(inventoryContentPacket);
+        // main inventory
+//        ContainerId.CREATIVE.getId();
+//        InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
+//        inventoryContentPacket.windowId = ContainerId.INVENTORY.getId();
+//        Slot[] inventory = new Slot[36];
+//        for(int index = 0; index < inventory.length; index++) {
+//            inventory[index] = new Slot(0, 0, 0);
+//        }
+//        inventoryContentPacket.items = inventory;
+//        sendPacket(inventoryContentPacket);
+//
+//        // ? inventory
+//        InventoryContentPacket inventoryContentPacket2 = new InventoryContentPacket();
+//        inventoryContentPacket2.windowId = ContainerId.ARMOR.getId();
+//        Slot[] inventory2 = new Slot[4];
+//        for(int index = 0; index < inventory2.length; index++) {
+//            inventory2[index] = new Slot(0, 0, 0);
+//        }
+//        inventoryContentPacket2.items = inventory2;
+//        sendPacket(inventoryContentPacket2);
+
+        // creative inventory
+        InventoryContentPacket inventoryContentPacket3 = new InventoryContentPacket();
+        inventoryContentPacket3.windowId = ContainerId.CREATIVE.getId();
+        inventoryContentPacket3.items = BlockEnum.getCreativeBlocks().stream().toArray(Slot[]::new);
+        sendPacket(inventoryContentPacket3);
     }
 
     public void handlePacketBinary(byte[] packet) {

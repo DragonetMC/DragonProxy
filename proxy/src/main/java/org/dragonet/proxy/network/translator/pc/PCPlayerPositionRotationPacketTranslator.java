@@ -145,6 +145,9 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             entityData.meta = EntityMetaData.createDefault();
             session.sendPacket(entityData, true);
 
+            if (restored.getGameMode().equals(GameMode.CREATIVE))
+                session.sendCreativeInventory();
+
             if (session.getProxy().getAuthMode().equalsIgnoreCase("online")) {
 
                 MovePlayerPacket pk = new MovePlayerPacket();

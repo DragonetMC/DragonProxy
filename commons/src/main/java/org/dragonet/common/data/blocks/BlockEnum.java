@@ -5,6 +5,13 @@
  */
 package org.dragonet.common.data.blocks;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -2056,16 +2063,34 @@ public enum BlockEnum {
     }
 
     private final static Set<Slot> blocks = new HashSet();
+    private final static Set<Slot> creativeBlocks = new HashSet();
     private final static Map<Integer, Slot> idToBlock = new HashMap();
     private final static Map<String, Slot> nameToBlock = new HashMap();
 
     static {
-        for(BlockEnum block : values()) {
+        for (BlockEnum block : values()) {
             Slot blockState = new Slot(block.id, block.data);
             blocks.add(blockState);
             idToBlock.put(block.id, blockState);
             nameToBlock.put(block.name, blockState);
         }
+        //placeholder thanks nukkit
+        Gson gson = new GsonBuilder().create();
+        InputStream in = BlockEnum.class.getResourceAsStream("/creativeitems.json");
+        Reader reader = new InputStreamReader(in);
+        JsonObject oldBlocksListObject = gson.fromJson(reader, JsonObject.class);
+            JsonArray array = oldBlocksListObject.get("items").getAsJsonArray();
+            array.forEach(object -> {
+                if (object.isJsonObject()) {
+                    int id = 0;
+                    int damage = 0;
+                    if (object.getAsJsonObject().has("id"))
+                        id = object.getAsJsonObject().get("id").getAsInt();
+                    if (object.getAsJsonObject().has("damage"))
+                        damage = object.getAsJsonObject().get("damage").getAsInt();
+                    creativeBlocks.add(new Slot(id, damage, 1));
+                }
+            });
     }
 
     public String getName() {
@@ -2083,7 +2108,11 @@ public enum BlockEnum {
     public static Set<Slot> getBlocks() {
         return blocks;
     }
-    
+
+    public static Set<Slot> getCreativeBlocks() {
+        return creativeBlocks;
+    }
+
     public static Slot getSlots() {
         return null;
     }

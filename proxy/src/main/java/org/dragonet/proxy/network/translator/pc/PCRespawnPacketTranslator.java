@@ -74,6 +74,9 @@ public class PCRespawnPacketTranslator implements IPCPacketTranslator<ServerResp
             //set world difficulty
             session.sendPacket(new SetDifficultyPacket(packet.getDifficulty()));
 
+            if (packet.getGameMode().equals(GameMode.CREATIVE))
+                session.sendCreativeInventory();
+
             // change dim packet
 //            ChangeDimensionPacket changeDimPacket = new ChangeDimensionPacket();
 //            changeDimPacket.dimension = packet.getDimension();
