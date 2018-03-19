@@ -69,7 +69,7 @@ public class DPAddonBungee extends Plugin implements Listener {
 //        }
         
         if (isPluginLoaded("LuckPerms")) {
-            LuckPermsCompat.addContextCalculator();
+            LuckPermsCompat.addContextCalculator(bedrockPlayers);
         }
     }
 

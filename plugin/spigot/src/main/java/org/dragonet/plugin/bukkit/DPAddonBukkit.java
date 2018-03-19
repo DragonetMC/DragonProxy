@@ -35,7 +35,7 @@ public class DPAddonBukkit extends JavaPlugin implements Listener {
 
     private DPPluginMessageListener pluginMessageListener;
 
-    public final Set<UUID> bedrockPlayers = new HashSet<>();
+    private final Set<UUID> bedrockPlayers = new HashSet<>();
     
     private boolean isPluginLoaded(String pluginName) {
       return getServer().getPluginManager().getPlugin(pluginName) != null;
@@ -54,7 +54,7 @@ public class DPAddonBukkit extends JavaPlugin implements Listener {
         this.getCommand("form").setExecutor(new DragonProxyFormCommand(this));
         
         if (isPluginLoaded("LuckPerms")) {
-            LuckPermsCompat.addContextCalculator();
+            LuckPermsCompat.addContextCalculator(bedrockPlayers);
         }
     }
 
