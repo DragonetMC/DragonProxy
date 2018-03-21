@@ -67,15 +67,15 @@ public class DPAddonBungee extends Plugin implements Listener {
 //                Logger.getLogger(DPAddonBungee.class.getName()).log(Level.SEVERE, null, ex);
 //            }
 //        }
-        
-        if (isPluginLoaded("LuckPerms")) {
-            LuckPermsCompat.addContextCalculator(bedrockPlayers);
-        }
     }
 
     @Override
     public void onEnable() {
         getProxy().getPluginManager().registerListener(this, this);
+        
+        if (isPluginLoaded("LuckPerms")) {
+            LuckPermsCompat.addContextCalculator(bedrockPlayers);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOW)
