@@ -76,10 +76,3 @@ The plugin API is not made, wait for it !
 * [Nukkit](https://github.com/NukkitX/Nukkit)
 * [MINET](https://github.com/NiclasOlofsson/MiNET)
 * [MinecraftCoalition](http://wiki.vg)
-
-# YO!! HOLD ON!! 
-[![](https://shockbyte.com/assets/img/logo-2017.png)](https://shockbyte.com/partner/dragonet)
-## You need a server? huh? 
-## GET IT FROM [SHOCKBYTE](https://shockbyte.com/partner/dragonet)!! 
-#### It supports DragonProxy
-Super powerful servers with affordable price! :/ NOICE! 
