@@ -173,9 +173,6 @@ public class DragonProxy {
         console = new ConsoleCommandReader(this);
         console.startConsole();
 
-        // set logger mode
-        logger.debug = config.log_debug;
-
         // set logger colors mod
         logger.colorful = config.log_colors;
 
@@ -193,6 +190,12 @@ public class DragonProxy {
 
         // Check for startup arguments
         checkArguments(launchArgs);
+        
+        if(config.log_debug && !debug) {
+            logger.debug = true;
+            debug = true;
+            logger.info("Proxy running in debug mode.");
+        }
 
         // Load language file
         try {
