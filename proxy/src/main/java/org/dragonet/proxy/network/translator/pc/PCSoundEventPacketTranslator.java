@@ -56,6 +56,8 @@ public class PCSoundEventPacketTranslator implements IPCPacketTranslator<ServerP
                 pk.sound = LevelSoundEventPacket.Sound.BOW_HIT;
                 break;
             case ENTITY_GENERIC_EXTINGUISH_FIRE:
+            	pk.sound = LevelSoundEventPacket.Sound.FIZZ;
+                break;
             case BLOCK_FIRE_EXTINGUISH:
                 pk.sound = LevelSoundEventPacket.Sound.EXTINGUISH_FIRE;
                 break;
@@ -144,6 +146,8 @@ public class PCSoundEventPacketTranslator implements IPCPacketTranslator<ServerP
                 pk.sound = LevelSoundEventPacket.Sound.REMEDY;
                 break;
             case ENTITY_SHEEP_SHEAR:
+            	pk.sound = LevelSoundEventPacket.Sound.SHEAR;
+                break;
             case ENTITY_MOOSHROOM_SHEAR:
                 pk.sound = LevelSoundEventPacket.Sound.SHEAR;
                 break;
@@ -183,20 +187,44 @@ public class PCSoundEventPacketTranslator implements IPCPacketTranslator<ServerP
                 pk.sound = LevelSoundEventPacket.Sound.PORTAL;
                 break;
             case BLOCK_LEVER_CLICK:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_ON;
+                break;
             case BLOCK_COMPARATOR_CLICK:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_ON;
+                break;
             case BLOCK_STONE_BUTTON_CLICK_ON:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_ON;
+                break;
             case BLOCK_METAL_PRESSUREPLATE_CLICK_ON:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_ON;
+                break;
             case BLOCK_STONE_PRESSUREPLATE_CLICK_ON:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_ON;
+                break;
             case BLOCK_TRIPWIRE_CLICK_ON:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_ON;
+                break;
             case BLOCK_WOOD_BUTTON_CLICK_ON:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_ON;
+                break;
             case BLOCK_WOOD_PRESSUREPLATE_CLICK_ON:
                 pk.sound = LevelSoundEventPacket.Sound.POWER_ON;
                 break;
             case BLOCK_METAL_PRESSUREPLATE_CLICK_OFF:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_OFF;
+                break;
             case BLOCK_STONE_BUTTON_CLICK_OFF:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_OFF;
+                break;
             case BLOCK_STONE_PRESSUREPLATE_CLICK_OFF:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_OFF;
+                break;
             case BLOCK_TRIPWIRE_CLICK_OFF:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_OFF;
+                break;
             case BLOCK_WOOD_BUTTON_CLICK_OFF:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_OFF;
+                break;
             case BLOCK_WOOD_PRESSUREPLATE_CLICK_OFF:
                 pk.sound = LevelSoundEventPacket.Sound.POWER_OFF;
                 break;
@@ -220,7 +248,11 @@ public class PCSoundEventPacketTranslator implements IPCPacketTranslator<ServerP
                 pk.sound = LevelSoundEventPacket.Sound.PISTON_IN;
                 break;
             case ENTITY_BOBBER_THROW:
+            	pk.sound = LevelSoundEventPacket.Sound.SPLASH;
+            	break;
             case ENTITY_EGG_THROW:
+            	pk.sound = LevelSoundEventPacket.Sound.THROW;
+            	break;
             case ENTITY_ENDERPEARL_THROW:
             case ENTITY_EXPERIENCE_BOTTLE_THROW:
             case ENTITY_LINGERINGPOTION_THROW:
