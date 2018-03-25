@@ -31,6 +31,7 @@ import org.dragonet.proxy.events.EventManager;
 import org.dragonet.proxy.network.RaknetInterface;
 import org.dragonet.proxy.network.SessionRegister;
 import org.dragonet.proxy.utilities.ProxyLogger;
+import org.dragonet.proxy.utilities.SoundTranslator;
 import org.dragonet.proxy.utilities.MetricsManager;
 import org.dragonet.proxy.utilities.PluginManager;
 import org.dragonet.proxy.utilities.pingpassthrough.PingThread;
@@ -67,6 +68,7 @@ public class DragonProxy {
     private boolean debug = false;
     private final PluginManager pluginManager;
     private final EventManager eventManager;
+    private final SoundTranslator soundTranslator;
 
     public static void main(String[] args) {
         launchArgs = args;
@@ -105,6 +107,10 @@ public class DragonProxy {
 
     public EventManager getEventManager() {
         return eventManager;
+    }
+    
+    public SoundTranslator getSoundTranslator() {
+    	return soundTranslator;
     }
 
 
@@ -255,6 +261,8 @@ public class DragonProxy {
         // create the plugin manager
         pluginManager = new PluginManager(pluginfolder.toPath());
         eventManager = new EventManager(this);
+        
+        soundTranslator = new SoundTranslator();
 
         // start and load all plugins of application
         pluginManager.loadPlugins();
