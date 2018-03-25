@@ -717,7 +717,6 @@ public class SoundTranslator {
 	}
 	
 	private void registerFromEq(BuiltinSound shortcut, BuiltinSound parent) {
-		DragonProxy.getInstance().getLogger().info("Checking registry of shortcut: "+shortcut.toString());
 		if(parent == shortcut) {
 			return; // WHAT???
 		}
