@@ -729,7 +729,6 @@ public class SoundTranslator {
 		}
 		if (pctope.containsKey(parent)) {
 			pctope.put(shortcut, pctope.get(parent)); // Register into sound list
-			DragonProxy.getInstance().getLogger().info("Register shortcut \""+shortcut.toString()+"\" to translates (Parent: \""+parent.toString()+"\") ");
 		}
 	}
 
@@ -742,16 +741,13 @@ public class SoundTranslator {
 		}
 		if (pe instanceof String) {
 			pctope.put(bs, (String) pe);
-			DragonProxy.getInstance().getLogger().info("Register translate of \""+bs.toString()+"\" to \""+pe+"\" ");
 			return true;
 		} else if (pe instanceof BuiltinSound) {
 			pceq.put(bs, (BuiltinSound) pe);
-			DragonProxy.getInstance().getLogger().info("Register translate of \""+bs.toString()+"\" to shortcut of \""+pe.toString()+"\" ");
 			return true;
 		} else if (pe instanceof Boolean) {
 			if ((boolean) pe == false) {
 				ignore.add(bs);
-				DragonProxy.getInstance().getLogger().info("Register translate of \""+bs.toString()+"\" to ignore packet ");
 			}
 			return true;
 		}
