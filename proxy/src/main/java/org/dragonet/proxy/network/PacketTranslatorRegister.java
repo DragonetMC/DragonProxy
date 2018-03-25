@@ -75,6 +75,7 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerUnloadChunkPacket.class, new PCUnloadChunkDataPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlaySoundPacket.class, new PCPlaySoundPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayBuiltinSoundPacket.class, new PCSoundEventPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerPlayEffectPacket.class, new PCPlayEffectPacketTranslator());
 
         //
         // // Entity
