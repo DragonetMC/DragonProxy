@@ -1,4 +1,4 @@
-package org.dragonet.proxy.utilities;
+package org.dragonet.proxy.network.translator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
