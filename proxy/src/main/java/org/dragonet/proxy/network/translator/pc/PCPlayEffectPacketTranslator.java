@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.dragonet.common.maths.BlockPosition;
+import org.dragonet.common.maths.Vector3F;
 import org.dragonet.protocol.PEPacket;
+import org.dragonet.protocol.packets.LevelEventPacket;
 import org.dragonet.protocol.packets.PlaySoundPacket;
 import org.dragonet.protocol.packets.StopSoundPacket;
 import org.dragonet.proxy.DragonProxy;
@@ -25,12 +27,10 @@ public class PCPlayEffectPacketTranslator implements IPCPacketTranslator<ServerP
 
 	@Override
 	public PEPacket[] translate(UpstreamSession session, ServerPlayEffectPacket packet) {
-		DragonProxy.getInstance().getLogger().info("New effect packet: "+packet.getEffect().toString());
 		WorldEffect effect = packet.getEffect();
 		WorldEffectData data = packet.getData();
 		ArrayList<PEPacket> packets = new ArrayList<PEPacket>();
 		if(effect == SoundEffect.RECORD && data instanceof RecordEffectData) {
-			DragonProxy.getInstance().getLogger().info("Record: ("+data.toString()+") ID: "+((RecordEffectData) data).getRecordId());
 			if(records.containsKey(((RecordEffectData) data).getRecordId())) {
 				PlaySoundPacket psp = new PlaySoundPacket();
 				psp.name = DragonProxy.getInstance().getSoundTranslator().translate(records.get(((RecordEffectData) data).getRecordId()));
@@ -72,6 +72,13 @@ public class PCPlayEffectPacketTranslator implements IPCPacketTranslator<ServerP
 				psp.volume = 10;
 				packets.add(psp);
 			}
+		}
+		if (effect == ParticleEffect.BREAK_SPLASH_POTION) {
+			LevelEventPacket pk = new LevelEventPacket();
+			pk.eventId = LevelEventPacket.EVENT_PARTICLE_SPLASH;
+			pk.position = new Vector3F(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
+			pk.data = 0;
+			packets.add(pk);
 		}
 		// TODO Other effects
 		if (!packets.isEmpty()) {
@@ -125,6 +132,7 @@ public class PCPlayEffectPacketTranslator implements IPCPacketTranslator<ServerP
 		sounds.put(SoundEffect.BLOCK_IRON_TRAPDOOR_CLOSE, BuiltinSound.BLOCK_IRON_TRAPDOOR_CLOSE);
 		sounds.put(ParticleEffect.BREAK_EYE_OF_ENDER, BuiltinSound.ENTITY_ENDEREYE_DEATH);
 		sounds.put(SoundEffect.ENTITY_ENDERDRAGON_GROWL, BuiltinSound.ENTITY_ENDERDRAGON_GROWL);
+		sounds.put(ParticleEffect.BREAK_SPLASH_POTION, BuiltinSound.BLOCK_GLASS_BREAK);
 		
 		records.put(2256, BuiltinSound.RECORD_13); // record_13
 		records.put(2257, BuiltinSound.RECORD_CAT); // record_cat
