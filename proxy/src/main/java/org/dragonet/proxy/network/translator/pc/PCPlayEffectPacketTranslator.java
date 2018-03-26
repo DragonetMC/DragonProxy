@@ -1,17 +1,23 @@
 package org.dragonet.proxy.network.translator.pc;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.dragonet.common.maths.BlockPosition;
 import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.packets.PlaySoundPacket;
+import org.dragonet.protocol.packets.StopSoundPacket;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.proxy.network.cache.JukeboxCache;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 
+import com.github.steveice10.mc.protocol.data.game.world.effect.BreakBlockEffectData;
 import com.github.steveice10.mc.protocol.data.game.world.effect.ParticleEffect;
+import com.github.steveice10.mc.protocol.data.game.world.effect.RecordEffectData;
 import com.github.steveice10.mc.protocol.data.game.world.effect.SoundEffect;
 import com.github.steveice10.mc.protocol.data.game.world.effect.WorldEffect;
+import com.github.steveice10.mc.protocol.data.game.world.effect.WorldEffectData;
 import com.github.steveice10.mc.protocol.data.game.world.sound.BuiltinSound;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerPlayEffectPacket;
 
@@ -19,29 +25,65 @@ public class PCPlayEffectPacketTranslator implements IPCPacketTranslator<ServerP
 
 	@Override
 	public PEPacket[] translate(UpstreamSession session, ServerPlayEffectPacket packet) {
-		DragonProxy.getInstance().getLogger().info("WorldEffect: "+packet.getEffect().toString());
+		DragonProxy.getInstance().getLogger().info("New effect packet: "+packet.getEffect().toString());
 		WorldEffect effect = packet.getEffect();
-		PlaySoundPacket psp = null;
-		if(sounds.containsKey(effect)) {
+		WorldEffectData data = packet.getData();
+		ArrayList<PEPacket> packets = new ArrayList<PEPacket>();
+		if(effect == SoundEffect.RECORD && data instanceof RecordEffectData) {
+			DragonProxy.getInstance().getLogger().info("Record: ("+data.toString()+") ID: "+((RecordEffectData) data).getRecordId());
+			if(records.containsKey(((RecordEffectData) data).getRecordId())) {
+				PlaySoundPacket psp = new PlaySoundPacket();
+				psp.name = DragonProxy.getInstance().getSoundTranslator().translate(records.get(((RecordEffectData) data).getRecordId()));
+				psp.blockPosition = new BlockPosition(packet.getPosition());
+				psp.pitch = 1;
+				psp.volume = 10;
+				packets.add(psp);
+				session.getJukeboxCache().registerJukebox(new BlockPosition(packet.getPosition()), records.get(((RecordEffectData) data).getRecordId()));
+			} else if (((RecordEffectData) data).getRecordId() == 0) {
+				BuiltinSound sound = session.getJukeboxCache().unregisterJukebox(new BlockPosition(packet.getPosition()));
+				if(sound != null) {
+					StopSoundPacket ssp = new StopSoundPacket();
+					ssp.name = DragonProxy.getInstance().getSoundTranslator().translate(sound);
+					packets.add(ssp);
+				}
+			} else {
+				// Something is wrong
+			}
+		} else if (effect == ParticleEffect.BREAK_BLOCK && data instanceof BreakBlockEffectData){
+			// I don't know where is this packet used
+			PlaySoundPacket psp = new PlaySoundPacket();
+			if(breakBlock.containsKey(((BreakBlockEffectData) data).getBlockState().getId())) {
+				psp.name = DragonProxy.getInstance().getSoundTranslator().translate(breakBlock.get(((BreakBlockEffectData) data).getBlockState().getId()));
+			} else {
+				psp.name = DragonProxy.getInstance().getSoundTranslator().translate(breakBlock.get(1));
+			}
+			psp.blockPosition = new BlockPosition(packet.getPosition());
+			psp.pitch = 1;
+			psp.volume = 10;
+			packets.add(psp);
+		} else if (sounds.containsKey(effect)) {
+			// This packet is used only when effect is from block not entity
+			// ex. pressure plate -> door, but when player open door I don't hear anything
 			if(!DragonProxy.getInstance().getSoundTranslator().isIgnored(sounds.get(effect)) && DragonProxy.getInstance().getSoundTranslator().isTranslatable(sounds.get(effect))) {
-				psp = new PlaySoundPacket();
+				PlaySoundPacket psp = new PlaySoundPacket();
 				psp.name = DragonProxy.getInstance().getSoundTranslator().translate(sounds.get(effect));
 				psp.blockPosition = new BlockPosition(packet.getPosition());
 				psp.pitch = 1;
 				psp.volume = 10;
-				DragonProxy.getInstance().getLogger().info("Sound: "+ DragonProxy.getInstance().getSoundTranslator().translate(sounds.get(effect)));
+				packets.add(psp);
 			}
 		}
-		//TODO Other effects
-		if (psp != null) {
-			DragonProxy.getInstance().getLogger().info("Sending packet");
-			return new PEPacket[] {psp};
+		// TODO Other effects
+		if (!packets.isEmpty()) {
+			return packets.toArray(new PEPacket[packets.size()]);
 		} else {
 			return null;
 		}
 	}
 
 	private static HashMap<WorldEffect, BuiltinSound> sounds = new HashMap<WorldEffect, BuiltinSound>(); 
+	private static HashMap<Integer, BuiltinSound> breakBlock = new HashMap<Integer, BuiltinSound>();
+	private static HashMap<Integer, BuiltinSound> records = new HashMap<Integer, BuiltinSound>();
 	
 	static {
 		sounds.put(SoundEffect.BLOCK_DISPENSER_DISPENSE, BuiltinSound.BLOCK_DISPENSER_DISPENSE);
@@ -83,6 +125,28 @@ public class PCPlayEffectPacketTranslator implements IPCPacketTranslator<ServerP
 		sounds.put(SoundEffect.BLOCK_IRON_TRAPDOOR_CLOSE, BuiltinSound.BLOCK_IRON_TRAPDOOR_CLOSE);
 		sounds.put(ParticleEffect.BREAK_EYE_OF_ENDER, BuiltinSound.ENTITY_ENDEREYE_DEATH);
 		sounds.put(SoundEffect.ENTITY_ENDERDRAGON_GROWL, BuiltinSound.ENTITY_ENDERDRAGON_GROWL);
+		
+		records.put(2256, BuiltinSound.RECORD_13); // record_13
+		records.put(2257, BuiltinSound.RECORD_CAT); // record_cat
+		records.put(2258, BuiltinSound.RECORD_BLOCKS); // record_blocks
+		records.put(2259, BuiltinSound.RECORD_CHIRP); // record_chirp
+		records.put(2260, BuiltinSound.RECORD_FAR); // record_far
+		records.put(2261, BuiltinSound.RECORD_MALL); // record_mall
+		records.put(2262, BuiltinSound.RECORD_MELLOHI); // record_mellohi
+		records.put(2263, BuiltinSound.RECORD_STAL); // record_stal
+		records.put(2264, BuiltinSound.RECORD_STRAD); // record_strad
+		records.put(2265, BuiltinSound.RECORD_WARD); // record_ward
+		records.put(2266, BuiltinSound.RECORD_11); // record_11
+		records.put(2267, BuiltinSound.RECORD_WAIT); // record_wait
+		
+		breakBlock.put(1, BuiltinSound.BLOCK_STONE_BREAK);
+		breakBlock.put(2, BuiltinSound.BLOCK_GRASS_BREAK);
+		breakBlock.put(3, BuiltinSound.BLOCK_GRAVEL_BREAK);
+		breakBlock.put(4, BuiltinSound.BLOCK_STONE_BREAK);
+		breakBlock.put(5, BuiltinSound.BLOCK_WOOD_BREAK);
+		breakBlock.put(6, BuiltinSound.BLOCK_GRASS_BREAK);
+		breakBlock.put(12, BuiltinSound.BLOCK_SAND_BREAK);
+		breakBlock.put(13, BuiltinSound.BLOCK_GRAVEL_BREAK);
 	}
 
 }
