@@ -9,10 +9,12 @@ import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.packets.LevelEventPacket;
 import org.dragonet.protocol.packets.PlaySoundPacket;
 import org.dragonet.protocol.packets.StopSoundPacket;
+import org.dragonet.protocol.packets.TextPacket;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.JukeboxCache;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
+import org.dragonet.common.data.ParticleEffects;
 
 import com.github.steveice10.mc.protocol.data.game.world.effect.BreakBlockEffectData;
 import com.github.steveice10.mc.protocol.data.game.world.effect.ParticleEffect;
@@ -39,6 +41,12 @@ public class PCPlayEffectPacketTranslator implements IPCPacketTranslator<ServerP
 				psp.volume = 10;
 				packets.add(psp);
 				session.getJukeboxCache().registerJukebox(new BlockPosition(packet.getPosition()), records.get(((RecordEffectData) data).getRecordId()));
+				if(record_names.containsKey(((RecordEffectData) data).getRecordId())) {
+					TextPacket text = new TextPacket();
+					text.type = TextPacket.TYPE_JUKEBOX_POPUP;
+					text.message = "Now playing: C418 - "+record_names.get(((RecordEffectData) data).getRecordId());
+					packets.add(text);
+				}
 			} else if (((RecordEffectData) data).getRecordId() == 0) {
 				BuiltinSound sound = session.getJukeboxCache().unregisterJukebox(new BlockPosition(packet.getPosition()));
 				if(sound != null) {
@@ -77,7 +85,7 @@ public class PCPlayEffectPacketTranslator implements IPCPacketTranslator<ServerP
 			LevelEventPacket pk = new LevelEventPacket();
 			pk.eventId = LevelEventPacket.EVENT_ADD_PARTICLE_MASK;
 			pk.position = new Vector3F(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
-			pk.data = PARTICLE_TYPE_SMOKE;
+			pk.data = ParticleEffects.TYPE_SMOKE.id;
 			packets.add(pk);
 		}
 		if (effect == ParticleEffect.BONEMEAL_GROW) {
@@ -127,6 +135,7 @@ public class PCPlayEffectPacketTranslator implements IPCPacketTranslator<ServerP
 	private static HashMap<WorldEffect, BuiltinSound> sounds = new HashMap<WorldEffect, BuiltinSound>(); 
 	private static HashMap<Integer, BuiltinSound> breakBlock = new HashMap<Integer, BuiltinSound>();
 	private static HashMap<Integer, BuiltinSound> records = new HashMap<Integer, BuiltinSound>();
+	private static HashMap<Integer, String> record_names = new HashMap<Integer, String>();
 	
 	static {
 		sounds.put(SoundEffect.BLOCK_DISPENSER_DISPENSE, BuiltinSound.BLOCK_DISPENSER_DISPENSE);
@@ -183,6 +192,19 @@ public class PCPlayEffectPacketTranslator implements IPCPacketTranslator<ServerP
 		records.put(2266, BuiltinSound.RECORD_11); // record_11
 		records.put(2267, BuiltinSound.RECORD_WAIT); // record_wait
 		
+		record_names.put(2256, "13"); // record_13
+		record_names.put(2257, "Cat"); // record_cat
+		record_names.put(2258, "Blocks"); // record_blocks
+		record_names.put(2259, "Chirp"); // record_chirp
+		record_names.put(2260, "Far"); // record_far
+		record_names.put(2261, "Mall"); // record_mall
+		record_names.put(2262, "Mellohi"); // record_mellohi
+		record_names.put(2263, "Stal"); // record_stal
+		record_names.put(2264, "Strad"); // record_strad
+		record_names.put(2265, "Ward"); // record_ward
+		record_names.put(2266, "11"); // record_11
+		record_names.put(2267, "Wait"); // record_wait
+		
 		breakBlock.put(1, BuiltinSound.BLOCK_STONE_BREAK);
 		breakBlock.put(2, BuiltinSound.BLOCK_GRASS_BREAK);
 		breakBlock.put(3, BuiltinSound.BLOCK_GRAVEL_BREAK);
@@ -192,48 +214,5 @@ public class PCPlayEffectPacketTranslator implements IPCPacketTranslator<ServerP
 		breakBlock.put(12, BuiltinSound.BLOCK_SAND_BREAK);
 		breakBlock.put(13, BuiltinSound.BLOCK_GRAVEL_BREAK);
 	}
-	
-	// From Nukkit
-    public static final int PARTICLE_TYPE_BUBBLE = 1;
-    public static final int PARTICLE_TYPE_CRITICAL = 2;
-    public static final int PARTICLE_TYPE_BLOCK_FORCE_FIELD = 3;
-    public static final int PARTICLE_TYPE_SMOKE = 4;
-    public static final int PARTICLE_TYPE_EXPLODE = 5;
-    public static final int PARTICLE_TYPE_EVAPORATION = 6;
-    public static final int PARTICLE_TYPE_FLAME = 7;
-    public static final int PARTICLE_TYPE_LAVA = 8;
-    public static final int PARTICLE_TYPE_LARGE_SMOKE = 9;
-    public static final int PARTICLE_TYPE_REDSTONE = 10;
-    public static final int PARTICLE_TYPE_RISING_RED_DUST = 11;
-    public static final int PARTICLE_TYPE_ITEM_BREAK = 12;
-    public static final int PARTICLE_TYPE_SNOWBALL_POOF = 13;
-    public static final int PARTICLE_TYPE_HUGE_EXPLODE = 14;
-    public static final int PARTICLE_TYPE_HUGE_EXPLODE_SEED = 15;
-    public static final int PARTICLE_TYPE_MOB_FLAME = 16;
-    public static final int PARTICLE_TYPE_HEART = 17;
-    public static final int PARTICLE_TYPE_TERRAIN = 18;
-    public static final int PARTICLE_TYPE_SUSPENDED_TOWN = 19;
-    public static final int PARTICLE_TYPE_PORTAL = 20;
-    public static final int PARTICLE_TYPE_SPLASH = 21;
-    public static final int PARTICLE_TYPE_WATER_WAKE = 22;
-    public static final int PARTICLE_TYPE_DRIP_WATER = 23;
-    public static final int PARTICLE_TYPE_DRIP_LAVA = 24;
-    public static final int PARTICLE_TYPE_FALLING_DUST = 25;
-    public static final int PARTICLE_TYPE_MOB_SPELL = 26;
-    public static final int PARTICLE_TYPE_MOB_SPELL_AMBIENT = 27;
-    public static final int PARTICLE_TYPE_MOB_SPELL_INSTANTANEOUS = 28;
-    public static final int PARTICLE_TYPE_INK = 29;
-    public static final int PARTICLE_TYPE_SLIME = 30;
-    public static final int PARTICLE_TYPE_RAIN_SPLASH = 31;
-    public static final int PARTICLE_TYPE_VILLAGER_ANGRY = 32;
-    public static final int PARTICLE_TYPE_VILLAGER_HAPPY = 33;
-    public static final int PARTICLE_TYPE_ENCHANTMENT_TABLE = 34;
-    public static final int PARTICLE_TYPE_TRACKING_EMITTER = 35;
-    public static final int PARTICLE_TYPE_NOTE = 36;
-    public static final int PARTICLE_TYPE_WITCH_SPELL = 37;
-    public static final int PARTICLE_TYPE_CARROT = 38;
-    //39 unknown
-    public static final int PARTICLE_TYPE_END_ROD = 40;
-    public static final int PARTICLE_TYPE_DRAGONS_BREATH = 41;
 
 }
