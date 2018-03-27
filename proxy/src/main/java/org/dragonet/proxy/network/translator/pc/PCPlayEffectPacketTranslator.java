@@ -73,14 +73,50 @@ public class PCPlayEffectPacketTranslator implements IPCPacketTranslator<ServerP
 				packets.add(psp);
 			}
 		}
-		if (effect == ParticleEffect.BREAK_SPLASH_POTION) {
+		if (effect == ParticleEffect.SMOKE) {
 			LevelEventPacket pk = new LevelEventPacket();
-			pk.eventId = LevelEventPacket.EVENT_PARTICLE_SPLASH;
+			pk.eventId = LevelEventPacket.EVENT_ADD_PARTICLE_MASK;
+			pk.position = new Vector3F(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
+			pk.data = PARTICLE_TYPE_SMOKE;
+			packets.add(pk);
+		}
+		if (effect == ParticleEffect.BONEMEAL_GROW) {
+			LevelEventPacket pk = new LevelEventPacket();
+			pk.eventId = LevelEventPacket.EVENT_PARTICLE_BONEMEAL;
 			pk.position = new Vector3F(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
 			pk.data = 0;
 			packets.add(pk);
 		}
-		// TODO Other effects
+		if (effect == ParticleEffect.BREAK_BLOCK) {
+			// I don't know hot to test it // TODO
+		}
+		if (effect == ParticleEffect.BREAK_EYE_OF_ENDER) {
+			LevelEventPacket pk = new LevelEventPacket();
+			pk.eventId = LevelEventPacket.EVENT_PARTICLE_EYE_DESPAWN;
+			pk.position = new Vector3F(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
+			pk.data = 0;
+			packets.add(pk);
+		}
+		if (effect == ParticleEffect.BREAK_SPLASH_POTION) {
+			LevelEventPacket pk = new LevelEventPacket();
+			pk.eventId = LevelEventPacket.EVENT_PARTICLE_SPLASH;
+			pk.position = new Vector3F(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
+			pk.data = 0; // TODO
+			packets.add(pk);
+		}
+		if (effect == ParticleEffect.END_GATEWAY_SPAWN) {
+			// TODO
+		}
+		if (effect == ParticleEffect.ENDERDRAGON_FIREBALL_EXPLODE) {
+			// TODO
+		}
+		if (effect == ParticleEffect.MOB_SPAWN) {
+			LevelEventPacket pk = new LevelEventPacket();
+			pk.eventId = LevelEventPacket.EVENT_PARTICLE_SPAWN;
+			pk.position = new Vector3F(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
+			pk.data = 2;
+			packets.add(pk);
+		}
 		if (!packets.isEmpty()) {
 			return packets.toArray(new PEPacket[packets.size()]);
 		} else {
@@ -156,5 +192,48 @@ public class PCPlayEffectPacketTranslator implements IPCPacketTranslator<ServerP
 		breakBlock.put(12, BuiltinSound.BLOCK_SAND_BREAK);
 		breakBlock.put(13, BuiltinSound.BLOCK_GRAVEL_BREAK);
 	}
+	
+	// From Nukkit
+    public static final int PARTICLE_TYPE_BUBBLE = 1;
+    public static final int PARTICLE_TYPE_CRITICAL = 2;
+    public static final int PARTICLE_TYPE_BLOCK_FORCE_FIELD = 3;
+    public static final int PARTICLE_TYPE_SMOKE = 4;
+    public static final int PARTICLE_TYPE_EXPLODE = 5;
+    public static final int PARTICLE_TYPE_EVAPORATION = 6;
+    public static final int PARTICLE_TYPE_FLAME = 7;
+    public static final int PARTICLE_TYPE_LAVA = 8;
+    public static final int PARTICLE_TYPE_LARGE_SMOKE = 9;
+    public static final int PARTICLE_TYPE_REDSTONE = 10;
+    public static final int PARTICLE_TYPE_RISING_RED_DUST = 11;
+    public static final int PARTICLE_TYPE_ITEM_BREAK = 12;
+    public static final int PARTICLE_TYPE_SNOWBALL_POOF = 13;
+    public static final int PARTICLE_TYPE_HUGE_EXPLODE = 14;
+    public static final int PARTICLE_TYPE_HUGE_EXPLODE_SEED = 15;
+    public static final int PARTICLE_TYPE_MOB_FLAME = 16;
+    public static final int PARTICLE_TYPE_HEART = 17;
+    public static final int PARTICLE_TYPE_TERRAIN = 18;
+    public static final int PARTICLE_TYPE_SUSPENDED_TOWN = 19;
+    public static final int PARTICLE_TYPE_PORTAL = 20;
+    public static final int PARTICLE_TYPE_SPLASH = 21;
+    public static final int PARTICLE_TYPE_WATER_WAKE = 22;
+    public static final int PARTICLE_TYPE_DRIP_WATER = 23;
+    public static final int PARTICLE_TYPE_DRIP_LAVA = 24;
+    public static final int PARTICLE_TYPE_FALLING_DUST = 25;
+    public static final int PARTICLE_TYPE_MOB_SPELL = 26;
+    public static final int PARTICLE_TYPE_MOB_SPELL_AMBIENT = 27;
+    public static final int PARTICLE_TYPE_MOB_SPELL_INSTANTANEOUS = 28;
+    public static final int PARTICLE_TYPE_INK = 29;
+    public static final int PARTICLE_TYPE_SLIME = 30;
+    public static final int PARTICLE_TYPE_RAIN_SPLASH = 31;
+    public static final int PARTICLE_TYPE_VILLAGER_ANGRY = 32;
+    public static final int PARTICLE_TYPE_VILLAGER_HAPPY = 33;
+    public static final int PARTICLE_TYPE_ENCHANTMENT_TABLE = 34;
+    public static final int PARTICLE_TYPE_TRACKING_EMITTER = 35;
+    public static final int PARTICLE_TYPE_NOTE = 36;
+    public static final int PARTICLE_TYPE_WITCH_SPELL = 37;
+    public static final int PARTICLE_TYPE_CARROT = 38;
+    //39 unknown
+    public static final int PARTICLE_TYPE_END_ROD = 40;
+    public static final int PARTICLE_TYPE_DRAGONS_BREATH = 41;
 
 }
