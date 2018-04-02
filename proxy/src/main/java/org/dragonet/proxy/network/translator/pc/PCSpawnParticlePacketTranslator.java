@@ -25,11 +25,12 @@ public class PCSpawnParticlePacketTranslator implements IPCPacketTranslator<Serv
             packets.add(pk);
         } else {
             int num = ParticleTranslator.getInstance().translate(packet.getParticle());
+            session.getProxy().getLogger().info(Integer.toString(num));
             if (num != -1) {
                 LevelEventPacket pk = new LevelEventPacket();
-                pk.eventId = LevelEventPacket.EVENT_ADD_PARTICLE_MASK;
+                pk.eventId = (short) (LevelEventPacket.EVENT_ADD_PARTICLE_MASK | num);
                 pk.position = new Vector3F(packet.getX(), packet.getY(), packet.getZ());
-                pk.data = num;
+                pk.data = 0;  // TODO ?
                 packets.add(pk);
             }
         }

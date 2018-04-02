@@ -153,6 +153,7 @@ public final class PacketTranslatorRegister {
     public static PEPacket[] translateToPE(UpstreamSession session, Packet packet) {
         if (packet == null)
             return null;
+        //session.getProxy().getLogger().debug(packet.toString());
         IPCPacketTranslator<Packet> target = (IPCPacketTranslator<Packet>) PC_TO_PE_TRANSLATOR.get(packet.getClass());
         if (target == null)
             return null;
@@ -171,6 +172,7 @@ public final class PacketTranslatorRegister {
     public static Packet[] translateToPC(UpstreamSession session, PEPacket packet) {
         if (packet == null)
             return null;
+        //session.getProxy().getLogger().debug(packet.toString());
         IPEPacketTranslator<PEPacket> target = (IPEPacketTranslator<PEPacket>) PE_TO_PC_TRANSLATOR.get(packet.getClass());
         if (target == null)
             return null;
