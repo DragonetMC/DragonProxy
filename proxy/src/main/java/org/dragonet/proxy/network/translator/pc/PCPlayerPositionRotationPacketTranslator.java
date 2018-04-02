@@ -212,14 +212,14 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
         byte mode = MovePlayerPacket.MODE_NORMAL;
         ChunkPos chunk = new ChunkPos(NukkitMath.ceilDouble(packet.getX()) >> 4, NukkitMath.ceilDouble(packet.getZ()) >> 4);
         // check if destination is out of range
-        if (!session.getChunkCache().getLoadedChunks().contains(chunk)) {
+        //if (!session.getChunkCache().getLoadedChunks().contains(chunk)) {
             mode = MovePlayerPacket.MODE_TELEPORT;
             offset = 0.2f;
 //            System.out.println(packet.getX() + " " + packet.getZ());
 //            System.out.println("out of range !" + chunk.toString());
             session.getChunkCache().sendOrderedChunks();
 //            session.getChunkCache().getDebugGrid();
-        }
+        //}
 
         MovePlayerPacket pk = new MovePlayerPacket();
         pk.rtid = entityPlayer.proxyEid;
