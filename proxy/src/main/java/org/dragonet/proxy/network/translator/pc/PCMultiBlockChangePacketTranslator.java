@@ -44,8 +44,9 @@ public class PCMultiBlockChangePacketTranslator implements IPCPacketTranslator<S
                 packets[i].flags = UpdateBlockPacket.FLAG_NEIGHBORS;
                 packets[i].data = entry.getPEDamage();
             } catch (Exception ex) {
-                session.getProxy().getLogger()
-                        .debug("Error when updating block [" + pos.getX() + "," + pos.getY() + "," + pos.getZ() + "]");
+                session.getProxy().getLogger().debug("Error when updating block [" + pos.getX() + "," + pos.getY() + ","
+                        + pos.getZ() + "] " + block.toString());
+                session.getProxy().getLogger().debug(ex.getMessage());
             }
 
             // Save glitchy items in cache

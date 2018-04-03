@@ -13,6 +13,7 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
+import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerBlockChangePacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
@@ -28,8 +29,9 @@ public class PCBlockChangePacketTranslator implements IPCPacketTranslator<Server
     @Override
     public PEPacket[] translate(UpstreamSession session, ServerBlockChangePacket packet) {
         Position pos = packet.getRecord().getPosition();
+        BlockState block = packet.getRecord().getBlock();
         if (session.getChunkCache().getBlock(pos) != null) {
-            if (packet.getRecord().getBlock().getId() == 0 && session.getChunkCache().getBlock(pos).getId() != 0) {
+            if (block.getId() == 0 && session.getChunkCache().getBlock(pos).getId() != 0) {
                 LevelEventPacket pk = new LevelEventPacket();
                 pk.eventId = LevelEventPacket.EVENT_PARTICLE_DESTROY;
                 pk.position = new Vector3F(pos.getX(), pos.getY(), pos.getZ());
@@ -38,21 +40,27 @@ public class PCBlockChangePacketTranslator implements IPCPacketTranslator<Server
             }
         }
         // update cache
-        session.getChunkCache().update(pos, packet.getRecord().getBlock());
+        try {
+            session.getChunkCache().update(pos, block);
 
-        // Save glitchy items in cache
-        // Position blockPosition = new Position(pk.blockPosition.x, pk.blockPosition.y,
-        // pk.blockPosition.z);
-        // session.getBlockCache().checkBlock(entry.getId(), entry.getPEDamage(),
-        // blockPosition);
-        ItemEntry entry = session.getChunkCache().translateBlock(pos);
-        if (entry != null) {
-            UpdateBlockPacket pk = new UpdateBlockPacket();
-            pk.flags = UpdateBlockPacket.FLAG_NEIGHBORS;
-            pk.data = entry.getPEDamage();
-            pk.id = entry.getId();
-            pk.blockPosition = new BlockPosition(pos);
-            session.putCachePacket(pk);
+            // Save glitchy items in cache
+            // Position blockPosition = new Position(pk.blockPosition.x, pk.blockPosition.y,
+            // pk.blockPosition.z);
+            // session.getBlockCache().checkBlock(entry.getId(), entry.getPEDamage(),
+            // blockPosition);
+            ItemEntry entry = session.getChunkCache().translateBlock(pos);
+            if (entry != null) {
+                UpdateBlockPacket pk = new UpdateBlockPacket();
+                pk.flags = UpdateBlockPacket.FLAG_NEIGHBORS;
+                pk.data = entry.getPEDamage();
+                pk.id = entry.getId();
+                pk.blockPosition = new BlockPosition(pos);
+                session.putCachePacket(pk);
+            }
+        } catch (Exception ex) {
+            session.getProxy().getLogger().debug("Error when updating block [" + pos.getX() + "," + pos.getY() + ","
+                    + pos.getZ() + "] " + block.toString());
+            session.getProxy().getLogger().debug(ex.getMessage());
         }
         return null;
     }
