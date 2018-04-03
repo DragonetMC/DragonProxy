@@ -241,11 +241,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
         session.sendPacket(pk);
         
         if(!contains) { // Send empty chunk??
-            FullChunkDataPacket nch = new FullChunkDataPacket();
-            nch.x = chunk.chunkXPos;
-            nch.z = chunk.chunkZPos;
-            nch.payload = new byte[0];
-            session.sendPacket(nch);
+            session.getChunkCache().sendEmptyChunk(chunk.chunkXPos, chunk.chunkZPos);
         }
 
         // send the confirmation

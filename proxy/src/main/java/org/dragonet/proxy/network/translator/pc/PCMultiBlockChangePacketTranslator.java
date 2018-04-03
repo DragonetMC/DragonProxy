@@ -15,12 +15,15 @@ package org.dragonet.proxy.network.translator.pc;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMultiBlockChangePacket;
+
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
+import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.common.data.itemsblocks.ItemEntry;
 import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.packets.UpdateBlockPacket;
 import org.dragonet.common.maths.BlockPosition;
+import org.dragonet.common.maths.ChunkPos;
 
 public class PCMultiBlockChangePacketTranslator implements IPCPacketTranslator<ServerMultiBlockChangePacket> {
 
@@ -32,15 +35,17 @@ public class PCMultiBlockChangePacketTranslator implements IPCPacketTranslator<S
             Position pos = packet.getRecords()[i].getPosition();
             BlockState block = packet.getRecords()[i].getBlock();
             try {
-                // update cache
+                ChunkPos chunk = new ChunkPos(pos.getX() >> 4, pos.getZ() >> 4);
                 session.getChunkCache().update(pos, block);
-
-                packets[i] = new UpdateBlockPacket();
-                packets[i].blockPosition = new BlockPosition(pos.getX(), pos.getY(), pos.getZ());
 
                 ItemEntry entry = session.getChunkCache().translateBlock(pos);
 
-                packets[i].id = entry.getId(); // This is with a lot of errors
+                if (entry == null) {
+                    entry = ItemBlockTranslator.translateToPC(block.getId(), block.getData());
+                }
+                packets[i] = new UpdateBlockPacket();
+                packets[i].blockPosition = new BlockPosition(pos.getX(), pos.getY(), pos.getZ());
+                packets[i].id = entry.getId();
                 packets[i].flags = UpdateBlockPacket.FLAG_NEIGHBORS;
                 packets[i].data = entry.getPEDamage();
             } catch (Exception ex) {
