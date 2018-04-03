@@ -284,6 +284,7 @@ public class UpstreamSession {
         if (downstream != null)
             downstream.disconnect();
         proxy.getSessionRegister().removeSession(this);
+        getChunkCache().purge();
     }
 
     public void authenticate(String email, String password, Proxy authProxy) {

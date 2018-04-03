@@ -247,6 +247,10 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
         // send the confirmation
         ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());
         ((PCDownstreamSession) session.getDownstream()).send(confirm);
+        
+        if(!contains) {
+            session.getChunkCache().sendOrderedChunks();
+        }
 
         return null;
     }

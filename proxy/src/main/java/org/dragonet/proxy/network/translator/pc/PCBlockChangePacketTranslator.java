@@ -37,6 +37,12 @@ public class PCBlockChangePacketTranslator implements IPCPacketTranslator<Server
                 pk.position = new Vector3F(pos.getX(), pos.getY(), pos.getZ());
                 pk.data = session.getChunkCache().getBlock(pos).getId();
                 session.sendPacket(pk);
+            } else if (isDoor(block.getId())) {
+                // TODO check if opened or closed
+            } else if (isGate(block.getId())) {
+                // TODO check if opened or closed
+            } else if (isTrapdoor(block.getId())) {
+                // TODO check if opened or closed
             }
         }
         // update cache
@@ -63,5 +69,17 @@ public class PCBlockChangePacketTranslator implements IPCPacketTranslator<Server
             session.getProxy().getLogger().debug(ex.getMessage());
         }
         return null;
+    }
+    
+    public boolean isDoor(int id) {
+        return id == 64 || id == 193 || id == 194 || id == 195 || id == 196 || id == 197 || id == 71;
+    }
+    
+    public boolean isGate(int id) {
+        return id == 107 || id == 183 || id == 184 || id == 185 || id == 186 || id == 187;
+    }
+    
+    public boolean isTrapdoor(int id) {
+        return id == 96 || id == 167;
     }
 }
