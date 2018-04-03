@@ -28,19 +28,23 @@ public class PCBlockChangePacketTranslator implements IPCPacketTranslator<Server
     @Override
     public PEPacket[] translate(UpstreamSession session, ServerBlockChangePacket packet) {
         Position pos = packet.getRecord().getPosition();
-        if(packet.getRecord().getBlock().getId() == 0 && session.getChunkCache().getBlock(pos) != null) {
-            LevelEventPacket pk = new LevelEventPacket();
-            pk.eventId = LevelEventPacket.EVENT_PARTICLE_DESTROY;
-            pk.position = new Vector3F(pos.getX(), pos.getY(), pos.getZ());
-            pk.data = session.getChunkCache().getBlock(pos).getId();
-            session.sendPacket(pk);
+        if (session.getChunkCache().getBlock(pos) != null) {
+            if (packet.getRecord().getBlock().getId() == 0 && session.getChunkCache().getBlock(pos).getId() != 0) {
+                LevelEventPacket pk = new LevelEventPacket();
+                pk.eventId = LevelEventPacket.EVENT_PARTICLE_DESTROY;
+                pk.position = new Vector3F(pos.getX(), pos.getY(), pos.getZ());
+                pk.data = session.getChunkCache().getBlock(pos).getId();
+                session.sendPacket(pk);
+            }
         }
-        //update cache
+        // update cache
         session.getChunkCache().update(pos, packet.getRecord().getBlock());
 
         // Save glitchy items in cache
-//        Position blockPosition = new Position(pk.blockPosition.x, pk.blockPosition.y, pk.blockPosition.z);
-//        session.getBlockCache().checkBlock(entry.getId(), entry.getPEDamage(), blockPosition);
+        // Position blockPosition = new Position(pk.blockPosition.x, pk.blockPosition.y,
+        // pk.blockPosition.z);
+        // session.getBlockCache().checkBlock(entry.getId(), entry.getPEDamage(),
+        // blockPosition);
         ItemEntry entry = session.getChunkCache().translateBlock(pos);
         if (entry != null) {
             UpdateBlockPacket pk = new UpdateBlockPacket();

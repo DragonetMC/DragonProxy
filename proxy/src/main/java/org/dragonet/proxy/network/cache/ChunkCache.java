@@ -86,6 +86,7 @@ public class ChunkCache {
     public void update(Column column) {
         ChunkPos columnPos = new ChunkPos(column.getX(), column.getZ());
         chunkCache.put(columnPos, column);
+        session.getChunkCache().sendChunk(column.getX(), column.getZ(), true);
 //        System.out.println("ChunkCache add or update chunk " + column.getX() + ", " + column.getZ());
     }
 
