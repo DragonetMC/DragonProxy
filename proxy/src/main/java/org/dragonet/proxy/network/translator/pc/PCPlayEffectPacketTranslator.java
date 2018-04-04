@@ -77,7 +77,7 @@ public class PCPlayEffectPacketTranslator implements IPCPacketTranslator<ServerP
 				psp.name = DragonProxy.getInstance().getSoundTranslator().translate(sounds.get(effect));
 				psp.blockPosition = new BlockPosition(packet.getPosition());
 				psp.pitch = 1;
-				psp.volume = 10;
+				psp.volume = 1;
 				packets.add(psp);
 			}
 		}

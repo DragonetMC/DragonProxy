@@ -14,12 +14,20 @@ package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
+import com.github.steveice10.mc.protocol.data.game.world.sound.BuiltinSound;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerBlockChangePacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
+import org.dragonet.proxy.network.translator.ItemBlockTranslator;
+import org.dragonet.proxy.network.translator.SoundTranslator;
+
+import java.nio.ByteBuffer;
+
+import org.dragonet.common.data.blocks.GlobalBlockPalette;
 import org.dragonet.common.data.itemsblocks.ItemEntry;
 import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.packets.LevelEventPacket;
+import org.dragonet.protocol.packets.PlaySoundPacket;
 import org.dragonet.protocol.packets.UpdateBlockPacket;
 import org.dragonet.common.maths.BlockPosition;
 import org.dragonet.common.maths.Vector3F;
@@ -35,14 +43,57 @@ public class PCBlockChangePacketTranslator implements IPCPacketTranslator<Server
                 LevelEventPacket pk = new LevelEventPacket();
                 pk.eventId = LevelEventPacket.EVENT_PARTICLE_DESTROY;
                 pk.position = new Vector3F(pos.getX(), pos.getY(), pos.getZ());
-                pk.data = session.getChunkCache().getBlock(pos).getId();
+                ItemEntry entry = ItemBlockTranslator.translateToPE(session.getChunkCache().getBlock(pos).getId(), session.getChunkCache().getBlock(pos).getData());
+                pk.data = GlobalBlockPalette.getOrCreateRuntimeId(entry.getId(), entry.getPEDamage());
                 session.sendPacket(pk);
             } else if (isDoor(block.getId())) {
-                // TODO check if opened or closed
+                if ((block.getData() & 0x4) == 0x4 && (session.getChunkCache().getBlock(pos).getData() & 0x4) != 0x4) {
+                    PlaySoundPacket psp = new PlaySoundPacket();
+                    psp.blockPosition = new BlockPosition(pos);
+                    psp.name = session.getProxy().getSoundTranslator().translate(block.getId() == 71 ? BuiltinSound.BLOCK_IRON_DOOR_CLOSE : BuiltinSound.BLOCK_WOODEN_DOOR_OPEN);
+                    psp.volume = 1;
+                    psp.pitch = 1;
+                    session.sendPacket(psp);
+                } else if  ((block.getData() & 0x4) != 0x4 && (session.getChunkCache().getBlock(pos).getData() & 0x4) == 0x4){
+                    PlaySoundPacket psp = new PlaySoundPacket();
+                    psp.blockPosition = new BlockPosition(pos);
+                    psp.name = session.getProxy().getSoundTranslator().translate(block.getId() == 71 ? BuiltinSound.BLOCK_IRON_DOOR_CLOSE : BuiltinSound.BLOCK_WOODEN_DOOR_CLOSE);
+                    psp.volume = 1;
+                    psp.pitch = 1;
+                    session.sendPacket(psp);
+                }
             } else if (isGate(block.getId())) {
-                // TODO check if opened or closed
+                if ((block.getData() & 0x4) == 0x4 && (session.getChunkCache().getBlock(pos).getData() & 0x4) != 0x4) {
+                    PlaySoundPacket psp = new PlaySoundPacket();
+                    psp.blockPosition = new BlockPosition(pos);
+                    psp.name = session.getProxy().getSoundTranslator().translate(BuiltinSound.BLOCK_FENCE_GATE_OPEN);
+                    psp.volume = 1;
+                    psp.pitch = 1;
+                    session.sendPacket(psp);
+                } else if  ((block.getData() & 0x4) != 0x4 && (session.getChunkCache().getBlock(pos).getData() & 0x4) == 0x4){
+                    PlaySoundPacket psp = new PlaySoundPacket();
+                    psp.blockPosition = new BlockPosition(pos);
+                    psp.name = session.getProxy().getSoundTranslator().translate(BuiltinSound.BLOCK_FENCE_GATE_CLOSE);
+                    psp.volume = 1;
+                    psp.pitch = 1;
+                    session.sendPacket(psp);
+                }
             } else if (isTrapdoor(block.getId())) {
-                // TODO check if opened or closed
+                if ((block.getData() & 0x4) == 0x4 && (session.getChunkCache().getBlock(pos).getData() & 0x4) != 0x4) {
+                    PlaySoundPacket psp = new PlaySoundPacket();
+                    psp.blockPosition = new BlockPosition(pos);
+                    psp.name = session.getProxy().getSoundTranslator().translate(block.getId() == 167 ? BuiltinSound.BLOCK_IRON_TRAPDOOR_OPEN : BuiltinSound.BLOCK_WOODEN_TRAPDOOR_OPEN);
+                    psp.volume = 1;
+                    psp.pitch = 1;
+                    session.sendPacket(psp);
+                } else if  ((block.getData() & 0x4) != 0x4 && (session.getChunkCache().getBlock(pos).getData() & 0x4) == 0x4){
+                    PlaySoundPacket psp = new PlaySoundPacket();
+                    psp.blockPosition = new BlockPosition(pos);
+                    psp.name = session.getProxy().getSoundTranslator().translate(block.getId() == 167 ? BuiltinSound.BLOCK_IRON_TRAPDOOR_CLOSE : BuiltinSound.BLOCK_WOODEN_TRAPDOOR_CLOSE);
+                    psp.volume = 1;
+                    psp.pitch = 1;
+                    session.sendPacket(psp);
+                }
             }
         }
         // update cache
