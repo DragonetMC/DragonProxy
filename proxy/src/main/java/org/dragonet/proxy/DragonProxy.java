@@ -22,6 +22,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.dragonet.common.data.blocks.Block;
+import org.dragonet.common.data.blocks.GlobalBlockPalette;
 import org.dragonet.protocol.ProtocolInfo;
 import org.dragonet.proxy.commands.CommandRegister;
 import org.dragonet.proxy.commands.ConsoleCommandReader;
@@ -243,6 +244,8 @@ public class DragonProxy {
         sessionRegister = new SessionRegister(this);
         commandRegister = new CommandRegister(this);
         skinFetcher = new SkinFetcher();
+        
+        GlobalBlockPalette.getOrCreateRuntimeId(0, 0); // Force it to load
 
         // Init block handling
         Block.init();

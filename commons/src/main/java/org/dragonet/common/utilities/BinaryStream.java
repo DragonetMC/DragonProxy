@@ -296,6 +296,7 @@ public class BinaryStream {
     public void putSkin(Skin skin) {
         this.putString(skin.getModel());
         this.putByteArray(skin.getData());
+        this.putByteArray(skin.getCape().getData());
     }
 
     public Skin getSkin() {

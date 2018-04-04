@@ -21,7 +21,7 @@ public class PCSpawnParticlePacketTranslator implements IPCPacketTranslator<Serv
             LevelEventPacket pk = new LevelEventPacket();
             pk.eventId = LevelEventPacket.EVENT_PARTICLE_DESTROY;
             pk.position = new Vector3F(packet.getX(), packet.getY(), packet.getZ());
-            pk.data = packet.getData()[0];
+            pk.data = packet.getData()[0]; // TODO
             packets.add(pk);
         } else {
             int num = ParticleTranslator.getInstance().translate(packet.getParticle());

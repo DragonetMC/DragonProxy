@@ -34,11 +34,14 @@ public class PlayerListPacket extends PEPacket {
                 if (type == TYPE_ADD) {
                     putUnsignedVarLong(e.eid);
                     putString(e.username);
+                    putString(e.thirdPartyName != null ? e.thirdPartyName : e.username); // TODO
+                    putVarInt(e.platform);
                     this.putSkin(e.skin);
                     this.putByteArray(e.skin.getCape().getData());
                     this.putString(e.geometryModel);
                     this.putByteArray(e.geometryData);
                     putString(e.xboxUserId);
+                    putString(e.unk1);
                 }
             }
         } else
@@ -57,8 +60,11 @@ public class PlayerListPacket extends PEPacket {
                 if (type == TYPE_ADD) {
                     entries[i].eid = getVarLong();
                     entries[i].username = getString();
+                    entries[i].thirdPartyName = getString();
+                    entries[i].platform = getVarInt();
                     entries[i].skin = getSkin();
                     entries[i].xboxUserId = getString();
+                    entries[i].unk1 = getString();
                 }
             }
     }

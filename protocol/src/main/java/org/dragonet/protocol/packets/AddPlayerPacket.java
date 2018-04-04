@@ -44,11 +44,11 @@ public class AddPlayerPacket extends PEPacket {
     public void encodePayload() {
         putUUID(uuid);
         putString(username);
-//        putString(thirdpartyName != null ? thirdpartyName : username);
-//        putVarInt(platformID);
+        putString(thirdpartyName != null ? thirdpartyName : username);
+        putVarInt(platformID);
         putVarLong(eid);
         putUnsignedVarLong(rtid);
-//        putString(platformChatID);
+        putString(platformChatID);
         putVector3F(position);
         putVector3F(motion);
         putLFloat(pitch);
