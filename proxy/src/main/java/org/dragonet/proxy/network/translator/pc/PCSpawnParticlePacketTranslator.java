@@ -1,6 +1,7 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.dragonet.common.data.blocks.GlobalBlockPalette;
 import org.dragonet.common.data.itemsblocks.ItemEntry;
@@ -25,8 +26,9 @@ public class PCSpawnParticlePacketTranslator implements IPCPacketTranslator<Serv
             LevelEventPacket pk = new LevelEventPacket();
             pk.eventId = LevelEventPacket.EVENT_PARTICLE_DESTROY;
             pk.position = new Vector3F(packet.getX(), packet.getY(), packet.getZ());
-            Position pos = new Position((int)packet.getX(), (int)packet.getY(), (int)packet.getZ());
-            ItemEntry entry = ItemBlockTranslator.translateToPE(session.getChunkCache().getBlock(pos).getId(), session.getChunkCache().getBlock(pos).getData());
+            Position pos = new Position((int) packet.getX(), (int) packet.getY(), (int) packet.getZ());
+            ItemEntry entry = ItemBlockTranslator.translateToPE(session.getChunkCache().getBlock(pos).getId(),
+                    session.getChunkCache().getBlock(pos).getData());
             if (session.getChunkCache().getBlock(pos) != null)
                 pk.data = GlobalBlockPalette.getOrCreateRuntimeId(entry.getId(), entry.getPEDamage());
             else
@@ -34,13 +36,13 @@ public class PCSpawnParticlePacketTranslator implements IPCPacketTranslator<Serv
             packets.add(pk);
         } else {
             int num = ParticleTranslator.getInstance().translate(packet.getParticle());
-            session.getProxy().getLogger().info(Integer.toString(num));
             if (num != -1) {
-                LevelEventPacket pk = new LevelEventPacket();
-                pk.eventId = (short) (LevelEventPacket.EVENT_ADD_PARTICLE_MASK | num);
-                pk.position = new Vector3F(packet.getX(), packet.getY(), packet.getZ());
-                pk.data = 0;  // TODO ?
-                packets.add(pk);
+                Random random = new Random(System.currentTimeMillis());
+                for (int i = 0; i < packet.getAmount(); i++) {
+                    packets.add(getParticle(packet.getX() + (random.nextFloat() * 2 - 1) * packet.getOffsetX(),
+                            packet.getY() + (random.nextFloat() * 2 - 1) * packet.getOffsetY(),
+                            packet.getZ() + (random.nextFloat() * 2 - 1) * packet.getOffsetZ(), num, 0));
+                }
             }
         }
         if (!packets.isEmpty()) {
@@ -48,6 +50,14 @@ public class PCSpawnParticlePacketTranslator implements IPCPacketTranslator<Serv
         } else {
             return null;
         }
+    }
+
+    public LevelEventPacket getParticle(float x, float y, float z, int type, int data) {
+        LevelEventPacket pk = new LevelEventPacket();
+        pk.eventId = (short) (LevelEventPacket.EVENT_ADD_PARTICLE_MASK | type);
+        pk.position = new Vector3F(x, y, z);
+        pk.data = data;
+        return pk;
     }
 
 }
