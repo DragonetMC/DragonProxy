@@ -75,6 +75,7 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerUnloadChunkPacket.class, new PCUnloadChunkDataPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlaySoundPacket.class, new PCPlaySoundPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerPlayBuiltinSoundPacket.class, new PCSoundEventPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerPlayEffectPacket.class, new PCPlayEffectPacketTranslator());
 
         //
         // // Entity
@@ -83,6 +84,7 @@ public final class PacketTranslatorRegister {
         PC_TO_PE_TRANSLATOR.put(ServerSpawnObjectPacket.class, new PCSpawnObjectPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerSpawnPaintingPacket.class, new PCSpawnPaintingPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerSpawnExpOrbPacket.class, new PCSpawnExpOrbPacketTranslator());
+        PC_TO_PE_TRANSLATOR.put(ServerSpawnParticlePacket.class, new PCSpawnParticlePacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityMetadataPacket.class, new PCEntityMetadataPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityDestroyPacket.class, new PCDestroyEntitiesPacketTranslator());
         PC_TO_PE_TRANSLATOR.put(ServerEntityPositionRotationPacket.class, new PCEntityPositionRotationPacketTranslator());
@@ -151,6 +153,7 @@ public final class PacketTranslatorRegister {
     public static PEPacket[] translateToPE(UpstreamSession session, Packet packet) {
         if (packet == null)
             return null;
+        //session.getProxy().getLogger().debug(packet.toString());
         IPCPacketTranslator<Packet> target = (IPCPacketTranslator<Packet>) PC_TO_PE_TRANSLATOR.get(packet.getClass());
         if (target == null)
             return null;
@@ -169,6 +172,7 @@ public final class PacketTranslatorRegister {
     public static Packet[] translateToPC(UpstreamSession session, PEPacket packet) {
         if (packet == null)
             return null;
+        //session.getProxy().getLogger().debug(packet.toString());
         IPEPacketTranslator<PEPacket> target = (IPEPacketTranslator<PEPacket>) PE_TO_PC_TRANSLATOR.get(packet.getClass());
         if (target == null)
             return null;

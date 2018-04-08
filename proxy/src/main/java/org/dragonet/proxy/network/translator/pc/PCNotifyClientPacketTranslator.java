@@ -16,6 +16,9 @@ import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
+
+import java.util.concurrent.ThreadLocalRandom;
+
 import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.packets.AdventureSettingsPacket;
 import org.dragonet.protocol.packets.LevelEventPacket;
@@ -49,11 +52,26 @@ public class PCNotifyClientPacketTranslator implements IPCPacketTranslator<Serve
             case START_RAIN:
                 LevelEventPacket evtStartRain = new LevelEventPacket();
                 evtStartRain.eventId = LevelEventPacket.EVENT_START_RAIN;
+                evtStartRain.data = ThreadLocalRandom.current().nextInt(50000) + 10000; //Some from Nukkit, but ... :D
                 return new PEPacket[]{evtStartRain};
             case STOP_RAIN:
                 LevelEventPacket evtStopRain = new LevelEventPacket();
                 evtStopRain.eventId = LevelEventPacket.EVENT_STOP_RAIN;
                 return new PEPacket[]{evtStopRain};
+            case ARROW_HIT_PLAYER:
+                break;
+            case AFFECTED_BY_ELDER_GUARDIAN:
+                break;
+            case DEMO_MESSAGE:
+                break;
+            case ENTER_CREDITS:
+                break;
+            case INVALID_BED:
+                break;
+            case RAIN_STRENGTH:
+                break;
+            case THUNDER_STRENGTH:
+                break;
         }
         return null;
     }

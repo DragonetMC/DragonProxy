@@ -21,12 +21,12 @@ public class TextPacket extends PEPacket {
     public int type;
     public boolean needsTranslation;
     public String source;
-//    public String sourceThirdPartyName = "";
-//    public int sourcePlatform = 0;
+    public String sourceThirdPartyName = "";
+    public int sourcePlatform = 0;
     public String message;
     public String[] params;
     public String xboxUserId;
-//    public String unk1;
+    public String unk1;
 
     public TextPacket() {
 
@@ -46,8 +46,8 @@ public class TextPacket extends PEPacket {
             case TYPE_WHISPER:
             case TYPE_ANNOUNCEMENT:
                 source = getString();
-//                sourceThirdPartyName = getString();
-//                sourcePlatform = getVarInt();
+                sourceThirdPartyName = getString();
+                sourcePlatform = getVarInt();
             case TYPE_RAW:
             case TYPE_TIP:
             case TYPE_SYSTEM:
@@ -67,7 +67,7 @@ public class TextPacket extends PEPacket {
         }
 
         xboxUserId = getString();
-//        unk1 = getString();
+        unk1 = getString();
     }
 
     @Override
@@ -82,8 +82,8 @@ public class TextPacket extends PEPacket {
                  */
             case TYPE_ANNOUNCEMENT:
                 putString(source);
-//                putString(sourceThirdPartyName);
-//                putVarInt(sourcePlatform);
+                putString(sourceThirdPartyName);
+                putVarInt(sourcePlatform);
             case TYPE_RAW:
             case TYPE_TIP:
             case TYPE_SYSTEM:
@@ -111,10 +111,10 @@ public class TextPacket extends PEPacket {
             putString("");
         }
 
-//        if (unk1 != null) {
-//            putString(unk1);
-//        } else {
-//            putString("");
-//        }
+        if (unk1 != null) {
+            putString(unk1);
+        } else {
+            putString("");
+        }
     }
 }

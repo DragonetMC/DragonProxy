@@ -2,6 +2,7 @@ package org.dragonet.protocol.packets;
 
 import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.ProtocolInfo;
+import org.dragonet.common.data.blocks.GlobalBlockPalette;
 import org.dragonet.common.maths.BlockPosition;
 
 /**
@@ -22,6 +23,7 @@ public class UpdateBlockPacket extends PEPacket {
     public int id;
     public int data;
     public int flags;
+    public int runtimeId;
 
     public UpdateBlockPacket() {
 
@@ -35,17 +37,15 @@ public class UpdateBlockPacket extends PEPacket {
     @Override
     public void decodePayload() {
         blockPosition = getBlockPosition();
-        id = (int) getUnsignedVarInt();
-        long aux = getUnsignedVarInt();
-        data = (int) (aux & 0xf);
-        flags = (int) (aux >> 4);
+        runtimeId = (int) getUnsignedVarInt();
+        flags = (int) getUnsignedVarInt();
     }
 
     @Override
     public void encodePayload() {
+        runtimeId = GlobalBlockPalette.getOrCreateRuntimeId(id, data);
         putBlockPosition(blockPosition);
-        putUnsignedVarInt(id);
-        int aux = ((flags) << 4) | (data & 0xf);
-        putUnsignedVarInt(aux);
+        putUnsignedVarInt(runtimeId);
+        putUnsignedVarInt(flags);
     }
 }

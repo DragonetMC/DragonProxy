@@ -22,6 +22,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.dragonet.common.data.blocks.Block;
+import org.dragonet.common.data.blocks.GlobalBlockPalette;
 import org.dragonet.protocol.ProtocolInfo;
 import org.dragonet.proxy.commands.CommandRegister;
 import org.dragonet.proxy.commands.ConsoleCommandReader;
@@ -30,6 +31,7 @@ import org.dragonet.proxy.configuration.ServerConfig;
 import org.dragonet.proxy.events.EventManager;
 import org.dragonet.proxy.network.RaknetInterface;
 import org.dragonet.proxy.network.SessionRegister;
+import org.dragonet.proxy.network.translator.SoundTranslator;
 import org.dragonet.proxy.utilities.ProxyLogger;
 import org.dragonet.proxy.utilities.MetricsManager;
 import org.dragonet.proxy.utilities.PluginManager;
@@ -67,6 +69,7 @@ public class DragonProxy {
     private boolean debug = false;
     private final PluginManager pluginManager;
     private final EventManager eventManager;
+    private final SoundTranslator soundTranslator;
 
     public static void main(String[] args) {
         launchArgs = args;
@@ -105,6 +108,10 @@ public class DragonProxy {
 
     public EventManager getEventManager() {
         return eventManager;
+    }
+    
+    public SoundTranslator getSoundTranslator() {
+    	return soundTranslator;
     }
 
 
@@ -237,6 +244,8 @@ public class DragonProxy {
         sessionRegister = new SessionRegister(this);
         commandRegister = new CommandRegister(this);
         skinFetcher = new SkinFetcher();
+        
+        GlobalBlockPalette.getOrCreateRuntimeId(0, 0); // Force it to load
 
         // Init block handling
         Block.init();
@@ -255,6 +264,8 @@ public class DragonProxy {
         // create the plugin manager
         pluginManager = new PluginManager(pluginfolder.toPath());
         eventManager = new EventManager(this);
+        
+        soundTranslator = new SoundTranslator();
 
         // start and load all plugins of application
         pluginManager.loadPlugins();

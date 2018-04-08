@@ -17,7 +17,7 @@ public class AddItemEntityPacket extends PEPacket {
     public Vector3F position;
     public Vector3F motion;
     public EntityMetaData metadata;
-//    public boolean unk1 = false;
+    public boolean isFromFishing = false;
 
     public AddItemEntityPacket() {
 
@@ -41,7 +41,7 @@ public class AddItemEntityPacket extends PEPacket {
         } else {
             putUnsignedVarInt(0);
         }
-//        putBoolean(unk1);
+        putBoolean(isFromFishing);
     }
 
     @Override
@@ -52,6 +52,6 @@ public class AddItemEntityPacket extends PEPacket {
         position = getVector3F();
         motion = getVector3F();
         metadata = EntityMetaData.from(this);
-//        unk1 = getBoolean();
+        isFromFishing = getBoolean();
     }
 }

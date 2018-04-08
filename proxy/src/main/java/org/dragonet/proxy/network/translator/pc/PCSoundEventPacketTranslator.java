@@ -13,17 +13,22 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerPlayBuiltinSoundPacket;
+
+import org.dragonet.common.data.blocks.GlobalBlockPalette;
+import org.dragonet.common.maths.BlockPosition;
 import org.dragonet.common.maths.Vector3F;
+import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.packets.LevelSoundEventPacket;
+import org.dragonet.protocol.packets.PlaySoundPacket;
 
 
 public class PCSoundEventPacketTranslator implements IPCPacketTranslator<ServerPlayBuiltinSoundPacket> {
 
     public PEPacket[] translate(UpstreamSession session, ServerPlayBuiltinSoundPacket packet) {
-        LevelSoundEventPacket pk = new LevelSoundEventPacket();
+    	LevelSoundEventPacket pk = new LevelSoundEventPacket();
 
         //System.out.println("BuiltIn Sound packet: " + packet.getSound().name());
 
@@ -56,6 +61,8 @@ public class PCSoundEventPacketTranslator implements IPCPacketTranslator<ServerP
                 pk.sound = LevelSoundEventPacket.Sound.BOW_HIT;
                 break;
             case ENTITY_GENERIC_EXTINGUISH_FIRE:
+            	pk.sound = LevelSoundEventPacket.Sound.FIZZ;
+                break;
             case BLOCK_FIRE_EXTINGUISH:
                 pk.sound = LevelSoundEventPacket.Sound.EXTINGUISH_FIRE;
                 break;
@@ -144,37 +151,112 @@ public class PCSoundEventPacketTranslator implements IPCPacketTranslator<ServerP
                 pk.sound = LevelSoundEventPacket.Sound.REMEDY;
                 break;
             case ENTITY_SHEEP_SHEAR:
+            	pk.sound = LevelSoundEventPacket.Sound.SHEAR;
+                break;
             case ENTITY_MOOSHROOM_SHEAR:
                 pk.sound = LevelSoundEventPacket.Sound.SHEAR;
                 break;
+            // Break sounds need test
             case BLOCK_GRASS_BREAK:
+                pk.sound = LevelSoundEventPacket.Sound.BREAK_BLOCK;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(2);
+                break;
             case BLOCK_ANVIL_BREAK:
+                pk.sound = LevelSoundEventPacket.Sound.BREAK_BLOCK;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(145);
+                break;
             case BLOCK_GLASS_BREAK:
+                pk.sound = LevelSoundEventPacket.Sound.BREAK_BLOCK;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(20);
+                break;
             case BLOCK_CLOTH_BREAK:
+                pk.sound = LevelSoundEventPacket.Sound.BREAK_BLOCK;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(35);
+                break;
             case BLOCK_GRAVEL_BREAK:
+                pk.sound = LevelSoundEventPacket.Sound.BREAK_BLOCK;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(13);
+                break;
             case BLOCK_LADDER_BREAK:
+                pk.sound = LevelSoundEventPacket.Sound.BREAK_BLOCK;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(65);
+                break;
             case BLOCK_METAL_BREAK:
+                pk.sound = LevelSoundEventPacket.Sound.BREAK_BLOCK;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(1);
+                break;
             case BLOCK_SAND_BREAK:
+                pk.sound = LevelSoundEventPacket.Sound.BREAK_BLOCK;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(12);
+                break;
             case BLOCK_SLIME_BREAK:
+                pk.sound = LevelSoundEventPacket.Sound.BREAK_BLOCK;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(165);
+                break;
             case BLOCK_SNOW_BREAK:
+                pk.sound = LevelSoundEventPacket.Sound.BREAK_BLOCK;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(80);
+                break;
             case BLOCK_STONE_BREAK:
+                pk.sound = LevelSoundEventPacket.Sound.BREAK_BLOCK;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(1);
+                break;
             case BLOCK_WOOD_BREAK:
                 pk.sound = LevelSoundEventPacket.Sound.BREAK_BLOCK;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(5);
                 break;
+            // Place sounds need test
             case BLOCK_GRASS_PLACE:
+                pk.sound = LevelSoundEventPacket.Sound.PLACE;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(2);
+                break;
             case BLOCK_ANVIL_PLACE:
+                pk.sound = LevelSoundEventPacket.Sound.PLACE;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(145);
+                break;
             case BLOCK_CLOTH_PLACE:
+                pk.sound = LevelSoundEventPacket.Sound.PLACE;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(35);
+                break;
             case BLOCK_GLASS_PLACE:
+                pk.sound = LevelSoundEventPacket.Sound.PLACE;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(20);
+                break;
             case BLOCK_GRAVEL_PLACE:
+                pk.sound = LevelSoundEventPacket.Sound.PLACE;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(13);
+                break;
             case BLOCK_LADDER_PLACE:
+                pk.sound = LevelSoundEventPacket.Sound.PLACE;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(65);
+                break;
             case BLOCK_METAL_PLACE:
+                pk.sound = LevelSoundEventPacket.Sound.PLACE;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(1);
+                break;
             case BLOCK_SAND_PLACE:
+                pk.sound = LevelSoundEventPacket.Sound.PLACE;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(12);
+                break;
             case BLOCK_SLIME_PLACE:
+                pk.sound = LevelSoundEventPacket.Sound.PLACE;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(165);
+                break;
             case BLOCK_SNOW_PLACE:
+                pk.sound = LevelSoundEventPacket.Sound.PLACE;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(80);
+                break;
             case BLOCK_STONE_PLACE:
+                pk.sound = LevelSoundEventPacket.Sound.PLACE;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(1);
+                break;
             case BLOCK_WATERLILY_PLACE:
+                pk.sound = LevelSoundEventPacket.Sound.PLACE;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(2);
+                break;
             case BLOCK_WOOD_PLACE:
                 pk.sound = LevelSoundEventPacket.Sound.PLACE;
+                pk.extraData = GlobalBlockPalette.getOrCreateRuntimeId(5);
                 break;
             case BLOCK_LAVA_POP:
                 pk.sound = LevelSoundEventPacket.Sound.POP;
@@ -183,33 +265,78 @@ public class PCSoundEventPacketTranslator implements IPCPacketTranslator<ServerP
                 pk.sound = LevelSoundEventPacket.Sound.PORTAL;
                 break;
             case BLOCK_LEVER_CLICK:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_ON;
+                break;
             case BLOCK_COMPARATOR_CLICK:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_ON;
+                break;
             case BLOCK_STONE_BUTTON_CLICK_ON:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_ON;
+                break;
             case BLOCK_METAL_PRESSUREPLATE_CLICK_ON:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_ON;
+                break;
             case BLOCK_STONE_PRESSUREPLATE_CLICK_ON:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_ON;
+                break;
             case BLOCK_TRIPWIRE_CLICK_ON:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_ON;
+                break;
             case BLOCK_WOOD_BUTTON_CLICK_ON:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_ON;
+                break;
             case BLOCK_WOOD_PRESSUREPLATE_CLICK_ON:
                 pk.sound = LevelSoundEventPacket.Sound.POWER_ON;
                 break;
             case BLOCK_METAL_PRESSUREPLATE_CLICK_OFF:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_OFF;
+                break;
             case BLOCK_STONE_BUTTON_CLICK_OFF:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_OFF;
+                break;
             case BLOCK_STONE_PRESSUREPLATE_CLICK_OFF:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_OFF;
+                break;
             case BLOCK_TRIPWIRE_CLICK_OFF:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_OFF;
+                break;
             case BLOCK_WOOD_BUTTON_CLICK_OFF:
+                pk.sound = LevelSoundEventPacket.Sound.POWER_OFF;
+                break;
             case BLOCK_WOOD_PRESSUREPLATE_CLICK_OFF:
                 pk.sound = LevelSoundEventPacket.Sound.POWER_OFF;
                 break;
+            // Notes need test and extradata or send with else packet
             case BLOCK_NOTE_BASEDRUM:
+                pk.sound = LevelSoundEventPacket.Sound.NOTE;
+                break;
             case BLOCK_NOTE_BASS:
+                pk.sound = LevelSoundEventPacket.Sound.NOTE;
+                break;
             case BLOCK_NOTE_BELL:
+                pk.sound = LevelSoundEventPacket.Sound.NOTE;
+                break;
             case BLOCK_NOTE_CHIME:
+                pk.sound = LevelSoundEventPacket.Sound.NOTE;
+                break;
             case BLOCK_NOTE_FLUTE:
+                pk.sound = LevelSoundEventPacket.Sound.NOTE;
+                break;
             case BLOCK_NOTE_GUITAR:
+                pk.sound = LevelSoundEventPacket.Sound.NOTE;
+                break;
             case BLOCK_NOTE_HARP:
+                pk.sound = LevelSoundEventPacket.Sound.NOTE;
+                break;
             case BLOCK_NOTE_HAT:
+                pk.sound = LevelSoundEventPacket.Sound.NOTE;
+                break;
             case BLOCK_NOTE_PLING:
+                pk.sound = LevelSoundEventPacket.Sound.NOTE;
+                break;
             case BLOCK_NOTE_SNARE:
+                pk.sound = LevelSoundEventPacket.Sound.NOTE;
+                break;
             case BLOCK_NOTE_XYLOPHONE:
                 pk.sound = LevelSoundEventPacket.Sound.NOTE;
                 break;
@@ -220,12 +347,27 @@ public class PCSoundEventPacketTranslator implements IPCPacketTranslator<ServerP
                 pk.sound = LevelSoundEventPacket.Sound.PISTON_IN;
                 break;
             case ENTITY_BOBBER_THROW:
+            	pk.sound = LevelSoundEventPacket.Sound.SPLASH;
+            	break;
             case ENTITY_EGG_THROW:
+            	pk.sound = LevelSoundEventPacket.Sound.THROW;
+            	break;
+        	// Throw need test or else translates
             case ENTITY_ENDERPEARL_THROW:
+                pk.sound = LevelSoundEventPacket.Sound.THROW;
+                break;
             case ENTITY_EXPERIENCE_BOTTLE_THROW:
+                pk.sound = LevelSoundEventPacket.Sound.THROW;
+                break;
             case ENTITY_LINGERINGPOTION_THROW:
+                pk.sound = LevelSoundEventPacket.Sound.THROW;
+                break;
             case ENTITY_SNOWBALL_THROW:
+                pk.sound = LevelSoundEventPacket.Sound.THROW;
+                break;
             case ENTITY_SPLASH_POTION_THROW:
+                pk.sound = LevelSoundEventPacket.Sound.THROW;
+                break;
             case ENTITY_WITCH_THROW:
                 pk.sound = LevelSoundEventPacket.Sound.THROW;
                 break;
@@ -239,12 +381,23 @@ public class PCSoundEventPacketTranslator implements IPCPacketTranslator<ServerP
                 pk.sound = LevelSoundEventPacket.Sound.EXPLODE;
                 break;
             default:
-                return null;
+                break;
         }
 
         //System.out.println("Converted sound packet " + pk.sound.name() + " (" + pk.sound.soundID + ") - " + pk.position + " - " + pk.extraData + " - " + pk.pitch);
-
-        return new PEPacket[]{pk};
+        if(pk.sound == null) {
+        	if(!DragonProxy.getInstance().getSoundTranslator().isIgnored(packet.getSound()) && DragonProxy.getInstance().getSoundTranslator().isTranslatable(packet.getSound())) {
+        		PlaySoundPacket npacket = new PlaySoundPacket();
+        		npacket.blockPosition = new BlockPosition((int) packet.getX(), (int) packet.getY(), (int) packet.getZ());
+        		npacket.name = DragonProxy.getInstance().getSoundTranslator().translate(packet.getSound());
+        		npacket.volume = packet.getVolume();
+        		npacket.pitch = packet.getPitch();
+        		return new PEPacket[]{npacket}; // USE PlaySoundPacket if sound id is not founded
+        	}
+        	return null;
+        } else {
+        	return new PEPacket[]{pk};
+        }
     }
 
 }

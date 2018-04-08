@@ -54,7 +54,8 @@ public class LevelEventPacket extends PEPacket {
     public static final int EVENT_PARTICLE_SPLASH = 2002;
     public static final int EVENT_PARTICLE_EYE_DESPAWN = 2003;
     public static final int EVENT_PARTICLE_SPAWN = 2004;
-
+    public static final int EVENT_PARTICLE_BONEMEAL = 2005;
+    
     public static final int EVENT_GUARDIAN_CURSE = 2006;
 
     public static final int EVENT_PARTICLE_BLOCK_FORCE_FIELD = 2008;

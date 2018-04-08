@@ -14,6 +14,8 @@ package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.data.message.TranslationMessage;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerChatPacket;
+
+import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.MessageTranslator;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;

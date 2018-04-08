@@ -212,7 +212,8 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
         byte mode = MovePlayerPacket.MODE_NORMAL;
         ChunkPos chunk = new ChunkPos(NukkitMath.ceilDouble(packet.getX()) >> 4, NukkitMath.ceilDouble(packet.getZ()) >> 4);
         // check if destination is out of range
-        if (!session.getChunkCache().getLoadedChunks().contains(chunk)) {
+        boolean contains = session.getChunkCache().getLoadedChunks().contains(chunk);
+        if (!contains) {
             mode = MovePlayerPacket.MODE_TELEPORT;
             offset = 0.2f;
 //            System.out.println(packet.getX() + " " + packet.getZ());
@@ -234,13 +235,22 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             if (vehicle != null)
                 pk.ridingRuntimeId = vehicle.eid;
         }
+        
 //        System.out.println("From server " + packet.getX() + " " + packet.getY() + " " + packet.getZ() + " ");
 //        System.out.println("Entity position " + entityPlayer.x + " " + (entityPlayer.y - EntityType.PLAYER.getOffset()) + " " + entityPlayer.z + " ");
         session.sendPacket(pk);
+        
+        if(!contains) { // Send empty chunk??
+            session.getChunkCache().sendEmptyChunk(chunk.chunkXPos, chunk.chunkZPos);
+        }
 
         // send the confirmation
         ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());
         ((PCDownstreamSession) session.getDownstream()).send(confirm);
+        
+        if(!contains) {
+            session.getChunkCache().sendOrderedChunks();
+        }
 
         return null;
     }

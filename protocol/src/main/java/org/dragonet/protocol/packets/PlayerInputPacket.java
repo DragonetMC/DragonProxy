@@ -8,15 +8,15 @@ public class PlayerInputPacket extends PEPacket {
     public float motionX;
     public float motionY;
 
-    public boolean unknownBool1;
-    public boolean unknownBool2;
+    public boolean jumping;
+    public boolean sneaking;
 
     @Override
     public void decodePayload() {
         this.motionX = this.getLFloat();
         this.motionY = this.getLFloat();
-        this.unknownBool1 = this.getBoolean();
-        this.unknownBool2 = this.getBoolean();
+        this.jumping = this.getBoolean();
+        this.sneaking = this.getBoolean();
     }
 
     @Override

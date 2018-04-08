@@ -59,6 +59,7 @@ public final class Protocol {
         packets.put(SET_SPAWN_POSITION_PACKET, SetSpawnPositionPacket.class);
         packets.put(LEVEL_EVENT_PACKET, LevelEventPacket.class);
         packets.put(PLAY_SOUND_PACKET, PlaySoundPacket.class);
+        packets.put(STOP_SOUND_PACKET, StopSoundPacket.class);
         packets.put(ADD_ENTITY_PACKET, AddEntityPacket.class);
         packets.put(ADD_PLAYER_PACKET, AddPlayerPacket.class);
         packets.put(PLAYER_LIST_PACKET, PlayerListPacket.class);

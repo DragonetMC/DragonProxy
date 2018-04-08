@@ -33,6 +33,7 @@ import org.dragonet.proxy.utilities.CLSAuthenticationService;
 
 import org.dragonet.common.data.entity.EntityType;
 import org.dragonet.proxy.network.cache.EntityCache;
+import org.dragonet.proxy.network.cache.JukeboxCache;
 import org.dragonet.proxy.network.cache.WindowCache;
 import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.ProtocolInfo;
@@ -100,6 +101,7 @@ public class UpstreamSession {
     private final EntityCache entityCache = new EntityCache(this);
     private final WindowCache windowCache = new WindowCache(this);
     private final ChunkCache chunkCache = new ChunkCache(this);
+    private final JukeboxCache jukeboxCache = new JukeboxCache();
 
     public UpstreamSession(DragonProxy proxy, String raknetID, RakNetClientSession raknetClient,
             InetSocketAddress remoteAddress) {
@@ -172,6 +174,10 @@ public class UpstreamSession {
 
     public MinecraftProtocol getProtocol() {
         return protocol;
+    }
+    
+    public JukeboxCache getJukeboxCache() {
+    	return jukeboxCache;
     }
 
     public void sendPacket(PEPacket packet) {
@@ -278,6 +284,7 @@ public class UpstreamSession {
         if (downstream != null)
             downstream.disconnect();
         proxy.getSessionRegister().removeSession(this);
+        getChunkCache().purge();
     }
 
     public void authenticate(String email, String password, Proxy authProxy) {
