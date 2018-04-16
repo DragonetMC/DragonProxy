@@ -1,0 +1,52 @@
+version: 2
+jobs:
+  build_and_test_jdk9:
+    working_directory: ~/authmereloaded-jdk9
+    docker:
+      - image: circleci/openjdk:9-jdk
+    environment:
+        MAVEN_OPTS: -Xmx2048m
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - dragonproxy-{{ checksum "pom.xml" }}
+          - dragonproxy-
+     - run: mvn -T 2 dependency:go-offline
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: dragonproxy-{{ checksum "pom.xml" }}
+      - run: mvn -T 2 package
+      - store_test_results:
+          path: target/surefire-reports
+      - store_artifacts:
+          path: target/*.jar
+  build_and_test_jdk10:
+    working_directory: ~/authmereloaded-jdk10
+    docker:
+      - image: circleci/openjdk:10-jdk
+    environment:
+        MAVEN_OPTS: -Xmx2048m
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - dragonproxy-{{ checksum "pom.xml" }}
+          - dragonproxy-
+     - run: mvn -T 2 dependency:go-offline
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: dragonproxy-{{ checksum "pom.xml" }}
+      - run: mvn -T 2 package
+      - store_test_results:
+          path: target/surefire-reports
+      - store_artifacts:
+          path: target/*.jar
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build_and_test_jdk9
+      - build_and_test_jdk10
