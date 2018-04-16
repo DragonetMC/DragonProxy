@@ -9,4 +9,4 @@ This is, however, completely *optional*, and DragonProxy will work fine without 
 * Spigot
 * Bungeecord
 
-Note: If you install one of these plugins, you still need to run DragonProxy seperatly! This plugin just acts as a bridge between the served and proxy, it is NOT a proxy itself!
+Note: If you install one of these plugins, you still need to run DragonProxy separately! This plugin just acts as a bridge between the served and proxy, it is NOT a proxy itself!
