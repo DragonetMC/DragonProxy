@@ -12,6 +12,11 @@
 
     <artifactId>dragonproxy-proxy</artifactId>
 
+    <name>DragonProxy</name>
+    <description>
+        A proxy that allows Minecraft: Bedrock clients to connect to Minecraft: Java Edition servers.
+    </description>
+
     <properties>
         <outputName>dragonproxy-${project.version}</outputName>
     </properties>
@@ -131,7 +136,7 @@
             <artifactId>sentry</artifactId>
             <version>1.7.0</version>
         </dependency>
-	<dependency>
+        <dependency>
             <groupId>org.pf4j</groupId>
             <artifactId>pf4j</artifactId>
             <version>2.2.0</version>

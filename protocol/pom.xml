@@ -12,6 +12,12 @@
 
     <artifactId>dragonproxy-protocol</artifactId>
 
+    <name>DragonProxy Protocol</name>
+    <description>
+        The protocol library for the DragonProxy project, a proxy that allows Minecraft: Bedrock clients
+        to connect to Minecraft: Java Edition servers.
+    </description>
+
     <repositories>
         <repository>
             <id>maven-repo</id>

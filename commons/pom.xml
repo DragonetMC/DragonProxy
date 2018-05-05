@@ -12,6 +12,12 @@
 
     <artifactId>dragonproxy-commons</artifactId>
 
+    <name>DragonProxy Commons</name>
+    <description>
+        The common code for the DragonProxy project, a proxy that allows Minecraft: Bedrock clients to connect
+        to Minecraft: Java Edition servers.
+    </description>
+
     <dependencies>
         <dependency>
             <groupId>com.github.steveice10</groupId>

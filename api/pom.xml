@@ -12,6 +12,12 @@
 
     <artifactId>dragonproxy-api</artifactId>
 
+    <name>DragonProxy API</name>
+    <description>
+        The API for the DragonProxy project, a proxy that allows Minecraft: Bedrock clients to connect to
+        Minecraft: Java Edition servers.
+    </description>
+
     <build>
         <plugins>
             <plugin>
@@ -21,7 +27,6 @@
                     <execution>
                         <id>attach-javadocs</id>
                         <goals>
-                            <goal>aggregate</goal>
                             <goal>jar</goal>
                         </goals>
                     </execution>
