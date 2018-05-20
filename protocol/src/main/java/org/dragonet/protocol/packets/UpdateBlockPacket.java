@@ -1,9 +1,9 @@
 package org.dragonet.protocol.packets;
 
-import org.dragonet.protocol.PEPacket;
-import org.dragonet.protocol.ProtocolInfo;
 import org.dragonet.common.data.blocks.GlobalBlockPalette;
 import org.dragonet.common.maths.BlockPosition;
+import org.dragonet.protocol.PEPacket;
+import org.dragonet.protocol.ProtocolInfo;
 
 /**
  * Created on 2017/10/21.
@@ -24,6 +24,7 @@ public class UpdateBlockPacket extends PEPacket {
     public int data;
     public int flags;
     public int runtimeId;
+    public int dataLayer;
 
     public UpdateBlockPacket() {
 
@@ -39,6 +40,7 @@ public class UpdateBlockPacket extends PEPacket {
         blockPosition = getBlockPosition();
         runtimeId = (int) getUnsignedVarInt();
         flags = (int) getUnsignedVarInt();
+        dataLayer = (int) getUnsignedVarInt();
     }
 
     @Override
@@ -47,5 +49,6 @@ public class UpdateBlockPacket extends PEPacket {
         putBlockPosition(blockPosition);
         putUnsignedVarInt(runtimeId);
         putUnsignedVarInt(flags);
+        putUnsignedVarInt(dataLayer);
     }
 }

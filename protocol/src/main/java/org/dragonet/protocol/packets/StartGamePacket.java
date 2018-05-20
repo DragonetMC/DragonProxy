@@ -1,11 +1,11 @@
 package org.dragonet.protocol.packets;
 
 import com.github.steveice10.mc.protocol.data.game.setting.Difficulty;
+import org.dragonet.common.maths.BlockPosition;
 import org.dragonet.common.maths.Vector3F;
+import org.dragonet.common.utilities.GameRule;
 import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.ProtocolInfo;
-import org.dragonet.common.maths.BlockPosition;
-import org.dragonet.common.utilities.GameRule;
 
 import java.util.Map;
 
@@ -31,6 +31,7 @@ public class StartGamePacket extends PEPacket {
     public boolean achievementsDisabled;
     public int time;
     public boolean eduMode;
+    public boolean eduFeaturesEnabled;
     public float rainLevel;
     public float lightningLevel;
     public boolean multiplayerGame = true;
@@ -49,6 +50,9 @@ public class StartGamePacket extends PEPacket {
     public boolean hasPlatformBroadcast = false;
     public int platformBroadcastMode = 0;
     public boolean xboxLiveBroadcastIntent = false;
+    public boolean hasLockedBehaviorPack;
+    public boolean hasLockedResourcePack;
+    public boolean isFromLockedWorldTemplate;
 
     public String levelId;
     public String worldName;
@@ -88,6 +92,7 @@ public class StartGamePacket extends PEPacket {
         putBoolean(achievementsDisabled);
         putVarInt(time);
         putBoolean(eduMode);
+        putBoolean(eduFeaturesEnabled);
         putLFloat(rainLevel);
         putLFloat(lightningLevel);
         putBoolean(multiplayerGame);
@@ -106,6 +111,9 @@ public class StartGamePacket extends PEPacket {
         putBoolean(hasPlatformBroadcast);
         putVarInt(platformBroadcastMode);
         putBoolean(xboxLiveBroadcastIntent);
+        putBoolean(hasLockedBehaviorPack);
+        putBoolean(hasLockedResourcePack);
+        putBoolean(isFromLockedWorldTemplate);
 
         putString(levelId);
         putString(worldName);
