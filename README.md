@@ -14,7 +14,7 @@ __Some servers anticheats trigger some movments cheat, use at your own risks.__
 If you get banned from a server, we do not take responsabilities.
   
 ## Features
-- Currently supporting Bedrock 1.4.0 and Java 1.12.2
+- Currently supporting Bedrock 1.4.2 and Java 1.12.2
 - Chat supported
 - Chunks supported
 - Movement supported
