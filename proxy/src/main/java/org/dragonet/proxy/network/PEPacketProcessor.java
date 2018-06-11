@@ -118,7 +118,7 @@ public class PEPacketProcessor {
         if(!client.getProxy().getConfig().disable_packet_events){
             PacketfromPlayerEvent packetEvent = new PacketfromPlayerEvent(client, packet);
             client.getProxy().getEventManager().callEvent(packetEvent);
-            if(packetEvent.isCancelled()){
+            if(packetEvent.isCancelled​()){
                 return;
             }
         }

@@ -291,9 +291,9 @@ public class UpstreamSession {
         proxy.getGeneralThreadPool().execute(() -> {
             try {
                 if (authProxy == null)
-                    protocol = new MinecraftProtocol(email, password, false, Proxy.NO_PROXY);
+                    protocol = new MinecraftProtocol(email, password, Proxy.NO_PROXY);
                 else
-                    protocol = new MinecraftProtocol(email, password, false, authProxy);
+                    protocol = new MinecraftProtocol(email, password, authProxy);
             } catch (RequestException ex) {
                 ex.printStackTrace();
                 if (ex.getMessage().toLowerCase().contains("invalid")) {
@@ -442,7 +442,7 @@ public class UpstreamSession {
 
             CLSAuthenticationService.getInstance().refresh(this, authSvc.getAccessToken());
 
-            protocol = new MinecraftProtocol(authSvc.getSelectedProfile(), authSvc.getAccessToken());
+            protocol = new MinecraftProtocol(authSvc.getSelectedProfile(), authSvc.getClientToken(), authSvc.getAccessToken());
 
             proxy.getLogger().debug("Initially joining [" + proxy.getConfig().remote_server_addr + "]... ");
             connectToServer(proxy.getConfig().remote_server_addr, proxy.getConfig().remote_server_port);
