@@ -41,6 +41,7 @@ import org.yaml.snakeyaml.Yaml;
 import com.github.steveice10.mc.protocol.MinecraftConstants;
 
 import co.aikar.timings.Timings;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.SystemUtils;
 import org.dragonet.common.utilities.SkinFetcher;
 
@@ -109,11 +110,10 @@ public class DragonProxy {
     public EventManager getEventManager() {
         return eventManager;
     }
-    
-    public SoundTranslator getSoundTranslator() {
-    	return soundTranslator;
-    }
 
+    public SoundTranslator getSoundTranslator() {
+        return soundTranslator;
+    }
 
     public boolean isShuttingDown() {
         return shuttingDown;
@@ -176,6 +176,19 @@ public class DragonProxy {
                     // Ignore
                 }
             }
+
+        // Load language file
+        try {
+            lang = new Lang(config.lang);
+        } catch (IOException ex) {
+            logger.info("Failed to load language file: " + config.lang + "!");
+            ex.printStackTrace();
+        }
+
+        // Create thread pool
+        logger.info(lang.get(Lang.INIT_CREATING_THREAD_POOL, config.thread_pool_size));
+        generalThreadPool = Executors.newScheduledThreadPool(config.thread_pool_size);
+
         // Initialize console command reader
         console = new ConsoleCommandReader(this);
         console.startConsole();
@@ -197,19 +210,11 @@ public class DragonProxy {
 
         // Check for startup arguments
         checkArguments(launchArgs);
-        
-        if(config.log_debug && !debug) {
+
+        if (config.log_debug && !debug) {
             logger.debug = true;
             debug = true;
             logger.info("Proxy running in debug mode.");
-        }
-
-        // Load language file
-        try {
-            lang = new Lang(config.lang);
-        } catch (IOException ex) {
-            logger.info("Failed to load language file: " + config.lang + "!");
-            ex.printStackTrace();
         }
 
         // Load some more stuff
@@ -218,12 +223,11 @@ public class DragonProxy {
             version += " (" + properties.getProperty("git.commit.id.describe") + ")";
 
         // Check profile, used for docker profile
-        if (System.getProperties().containsKey("org.dragonet.proxy.profile")) {
+        if (System.getProperties().containsKey("org.dragonet.proxy.profile"))
             if (System.getProperties().get("org.dragonet.proxy.profile").equals("container")) {
                 isContainer = true;
                 version += "-docker";
             }
-        }
 
         logger.info(lang.get(Lang.INIT_LOADING, version));
         logger.info(lang.get(Lang.INIT_MC_PC_SUPPORT, MinecraftConstants.GAME_VERSION));
@@ -244,15 +248,11 @@ public class DragonProxy {
         sessionRegister = new SessionRegister(this);
         commandRegister = new CommandRegister(this);
         skinFetcher = new SkinFetcher();
-        
+
         GlobalBlockPalette.getOrCreateRuntimeId(0, 0); // Force it to load
 
         // Init block handling
         Block.init();
-
-        // Create thread pool
-        logger.info(lang.get(Lang.INIT_CREATING_THREAD_POOL, config.thread_pool_size));
-        generalThreadPool = Executors.newScheduledThreadPool(config.thread_pool_size);
 
         // MOTD
         motd = config.motd;
@@ -264,7 +264,7 @@ public class DragonProxy {
         // create the plugin manager
         pluginManager = new PluginManager(pluginfolder.toPath());
         eventManager = new EventManager(this);
-        
+
         soundTranslator = new SoundTranslator();
 
         // start and load all plugins of application
@@ -279,16 +279,18 @@ public class DragonProxy {
                 motd, config.auto_login ? 1 : config.max_players);
 
         if (DragonProxy.getInstance().getConfig().ping_passthrough)
-            new PingThread();
+            generalThreadPool.scheduleAtFixedRate(new PingThread(), 1, 1, TimeUnit.SECONDS);
 
-        ticker.start();
+        generalThreadPool.execute(ticker);
 
         logger.info(lang.get(Lang.INIT_DONE));
 
 //        Runtime.getRuntime().addShutdownHook(new Thread() {
 //            @Override
 //            public void run() {
-//                shutdown();
+//                this.setName("ShutdownThread");
+//                if (!isShuttingDown())
+//                    shutdown();
 //            }
 //        });
     }
@@ -320,22 +322,22 @@ public class DragonProxy {
     }
 
     public void shutdown() {
-        logger.info(lang.get(Lang.SHUTTING_DOWN));
+        this.logger.info(lang.get(Lang.SHUTTING_DOWN));
 
-        pluginManager.stopPlugins();
+        this.pluginManager.stopPlugins();
 
-        debug = false;
+        this.debug = false;
         this.shuttingDown = true;
-        network.shutdown();
-        try {
-            Thread.sleep(2000); // Wait for all clients disconnected
-        } catch (Exception ex) {
-            logger.info("Exception while shutting down!");
-            ex.printStackTrace();
-        }
-        Timings.stopServer();
+        this.network.shutdown();
+//        try {
+//            Thread.sleep(2000); // Wait for all clients disconnected
+//        } catch (Exception ex) {
+//            logger.info("Exception while shutting down!");
+//            ex.printStackTrace();
+//        }
+        this.logger.stop();
+        this.generalThreadPool.shutdown();
         System.out.println("Goodbye!");
-        logger.stop();
         System.exit(0);
     }
 

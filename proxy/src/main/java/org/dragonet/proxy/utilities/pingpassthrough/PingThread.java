@@ -12,15 +12,15 @@ import org.dragonet.proxy.DragonProxy;
 
 import java.util.concurrent.Executors;
 
-public class PingThread implements Runnable{
+public class PingThread extends Thread{
 
     private static PingThread instance;
     private ServerStatusInfo info;
     private Client client;
 
     public PingThread(){
+        super("PingThread");
         instance = this;
-        Executors.newSingleThreadExecutor().execute(this);
     }
 
     public static PingThread getInstance(){
@@ -45,7 +45,6 @@ public class PingThread implements Runnable{
             try {
                 this.setClient();
                 client.getSession().connect();
-                Thread.sleep(1000);
             } catch (Exception e) { e.printStackTrace(); }
         }
 

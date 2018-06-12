@@ -30,6 +30,7 @@ public class ConsoleCommandReader {
 
     private final DragonProxy proxy;
     private final Terminal terminal;
+    private Thread thread;
 
     public ConsoleCommandReader(DragonProxy proxy) {
         this.proxy = proxy;
@@ -37,7 +38,7 @@ public class ConsoleCommandReader {
     }
 
     public void startConsole() {
-        Thread thread = new Thread(new Runnable() {
+        thread = new Thread() {
             public void run() {
                 if (terminal != null) {
                     LineReader reader = LineReaderBuilder.builder()
@@ -85,13 +86,11 @@ public class ConsoleCommandReader {
                             proxy.getCommandRegister().callCommand(line);
                         }
                     } catch (IOException ex) {
-                    Logger.getLogger(ConsoleCommandReader.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                        Logger.getLogger(ConsoleCommandReader.class.getName()).log(Level.SEVERE, null, ex);
+                    }
             }
-        });
-
+        };
         thread.setName("ConsoleCommandThread");
-        thread.setDaemon(true);
-        thread.start();
+        proxy.getGeneralThreadPool().execute(thread);
     }
 }
