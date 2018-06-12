@@ -54,15 +54,15 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
     @Override
     public Packet[] translate(UpstreamSession session, InventoryTransactionPacket packet) {
         //debug
-                if (packet.transactionType == InventoryTransactionPacket.TYPE_NORMAL) {
-                    System.out.println(">>>>============================");
-        //            System.out.println("InventoryTransactionPacket type: \n" + DebugTools.getAllFields(packet));
-        //            System.out.println("-------------");
-                    for (InventoryTransactionAction action : packet.actions) {
-                        System.out.println(DebugTools.getAllFields(action));
-                    }
-                    System.out.println("<<<<============================");
-                }
+//                if (packet.transactionType == InventoryTransactionPacket.TYPE_NORMAL) {
+//                    System.out.println(">>>>============================");
+//        //            System.out.println("InventoryTransactionPacket type: \n" + DebugTools.getAllFields(packet));
+//        //            System.out.println("-------------");
+//                    for (InventoryTransactionAction action : packet.actions) {
+//                        System.out.println(DebugTools.getAllFields(action));
+//                    }
+//                    System.out.println("<<<<============================");
+//                }
 
 //        System.out.println(">>>>============================");
 //        System.out.println("InventoryTransactionPacket type: \n" + DebugTools.getAllFields(packet));
@@ -94,9 +94,9 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                 //creative case
                 if (packet.actions.length == 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_CONTAINER && packet.actions[1].sourceType == InventoryTransactionAction.SOURCE_CREATIVE && packet.actions[0].containerId == ContainerId.CURSOR.getId()) {
                     cursor = packet.actions[0].newItem; //set the cursor
-                    System.out.println("set cursor to " + cursor.toString());
+//                    System.out.println("set cursor to " + cursor.toString());
                     session.getDataCache().put(CacheKey.CURRENT_TRANSACTION_CREATIVE, cursor);
-                    System.out.println("Pick in creative inventory !");
+//                    System.out.println("Pick in creative inventory !");
                 }
 
                 if (packet.actions.length == 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_CONTAINER && packet.actions[1].containerId == ContainerId.CURSOR.getId()) {
@@ -134,7 +134,7 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                         }
                     }
 
-                    System.out.println("interact in " + (creative ? "creative " : "") + "inventory " + packet.actions[0].containerId + " slot JE: " + slot + " BE:" + slotBE);
+//                    System.out.println("interact in " + (creative ? "creative " : "") + "inventory " + packet.actions[0].containerId + " slot JE: " + slot + " BE:" + slotBE);
 
                     if (!creative) {
                         // send action to server
@@ -150,7 +150,7 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
 
                         session.getDownstream().send(windowActionPacket);
                     } else {
-                        System.out.println("CREATIVE !!!!!!!!!!!!!!!!!!!!!!!!");
+//                        System.out.println("CREATIVE !!!!!!!!!!!!!!!!!!!!!!!!");
                         // send action to server
                         ClientCreativeInventoryActionPacket creativeActionPacket = new ClientCreativeInventoryActionPacket(
                                 slot, //slot
