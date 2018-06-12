@@ -13,3 +13,6 @@ How it works :
 - if the connection matches the filter, the plugin check the auth payload and process xboxlive auth, if not, mojang auth is checked
 - if the xboxlive auth is completed, the players login likes a java one
 - the xboxlive uid is used as an UUID, it's a different UUID version than Mojang one, so there are no UUID conflicts
+
+You can also know if a player is a PE player or not with uour little api:
+`boolean isBedrockPlayer = DPAddonBungee.getInstance().isBedrockPlayer(UUID uuid);`

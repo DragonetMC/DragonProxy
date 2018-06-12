@@ -12,7 +12,7 @@ DragonProxy is a software placed between a Minecraft Bedrock client and a Java M
 
 __Some servers anticheats trigger some movments cheat, use at your own risks.__
 If you get banned from a server, we do not take responsabilities.
-  
+
 ## Features
 - Currently supporting Bedrock 1.4.2 and Java 1.12.2
 - Chat supported
@@ -62,18 +62,18 @@ Then run `cd DragonProxy` and `mvn package`.
 If all goes well, the DragonProxy jar can be found in `proxy/target`. Enjoy!
 
 ## Installing
-Download from above, then:
+Download in a sepate directory, then:
  - to generate a config file, start with ```java -jar dragonproxy-x.x.x.jar``` (where x.x.x is the version)
  - stop the process with CTRL+C
  - edit [config.yml](https://github.com/DragonetMC/DragonProxy/blob/master/proxy/src/main/resources/config.yml) as needed
  - then start again
 
 ## Plugin setup
-DragonProxy plugins are optionnals. Warning : the hybrid auth is only implemented for bungeecord.
+[DragonProxy plugins](https://github.com/DragonetMC/DragonProxy/tree/master/plugin) are optionnals. Warning : the hybrid auth is only implemented for bungeecord.
 
-The bungeecord plugin is used to auth players in hybrid auth mode.
+The [bungeecord](https://github.com/DragonetMC/DragonProxy/tree/master/plugin/bungee) plugin is used to auth players in hybrid auth mode.
 
-The bukkit plugin is used to send custom packets to the Bedrock client.
+The [bukkit](https://github.com/DragonetMC/DragonProxy/tree/master/plugin/spigot) plugin is used to send custom packets to the Bedrock client, but does not works yet.
 
 ## Windows 10 localhost problem
 If you try to run DragonProxy on the __same computer__ you start Minecraft W10 Edition, you must [enable loopback for Minecraft protocol](http://pmmp.readthedocs.io/en/rtfd/faq/connecting/win10localhostcantconnect.html) first.
