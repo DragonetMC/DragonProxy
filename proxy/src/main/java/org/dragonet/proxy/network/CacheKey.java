@@ -25,6 +25,9 @@ public final class CacheKey {
     public static final String CURRENT_WINDOW_ID = "window_opened_id";
     public static final String CURRENT_WINDOW_SIZE = "window_opened_size";
 
+    // Slot
+    public static final String CURRENT_TRANSACTION_CREATIVE = "window_cursor_creative";
+
     // Positions
     public static final String BLOCK_BREAKING_POSITION = "block_breaking_position";
     public static final String CURRENT_WINDOW_POSITION = "window_block_position";

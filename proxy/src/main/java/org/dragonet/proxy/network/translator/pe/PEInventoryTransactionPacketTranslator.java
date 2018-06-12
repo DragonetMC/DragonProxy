@@ -42,6 +42,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlaye
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPlaceBlockPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerSwingArmPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerUseItemPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientCreativeInventoryActionPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientWindowActionPacket;
 import com.github.steveice10.packetlib.packet.Packet;
 
@@ -53,15 +54,15 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
     @Override
     public Packet[] translate(UpstreamSession session, InventoryTransactionPacket packet) {
         //debug
-        //        if (packet.transactionType == InventoryTransactionPacket.TYPE_NORMAL) {
-        //            System.out.println(">>>>============================");
-        ////            System.out.println("InventoryTransactionPacket type: \n" + DebugTools.getAllFields(packet));
-        ////            System.out.println("-------------");
-        //            for (InventoryTransactionAction action : packet.actions) {
-        //                System.out.println(DebugTools.getAllFields(action));
-        //            }
-        //            System.out.println("<<<<============================");
-        //        }
+                if (packet.transactionType == InventoryTransactionPacket.TYPE_NORMAL) {
+                    System.out.println(">>>>============================");
+        //            System.out.println("InventoryTransactionPacket type: \n" + DebugTools.getAllFields(packet));
+        //            System.out.println("-------------");
+                    for (InventoryTransactionAction action : packet.actions) {
+                        System.out.println(DebugTools.getAllFields(action));
+                    }
+                    System.out.println("<<<<============================");
+                }
 
 //        System.out.println(">>>>============================");
 //        System.out.println("InventoryTransactionPacket type: \n" + DebugTools.getAllFields(packet));
@@ -74,7 +75,8 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
         switch (packet.transactionType) {
             case InventoryTransactionPacket.TYPE_NORMAL: //0 INVENTORY & CHEST
 //                System.out.println("TYPE_NORMAL");
-                Slot cursor = null;
+                Slot cursor = (Slot)session.getDataCache().getOrDefault(CacheKey.CURRENT_TRANSACTION_CREATIVE, null);
+                boolean creative = session.getDataCache().containsKey(CacheKey.CURRENT_TRANSACTION_CREATIVE);
                 if (packet.actions.length <= 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_WORLD && packet.actions[1].containerId == ContainerId.INVENTORY.getId()) //main inventory
                 {
                     // drop item
@@ -88,6 +90,15 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
 //                System.out.println("packet.actions[1].sourceType " + packet.actions[1].sourceType);
 //                System.out.println("packet.actions[0].containerId " + packet.actions[0].containerId);
 //                System.out.println("packet.actions[1].containerId " + packet.actions[1].containerId);
+
+                //creative case
+                if (packet.actions.length == 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_CONTAINER && packet.actions[1].sourceType == InventoryTransactionAction.SOURCE_CREATIVE && packet.actions[0].containerId == ContainerId.CURSOR.getId()) {
+                    cursor = packet.actions[0].newItem; //set the cursor
+                    System.out.println("set cursor to " + cursor.toString());
+                    session.getDataCache().put(CacheKey.CURRENT_TRANSACTION_CREATIVE, cursor);
+                    System.out.println("Pick in creative inventory !");
+                }
+
                 if (packet.actions.length == 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_CONTAINER && packet.actions[1].containerId == ContainerId.CURSOR.getId()) {
                     // desktop version: click on an item (maybe pick/place/merge/swap)
 
@@ -95,7 +106,8 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
 //                    System.out.println("packet.actions[0].newItem " + packet.actions[0].newItem);
 //                    System.out.println("packet.actions[1].oldItem " + packet.actions[1].oldItem);
 //                    System.out.println("packet.actions[1].newItem " + packet.actions[1].newItem);
-                    cursor = packet.actions[0].oldItem; //set the cursor
+                    if (cursor == null)
+                        cursor = packet.actions[0].oldItem; //set the cursor
                     int windowID = 0;
                     if (session.getDataCache().containsKey(CacheKey.CURRENT_WINDOW_ID))
                         windowID = (int) session.getDataCache().get(CacheKey.CURRENT_WINDOW_ID);
@@ -121,20 +133,34 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                                 slot += size + 27;//Hotbar offset
                         }
                     }
-//                    System.out.println("interact in chest (" + packet.actions[0].containerId + ") slot JE: " + slot + " BE:" + slotBE);
 
-                    // send action to server
-                    ClientWindowActionPacket windowActionPacket = new ClientWindowActionPacket(
-                            windowID, //window id
-                            session.getWindowCache().currentTransactionId.incrementAndGet(), //transaction id
-                            slot, //slot
-                            ItemBlockTranslator.translateToPC(cursor),
-                            WindowAction.CLICK_ITEM,
-                            ClickItemParam.LEFT_CLICK
-                    );
-//                    System.out.println("WINDOWACTIONPACKET \n" + DebugTools.getAllFields(windowActionPacket));
+                    System.out.println("interact in " + (creative ? "creative " : "") + "inventory " + packet.actions[0].containerId + " slot JE: " + slot + " BE:" + slotBE);
 
-                    session.getDownstream().send(windowActionPacket);
+                    if (!creative) {
+                        // send action to server
+                        ClientWindowActionPacket windowActionPacket = new ClientWindowActionPacket(
+                                windowID, //window id
+                                session.getWindowCache().currentTransactionId.incrementAndGet(), //transaction id
+                                slot, //slot
+                                ItemBlockTranslator.translateToPC(cursor),
+                                WindowAction.CLICK_ITEM,
+                                ClickItemParam.LEFT_CLICK
+                        );
+    //                    System.out.println("WINDOWACTIONPACKET \n" + DebugTools.getAllFields(windowActionPacket));
+
+                        session.getDownstream().send(windowActionPacket);
+                    } else {
+                        System.out.println("CREATIVE !!!!!!!!!!!!!!!!!!!!!!!!");
+                        // send action to server
+                        ClientCreativeInventoryActionPacket creativeActionPacket = new ClientCreativeInventoryActionPacket(
+                                slot, //slot
+                                ItemBlockTranslator.translateToPC(cursor)
+                        );
+    //                    System.out.println("WINDOWACTIONPACKET \n" + DebugTools.getAllFields(windowActionPacket));
+
+                        session.getDownstream().send(creativeActionPacket);
+                    }
+                    session.getDataCache().remove(CacheKey.CURRENT_TRANSACTION_CREATIVE);
 
                     // after the previous one, we can detect SHIFT click or move items on mobile devices
 //                    if (packet.actions.length == 2 && packet.actions[0].sourceType == InventoryTransactionAction.SOURCE_CONTAINER && packet.actions[1].sourceType == InventoryTransactionAction.SOURCE_CONTAINER)
