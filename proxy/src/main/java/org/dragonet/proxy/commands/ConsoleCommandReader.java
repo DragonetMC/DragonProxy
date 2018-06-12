@@ -12,39 +12,80 @@
  */
 package org.dragonet.proxy.commands;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.dragonet.proxy.DragonProxy;
 
-import java.util.Scanner;
+import net.minecrell.terminalconsole.TerminalConsoleAppender;
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.UserInterruptException;
+import org.jline.terminal.Terminal;
 
 public class ConsoleCommandReader {
 
     private final DragonProxy proxy;
+    private final Terminal terminal;
 
     public ConsoleCommandReader(DragonProxy proxy) {
         this.proxy = proxy;
+        this.terminal = TerminalConsoleAppender.getTerminal();
     }
 
     public void startConsole() {
         Thread thread = new Thread(new Runnable() {
             public void run() {
-                String command = "";
-                while (!proxy.isShuttingDown()) {
-                    try {
-//                        System.out.print(">");
-                        Scanner scanner = new Scanner(System.in);
-                        if (scanner.hasNext()) {
-                            command = scanner.nextLine();
+                if (terminal != null) {
+                    LineReader reader = LineReaderBuilder.builder()
+                            .appName("Example App") // TODO: Replace with your app name
+                            .terminal(terminal)
+                            .build(); // Important to make the appender aware of the reader
+                    TerminalConsoleAppender.setReader(reader);
 
-                            if (command != null || command.trim().length() != 0) {
-                                proxy.getLogger().info("[Console] Executing command: " + command);
-                                proxy.getCommandRegister().callCommand(command);
+                    try {
+                        String line;
+
+                        while (true) {
+                            try {
+                                line = reader.readLine("> ");
+                            } catch (EndOfFileException ignored) {
+                                // This is thrown when the user indicates end of input using CTRL + D
+                                // For most applications it doesn't make sense to stop reading input
+                                // You can either disable console input at this point, or just continue
+                                // reading normally.
+                                continue;
                             }
+
+                            if (line == null)
+                                break;
+
+                            // TODO: Execute command with the line
                         }
-                        Thread.sleep(50);
-                    } catch (Exception ex) {
-                        proxy.getLogger().severe("Error while executing command: " + ex);
-                        ex.printStackTrace();
+                    } catch (UserInterruptException e) {
+                        // Called when CTRL + C is typed
+                        // TODO: You should stop your app here
+                    } finally {
+                        // Note: At this point the `LineReader` is no longer readable
+                        // The appender isn't aware of this so you should remove it manually to avoid errors
+                        TerminalConsoleAppender.setReader(null);
                     }
+
+                } else
+                    // JLine isn't enabled or not supported
+                    // TODO: Usually, you should fall back to reading from standard input here
+                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            // TODO: Execute command with the line
+                            proxy.getLogger().info("[Console] Executing command: " + line);
+                            proxy.getCommandRegister().callCommand(line);
+                        }
+                    } catch (IOException ex) {
+                    Logger.getLogger(ConsoleCommandReader.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });

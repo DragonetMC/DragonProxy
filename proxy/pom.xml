@@ -136,6 +136,12 @@
             <artifactId>pf4j</artifactId>
             <version>2.2.0</version>
         </dependency>
+        <dependency>
+            <groupId>net.minecrell</groupId>
+            <artifactId>terminalconsoleappender</artifactId>
+            <version>1.0.0</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
 </project>

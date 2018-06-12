@@ -66,7 +66,7 @@ public class ProxyLogger {
             logDir.mkdir();
             File logFile = new File(logDir, "latest.log");
             int maxLogFileSize = 20;//Mo
-            if (logFile.exists() && (logFile.length() / 1024L * 1024L) > maxLogFileSize)
+            if (logFile.exists() && (logFile.length()) > maxLogFileSize * 1024L * 1024L)
                 logger.warning("Your log file is larger than " + maxLogFileSize + "Mo, you should backup and clean it !");
             FileHandler fileHandler = new FileHandler(logFile.getCanonicalPath(), true);
             fileHandler.setLevel(Level.INFO);
@@ -97,20 +97,20 @@ public class ProxyLogger {
     }
 
     public void info(String message) {
-        logger.info(message);
+        logger.info(org.dragonet.common.maths.MCColor.printConsole(message, proxy.getConfig().log_colors));
     }
 
     public void warning(String message) {
-        logger.warning(message);
+        logger.warning(org.dragonet.common.maths.MCColor.printConsole(message, proxy.getConfig().log_colors));
     }
 
     public void severe(String message) {
-        logger.severe(message);
+        logger.severe(org.dragonet.common.maths.MCColor.printConsole(message, proxy.getConfig().log_colors));
     }
 
     public void debug(String message) {
         if (debug)
-            logger.info(message);
+            logger.info(org.dragonet.common.maths.MCColor.printConsole(message, proxy.getConfig().log_colors));
     }
 
     public void stop() {

@@ -44,7 +44,7 @@ public class MCColor {
 
     public static String toANSI(String string) {
         string = string.replace(BOLD, "");
-        string = string.replace(OBFUSCATED, (char) 0x1b + "[8m");
+        string = string.replace(OBFUSCATED, (char) 0x1b + "[6m");
         string = string.replace(ITALIC, (char) 0x1b + "[3m");
         string = string.replace(UNDERLINE, (char) 0x1b + "[4m");
         string = string.replace(STRIKETHROUGH, (char) 0x1b + "[9m");
@@ -68,12 +68,12 @@ public class MCColor {
         return string;
     }
 
-    public static String clean(String message) {
-        return message = message.replaceAll((char) 0x1b + "[0-9;\\[\\(]+[Bm]", "");
+    //remove &?, §? and ansi colors codes
+    public static String stripColors(String message) {
+        return message = message.replaceAll("(&([a-fk-or0-9]))","").replaceAll("(§([a-fk-or0-9]))","").replaceAll("s/\\x1b\\[[0-9;]*[a-zA-Z]//g","");
     }
 
-    //remove &? and §? colors codes
-    public static String stripColors(String message) {
-        return message = message.replaceAll("(&([a-fk-or0-9]))","").replaceAll("(\\u00A7([a-fk-or0-9]))","");
+    public static String printConsole(String message, boolean colors) {
+        return colors ? toANSI(message + MCColor.RESET) : stripColors(message + MCColor.RESET);
     }
 }
