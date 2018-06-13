@@ -133,6 +133,8 @@ public class ChunkCache {
     }
 
     public void update(Position position, BlockState block) {
+        if (position.getY() < 0) //never behind 0
+            return;
         ChunkPos columnPos = new ChunkPos(position.getX() >> 4, position.getZ() >> 4);
 //        System.out.println("translateBlock Position " + position.toString());
         if (chunkCache.containsKey(columnPos))
@@ -150,6 +152,8 @@ public class ChunkCache {
     }
 
     public final ItemEntry translateBlock(Position position) {
+        if (position.getY() < 0) //never behind 0
+            return null;
         ChunkPos columnPos = new ChunkPos(position.getX() >> 4, position.getZ() >> 4);
         if (chunkCache.containsKey(columnPos))
             try {
@@ -168,6 +172,8 @@ public class ChunkCache {
     }
 
     public final ItemStack getBlock(Position position) {
+        if (position.getY() < 0) //never behind 0
+            return null;
         ChunkPos columnPos = new ChunkPos(position.getX() >> 4, position.getZ() >> 4);
         if (chunkCache.containsKey(columnPos))
             try {
