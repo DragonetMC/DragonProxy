@@ -15,15 +15,13 @@ package org.dragonet.proxy.network.translator.pc;
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerRespawnPacket;
 import java.util.ArrayList;
+import org.dragonet.api.caches.cached.ICachedEntity;
 import org.dragonet.common.data.entity.PEEntityAttribute;
-import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.translators.IPCPacketTranslator;
+import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.protocol.packets.AdventureSettingsPacket;
-import org.dragonet.protocol.packets.ChangeDimensionPacket;
 import org.dragonet.protocol.packets.PlayStatusPacket;
-import org.dragonet.protocol.packets.RemoveEntityPacket;
 import org.dragonet.protocol.packets.SetDifficultyPacket;
 import org.dragonet.protocol.packets.SetPlayerGameTypePacket;
 import org.dragonet.protocol.packets.UpdateAttributesPacket;
@@ -31,12 +29,12 @@ import org.dragonet.proxy.DragonProxy;
 
 public class PCRespawnPacketTranslator implements IPCPacketTranslator<ServerRespawnPacket> {
 
-    public PEPacket[] translate(UpstreamSession session, ServerRespawnPacket packet) {
+    public PEPacket[] translate(IUpstreamSession session, ServerRespawnPacket packet) {
 
-        CachedEntity entity = session.getEntityCache().getClientEntity();
-        if (entity.dimention != packet.getDimension()) {
+        ICachedEntity entity = session.getEntityCache().getClientEntity();
+        if (entity.getDimention() != packet.getDimension()) {
             // the player have changed dimention
-            DragonProxy.getInstance().getLogger().info(session.getUsername() + " change dim " + entity.dimention + " to " + packet.getDimension());
+            DragonProxy.getInstance().getLogger().info(session.getUsername() + " change dim " + entity.getDimention() + " to " + packet.getDimension());
 //            entity.dimention = packet.getDimension();
 
             // purge and despawn
@@ -56,19 +54,19 @@ public class PCRespawnPacketTranslator implements IPCPacketTranslator<ServerResp
             adv.setFlag(AdventureSettingsPacket.WORLD_BUILDER, !packet.getGameMode().equals(GameMode.SPECTATOR) || !packet.getGameMode().equals(GameMode.ADVENTURE));
             adv.setFlag(AdventureSettingsPacket.FLYING, packet.getGameMode().equals(GameMode.SPECTATOR));
             adv.setFlag(AdventureSettingsPacket.MUTED, false);
-            adv.eid = entity.proxyEid;
+            adv.eid = entity.getProxyEid();
             adv.commandsPermission = AdventureSettingsPacket.PERMISSION_NORMAL;
             adv.playerPermission = AdventureSettingsPacket.LEVEL_PERMISSION_MEMBER;
             session.sendPacket(adv);
 
             // send entity attributes
             UpdateAttributesPacket attr = new UpdateAttributesPacket();
-            attr.rtid = entity.proxyEid;
-            if (entity.attributes.isEmpty()) {
+            attr.rtid = entity.getProxyEid();
+            if (entity.getAttributes().isEmpty()) {
                 attr.entries = new ArrayList();
                 attr.entries.addAll(PEEntityAttribute.getDefault());
             } else
-                attr.entries = entity.attributes.values();
+                attr.entries = entity.getAttributes().values();
             session.sendPacket(attr);
 
             //set world difficulty

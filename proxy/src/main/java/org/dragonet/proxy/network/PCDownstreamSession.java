@@ -12,6 +12,7 @@
  */
 package org.dragonet.proxy.network;
 
+import org.dragonet.api.sessions.IDownstreamSession;
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
 import com.github.steveice10.mc.protocol.data.SubProtocol;
 import com.github.steveice10.mc.protocol.packet.handshake.client.HandshakePacket;
@@ -25,7 +26,9 @@ import com.github.steveice10.packetlib.event.session.PacketSendingEvent;
 import com.github.steveice10.packetlib.event.session.SessionAdapter;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.ProxyServer;
+import org.dragonet.api.sessions.IUpstreamSession;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
 
@@ -36,15 +39,16 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
 
     public MinecraftProtocol protocol;
 
-    private final DragonProxy proxy;
-    private final UpstreamSession upstream;
+    private final ProxyServer proxy;
+    private final IUpstreamSession upstream;
     private Client remoteClient;
 
-    public PCDownstreamSession(DragonProxy proxy, UpstreamSession upstream) {
+    public PCDownstreamSession(ProxyServer proxy, IUpstreamSession upstream) {
         this.proxy = proxy;
         this.upstream = upstream;
     }
 
+    @Override
     public void connect(String addr, int port) {
         if (this.protocol == null) {
             upstream.onConnected(); // Clear the flags
@@ -65,14 +69,7 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
 
             @Override
             public void packetSending(PacketSendingEvent event) {
-                if(proxy.getAuthMode().equalsIgnoreCase("hybrid")) {
-                    if (protocol.getSubProtocol() == SubProtocol.HANDSHAKE && event.getPacket() instanceof HandshakePacket) {
-                        HandshakePacket packet = event.getPacket();
-                        String host = remoteClient.getSession().getHost() + "\0" + upstream.getProfile().getChainJWT();
-                        packet = new HandshakePacket(packet.getProtocolVersion(), host, packet.getPort(), packet.getIntent());
-                        event.setPacket(packet);
-                    }
-                }
+                onPacketSending(event);
             }
 
             @Override
@@ -90,64 +87,80 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
             @Override
             public void packetReceived(PacketReceivedEvent event) {
                 // Handle the packet
-                try {
-                    PEPacket[] packets = PacketTranslatorRegister.translateToPE(upstream, event.getPacket());
-                    if (packets == null) {
-                        return;
-                    }
-                    if (packets.length <= 0) {
-                        return;
-                    }
-                    if (packets.length == 1) {
-                        upstream.sendPacket(packets[0]);
-                    } else {
-                        upstream.sendAllPackets(packets, false);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    throw e;
-                }
+                onPacketRecieved(event);
             }
         });
         remoteClient.getSession().connect();
     }
 
+    @Override
     public void disconnect() {
-        if (remoteClient != null && remoteClient.getSession().isConnected()) {
+        if (remoteClient != null && remoteClient.getSession().isConnected())
             remoteClient.getSession().disconnect("Disconnect");
-        }
     }
 
+    @Override
     public boolean isConnected() {
         return remoteClient != null && remoteClient.getSession().isConnected();
     }
 
+    @Override
     public void send(Packet... packets) {
-        for (Packet p : packets) {
+        for (Packet p : packets)
             send(p);
-        }
     }
 
+    @Override
     public void send(Packet packet) {
-        if (packet == null) {
+        if (packet == null)
             return;
-        }
         remoteClient.getSession().send(packet);
     }
 
+    @Override
     public void sendChat(String chat) {
         remoteClient.getSession().send(new ClientChatPacket(chat));
     }
 
+    @Override
+    public void onPacketSending(PacketSendingEvent event) {
+        if (proxy.getAuthMode().equalsIgnoreCase("hybrid"))
+            if (protocol.getSubProtocol() == SubProtocol.HANDSHAKE && event.getPacket() instanceof HandshakePacket) {
+                HandshakePacket packet = event.getPacket();
+                String host = remoteClient.getSession().getHost() + "\0" + upstream.getProfile().getChainJWT();
+                packet = new HandshakePacket(packet.getProtocolVersion(), host, packet.getPort(), packet.getIntent());
+                event.setPacket(packet);
+            }
+    }
+
+    @Override
+    public void onPacketRecieved(PacketReceivedEvent event) {
+        try {
+            PEPacket[] packets = PacketTranslatorRegister.translateToPE(upstream, event.getPacket());
+            if (packets == null)
+                return;
+            if (packets.length <= 0)
+                return;
+            if (packets.length == 1)
+                upstream.sendPacket(packets[0]);
+            else
+                upstream.sendAllPackets(packets, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Override
     public void onTick() {
 
     }
 
-    public DragonProxy getProxy() {
+    public ProxyServer getProxy() {
         return proxy;
     }
 
-    public UpstreamSession getUpstream() {
+    public IUpstreamSession getUpstream() {
         return upstream;
     }
 }

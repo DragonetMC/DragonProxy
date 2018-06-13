@@ -35,14 +35,16 @@ import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.PCDownstreamSession;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.translators.IPCPacketTranslator;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.common.data.entity.Skin;
 import org.dragonet.common.utilities.BinaryStream;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import org.dragonet.api.caches.cached.ICachedEntity;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.common.maths.BlockPosition;
 import org.dragonet.common.maths.ChunkPos;
 
@@ -52,9 +54,9 @@ import org.dragonet.common.maths.NukkitMath;
 public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTranslator<ServerPlayerPositionRotationPacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerPlayerPositionRotationPacket packet) {
+    public PEPacket[] translate(IUpstreamSession session, ServerPlayerPositionRotationPacket packet) {
 
-        CachedEntity entityPlayer = session.getEntityCache().getClientEntity();
+        ICachedEntity entityPlayer = session.getEntityCache().getClientEntity();
         if (entityPlayer == null) {
             //disconnect (important missing data)
         }
@@ -68,9 +70,9 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             ServerJoinGamePacket restored = (ServerJoinGamePacket) session.getDataCache().remove(CacheKey.PACKET_JOIN_GAME_PACKET);
             if (!session.getProxy().getAuthMode().equalsIgnoreCase("online")) {
                 StartGamePacket ret = new StartGamePacket();
-                ret.rtid = entityPlayer.proxyEid;
-                ret.eid = entityPlayer.proxyEid;
-                ret.dimension = entityPlayer.dimention;
+                ret.rtid = entityPlayer.getProxyEid();
+                ret.eid = entityPlayer.getProxyEid();
+                ret.dimension = entityPlayer.getDimention();
                 ret.seed = 0;
                 ret.generator = 1;
                 ret.gamemode = restored.getGameMode() == GameMode.CREATIVE ? 1 : 0;
@@ -87,7 +89,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
                 session.sendPacket(ret, true);
             }
 
-            entityPlayer.absoluteMove(packet.getX(), packet.getY() + entityPlayer.peType.getOffset() + 0.1f, packet.getZ(), packet.getYaw(), packet.getPitch());
+            entityPlayer.absoluteMove(packet.getX(), packet.getY() + entityPlayer.getPeType().getOffset() + 0.1f, packet.getZ(), packet.getYaw(), packet.getPitch());
             session.getChunkCache().sendOrderedChunks();
 
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -109,12 +111,12 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             ((PCDownstreamSession) session.getDownstream()).send(clientSettingsPacket);
 
             UpdateAttributesPacket attr = new UpdateAttributesPacket();
-            attr.rtid = entityPlayer.proxyEid;
-            if (entityPlayer.attributes.isEmpty()) {
+            attr.rtid = entityPlayer.getProxyEid();
+            if (entityPlayer.getAttributes().isEmpty()) {
                 attr.entries = new ArrayList();
                 attr.entries.addAll(PEEntityAttribute.getDefault());
             } else
-                attr.entries = entityPlayer.attributes.values();
+                attr.entries = entityPlayer.getAttributes().values();
             session.sendPacket(attr, true);
 
             AdventureSettingsPacket adv = new AdventureSettingsPacket();
@@ -135,13 +137,13 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             //adv.setFlag(AdventureSettingsPacket.ATTACK_MOBS, true);
             //adv.setFlag(AdventureSettingsPacket.OPERATOR, true);
             //adv.setFlag(AdventureSettingsPacket.TELEPORT, true);
-            adv.eid = entityPlayer.proxyEid;
+            adv.eid = entityPlayer.getProxyEid();
             adv.commandsPermission = AdventureSettingsPacket.PERMISSION_NORMAL;     //TODO update this with server configiration
             adv.playerPermission = AdventureSettingsPacket.LEVEL_PERMISSION_MEMBER; //TODO update this with server configiration
             session.sendPacket(adv, true);
 
             SetEntityDataPacket entityData = new SetEntityDataPacket();
-            entityData.rtid = entityPlayer.proxyEid;
+            entityData.rtid = entityPlayer.getProxyEid();
             entityData.meta = EntityMetaData.createDefault();
             session.sendPacket(entityData, true);
 
@@ -151,17 +153,17 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             if (session.getProxy().getAuthMode().equalsIgnoreCase("online")) {
 
                 MovePlayerPacket pk = new MovePlayerPacket();
-                pk.rtid = entityPlayer.proxyEid;
+                pk.rtid = entityPlayer.getProxyEid();
                 pk.mode = MovePlayerPacket.MODE_TELEPORT;
                 pk.position = new Vector3F((float) packet.getX(), (float) packet.getY() + EntityType.PLAYER.getOffset() + 0.1f, (float) packet.getZ());
                 pk.yaw = packet.getYaw();
                 pk.pitch = packet.getPitch();
                 pk.headYaw = packet.getYaw();
 
-                if (entityPlayer.riding != 0) {
-                    CachedEntity vehicle = session.getEntityCache().getByLocalEID(entityPlayer.riding);
+                if (entityPlayer.getRiding() != 0) {
+                    ICachedEntity vehicle = session.getEntityCache().getByLocalEID(entityPlayer.getRiding());
                     if (vehicle != null)
-                        pk.ridingRuntimeId = vehicle.eid;
+                        pk.ridingRuntimeId = vehicle.getEid();
                 }
                 session.sendPacket(pk, true);
             }
@@ -174,7 +176,7 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
 
             session.setSpawned();
 
-            DragonProxy.getInstance().getLogger().info("Spawning " + session.getUsername() + " in world " + entityPlayer.dimention + " at " + entityPlayer.x + "/" + entityPlayer.y + "/" + entityPlayer.z);
+            DragonProxy.getInstance().getLogger().info("Spawning " + session.getUsername() + " in world " + entityPlayer.getDimention() + " at " + entityPlayer.getX() + "/" + entityPlayer.getY() + "/" + entityPlayer.getZ());
 
             // send the confirmation
             ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());
@@ -183,13 +185,13 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             PlayerListPacket playerListPacket = new PlayerListPacket();
             Set<org.dragonet.protocol.type.PlayerListEntry> peEntries = new HashSet();
 
-            for (CachedEntity entity : session.getEntityCache().getEntities().values()) {
-                if (entity.peType == EntityType.PLAYER) {
-                    PlayerListEntry playerListEntry = session.getPlayerInfoCache().get(entity.playerUniqueId);
+            for (ICachedEntity entity : session.getEntityCache().getEntities().values()) {
+                if (entity.getPeType() == EntityType.PLAYER) {
+                    PlayerListEntry playerListEntry = (PlayerListEntry)session.getPlayerInfoCache().get(entity.getPlayerUniqueId());
 
                     org.dragonet.protocol.type.PlayerListEntry peEntry = new org.dragonet.protocol.type.PlayerListEntry();
-                    peEntry.uuid = entity.playerUniqueId;
-                    peEntry.eid = entity.eid;
+                    peEntry.uuid = entity.getPlayerUniqueId();
+                    peEntry.eid = entity.getEid();
                     peEntry.username = playerListEntry.getProfile().getName();
                     peEntry.skin = Skin.DEFAULT_SKIN_STEVE;
                     peEntry.xboxUserId = "null";
@@ -201,11 +203,11 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
             playerListPacket.type = PlayerListPacket.TYPE_ADD;
             playerListPacket.entries = peEntries.toArray(new org.dragonet.protocol.type.PlayerListEntry[peEntries.size()]);
             session.sendPacket(playerListPacket);
-            entityPlayer.spawned = true;
+            entityPlayer.setSpawned(true);
             return null;
         }
 
-        entityPlayer.absoluteMove(packet.getX(), packet.getY() + entityPlayer.peType.getOffset() + 0.1f, packet.getZ(), packet.getYaw(), packet.getPitch());
+        entityPlayer.absoluteMove(packet.getX(), packet.getY() + entityPlayer.getPeType().getOffset() + 0.1f, packet.getZ(), packet.getYaw(), packet.getPitch());
         session.getChunkCache().sendOrderedChunks();
 
         float offset = 0.01f;
@@ -223,34 +225,32 @@ public class PCPlayerPositionRotationPacketTranslator implements IPCPacketTransl
         }
 
         MovePlayerPacket pk = new MovePlayerPacket();
-        pk.rtid = entityPlayer.proxyEid;
+        pk.rtid = entityPlayer.getProxyEid();
         pk.mode = mode;
         pk.position = new Vector3F((float) packet.getX(), (float) packet.getY() + EntityType.PLAYER.getOffset() + offset, (float) packet.getZ());
         pk.yaw = packet.getYaw();
         pk.pitch = packet.getPitch();
         pk.headYaw = packet.getYaw();
 
-        if (entityPlayer.riding != 0) {
-            CachedEntity vehicle = session.getEntityCache().getByLocalEID(entityPlayer.riding);
+        if (entityPlayer.getRiding() != 0) {
+            ICachedEntity vehicle = session.getEntityCache().getByLocalEID(entityPlayer.getRiding());
             if (vehicle != null)
-                pk.ridingRuntimeId = vehicle.eid;
+                pk.ridingRuntimeId = vehicle.getEid();
         }
-        
+
 //        System.out.println("From server " + packet.getX() + " " + packet.getY() + " " + packet.getZ() + " ");
 //        System.out.println("Entity position " + entityPlayer.x + " " + (entityPlayer.y - EntityType.PLAYER.getOffset()) + " " + entityPlayer.z + " ");
         session.sendPacket(pk);
-        
-        if(!contains) { // Send empty chunk??
+
+        if (!contains) // Send empty chunk??
             session.getChunkCache().sendEmptyChunk(chunk.chunkXPos, chunk.chunkZPos);
-        }
 
         // send the confirmation
         ClientTeleportConfirmPacket confirm = new ClientTeleportConfirmPacket(packet.getTeleportId());
         ((PCDownstreamSession) session.getDownstream()).send(confirm);
-        
-        if(!contains) {
+
+        if (!contains)
             session.getChunkCache().sendOrderedChunks();
-        }
 
         return null;
     }
