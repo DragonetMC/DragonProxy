@@ -142,11 +142,9 @@ public class ChunkCache {
             try {
                 Column column = chunkCache.get(columnPos);
                 BlockPosition blockPos = columnPos.getBlockInChunk(position.getX(), position.getY(), position.getZ());
-                if ((position.getY() >> 4) >= 0) {
-                    Chunk chunk = column.getChunks()[position.getY() >> 4];
-                    if (chunk != null)
-                        chunk.getBlocks().set(blockPos.x, blockPos.y, blockPos.z, block);
-                }
+                Chunk chunk = column.getChunks()[position.getY() >> 4];
+                if (chunk != null)
+                    chunk.getBlocks().set(blockPos.x, blockPos.y, blockPos.z, block);
             } catch (java.lang.ArrayIndexOutOfBoundsException ex) {
                 this.session.getProxy().getLogger()
                         .info("update(" + position.toString() + ", " + block.toString() + ")) fail to get chunk "
@@ -164,12 +162,10 @@ public class ChunkCache {
             try {
                 Column column = chunkCache.get(columnPos);
                 BlockPosition blockPos = columnPos.getBlockInChunk(position.getX(), position.getY(), position.getZ());
-                if ((position.getY() >> 4) >= 0) {
-                    Chunk chunk = column.getChunks()[position.getY() >> 4];
-                    if (chunk != null) {
-                        BlockState block = chunk.getBlocks().get(blockPos.x, blockPos.y, blockPos.z);
-                        return ItemBlockTranslator.translateToPE(block.getId(), block.getData());
-                    }
+                Chunk chunk = column.getChunks()[position.getY() >> 4];
+                if (chunk != null) {
+                    BlockState block = chunk.getBlocks().get(blockPos.x, blockPos.y, blockPos.z);
+                    return ItemBlockTranslator.translateToPE(block.getId(), block.getData());
                 }
             } catch (java.lang.ArrayIndexOutOfBoundsException ex) {
                 this.session.getProxy().getLogger().info("getBlock(" + position.toString() + ")) fail to get chunk "
@@ -187,12 +183,10 @@ public class ChunkCache {
             try {
                 Column column = chunkCache.get(columnPos);
                 BlockPosition blockPos = columnPos.getBlockInChunk(position.getX(), position.getY(), position.getZ());
-                if ((position.getY() >> 4) >= 0) {
-                    Chunk chunk = column.getChunks()[position.getY() >> 4];
-                    if (chunk != null) {
-                        BlockState block = chunk.getBlocks().get(blockPos.x, blockPos.y, blockPos.z);
-                        return new ItemStack(block.getId(), 1, block.getData());
-                    }
+                Chunk chunk = column.getChunks()[position.getY() >> 4];
+                if (chunk != null) {
+                    BlockState block = chunk.getBlocks().get(blockPos.x, blockPos.y, blockPos.z);
+                    return new ItemStack(block.getId(), 1, block.getData());
                 }
             } catch (java.lang.ArrayIndexOutOfBoundsException ex) {
                 this.session.getProxy().getLogger().severe("(getBlock(" + position.toString() + ")) fail to get chunk "
