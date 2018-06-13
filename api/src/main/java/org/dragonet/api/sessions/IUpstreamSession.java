@@ -13,12 +13,18 @@
 package org.dragonet.api.sessions;
 
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
+import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Map;
 import java.util.UUID;
 import org.dragonet.api.ProxyServer;
+import org.dragonet.api.caches.IChunkCache;
+import org.dragonet.api.caches.IEntityCache;
+import org.dragonet.api.caches.IJukeboxCache;
+import org.dragonet.api.caches.IWindowCache;
 import org.dragonet.api.network.PEPacket;
+import org.dragonet.common.utilities.LoginChainDecoder;
 
 public interface IUpstreamSession<Packet> {
 
@@ -34,9 +40,9 @@ public interface IUpstreamSession<Packet> {
 
     public InetSocketAddress getRemoteAddress();
 
-//    public PEPacketProcessor getPacketProcessor();
+    public IPEPacketProcessor getPacketProcessor();
 //
-//    public LoginChainDecoder getProfile();
+    public LoginChainDecoder getProfile();
 
     public String getUsername();
 
@@ -44,17 +50,17 @@ public interface IUpstreamSession<Packet> {
 
     public Map<String, Object> getDataCache();
 
-//    public Map<UUID, PlayerListEntry> getPlayerInfoCache();
+    public Map<UUID, PlayerListEntry> getPlayerInfoCache();
 //
-//    public EntityCache getEntityCache();
+    public IEntityCache getEntityCache();
 //
-//    public WindowCache getWindowCache();
+    public IWindowCache getWindowCache();
 //
-//    public ChunkCache getChunkCache();
+    public IChunkCache getChunkCache();
 //
     public MinecraftProtocol getProtocol();
 //
-//    public JukeboxCache getJukeboxCache();
+    public IJukeboxCache getJukeboxCache();
 
     public void sendPacket(PEPacket packet);
 //
@@ -83,7 +89,7 @@ public interface IUpstreamSession<Packet> {
 
     public void authenticate(String email, String password, Proxy authProxy);
 
-//    public void onLogin(LoginPacket packet);
+    public void onLogin(PEPacket packet);
 
     public void postLogin();
 

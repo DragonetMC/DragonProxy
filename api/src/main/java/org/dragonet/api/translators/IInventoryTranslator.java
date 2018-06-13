@@ -12,7 +12,7 @@
  */
 package org.dragonet.api.translators;
 
-import org.dragonet.api.inventories.ICachedWindow;
+import org.dragonet.api.caches.ICachedWindow;
 import org.dragonet.api.sessions.IUpstreamSession;
 
 public interface IInventoryTranslator {

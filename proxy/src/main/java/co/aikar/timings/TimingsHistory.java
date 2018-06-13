@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.common.utilities.JsonUtil;
@@ -163,7 +164,7 @@ public class TimingsHistory {
         final double avg;
 
         PingRecord() {
-            final Collection<UpstreamSession> onlinePlayers = DragonProxy.getInstance().getSessionRegister().getAll().values();
+            final Collection<IUpstreamSession> onlinePlayers = DragonProxy.getInstance().getSessionRegister().getAll().values();
             int totalPing = 0;
 //            for (UpstreamSession player : onlinePlayers) {
 //                totalPing += player.getPing();

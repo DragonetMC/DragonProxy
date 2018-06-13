@@ -9,13 +9,13 @@ import org.dragonet.common.gui.DropDownComponent;
 import org.dragonet.common.gui.LabelComponent;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.protocol.type.chunk.ChunkData;
-import org.dragonet.protocol.type.chunk.Section;
+import org.dragonet.common.data.chunk.ChunkData;
+import org.dragonet.common.data.chunk.Section;
 import org.dragonet.common.maths.BlockPosition;
-
 
 import java.util.Arrays;
 import org.dragonet.api.ProxyServer;
+import org.dragonet.api.caches.cached.ICachedEntity;
 
 /**
  * Created on 2017/9/13.
@@ -37,19 +37,19 @@ public class TestCommand extends Command {
             PlayStatusPacket s = new PlayStatusPacket();
             s.status = PlayStatusPacket.PLAYER_SPAWN;
             player.sendPacket(s);
-        } else if (args[0].equalsIgnoreCase("res")) {
+        } else if (args[0].equalsIgnoreCase("res"))
             player.sendPacket(new ResourcePacksInfoPacket());
-        } else if (args[0].equalsIgnoreCase("pos")) {
-            player.sendChat("pos at: " + player.getEntityCache().getClientEntity().x + ", "
-                + player.getEntityCache().getClientEntity().y + ", " + player.getEntityCache().getClientEntity().z);
-        } else if (args[0].equalsIgnoreCase("respawn")) {
+        else if (args[0].equalsIgnoreCase("pos"))
+            player.sendChat("pos at: " + player.getEntityCache().getClientEntity().getX() + ", "
+                    + player.getEntityCache().getClientEntity().getY() + ", " + player.getEntityCache().getClientEntity().getZ());
+        else if (args[0].equalsIgnoreCase("respawn")) {
             RespawnPacket resp = new RespawnPacket();
             resp.position = new Vector3F(Float.parseFloat(args[1]), Float.parseFloat(args[2]),
-                Float.parseFloat(args[3]));
+                    Float.parseFloat(args[3]));
             player.sendPacket(resp);
-        } else if (args[0].equalsIgnoreCase("chunkradius")) {
+        } else if (args[0].equalsIgnoreCase("chunkradius"))
             player.sendPacket(new ChunkRadiusUpdatedPacket(8));
-        } else if (args[0].equalsIgnoreCase("setspawnpos")) {
+        else if (args[0].equalsIgnoreCase("setspawnpos")) {
             SetSpawnPositionPacket packetSetSpawnPosition = new SetSpawnPositionPacket();
             packetSetSpawnPosition.position = new BlockPosition(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
             player.sendPacket(packetSetSpawnPosition);
@@ -58,11 +58,11 @@ public class TestCommand extends Command {
             mot.rtid = 1L;
             mot.motion = new Vector3F(0f, 0f, 0f);
             player.sendPacket(mot);
-        } else if (args[0].equalsIgnoreCase("die")) {
+        } else if (args[0].equalsIgnoreCase("die"))
             player.sendPacket(new SetHealthPacket(0));
-        } else if (args[0].equalsIgnoreCase("tp")) {
+        else if (args[0].equalsIgnoreCase("tp")) {
             Vector3F dest = new Vector3F(Float.parseFloat(args[1]), Float.parseFloat(args[2]),
-                Float.parseFloat(args[3]));
+                    Float.parseFloat(args[3]));
             MovePlayerPacket m = new MovePlayerPacket();
             m.rtid = 1L;
             m.mode = (byte) (Integer.parseInt(args[4]) & 0xFF);
@@ -71,7 +71,7 @@ public class TestCommand extends Command {
             player.sendChat("\u00a7bTeleported to: " + dest.toString());
         } else if (args[0].equalsIgnoreCase("moveentity")) {
             Vector3F dest = new Vector3F(Float.parseFloat(args[1]), Float.parseFloat(args[2]),
-                Float.parseFloat(args[3]));
+                    Float.parseFloat(args[3]));
             MoveEntityPacket m = new MoveEntityPacket();
             m.rtid = 1L;
             m.teleported = args[4].equalsIgnoreCase("true");
@@ -95,17 +95,17 @@ public class TestCommand extends Command {
             data.encode();
             chunk.payload = data.getBuffer();
             player.sendPacket(chunk);
-        } else if (args[0].equalsIgnoreCase("form")) {
+        } else if (args[0].equalsIgnoreCase("form"))
             testForm(player);
-        } else if (args[0].equalsIgnoreCase("sound")) {
+        else if (args[0].equalsIgnoreCase("sound")) {
 
             int id = Integer.parseInt(args[1]);
 
             LevelSoundEventPacket pk = new LevelSoundEventPacket();
 
-            CachedEntity self = player.getEntityCache().getClientEntity();
+            ICachedEntity self = player.getEntityCache().getClientEntity();
 
-            pk.position = new Vector3F((float) self.x, (float) self.y, (float) self.z);
+            pk.position = new Vector3F((float) self.getX(), (float) self.getY(), (float) self.getZ());
             pk.sound = LevelSoundEventPacket.Sound.fromID(id);
 
             player.sendPacket(pk);
@@ -119,7 +119,7 @@ public class TestCommand extends Command {
             pk.pos = new BlockPosition(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
             pk.direction = Integer.parseInt(args[4]);
             pk.title = args[5];
-            
+
             player.sendPacket(pk);
             player.sendChat("\u00a7bPainting " + pk.title + " spawned at " + pk.pos.toString());
 

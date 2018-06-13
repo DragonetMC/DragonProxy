@@ -14,13 +14,13 @@ package org.dragonet.proxy.network.translator.pe;
 
 import org.dragonet.common.data.entity.EntityType;
 import org.dragonet.protocol.packets.MovePlayerPacket;
-import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.api.translators.IPEPacketTranslator;
 
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientVehicleMovePacket;
 import com.github.steveice10.packetlib.packet.Packet;
+import org.dragonet.api.caches.cached.ICachedEntity;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.common.data.blocks.Block;
 import org.dragonet.common.data.itemsblocks.ItemEntry;
 import org.dragonet.common.maths.BlockPosition;
@@ -29,10 +29,10 @@ import org.dragonet.proxy.DragonProxy;
 
 public class PEMovePlayerPacketTranslator implements IPEPacketTranslator<MovePlayerPacket> {
 
-    public Packet[] translate(UpstreamSession session, MovePlayerPacket packet) {
-        CachedEntity entity = session.getEntityCache().getClientEntity();
+    public Packet[] translate(IUpstreamSession session, MovePlayerPacket packet) {
+        ICachedEntity entity = session.getEntityCache().getClientEntity();
 
-        if (entity.riding != 0 && packet.ridingRuntimeId != 0) { //Riding case
+        if (entity.getRiding() != 0 && packet.ridingRuntimeId != 0) { //Riding case
             ClientVehicleMovePacket pk = new ClientVehicleMovePacket(
                     packet.position.x,
                     packet.position.y - EntityType.PLAYER.getOffset(),
@@ -58,8 +58,8 @@ public class PEMovePlayerPacketTranslator implements IPEPacketTranslator<MovePla
                 ItemEntry PEBlock = session.getChunkCache().translateBlock(blockPos.asPosition());
                 if (PEBlock != null) {
                     Block b = Block.get(PEBlock.getId(), PEBlock.getPEDamage(), blockPos);
-                    if (b != null && b.collidesWithBB(session.getEntityCache().getClientEntity().boundingBox.clone())) {
-                    DragonProxy.getInstance().getLogger().info("Player position : " + entity.x + ", " + entity.y + ", " + entity.z + " collide with " + b.getClass().getSimpleName() + " on " + blockPos.toString());
+                    if (b != null && b.collidesWithBB(session.getEntityCache().getClientEntity().getBoundingBox().clone())) {
+                    DragonProxy.getInstance().getLogger().info("Player position : " + entity.getX() + ", " + entity.getY() + ", " + entity.getZ() + " collide with " + b.getClass().getSimpleName() + " on " + blockPos.toString());
                         isColliding = true;
                     }
                 }

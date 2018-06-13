@@ -4,34 +4,35 @@ import org.dragonet.api.network.PEPacket;
 import org.dragonet.api.events.HandlerList;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.api.events.Cancellable;
+import org.dragonet.api.sessions.IUpstreamSession;
 
-public class PacketfromPlayerEvent extends PEPacketEvent implements Cancellable{
+public class PacketfromPlayerEvent extends PEPacketEvent implements Cancellable {
 
     private static final HandlerList handlerList = new HandlerList();
-    
+
     @Override
-    public HandlerList getHandlers​(){
+    public HandlerList getHandlers​() {
         return handlerList;
     }
-    
-    private final UpstreamSession session;
-    
-    public PacketfromPlayerEvent(UpstreamSession session, PEPacket packet) {
+
+    private final IUpstreamSession session;
+
+    public PacketfromPlayerEvent(IUpstreamSession session, PEPacket packet) {
         super(packet);
         this.session = session;
     }
-    
-    public UpstreamSession getSession() {
+
+    public IUpstreamSession getSession() {
         return session;
     }
-    
+
     private boolean cancelled = false;
-    
-    public void setCancelled​(boolean cancel){
+
+    public void setCancelled​(boolean cancel) {
         cancelled = cancel;
     }
-    
-    public boolean isCancelled​(){
+
+    public boolean isCancelled​() {
         return cancelled;
     }
 

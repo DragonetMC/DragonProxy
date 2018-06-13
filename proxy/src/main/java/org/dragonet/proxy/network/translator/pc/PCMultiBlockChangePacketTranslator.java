@@ -16,18 +16,19 @@ import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMultiBlockChangePacket;
 
-import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.api.translators.IPCPacketTranslator;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.common.data.itemsblocks.ItemEntry;
 import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.protocol.packets.UpdateBlockPacket;
 import org.dragonet.common.maths.BlockPosition;
 import org.dragonet.common.maths.ChunkPos;
 
 public class PCMultiBlockChangePacketTranslator implements IPCPacketTranslator<ServerMultiBlockChangePacket> {
 
-    public PEPacket[] translate(UpstreamSession session, ServerMultiBlockChangePacket packet) {
+    @Override
+    public PEPacket[] translate(IUpstreamSession session, ServerMultiBlockChangePacket packet) {
         UpdateBlockPacket[] packets = new UpdateBlockPacket[packet.getRecords().length];
         // int generalFlag = packet.getRecords().length > 64 ?
         // UpdateBlockPacket.FLAG_ALL_PRIORITY : UpdateBlockPacket.FLAG_NEIGHBORS;

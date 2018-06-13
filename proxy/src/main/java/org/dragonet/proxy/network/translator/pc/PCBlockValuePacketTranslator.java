@@ -13,13 +13,13 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerBlockValuePacket;
-import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.api.translators.IPCPacketTranslator;
 import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IUpstreamSession;
 
 public class PCBlockValuePacketTranslator implements IPCPacketTranslator<ServerBlockValuePacket> {
 
-    public PEPacket[] translate(UpstreamSession session, ServerBlockValuePacket packet) {
+    public PEPacket[] translate(IUpstreamSession session, ServerBlockValuePacket packet) {
 
 // Used for updating these blocks
 //NOTE_BLOCK = 25; //NoteBlockValue //int pitch
@@ -31,7 +31,6 @@ public class PCBlockValuePacketTranslator implements IPCPacketTranslator<ServerB
 //TRAPPED_CHEST = 146;
 //SHULKER_BOX_LOWER = 219;
 //SHULKER_BOX_HIGHER = 234;
-
 //        UpdateBlockPacket pk = new UpdateBlockPacket();
 //        pk.flags = UpdateBlockPacket.FLAG_NEIGHBORS << 4;
 //        ItemEntry entry = ItemBlockTranslator.translateToPE(packet.getBlockId(), packet.getValue());
@@ -39,10 +38,6 @@ public class PCBlockValuePacketTranslator implements IPCPacketTranslator<ServerB
 //        pk.data = entry.damage;
 //        pk.id = entry.id;
 //        pk.blockPosition = new BlockPosition(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ());
-        return new PEPacket[]
-
-            {
-            }
-            ;
+        return new PEPacket[]{};
     }
 }

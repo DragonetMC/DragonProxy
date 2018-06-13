@@ -5,8 +5,8 @@ import com.github.steveice10.mc.protocol.data.game.setting.ChatVisibility;
 import com.github.steveice10.mc.protocol.data.game.setting.SkinPart;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientSettingsPacket;
 import com.github.steveice10.packetlib.packet.Packet;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.protocol.packets.ChunkRadiusUpdatedPacket;
-import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.api.translators.IPEPacketTranslator;
 import org.dragonet.protocol.packets.RequestChunkRadiusPacket;
 import org.dragonet.proxy.network.CacheKey;
@@ -15,7 +15,7 @@ import org.dragonet.proxy.network.PCDownstreamSession;
 public class PERequestChunkRadiusPacketTranslator implements IPEPacketTranslator<RequestChunkRadiusPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, RequestChunkRadiusPacket packet) {
+    public Packet[] translate(IUpstreamSession session, RequestChunkRadiusPacket packet) {
         session.getDataCache().put(CacheKey.PLAYER_REQUESTED_CHUNK_RADIUS, packet.radius);
 //        System.out.println("Requested chunk radius : " + packet.radius);
         session.sendPacket(new ChunkRadiusUpdatedPacket(((RequestChunkRadiusPacket) packet).radius));

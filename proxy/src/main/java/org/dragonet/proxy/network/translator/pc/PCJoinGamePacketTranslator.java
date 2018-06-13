@@ -14,13 +14,14 @@ package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import org.dragonet.proxy.network.CacheKey;
-import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.api.translators.IPCPacketTranslator;
 import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IUpstreamSession;
 
 public class PCJoinGamePacketTranslator implements IPCPacketTranslator<ServerJoinGamePacket> {
 
-    public PEPacket[] translate(UpstreamSession session, ServerJoinGamePacket packet) {
+    @Override
+    public PEPacket[] translate(IUpstreamSession session, ServerJoinGamePacket packet) {
         session.getDataCache().put(CacheKey.PLAYER_EID, packet.getEntityId()); // Stores the real entity ID
         session.getEntityCache().updateClientEntity(packet);
 

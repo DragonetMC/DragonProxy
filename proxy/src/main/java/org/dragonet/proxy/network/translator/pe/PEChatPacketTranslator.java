@@ -14,13 +14,13 @@ package org.dragonet.proxy.network.translator.pe;
 
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
 import com.github.steveice10.packetlib.packet.Packet;
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.api.translators.IPEPacketTranslator;
 import org.dragonet.protocol.packets.TextPacket;
 
 public class PEChatPacketTranslator implements IPEPacketTranslator<TextPacket> {
 
-    public Packet[] translate(UpstreamSession session, TextPacket packet) {
+    public Packet[] translate(IUpstreamSession session, TextPacket packet) {
         /*if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE) != null) {
             if (session.getDataCache().get(CacheKey.AUTHENTICATION_STATE).equals("email")) {
                 if (!PatternChecker.matchEmail(packet.message.trim())) {

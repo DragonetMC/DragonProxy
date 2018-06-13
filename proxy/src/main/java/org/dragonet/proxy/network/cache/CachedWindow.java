@@ -18,7 +18,7 @@ import com.github.steveice10.mc.protocol.data.game.window.WindowType;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.dragonet.api.inventories.ICachedWindow;
+import org.dragonet.api.caches.ICachedWindow;
 
 public class CachedWindow implements ICachedWindow {
 
@@ -30,7 +30,7 @@ public class CachedWindow implements ICachedWindow {
     private final WindowType pcType;
     private final int size;
     private String title = "Window";
-    private final Map<Integer, Integer> properties = Collections.synchronizedMap(new HashMap<Integer, Integer>());
+    private final Map<Integer, Integer> properties = Collections.synchronizedMap(new HashMap<>());
     private ItemStack[] slots;
 
     public CachedWindow(int windowId, WindowType pcType, int size) {

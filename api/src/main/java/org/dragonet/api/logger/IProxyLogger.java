@@ -11,6 +11,10 @@ package org.dragonet.api.logger;
  */
 public interface IProxyLogger {
 
+    public abstract void setDebug(boolean debug);
+
+    public abstract void setColorFull(boolean colorful);
+
     public abstract void info(String message);
 
     public abstract void warning(String message);

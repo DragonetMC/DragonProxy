@@ -1,15 +1,15 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerTitlePacket;
-import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.api.translators.IPCPacketTranslator;
 import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.protocol.packets.SetTitlePacket;
 
 public class PCSetTitlePacketTranslator implements IPCPacketTranslator<ServerTitlePacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerTitlePacket packet) {
+    public PEPacket[] translate(IUpstreamSession session, ServerTitlePacket packet) {
         SetTitlePacket titlePacket = new SetTitlePacket();
 
         switch (packet.getAction()) {

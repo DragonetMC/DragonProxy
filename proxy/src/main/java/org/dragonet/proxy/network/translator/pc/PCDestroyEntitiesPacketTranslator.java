@@ -13,23 +13,23 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityDestroyPacket;
-import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.cache.CachedEntity;
+import org.dragonet.api.caches.cached.ICachedEntity;
 import org.dragonet.api.translators.IPCPacketTranslator;
 import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.protocol.packets.RemoveEntityPacket;
 
 public class PCDestroyEntitiesPacketTranslator implements IPCPacketTranslator<ServerEntityDestroyPacket> {
 
-    public PEPacket[] translate(UpstreamSession session, ServerEntityDestroyPacket packet) {
+    public PEPacket[] translate(IUpstreamSession session, ServerEntityDestroyPacket packet) {
         PEPacket[] ret = new PEPacket[packet.getEntityIds().length];
         for (int i = 0; i < ret.length; i++) {
-            CachedEntity e = session.getEntityCache().removeByRemoteEID(packet.getEntityIds()[i]);
+            ICachedEntity e = session.getEntityCache().removeByRemoteEID(packet.getEntityIds()[i]);
             if (e == null) {
                 continue;
             }
             ret[i] = new RemoveEntityPacket();
-            ((RemoveEntityPacket) ret[i]).eid = e.proxyEid;
+            ((RemoveEntityPacket) ret[i]).eid = e.getProxyEid();
         }
         return ret;
     }

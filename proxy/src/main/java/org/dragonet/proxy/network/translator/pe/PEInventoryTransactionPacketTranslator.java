@@ -12,7 +12,6 @@
  */
 package org.dragonet.proxy.network.translator.pe;
 
-import org.dragonet.common.data.entity.EntityType;
 import org.dragonet.common.data.inventory.ContainerId;
 import org.dragonet.common.data.inventory.Slot;
 import org.dragonet.common.maths.BlockPosition;
@@ -27,7 +26,6 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.api.translators.IPEPacketTranslator;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
-import org.dragonet.proxy.utilities.DebugTools;
 
 import com.github.steveice10.mc.protocol.data.MagicValues;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
@@ -45,6 +43,8 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlaye
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientCreativeInventoryActionPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientWindowActionPacket;
 import com.github.steveice10.packetlib.packet.Packet;
+import org.dragonet.api.caches.cached.ICachedEntity;
+import org.dragonet.api.sessions.IUpstreamSession;
 
 /**
  * Created on 2017/12/3.
@@ -52,7 +52,7 @@ import com.github.steveice10.packetlib.packet.Packet;
 public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslator<InventoryTransactionPacket> {
 
     @Override
-    public Packet[] translate(UpstreamSession session, InventoryTransactionPacket packet) {
+    public Packet[] translate(IUpstreamSession session, InventoryTransactionPacket packet) {
         //debug
 //                if (packet.transactionType == InventoryTransactionPacket.TYPE_NORMAL) {
 //                    System.out.println(">>>>============================");
@@ -140,7 +140,7 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
                         // send action to server
                         ClientWindowActionPacket windowActionPacket = new ClientWindowActionPacket(
                                 windowID, //window id
-                                session.getWindowCache().currentTransactionId.incrementAndGet(), //transaction id
+                                session.getWindowCache().getCurrentTransactionId().incrementAndGet(), //transaction id
                                 slot, //slot
                                 ItemBlockTranslator.translateToPC(cursor),
                                 WindowAction.CLICK_ITEM,
@@ -210,14 +210,14 @@ public class PEInventoryTransactionPacketTranslator implements IPEPacketTranslat
             case InventoryTransactionPacket.TYPE_USE_ITEM_ON_ENTITY: //3
 //            System.out.println("TYPE_USE_ITEM_ON_ENTITY");
                 UseItemOnEntityData useItemOnEntityData = (UseItemOnEntityData) packet.transactionData;
-                CachedEntity cachedEntity = session.getEntityCache().getByLocalEID(useItemOnEntityData.entityRuntimeId);
+                ICachedEntity cachedEntity = session.getEntityCache().getByLocalEID(useItemOnEntityData.entityRuntimeId);
                 if (cachedEntity == null)
                     return null;
                 InteractAction interractAction = InteractAction.INTERACT;
                 if (useItemOnEntityData.actionType == InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_ATTACK)
                     interractAction = InteractAction.ATTACK;
                 ClientPlayerInteractEntityPacket interractPacket = new ClientPlayerInteractEntityPacket(
-                        (int) cachedEntity.eid,
+                        (int) cachedEntity.getEid(),
                         interractAction
                 );
                 return new Packet[]{interractPacket};

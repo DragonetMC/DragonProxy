@@ -21,14 +21,15 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.ClientRequestPacke
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerActionPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerStatePacket;
 import com.github.steveice10.packetlib.packet.Packet;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.proxy.network.CacheKey;
-import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.api.translators.IPEPacketTranslator;
 import org.dragonet.protocol.packets.PlayerActionPacket;
 
 public class PEPlayerActionPacketTranslator implements IPEPacketTranslator<PlayerActionPacket> {
 
-    public Packet[] translate(UpstreamSession session, PlayerActionPacket packet) {
+    @Override
+    public Packet[] translate(IUpstreamSession session, PlayerActionPacket packet) {
         if (packet.action == PlayerActionPacket.ACTION_RESPAWN) {
             return new Packet[]{new ClientRequestPacket(ClientRequest.RESPAWN)};
         }

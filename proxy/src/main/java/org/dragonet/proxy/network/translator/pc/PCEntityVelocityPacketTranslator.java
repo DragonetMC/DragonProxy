@@ -13,20 +13,20 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityVelocityPacket;
+import org.dragonet.api.caches.cached.ICachedEntity;
 import org.dragonet.common.maths.Vector3F;
 import org.dragonet.proxy.network.CacheKey;
-import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.api.translators.IPCPacketTranslator;
 import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.protocol.packets.SetEntityMotionPacket;
 
 
 public class PCEntityVelocityPacketTranslator implements IPCPacketTranslator<ServerEntityVelocityPacket> {
 
-    public PEPacket[] translate(UpstreamSession session, ServerEntityVelocityPacket packet) {
+    public PEPacket[] translate(IUpstreamSession session, ServerEntityVelocityPacket packet) {
 
-        CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
+        ICachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
         if (entity == null) {
             if (packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID)) {
                 entity = session.getEntityCache().getClientEntity();
@@ -35,12 +35,12 @@ public class PCEntityVelocityPacketTranslator implements IPCPacketTranslator<Ser
             }
         }
 
-        entity.motionX = packet.getMotionX();
-        entity.motionY = packet.getMotionY();
-        entity.motionZ = packet.getMotionZ();
+        entity.setMotionX(packet.getMotionX());
+        entity.setMotionY(packet.getMotionY());
+        entity.setMotionZ(packet.getMotionZ());
 
         SetEntityMotionPacket pk = new SetEntityMotionPacket();
-        pk.rtid = entity.proxyEid;
+        pk.rtid = entity.getProxyEid();
         pk.motion = new Vector3F((float) packet.getMotionX(), (float) packet.getMotionY(), (float) packet.getMotionZ());
         return new PEPacket[]{pk};
     }

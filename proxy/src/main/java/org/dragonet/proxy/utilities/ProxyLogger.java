@@ -24,17 +24,17 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+import org.dragonet.api.ProxyServer;
 import org.dragonet.api.logger.IProxyLogger;
-import org.dragonet.proxy.DragonProxy;
 
 public class ProxyLogger implements IProxyLogger {
 
     private final java.util.logging.Logger logger;
-    private DragonProxy proxy;
+    private ProxyServer proxy;
     public boolean colorful = false;
     public boolean debug = false;
 
-    public ProxyLogger(DragonProxy proxy) {
+    public ProxyLogger(ProxyServer proxy) {
         this.proxy = proxy;
         this.logger = java.util.logging.Logger.getLogger(proxy.getClass().getName());
         logger.setUseParentHandlers(false);
@@ -94,6 +94,14 @@ public class ProxyLogger implements IProxyLogger {
             logger.addHandler(sentryHandler);
             Sentry.init(System.getenv().get("DP_SENTRY_CLIENT_KEY"));
         }
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    public void setColorFull(boolean colorful) {
+        this.colorful = colorful;
     }
 
     @Override

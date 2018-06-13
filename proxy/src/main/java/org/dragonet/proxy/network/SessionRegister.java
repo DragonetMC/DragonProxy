@@ -29,28 +29,36 @@ public class SessionRegister implements ISessionRegister {
         this.proxy = proxy;
     }
 
+    @Override
     public void onTick() {
         Timings.connectionTimer.startTiming();
-        clients.values().parallelStream().forEach((session) -> {session.onTick();});
+        clients.values().parallelStream().forEach((session) -> {
+            session.onTick();
+        });
         Timings.connectionTimer.stopTiming();
     }
 
+    @Override
     public void newSession(IUpstreamSession session) {
         clients.put(session.getRaknetID(), session);
     }
 
-    public void removeSession(UpstreamSession session) {
+    @Override
+    public void removeSession(IUpstreamSession session) {
         clients.remove(session.getRaknetID());
     }
 
+    @Override
     public IUpstreamSession getSession(String identifier) {
         return clients.get(identifier);
     }
 
+    @Override
     public Map<String, IUpstreamSession> getAll() {
         return Collections.unmodifiableMap(clients);
     }
 
+    @Override
     public int getOnlineCount() {
         return clients.size();
     }

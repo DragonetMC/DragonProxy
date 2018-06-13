@@ -26,6 +26,7 @@ import com.whirvis.jraknet.server.RakNetServerListener;
 import com.whirvis.jraknet.server.ServerPing;
 import com.whirvis.jraknet.session.RakNetClientSession;
 import org.dragonet.api.ProxyServer;
+import org.dragonet.api.sessions.IRaknetInterface;
 import org.dragonet.api.sessions.ISessionRegister;
 import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.protocol.ProtocolInfo;
@@ -34,7 +35,7 @@ import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.network.translator.MessageTranslator;
 import org.dragonet.proxy.utilities.pingpassthrough.PingThread;
 
-public class RaknetInterface implements RakNetServerListener {
+public class RaknetInterface implements RakNetServerListener, IRaknetInterface {
 
     public static final Set<String> IMMEDIATE_PACKETS = new HashSet<>();
 
@@ -70,14 +71,17 @@ public class RaknetInterface implements RakNetServerListener {
         }, 500, 500, TimeUnit.MILLISECONDS);
     }
 
+    @Override
     public ProxyServer getProxy() {
         return proxy;
     }
 
+    @Override
     public String getServerName() {
         return serverName;
     }
 
+    @Override
     public int getMaxPlayers() {
         return maxPlayers;
     }
@@ -112,7 +116,7 @@ public class RaknetInterface implements RakNetServerListener {
     @Override
     public void onClientDisconnect(RakNetClientSession session, String reason) {
         DragonProxy.getInstance().getLogger().debug("CLIENT DISCONNECT");
-        UpstreamSession upstream = sessions.getSession(session.getAddress().toString());
+        IUpstreamSession upstream = sessions.getSession(session.getAddress().toString());
         if (upstream == null)
             return;
         upstream.onDisconnect(proxy.getLang().get(Lang.MESSAGE_CLIENT_DISCONNECT)); // It will handle rest of the
@@ -137,11 +141,12 @@ public class RaknetInterface implements RakNetServerListener {
         throwable.printStackTrace();
     }
 
+    @Override
     public void setBroadcastName(String serverName, int players, int maxPlayers) {
         if (maxPlayers == -1)
             maxPlayers = Integer.MAX_VALUE;
 
-        if (DragonProxy.getInstance().getConfig().ping_passthrough && PingThread.getInstance() != null) {
+        if (DragonProxy.getInstance().getConfig().isPing_passthrough() && PingThread.getInstance() != null) {
             ServerStatusInfo info = PingThread.getInstance().getInfo();
             if (info == null) {
                 // server offline, should probably do something
@@ -153,16 +158,16 @@ public class RaknetInterface implements RakNetServerListener {
                         new MinecraftIdentifier(motd, ProtocolInfo.CURRENT_PROTOCOL, ProtocolInfo.MINECRAFT_VERSION_NETWORK,
                                 info.getPlayerInfo().getOnlinePlayers(), info.getPlayerInfo().getMaxPlayers(), serverId, "DragonProxy", "Survival"));
             }
-        } else {
+        } else
             rakServer.setIdentifier(
                     new MinecraftIdentifier(serverName, ProtocolInfo.CURRENT_PROTOCOL, ProtocolInfo.MINECRAFT_VERSION_NETWORK,
                             players, maxPlayers, serverId, "DragonProxy", "Survival"));
-        }
 
         if (!rakServer.isBroadcastingEnabled())
             rakServer.setBroadcastingEnabled(true);
     }
 
+    @Override
     public void shutdown() {
         updatePing.cancel(true);
         rakServer.shutdown();

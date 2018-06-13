@@ -14,19 +14,19 @@ package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
-import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.api.translators.IPCPacketTranslator;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.protocol.packets.AdventureSettingsPacket;
 import org.dragonet.protocol.packets.LevelEventPacket;
 import org.dragonet.protocol.packets.SetPlayerGameTypePacket;
 
 public class PCNotifyClientPacketTranslator implements IPCPacketTranslator<ServerNotifyClientPacket> {
 
-    public PEPacket[] translate(UpstreamSession session, ServerNotifyClientPacket packet) {
+    public PEPacket[] translate(IUpstreamSession session, ServerNotifyClientPacket packet) {
         switch (packet.getNotification()) {
             case CHANGE_GAMEMODE:
                 GameMode gm = (GameMode) packet.getValue();
@@ -40,7 +40,7 @@ public class PCNotifyClientPacketTranslator implements IPCPacketTranslator<Serve
                 adv.setFlag(AdventureSettingsPacket.WORLD_BUILDER, !gm.equals(GameMode.SPECTATOR) || !gm.equals(GameMode.ADVENTURE));
                 adv.setFlag(AdventureSettingsPacket.FLYING, gm.equals(GameMode.SPECTATOR));
                 adv.setFlag(AdventureSettingsPacket.MUTED, false);
-                adv.eid = session.getEntityCache().getClientEntity().proxyEid;
+                adv.eid = session.getEntityCache().getClientEntity().getProxyEid();
                 adv.commandsPermission = AdventureSettingsPacket.PERMISSION_NORMAL;
                 adv.playerPermission = AdventureSettingsPacket.LEVEL_PERMISSION_MEMBER;
 

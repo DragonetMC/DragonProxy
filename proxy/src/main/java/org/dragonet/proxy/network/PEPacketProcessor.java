@@ -20,7 +20,6 @@ import java.util.Deque;
 
 import com.github.steveice10.packetlib.packet.Packet;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonParseException;
 import org.dragonet.common.utilities.JsonUtil;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -33,15 +32,17 @@ import org.dragonet.common.utilities.BinaryStream;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.dragonet.api.configuration.IServerConfig;
+import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IPEPacketProcessor;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.protocol.ProtocolInfo;
 import org.dragonet.protocol.Protocol;
 
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.configuration.ServerConfig;
 import org.dragonet.proxy.events.defaults.packets.PacketfromPlayerEvent;
-import org.dragonet.proxy.protocol.PEPacket;
 
-public class PEPacketProcessor {
+public class PEPacketProcessor implements IPEPacketProcessor {
 
     public final static int MAX_PACKETS_PER_CYCLE = 200;
 
@@ -58,13 +59,13 @@ public class PEPacketProcessor {
 
     private final AtomicBoolean enableForward = new AtomicBoolean();
 
-    private final UpstreamSession client;
+    private final IUpstreamSession client;
     private final Deque<byte[]> packets = new ArrayDeque<>();
 
     private Proxy authProxy = null;
 
-    public PEPacketProcessor(UpstreamSession client) {
-        ServerConfig config = DragonProxy.getInstance().getConfig();
+    public PEPacketProcessor(IUpstreamSession client) {
+        IServerConfig config = DragonProxy.getInstance().getConfig();
 
         if (config.getProxy_type().equalsIgnoreCase("none") || config.getProxy_type().equalsIgnoreCase("direct"))
             authProxy = null;
@@ -79,14 +80,17 @@ public class PEPacketProcessor {
         this.client = client;
     }
 
-    public UpstreamSession getClient() {
+    @Override
+    public IUpstreamSession getClient() {
         return client;
     }
 
+    @Override
     public void putPacket(byte[] packet) {
         packets.add(packet);
     }
 
+    @Override
     public void onTick() {
         int cnt = 0;
         Timings.playerNetworkReceiveTimer.startTiming();
@@ -111,11 +115,12 @@ public class PEPacketProcessor {
     }
 
     // this method should be in UpstreamSession
+    @Override
     public void handlePacket(PEPacket packet) {
         if (packet == null)
             return;
 
-        if(!client.getProxy().getConfig().disable_packet_events){
+        if(!client.getProxy().getConfig().getDisable_packet_events()){
             PacketfromPlayerEvent packetEvent = new PacketfromPlayerEvent(client, packet);
             client.getProxy().getEventManager().callEvent(packetEvent);
             if(packetEvent.isCancelled​()){
@@ -130,9 +135,9 @@ public class PEPacketProcessor {
                 InputComponent username = new InputComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_USERNAME)).setPlaceholder("steve@example.com");
                 InputComponent password = new InputComponent(this.client.getProxy().getLang().get(Lang.FORM_LOGIN_PASSWORD)).setPlaceholder("123456");
 
-                if (this.client.getProxy().getConfig().auto_login) {
-                    username.setDefaultValue(this.client.getProxy().getConfig().online_username);
-                    password.setDefaultValue(this.client.getProxy().getConfig().online_password);
+                if (this.client.getProxy().getConfig().getAuto_login()) {
+                    username.setDefaultValue(this.client.getProxy().getConfig().getOnline_username());
+                    password.setDefaultValue(this.client.getProxy().getConfig().getOnline_password());
                 }
 
                 // client.getDataCache().put(CacheKey.AUTHENTICATION_STATE, "online_login");

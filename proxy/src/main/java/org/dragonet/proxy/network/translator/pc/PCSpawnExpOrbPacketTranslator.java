@@ -13,26 +13,27 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnExpOrbPacket;
+import org.dragonet.api.caches.cached.ICachedEntity;
 import org.dragonet.common.maths.Vector3F;
-import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.api.translators.IPCPacketTranslator;
 import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.protocol.packets.SpawnExperienceOrb;
+import org.dragonet.proxy.network.cache.EntityCache;
 
 public class PCSpawnExpOrbPacketTranslator implements IPCPacketTranslator<ServerSpawnExpOrbPacket> {
 
-    public PEPacket[] translate(UpstreamSession session, ServerSpawnExpOrbPacket packet) {
-        CachedEntity entity = session.getEntityCache().newEntity(packet);
+    public PEPacket[] translate(IUpstreamSession session, ServerSpawnExpOrbPacket packet) {
+        ICachedEntity entity = ((EntityCache)session.getEntityCache()).newEntity(packet);
 
         if (entity == null)
             return null;
 
         if (session.isSpawned()) {
             SpawnExperienceOrb spawnXpOrb = new SpawnExperienceOrb();
-            spawnXpOrb.position = new Vector3F((float) entity.x, (float) entity.y + entity.peType.getOffset(), (float) entity.z);
+            spawnXpOrb.position = new Vector3F((float) entity.getX(), (float) entity.getY() + entity.getPeType().getOffset(), (float) entity.getZ());
             spawnXpOrb.count = packet.getExp();
-            entity.spawned = true;
+            entity.setSpawned(true);
             session.sendPacket(spawnXpOrb);
         }
 

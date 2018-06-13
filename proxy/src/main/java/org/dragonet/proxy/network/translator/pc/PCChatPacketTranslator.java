@@ -15,11 +15,10 @@ package org.dragonet.proxy.network.translator.pc;
 import com.github.steveice10.mc.protocol.data.message.TranslationMessage;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerChatPacket;
 
-import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.translator.MessageTranslator;
 import org.dragonet.api.translators.IPCPacketTranslator;
 import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.protocol.packets.TextPacket;
 
 public class PCChatPacketTranslator implements IPCPacketTranslator<ServerChatPacket> {
@@ -33,7 +32,8 @@ public class PCChatPacketTranslator implements IPCPacketTranslator<ServerChatPac
     public static final byte TYPE_WHISPER = 6;
     public static final byte TYPE_ANNOUNCEMENT = 7;
 
-    public PEPacket[] translate(UpstreamSession session, ServerChatPacket packet) {
+    @Override
+    public PEPacket[] translate(IUpstreamSession session, ServerChatPacket packet) {
         TextPacket pe = new TextPacket();
 
         switch (packet.getType()) {

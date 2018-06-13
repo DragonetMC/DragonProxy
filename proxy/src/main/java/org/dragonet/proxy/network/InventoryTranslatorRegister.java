@@ -35,6 +35,8 @@ import org.dragonet.proxy.DragonProxy;
 import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
 import java.util.List;
+import org.dragonet.api.caches.ICachedWindow;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.common.data.itemsblocks.ItemEntry;
 
 public final class InventoryTranslatorRegister {
@@ -46,8 +48,8 @@ public final class InventoryTranslatorRegister {
         TRANSLATORS.put(WindowType.CHEST, new ChestWindowTranslator());
     }
 
-    public static PEPacket[] sendPlayerInventory(UpstreamSession session) {
-        CachedWindow win = session.getWindowCache().getPlayerInventory();
+    public static PEPacket[] sendPlayerInventory(IUpstreamSession session) {
+        ICachedWindow win = session.getWindowCache().getPlayerInventory();
         // Translate and send
         InventoryContentPacket ret = new InventoryContentPacket();
         ret.windowId = ContainerId.INVENTORY.getId();
@@ -66,7 +68,7 @@ public final class InventoryTranslatorRegister {
         return new PEPacket[]{ret};
     }
 
-    public static void open(UpstreamSession session, ServerOpenWindowPacket win) {
+    public static void open(IUpstreamSession session, ServerOpenWindowPacket win) {
         closeOpened(session, true);
         if (TRANSLATORS.containsKey(win.getType())) {
             CachedWindow cached = new CachedWindow(win.getWindowId(), win.getType(), win.getSlots() + 36/* player inventory */);
@@ -91,7 +93,7 @@ public final class InventoryTranslatorRegister {
             session.getDownstream().send(new ClientCloseWindowPacket(win.getWindowId()));
     }
 
-    public static void closeOpened(UpstreamSession session, boolean byServer) {
+    public static void closeOpened(IUpstreamSession session, boolean byServer) {
         if (session.getDataCache().containsKey(CacheKey.CURRENT_WINDOW_ID)) {
             // There is already a window opened
             int id = (int) session.getDataCache().remove(CacheKey.CURRENT_WINDOW_ID);
@@ -118,7 +120,7 @@ public final class InventoryTranslatorRegister {
         }
     }
 
-    public static void updateContent(UpstreamSession session, ServerWindowItemsPacket packet) {
+    public static void updateContent(IUpstreamSession session, ServerWindowItemsPacket packet) {
         if (packet.getWindowId() == 0)
             return; // We don't process player inventory updates here.
         if (!session.getDataCache().containsKey(CacheKey.CURRENT_WINDOW_ID)
@@ -133,7 +135,7 @@ public final class InventoryTranslatorRegister {
             return;
         }
 
-        CachedWindow win = session.getWindowCache().get(openedId);
+        ICachedWindow win = session.getWindowCache().get(openedId);
         IInventoryTranslator translator = TRANSLATORS.get(win.getPcType());
         if (translator == null) {
             session.getDownstream().send(new ClientCloseWindowPacket(packet.getWindowId()));
@@ -143,7 +145,7 @@ public final class InventoryTranslatorRegister {
         translator.updateContent(session, win);
     }
 
-    public static void updateSlot(UpstreamSession session, ServerSetSlotPacket packet) {
+    public static void updateSlot(IUpstreamSession session, ServerSetSlotPacket packet) {
         if (packet.getWindowId() == 0)
             return; // We don't process player inventory updates here.
         if (!session.getDataCache().containsKey(CacheKey.CURRENT_WINDOW_ID)
@@ -158,7 +160,7 @@ public final class InventoryTranslatorRegister {
             session.getDownstream().send(new ClientCloseWindowPacket(packet.getWindowId()));
             return;
         }
-        CachedWindow win = session.getWindowCache().get(openedId);
+        ICachedWindow win = session.getWindowCache().get(openedId);
         if (win.getSize() <= packet.getSlot()) {
             session.getDownstream().send(new ClientCloseWindowPacket(packet.getWindowId()));
             return;

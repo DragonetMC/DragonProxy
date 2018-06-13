@@ -13,17 +13,18 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityAnimationPacket;
-import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.cache.CachedEntity;
+import org.dragonet.api.caches.cached.ICachedEntity;
 import org.dragonet.api.translators.IPCPacketTranslator;
 import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.protocol.packets.AnimatePacket;
 
 public class PCAnimationPacketTranslator implements IPCPacketTranslator<ServerEntityAnimationPacket> {
 
-    public PEPacket[] translate(UpstreamSession session, ServerEntityAnimationPacket packet) {
+    @Override
+    public PEPacket[] translate(IUpstreamSession session, ServerEntityAnimationPacket packet) {
 
-        CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
+        ICachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
         if (entity == null) {
             return null;
         }
@@ -44,7 +45,7 @@ public class PCAnimationPacketTranslator implements IPCPacketTranslator<ServerEn
             case SWING_ARM:
                 pk.action = AnimatePacket.ANIMATION_SWING_ARM;
         }
-        pk.eid = entity.proxyEid;
+        pk.eid = entity.getProxyEid();
         return new PEPacket[]{pk};
     }
 }

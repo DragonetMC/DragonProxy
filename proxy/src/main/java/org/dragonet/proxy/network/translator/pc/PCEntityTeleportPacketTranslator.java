@@ -13,18 +13,19 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import org.dragonet.common.maths.Vector3F;
-import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.api.translators.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityTeleportPacket;
+import org.dragonet.api.caches.cached.ICachedEntity;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.protocol.packets.MoveEntityPacket;
 
 public class PCEntityTeleportPacketTranslator implements IPCPacketTranslator<ServerEntityTeleportPacket> {
 
-    public PEPacket[] translate(UpstreamSession session, ServerEntityTeleportPacket packet) {
-        CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
+    @Override
+    public PEPacket[] translate(IUpstreamSession session, ServerEntityTeleportPacket packet) {
+        ICachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
         if (entity == null) {
             if (packet.getEntityId() == (int) session.getDataCache().get(CacheKey.PLAYER_EID)) {
                 entity = session.getEntityCache().getClientEntity();
@@ -35,15 +36,15 @@ public class PCEntityTeleportPacketTranslator implements IPCPacketTranslator<Ser
 
         entity.absoluteMove(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch());
 
-        if (entity.shouldMove) {
+        if (entity.isShouldMove()) {
             MoveEntityPacket pk = new MoveEntityPacket();
-            pk.rtid = entity.proxyEid;
-            pk.yaw = (byte) (entity.yaw / (360d / 256d));
-            pk.headYaw = (byte) (entity.headYaw / (360d / 256d));
-            pk.pitch = (byte) (entity.pitch / (360d / 256d));
-            pk.position = new Vector3F((float) entity.x, (float) entity.y + entity.peType.getOffset(), (float) entity.z);
+            pk.rtid = entity.getProxyEid();
+            pk.yaw = (byte) (entity.getYaw() / (360d / 256d));
+            pk.headYaw = (byte) (entity.getHeadYaw() / (360d / 256d));
+            pk.pitch = (byte) (entity.getPitch() / (360d / 256d));
+            pk.position = new Vector3F((float) entity.getX(), (float) entity.getY() + entity.getPeType().getOffset(), (float) entity.getZ());
             pk.onGround = packet.isOnGround();
-            entity.shouldMove = false;
+            entity.setShouldMove(false);
             return new PEPacket[]{pk};
         }
         return null;

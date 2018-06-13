@@ -13,21 +13,20 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityMetadataPacket;
+import org.dragonet.api.caches.cached.ICachedEntity;
 import org.dragonet.common.data.entity.EntityType;
-import org.dragonet.proxy.network.CacheKey;
-import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.api.translators.IPCPacketTranslator;
 import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.protocol.packets.SetEntityDataPacket;
 
 public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<ServerEntityMetadataPacket> {
 
-    public PEPacket[] translate(UpstreamSession session, ServerEntityMetadataPacket packet) {
-        CachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
+    public PEPacket[] translate(IUpstreamSession session, ServerEntityMetadataPacket packet) {
+        ICachedEntity entity = session.getEntityCache().getByRemoteEID(packet.getEntityId());
         if (entity == null) {
-            if (packet.getEntityId() == session.getEntityCache().getClientEntity().eid)
+            if (packet.getEntityId() == session.getEntityCache().getClientEntity().getEid())
                 entity = session.getEntityCache().getClientEntity();
             else
                 return null;
@@ -35,14 +34,14 @@ public class PCEntityMetadataPacketTranslator implements IPCPacketTranslator<Ser
 //            return null;
         }
 
-        entity.pcMeta = packet.getMetadata();
-        if (entity.spawned) {
+        entity.setPcMeta(packet.getMetadata());
+        if (entity.isSpawned()) {
             SetEntityDataPacket pk = new SetEntityDataPacket();
-            pk.rtid = entity.proxyEid;
-            pk.meta = EntityMetaTranslator.translateToPE(session, packet.getMetadata(), entity.peType);
+            pk.rtid = entity.getProxyEid();
+            pk.meta = EntityMetaTranslator.translateToPE(session, packet.getMetadata(), entity.getPeType());
             session.sendPacket(pk);
         } else
-            if (entity.peType == EntityType.PLAYER || entity.peType == EntityType.PAINTING) {
+            if (entity.getPeType() == EntityType.PLAYER || entity.getPeType() == EntityType.PAINTING) {
                 //Do nothing here !
             } else
                 entity.spawn(session);

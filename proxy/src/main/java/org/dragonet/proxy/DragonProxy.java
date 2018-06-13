@@ -43,7 +43,7 @@ import com.github.steveice10.mc.protocol.MinecraftConstants;
 import co.aikar.timings.Timings;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.SystemUtils;
-import org.dragonet.common.utilities.SkinFetcher;
+import org.dragonet.proxy.utilities.SkinFetcher;
 import org.dragonet.api.ProxyServer;
 import org.dragonet.api.commands.ICommandRegister;
 import org.dragonet.api.commands.IConsoleCommandReader;
@@ -220,7 +220,7 @@ public class DragonProxy implements ProxyServer {
         console.startConsole();
 
         // set logger colors mod
-        logger.colorful = config.isLog_colors();
+        logger.setColorFull(config.isLog_colors());
 
         // Put at the top instead
         if (!IS_RELEASE)
@@ -237,8 +237,8 @@ public class DragonProxy implements ProxyServer {
         // Check for startup arguments
         checkArguments(launchArgs);
 
-        if (config.log_debug && !debug) {
-            logger.debug = true;
+        if (config.isLog_debug() && !debug) {
+            logger.setDebug(true);
             debug = true;
             logger.info("Proxy running in debug mode.");
         }
@@ -281,7 +281,7 @@ public class DragonProxy implements ProxyServer {
         Block.init();
 
         // MOTD
-        motd = config.motd;
+        motd = config.getMotd();
         motd = motd.replace("&", "\u00a7");
 
         File pluginfolder = new File("plugins");
@@ -298,13 +298,13 @@ public class DragonProxy implements ProxyServer {
         pluginManager.startPlugins();
 
         // Bind
-        logger.info(lang.get(Lang.INIT_BINDING, config.udp_bind_ip, config.udp_bind_port));
+        logger.info(lang.get(Lang.INIT_BINDING, config.getUdp_bind_ip(), config.getUdp_bind_port()));
         // RakNet.enableLogging();
-        network = new RaknetInterface(this, config.udp_bind_ip, // IP
-                config.udp_bind_port, // Port
-                motd, config.auto_login ? 1 : config.max_players);
+        network = new RaknetInterface(this, config.getUdp_bind_ip(), // IP
+                config.getUdp_bind_port(), // Port
+                motd, config.getAuto_login() ? 1 : config.getMax_players());
 
-        if (DragonProxy.getInstance().getConfig().ping_passthrough)
+        if (DragonProxy.getInstance().getConfig().isPing_passthrough())
             generalThreadPool.scheduleAtFixedRate(new PingThread(), 1, 1, TimeUnit.SECONDS);
 
         generalThreadPool.execute(ticker);
@@ -347,7 +347,7 @@ public class DragonProxy implements ProxyServer {
             for (String arg : args)
                 if (arg.toLowerCase().contains("--debug")) {
                     debug = true;
-                    getLogger().debug = true;
+                    getLogger().setDebug(true);
                     logger.info("Proxy is running in debug mode.");
                 }
     }
@@ -377,7 +377,7 @@ public class DragonProxy implements ProxyServer {
      * @return the skinFetcher
      */
     @Override
-    public SkinFetcher getSkinFetcher() {
+    public ISkinFetcher getSkinFetcher() {
         return skinFetcher;
     }
 }

@@ -21,13 +21,14 @@ import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.api.translators.IPCPacketTranslator;
 import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.protocol.packets.LevelSoundEventPacket;
 import org.dragonet.protocol.packets.PlaySoundPacket;
 
 
 public class PCSoundEventPacketTranslator implements IPCPacketTranslator<ServerPlayBuiltinSoundPacket> {
 
-    public PEPacket[] translate(UpstreamSession session, ServerPlayBuiltinSoundPacket packet) {
+    public PEPacket[] translate(IUpstreamSession session, ServerPlayBuiltinSoundPacket packet) {
     	LevelSoundEventPacket pk = new LevelSoundEventPacket();
 
         //System.out.println("BuiltIn Sound packet: " + packet.getSound().name());

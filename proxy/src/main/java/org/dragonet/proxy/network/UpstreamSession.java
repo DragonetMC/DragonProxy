@@ -23,7 +23,6 @@ import com.github.steveice10.mc.protocol.data.game.setting.Difficulty;
 import com.whirvis.jraknet.protocol.Reliability;
 import com.whirvis.jraknet.session.RakNetClientSession;
 import org.dragonet.common.maths.Vector3F;
-import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
 import org.dragonet.proxy.events.defaults.packets.PackettoPlayerEvent;
 import org.dragonet.proxy.events.defaults.player.PlayerAuthenticationEvent;
@@ -48,8 +47,8 @@ import org.dragonet.protocol.packets.SetSpawnPositionPacket;
 import org.dragonet.protocol.packets.StartGamePacket;
 import org.dragonet.protocol.packets.TextPacket;
 import org.dragonet.protocol.packets.UpdateBlockPacket;
-import org.dragonet.protocol.type.chunk.ChunkData;
-import org.dragonet.protocol.type.chunk.Section;
+import org.dragonet.common.data.chunk.ChunkData;
+import org.dragonet.common.data.chunk.Section;
 import org.dragonet.common.utilities.Binary;
 import org.dragonet.common.maths.BlockPosition;
 import org.dragonet.common.utilities.LoginChainDecoder;
@@ -66,6 +65,10 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.zip.Deflater;
 import org.dragonet.api.ProxyServer;
+import org.dragonet.api.caches.IChunkCache;
+import org.dragonet.api.caches.IEntityCache;
+import org.dragonet.api.caches.IJukeboxCache;
+import org.dragonet.api.caches.IWindowCache;
 import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.common.data.blocks.BlockEnum;
 import org.dragonet.common.data.inventory.ContainerId;
@@ -101,10 +104,10 @@ public class UpstreamSession implements IUpstreamSession {
      */
     private final Map<String, Object> dataCache = Collections.synchronizedMap(new HashMap<String, Object>());
     private final Map<UUID, PlayerListEntry> playerInfoCache = Collections.synchronizedMap(new HashMap<UUID, PlayerListEntry>());
-    private final EntityCache entityCache = new EntityCache(this);
-    private final WindowCache windowCache = new WindowCache(this);
-    private final ChunkCache chunkCache = new ChunkCache(this);
-    private final JukeboxCache jukeboxCache = new JukeboxCache();
+    private final IEntityCache entityCache = new EntityCache(this);
+    private final IWindowCache windowCache = new WindowCache(this);
+    private final IChunkCache chunkCache = new ChunkCache(this);
+    private final IJukeboxCache jukeboxCache = new JukeboxCache();
 
     public UpstreamSession(ProxyServer proxy, String raknetID, RakNetClientSession raknetClient,
             InetSocketAddress remoteAddress) {
@@ -167,35 +170,43 @@ public class UpstreamSession implements IUpstreamSession {
         return dataCache;
     }
 
+    @Override
     public Map<UUID, PlayerListEntry> getPlayerInfoCache() {
         return playerInfoCache;
     }
 
-    public EntityCache getEntityCache() {
+    @Override
+    public IEntityCache getEntityCache() {
         return entityCache;
     }
 
-    public WindowCache getWindowCache() {
+    @Override
+    public IWindowCache getWindowCache() {
         return windowCache;
     }
 
-    public ChunkCache getChunkCache() {
+    @Override
+    public IChunkCache getChunkCache() {
         return chunkCache;
     }
 
+    @Override
     public MinecraftProtocol getProtocol() {
         return protocol;
     }
 
-    public JukeboxCache getJukeboxCache() {
+    @Override
+    public IJukeboxCache getJukeboxCache() {
     	return jukeboxCache;
     }
 
+    @Override
     public void sendPacket(PEPacket packet) {
         sendPacket(packet, false);
     }
 
     //if sending a packer before spawn, you should set high_priority to true !
+    @Override
     public void sendPacket(PEPacket packet, boolean high_priority) {
         if (packet == null)
             return;
@@ -231,6 +242,7 @@ public class UpstreamSession implements IUpstreamSession {
         }
     }
 
+    @Override
     public void sendAllPackets(PEPacket[] packets, boolean high_priority) {
         if (packets.length < 5 || true) //<- this disable batched packets
             for (PEPacket packet : packets)
@@ -248,6 +260,7 @@ public class UpstreamSession implements IUpstreamSession {
         }
     }
 
+    @Override
     public void connectToServer(String address, int port) {
         if (address == null)
             return;
@@ -262,6 +275,7 @@ public class UpstreamSession implements IUpstreamSession {
         downstream.connect(address, port);
     }
 
+    @Override
     public void onConnected() {
         connecting = false;
     }
@@ -271,6 +285,7 @@ public class UpstreamSession implements IUpstreamSession {
      *
      * @param reason
      */
+    @Override
     public void disconnect(String reason) {
         PlayerKickEvent kickEvent = new PlayerKickEvent(this);
         proxy.getEventManager().callEvent(kickEvent);
@@ -286,6 +301,7 @@ public class UpstreamSession implements IUpstreamSession {
      *
      * @param reason The reason of disconnection.
      */
+    @Override
     public void onDisconnect(String reason) {
         PlayerQuitEvent playerQuit = new PlayerQuitEvent(this);
         proxy.getEventManager().callEvent(playerQuit);
@@ -298,6 +314,7 @@ public class UpstreamSession implements IUpstreamSession {
         getChunkCache().purge();
     }
 
+    @Override
     public void authenticate(String email, String password, Proxy authProxy) {
         proxy.getGeneralThreadPool().execute(() -> {
             try {
@@ -326,11 +343,20 @@ public class UpstreamSession implements IUpstreamSession {
             sendChat(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_SUCCESS, username));
 
             proxy.getLogger().info(proxy.getLang().get(Lang.MESSAGE_ONLINE_LOGIN_SUCCESS_CONSOLE, username, remoteAddress, username));
-            connectToServer(proxy.getConfig().remote_server_addr, proxy.getConfig().remote_server_port);
+            connectToServer(proxy.getConfig().getRemote_server_addr(), proxy.getConfig().getRemote_server_port());
         });
     }
 
-    public void onLogin(LoginPacket packet) {
+    @Override
+    public void onLogin(PEPacket loginPacket) {
+        LoginPacket packet = null;
+        if (loginPacket instanceof LoginPacket)
+            packet = (LoginPacket)loginPacket;
+        else {
+            disconnect(proxy.getLang().get(Lang.MESSAGE_UNSUPPORTED_CLIENT));
+            return;
+        }
+
         if (username != null) {
             disconnect("Already logged in, this must be an error! ");
             return;
@@ -352,7 +378,7 @@ public class UpstreamSession implements IUpstreamSession {
         profile = packet.decoded;
 
         // Verify the integrity of the LoginPacket
-        if (proxy.getConfig().authenticate_players && !packet.decoded.isLoginVerified()) {
+        if (proxy.getConfig().isAuthenticate_players() && !packet.decoded.isLoginVerified()) {
             status.status = PlayStatusPacket.LOGIN_FAILED_INVALID_TENANT;
             sendPacket(status, true);
             disconnect(proxy.getLang().get(Lang.LOGIN_VERIFY_FAILED));
@@ -373,6 +399,7 @@ public class UpstreamSession implements IUpstreamSession {
         // now wait for response
     }
 
+    @Override
     public void postLogin() {
         sendPacket(new ResourcePackStackPacket(), true);
 
@@ -385,8 +412,8 @@ public class UpstreamSession implements IUpstreamSession {
         if (proxy.getAuthMode().equals("online")) {
             proxy.getLogger().debug("Login online mode, sending placeholder datas");
             StartGamePacket pkStartGame = new StartGamePacket();
-            pkStartGame.eid = getEntityCache().getClientEntity().proxyEid; // well we use 1 now
-            pkStartGame.rtid = getEntityCache().getClientEntity().proxyEid;
+            pkStartGame.eid = getEntityCache().getClientEntity().getProxyEid(); // well we use 1 now
+            pkStartGame.rtid = getEntityCache().getClientEntity().getProxyEid();
             pkStartGame.dimension = 0;
             pkStartGame.seed = 0;
             pkStartGame.generator = 1;
@@ -456,15 +483,16 @@ public class UpstreamSession implements IUpstreamSession {
 
             protocol = new MinecraftProtocol(authSvc.getSelectedProfile(), authSvc.getClientToken(), authSvc.getAccessToken());
 
-            proxy.getLogger().debug("Initially joining [" + proxy.getConfig().remote_server_addr + "]... ");
-            connectToServer(proxy.getConfig().remote_server_addr, proxy.getConfig().remote_server_port);
+            proxy.getLogger().debug("Initially joining [" + proxy.getConfig().getRemote_server_addr() + "]... ");
+            connectToServer(proxy.getConfig().getRemote_server_addr(), proxy.getConfig().getRemote_server_port());
         } else {
             protocol = new MinecraftProtocol(username);
-            proxy.getLogger().debug("Initially joining [" + proxy.getConfig().remote_server_addr + "]... ");
-            connectToServer(proxy.getConfig().remote_server_addr, proxy.getConfig().remote_server_port);
+            proxy.getLogger().debug("Initially joining [" + proxy.getConfig().getRemote_server_addr() + "]... ");
+            connectToServer(proxy.getConfig().getRemote_server_addr(), proxy.getConfig().getRemote_server_port());
         }
     }
 
+    @Override
     public void setSpawned() {
         if (!spawned) {
             spawned = true;
@@ -473,6 +501,7 @@ public class UpstreamSession implements IUpstreamSession {
         }
     }
 
+    @Override
     public void sendChat(String chat) {
         if (chat.contains("\n")) {
             String[] lines = chat.split("\n");
@@ -486,6 +515,7 @@ public class UpstreamSession implements IUpstreamSession {
         sendPacket(text, true);
     }
 
+    @Override
     public void sendFakeBlock(int x, int y, int z, int id, int meta) {
         UpdateBlockPacket pkBlock = new UpdateBlockPacket();
         pkBlock.id = id;
@@ -495,6 +525,7 @@ public class UpstreamSession implements IUpstreamSession {
         sendPacket(pkBlock);
     }
 
+    @Override
     public void sendCreativeInventory() {
         // main inventory
 //        ContainerId.CREATIVE.getId();
@@ -524,10 +555,12 @@ public class UpstreamSession implements IUpstreamSession {
         sendPacket(inventoryContentPacket3);
     }
 
+    @Override
     public void handlePacketBinary(byte[] packet) {
         packetProcessor.putPacket(packet);
     }
 
+    @Override
     public void putCachePacket(PEPacket packet) {
         if (packet == null)
             return;
@@ -539,6 +572,7 @@ public class UpstreamSession implements IUpstreamSession {
         cachedPackets.offer(packet);
     }
 
+    @Override
     public void onTick() {
         entityCache.onTick();
         chunkCache.onTick();

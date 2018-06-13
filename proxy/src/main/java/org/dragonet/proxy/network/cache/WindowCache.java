@@ -21,20 +21,21 @@ import java.util.Map;
 import com.github.steveice10.packetlib.packet.Packet;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import org.dragonet.api.caches.ICachedWindow;
+import org.dragonet.api.caches.IWindowCache;
+import org.dragonet.api.sessions.IUpstreamSession;
 
 import org.dragonet.proxy.network.UpstreamSession;
 
-public final class WindowCache {
+public final class WindowCache implements IWindowCache {
 
-    private final UpstreamSession upstream;
-    private final Map<Integer, CachedWindow> windows = Collections
-        .synchronizedMap(new HashMap<Integer, CachedWindow>());
-    private final Map<Integer, List<Packet>> cachedItems = Collections
-        .synchronizedMap(new HashMap<Integer, List<Packet>>());
+    private final IUpstreamSession upstream;
+    private final Map<Integer, ICachedWindow> windows = Collections.synchronizedMap(new HashMap<>());
+    private final Map<Integer, List<Packet>> cachedItems = Collections.synchronizedMap(new HashMap<>());
 
-    public AtomicInteger currentTransactionId = new AtomicInteger();
+    private final AtomicInteger currentTransactionId = new AtomicInteger();
 
-    public WindowCache(UpstreamSession upstream) {
+    public WindowCache(IUpstreamSession upstream) {
         this.upstream = upstream;
 
         CachedWindow inv = new CachedWindow(0, null, 45);
@@ -42,35 +43,42 @@ public final class WindowCache {
     }
 
     // public
-    public UpstreamSession getUpstream() {
+    @Override
+    public IUpstreamSession getUpstream() {
         return upstream;
     }
 
-    public CachedWindow getPlayerInventory() {
+    @Override
+    public ICachedWindow getPlayerInventory() {
         return windows.get(0);
     }
 
-    public Map<Integer, CachedWindow> getCachedWindows() {
+    @Override
+    public Map<Integer, ICachedWindow> getCachedWindows() {
         return windows;
     }
 
     // We do not do translations here, do it in InventoryTranslatorRegister
-    public void cacheWindow(CachedWindow win) {
+    public void cacheWindow(ICachedWindow win) {
         windows.put(win.getWindowId(), win);
     }
 
-    public CachedWindow removeWindow(int id) {
+    @Override
+    public ICachedWindow removeWindow(int id) {
         return windows.remove(id);
     }
 
-    public CachedWindow get(int id) {
+    @Override
+    public ICachedWindow get(int id) {
         return windows.get(id);
     }
 
+    @Override
     public boolean hasWindow(int id) {
         return windows.containsKey(id);
     }
 
+    @Override
     public void newCachedPacket(int windowId, Packet packet) {
         List<Packet> packets = null;
         synchronized (cachedItems) {
@@ -83,12 +91,19 @@ public final class WindowCache {
         packets.add(packet);
     }
 
+    @Override
     public Packet[] getCachedPackets(int windowId) {
         List<Packet> packets = null;
         packets = cachedItems.remove(windowId);
-        if (packets == null) {
+        if (packets == null)
             return new Packet[]{};
-        }
         return packets.toArray(new Packet[0]);
+    }
+
+    /**
+     * @return the currentTransactionId
+     */
+    public AtomicInteger getCurrentTransactionId() {
+        return currentTransactionId;
     }
 }

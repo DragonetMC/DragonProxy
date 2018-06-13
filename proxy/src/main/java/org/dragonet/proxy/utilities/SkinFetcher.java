@@ -10,13 +10,11 @@
  *
  * @author The Dragonet Team
  */
-package org.dragonet.common.utilities;
+package org.dragonet.proxy.utilities;
 
 import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.auth.data.GameProfile.Property;
-import com.github.steveice10.mc.auth.exception.profile.ProfileNotFoundException;
 import com.github.steveice10.mc.auth.service.ProfileService;
-import com.github.steveice10.mc.auth.service.ProfileService.ProfileLookupCallback;
 import com.google.common.base.Charsets;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -24,11 +22,9 @@ import com.google.common.cache.CacheLoader;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.UUID;

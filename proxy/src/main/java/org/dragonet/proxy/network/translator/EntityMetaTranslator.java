@@ -26,6 +26,7 @@ import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.MetadataType;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.common.data.entity.EntityType;
 import org.dragonet.common.data.entity.meta.EntityMetaData;
@@ -34,7 +35,7 @@ import org.dragonet.common.maths.BlockPosition;
 
 public final class EntityMetaTranslator {
 
-    public static EntityMetaData translateToPE(UpstreamSession session, EntityMetadata[] pcMeta, EntityType type) {
+    public static EntityMetaData translateToPE(IUpstreamSession session, EntityMetadata[] pcMeta, EntityType type) {
         /*
      * Following format was fetched from http://wiki.vg/Entities#Entity_meta_Format
          */

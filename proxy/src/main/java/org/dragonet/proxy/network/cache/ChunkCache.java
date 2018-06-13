@@ -22,9 +22,8 @@ import org.dragonet.common.data.itemsblocks.ItemEntry;
 import org.dragonet.common.data.nbt.NBTIO;
 import org.dragonet.common.data.nbt.tag.CompoundTag;
 import org.dragonet.common.maths.ChunkPos;
-import org.dragonet.protocol.type.chunk.ChunkData;
-import org.dragonet.protocol.type.chunk.Section;
-import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.common.data.chunk.ChunkData;
+import org.dragonet.common.data.chunk.Section;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -41,21 +40,24 @@ import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.packets.FullChunkDataPacket;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.CacheKey;
+import org.dragonet.api.sessions.IUpstreamSession;
+import org.dragonet.api.caches.IChunkCache;
+import org.dragonet.api.caches.cached.ICachedEntity;
 
 /**
  *
  * @author Epic
  */
-public class ChunkCache {
+public class ChunkCache implements IChunkCache {
 
-    private final UpstreamSession session;
+    private final IUpstreamSession session;
     private final Map<ChunkPos, Column> chunkCache = new HashMap();
     private final Set<ChunkPos> loadedChunks = new HashSet();
 
     private int chunkPerTick = 10;
     private final Queue<PEPacket> updateQueue = new ConcurrentLinkedQueue();
 
-    public ChunkCache(UpstreamSession session) {
+    public ChunkCache(IUpstreamSession session) {
         this.session = session;
     }
 
@@ -125,9 +127,9 @@ public class ChunkCache {
     }
 
     public void sendEmptyChunks(int radius) {
-        CachedEntity player = session.getEntityCache().getClientEntity();
-        int centerX = (int) player.x >> 4;
-        int centerZ = (int) player.z >> 4;
+        ICachedEntity player = session.getEntityCache().getClientEntity();
+        int centerX = (int) player.getX() >> 4;
+        int centerZ = (int) player.getZ() >> 4;
         for (int x = -radius; x < radius; x++)
             for (int z = -radius; z < radius; z++)
                 sendEmptyChunk(centerX + x, centerZ + z);
@@ -200,12 +202,12 @@ public class ChunkCache {
         if (!this.session.isLoggedIn())
             return;
 
-        CachedEntity player = session.getEntityCache().getClientEntity();
+        ICachedEntity player = session.getEntityCache().getClientEntity();
 
-        int centerX = (int) player.x >> 4;
-        int centerZ = (int) player.z >> 4;
+        int centerX = (int) player.getX() >> 4;
+        int centerZ = (int) player.getZ() >> 4;
 
-        int radius = player.spawned
+        int radius = player.isSpawned()
                 ? (int) session.getDataCache().getOrDefault(CacheKey.PLAYER_REQUESTED_CHUNK_RADIUS, 5)
                 : (int) Math.ceil(Math.sqrt(56));
 
@@ -306,12 +308,12 @@ public class ChunkCache {
 
     // debug
     public void getDebugGrid() {
-        CachedEntity player = session.getEntityCache().getClientEntity();
+        ICachedEntity player = session.getEntityCache().getClientEntity();
         int viewDistance = (int) session.getDataCache().getOrDefault(CacheKey.PLAYER_REQUESTED_CHUNK_RADIUS, 5);
 
         // center
-        int centerX = (int) player.x >> 4;
-        int centerZ = (int) player.z >> 4;
+        int centerX = (int) player.getX() >> 4;
+        int centerZ = (int) player.getZ() >> 4;
         ChunkPos playerChunkPos = new ChunkPos(centerX, centerZ);
 
         // find corners

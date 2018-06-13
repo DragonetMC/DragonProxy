@@ -12,16 +12,18 @@
  */
 package org.dragonet.proxy.network.translator.pc;
 
-import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.api.translators.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPaintingPacket;
+import org.dragonet.api.caches.cached.ICachedEntity;
 import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IUpstreamSession;
+import org.dragonet.proxy.network.cache.EntityCache;
 
 public class PCSpawnPaintingPacketTranslator implements IPCPacketTranslator<ServerSpawnPaintingPacket> {
 
-    public PEPacket[] translate(UpstreamSession session, ServerSpawnPaintingPacket packet) {
-        CachedEntity entity = session.getEntityCache().newEntity(packet);
+    @Override
+    public PEPacket[] translate(IUpstreamSession session, ServerSpawnPaintingPacket packet) {
+        ICachedEntity entity = ((EntityCache) session.getEntityCache()).newEntity(packet);
         if (entity == null)
             return null;
 

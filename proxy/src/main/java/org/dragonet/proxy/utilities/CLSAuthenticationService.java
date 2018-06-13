@@ -15,8 +15,6 @@ package org.dragonet.proxy.utilities;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.common.utilities.HTTP;
 import org.dragonet.proxy.DragonProxy;
@@ -38,7 +36,7 @@ public class CLSAuthenticationService {
     }
 
     private CLSAuthenticationService() {
-        this.clsServer = DragonProxy.getInstance().getConfig().cls_server;
+        this.clsServer = DragonProxy.getInstance().getConfig().getCls_server();
     }
 
     public boolean authenticate(UpstreamSession session) {

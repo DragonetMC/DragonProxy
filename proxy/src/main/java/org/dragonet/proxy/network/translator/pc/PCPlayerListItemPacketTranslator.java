@@ -14,7 +14,6 @@ package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntryAction;
-import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.api.translators.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPlayerListEntryPacket;
 
@@ -22,12 +21,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.protocol.packets.PlayerListPacket;
 import org.dragonet.common.data.entity.Skin;
 
 public class PCPlayerListItemPacketTranslator implements IPCPacketTranslator<ServerPlayerListEntryPacket> {
 
-    public PEPacket[] translate(UpstreamSession session, ServerPlayerListEntryPacket packet) {
+    @Override
+    public PEPacket[] translate(IUpstreamSession session, ServerPlayerListEntryPacket packet) {
         PlayerListPacket pk = new PlayerListPacket();
         if (packet.getAction() == PlayerListEntryAction.ADD_PLAYER) {
             PlayerListEntry[] entries = packet.getEntries();

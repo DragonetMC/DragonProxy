@@ -16,11 +16,12 @@ import org.dragonet.proxy.network.translator.ParticleTranslator;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.world.Particle;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerSpawnParticlePacket;
+import org.dragonet.api.sessions.IUpstreamSession;
 
 public class PCSpawnParticlePacketTranslator implements IPCPacketTranslator<ServerSpawnParticlePacket> {
 
     @Override
-    public PEPacket[] translate(UpstreamSession session, ServerSpawnParticlePacket packet) {
+    public PEPacket[] translate(IUpstreamSession session, ServerSpawnParticlePacket packet) {
         ArrayList<PEPacket> packets = new ArrayList<PEPacket>();
         if (packet.getParticle() == Particle.BLOCK_CRACK || packet.getParticle() == Particle.BLOCK_DUST) {
             LevelEventPacket pk = new LevelEventPacket();

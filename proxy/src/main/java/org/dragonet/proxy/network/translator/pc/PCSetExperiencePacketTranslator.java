@@ -13,25 +13,25 @@
 package org.dragonet.proxy.network.translator.pc;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerSetExperiencePacket;
+import org.dragonet.api.caches.cached.ICachedEntity;
 import org.dragonet.common.data.entity.PEEntityAttribute;
-import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.api.translators.IPCPacketTranslator;
 import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.protocol.packets.UpdateAttributesPacket;
 
 public class PCSetExperiencePacketTranslator implements IPCPacketTranslator<ServerPlayerSetExperiencePacket> {
 
-    public PEPacket[] translate(UpstreamSession session, ServerPlayerSetExperiencePacket packet) {
+    public PEPacket[] translate(IUpstreamSession session, ServerPlayerSetExperiencePacket packet) {
 
-        CachedEntity peSelfPlayer = session.getEntityCache().getClientEntity();
+        ICachedEntity peSelfPlayer = session.getEntityCache().getClientEntity();
 
-        peSelfPlayer.attributes.put(PEEntityAttribute.EXPERIENCE_LEVEL, PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE_LEVEL).setValue(packet.getLevel()));
-        peSelfPlayer.attributes.put(PEEntityAttribute.EXPERIENCE, PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE).setValue(packet.getSlot()));
+        peSelfPlayer.getAttributes().put(PEEntityAttribute.EXPERIENCE_LEVEL, PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE_LEVEL).setValue(packet.getLevel()));
+        peSelfPlayer.getAttributes().put(PEEntityAttribute.EXPERIENCE, PEEntityAttribute.findAttribute(PEEntityAttribute.EXPERIENCE).setValue(packet.getSlot()));
 
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
-        pk.rtid = peSelfPlayer.proxyEid;
-        pk.entries = peSelfPlayer.attributes.values();
+        pk.rtid = peSelfPlayer.getProxyEid();
+        pk.entries = peSelfPlayer.getAttributes().values();
 
         return new PEPacket[]{pk};
     }

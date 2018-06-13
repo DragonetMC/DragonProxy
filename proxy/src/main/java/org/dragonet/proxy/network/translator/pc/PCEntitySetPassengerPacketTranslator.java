@@ -16,50 +16,51 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntit
 
 import java.util.Arrays;
 import java.util.Iterator;
+import org.dragonet.api.caches.cached.ICachedEntity;
 
 import org.dragonet.common.data.entity.EntityType;
 import org.dragonet.common.data.entity.meta.EntityMetaData;
 import org.dragonet.common.data.entity.meta.type.Vector3FMeta;
 import org.dragonet.common.maths.Vector3F;
-import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.EntityMetaTranslator;
 import org.dragonet.api.translators.IPCPacketTranslator;
 import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.protocol.packets.SetEntityDataPacket;
 import org.dragonet.protocol.packets.SetEntityLinkPacket;
 
 
 public class PCEntitySetPassengerPacketTranslator implements IPCPacketTranslator<ServerEntitySetPassengersPacket> {
 
-    public PEPacket[] translate(UpstreamSession session, ServerEntitySetPassengersPacket packet) {
+    @Override
+    public PEPacket[] translate(IUpstreamSession session, ServerEntitySetPassengersPacket packet) {
 
-        CachedEntity vehicle = session.getEntityCache().getByRemoteEID(packet.getEntityId());
+        ICachedEntity vehicle = session.getEntityCache().getByRemoteEID(packet.getEntityId());
         if (vehicle == null) {
             return null;
         }
 
         // process not passenger (dismount)
-        Iterator<Long> itr = vehicle.passengers.iterator();
+        Iterator<Long> itr = vehicle.getPassengers().iterator();
         while (itr.hasNext()) {
             long id = itr.next();
-            CachedEntity rider = session.getEntityCache().getByLocalEID(id);
+            ICachedEntity rider = session.getEntityCache().getByLocalEID(id);
 
             if (rider == null) {
                 continue;
             }
-            if (!Arrays.asList(packet.getPassengerIds()).contains(rider.eid)) {
+            if (!Arrays.asList(packet.getPassengerIds()).contains(rider.getEid())) {
 
                 SetEntityLinkPacket pk = new SetEntityLinkPacket();
-                pk.riding = vehicle.proxyEid;
-                pk.rider = rider.proxyEid;
+                pk.riding = vehicle.getProxyEid();
+                pk.rider = rider.getProxyEid();
                 pk.type = SetEntityLinkPacket.TYPE_REMOVE;
                 setRiding(session, rider, null);
                 pk.unknownByte = 0x00;
                 session.putCachePacket(pk);
 
                 itr.remove();
-                rider.riding = 0;
+                rider.setRiding(0);
 //                System.out.println("DISMOUNT\n" + DebugTools.getAllFields(pk));
             }
         }
@@ -68,30 +69,30 @@ public class PCEntitySetPassengerPacketTranslator implements IPCPacketTranslator
         boolean piloteSet = false;
         for (int id : packet.getPassengerIds()) {
 
-            CachedEntity rider = session.getEntityCache().getByRemoteEID(id);
+            ICachedEntity rider = session.getEntityCache().getByRemoteEID(id);
 
             if (rider == null) {
                 continue;
             }
 
             SetEntityLinkPacket pk = new SetEntityLinkPacket();
-            pk.riding = vehicle.proxyEid;
-            pk.rider = rider.proxyEid;
+            pk.riding = vehicle.getProxyEid();
+            pk.rider = rider.getProxyEid();
 
             if (!piloteSet) {
                 piloteSet = true;
                 pk.type = SetEntityLinkPacket.TYPE_RIDE;
-                setRiding(session, rider, getSeatOffset(rider.peType, 1));
+                setRiding(session, rider, getSeatOffset(rider.getPeType(), 1));
             } else {
                 pk.type = SetEntityLinkPacket.TYPE_PASSENGER;
-                setRiding(session, rider, getSeatOffset(rider.peType, 2));
+                setRiding(session, rider, getSeatOffset(rider.getPeType(), 2));
             }
 
             pk.unknownByte = 0x00;
             session.putCachePacket(pk);
 
-            vehicle.passengers.add(rider.proxyEid);
-            rider.riding = vehicle.proxyEid;
+            vehicle.getPassengers().add(rider.getProxyEid());
+            rider.setRiding(vehicle.getProxyEid());
 //            System.out.println("MOUNT\n" + DebugTools.getAllFields(pk));
 
         }
@@ -99,15 +100,15 @@ public class PCEntitySetPassengerPacketTranslator implements IPCPacketTranslator
     }
 
     //if offset is null, it's a dismount action
-    private void setRiding(UpstreamSession session, CachedEntity rider, Vector3F offset) {
-        EntityMetaData peMeta = EntityMetaTranslator.translateToPE(session, rider.pcMeta, rider.peType);
+    private void setRiding(IUpstreamSession session, ICachedEntity rider, Vector3F offset) {
+        EntityMetaData peMeta = EntityMetaTranslator.translateToPE(session, rider.getPcMeta(), rider.getPeType());
         peMeta.setGenericFlag(EntityMetaData.Constants.DATA_FLAG_RIDING, offset != null);
         if (offset != null) {
             peMeta.set(EntityMetaData.Constants.DATA_RIDER_SEAT_POSITION, new Vector3FMeta(offset));
         }
 
         SetEntityDataPacket pk = new SetEntityDataPacket();
-        pk.rtid = rider.proxyEid;
+        pk.rtid = rider.getProxyEid();
         pk.meta = peMeta;
         session.putCachePacket(pk);
     }

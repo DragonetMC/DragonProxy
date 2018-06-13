@@ -170,7 +170,7 @@ public final class PacketTranslatorRegister {
 //        }
     }
 
-    public static Packet[] translateToPC(UpstreamSession session, PEPacket packet) {
+    public static Packet[] translateToPC(IUpstreamSession session, PEPacket packet) {
         if (packet == null)
             return null;
         //session.getProxy().getLogger().debug(packet.toString());
