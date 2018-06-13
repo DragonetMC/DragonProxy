@@ -36,7 +36,7 @@ See [#132](https://github.com/DragonetMC/DragonProxy/issues/132).
  - Snowballs, Enderpearls and Arrows are buggy
  - Redstone can be buggy, but mostly works
 
-![Screenshot](https://github.com/DragonetMC/DragonProxy/raw/master/screenshots/hypixel.png)
+![Screenshot](https://github.com/DragonetMC/DragonProxy/raw/master/screenshots/hypixel-2.png)
 
 ## Download
  - [release](https://github.com/DragonetMC/DragonProxy/releases) : stable builds
