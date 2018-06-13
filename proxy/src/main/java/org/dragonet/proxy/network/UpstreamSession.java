@@ -328,8 +328,9 @@ public class UpstreamSession {
         getDataCache().put(CacheKey.PACKET_LOGIN_PACKET, packet);
 
         PlayStatusPacket status = new PlayStatusPacket();
-        proxy.getLogger().debug("CLIENT PROTOCOL = " + packet.protocol);
-        if (packet.protocol != ProtocolInfo.CURRENT_PROTOCOL) {
+        proxy.getLogger().info("Player " + packet.decoded.username + " login with protocol " + packet.protocol  + "(actual " + ProtocolInfo.CURRENT_PROTOCOL + ")");
+        if (packet.protocol < ProtocolInfo.CURRENT_PROTOCOL) {
+            proxy.getLogger().severe("Player " + packet.decoded.username + " login with protocol " + "Unsupported protocol " + packet.protocol  + " < " + ProtocolInfo.CURRENT_PROTOCOL);
             status.status = PlayStatusPacket.LOGIN_FAILED_CLIENT;
             sendPacket(status, true);
             disconnect(proxy.getLang().get(Lang.MESSAGE_UNSUPPORTED_CLIENT));
