@@ -4,7 +4,7 @@ import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerSwingArmPacket;
 import com.github.steveice10.packetlib.packet.Packet;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.translator.IPEPacketTranslator;
+import org.dragonet.api.translators.IPEPacketTranslator;
 import org.dragonet.protocol.packets.AnimatePacket;
 
 public class PEAnimatePacketTranslator implements IPEPacketTranslator<AnimatePacket> {

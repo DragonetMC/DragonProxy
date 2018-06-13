@@ -15,9 +15,9 @@ package org.dragonet.proxy.network.translator.pc;
 import org.dragonet.proxy.network.InventoryTranslatorRegister;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedWindow;
-import org.dragonet.proxy.network.translator.IPCPacketTranslator;
+import org.dragonet.api.translators.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 
 public class PCSetSlotPacketTranslator implements IPCPacketTranslator<ServerSetSlotPacket> {
 
@@ -28,19 +28,19 @@ public class PCSetSlotPacketTranslator implements IPCPacketTranslator<ServerSetS
             return null;
         }
         CachedWindow win = session.getWindowCache().get(packet.getWindowId());
-        if (win.pcType == null && packet.getWindowId() != 0) {
+        if (win.getPcType() == null && packet.getWindowId() != 0) {
             return null;
         }
         if (packet.getWindowId() == 0) {
-            if (packet.getSlot() >= win.slots.length) {
+            if (packet.getSlot() >= win.getSlots().length) {
                 return null;
             }
-            win.slots[packet.getSlot()] = packet.getItem();
+            win.getSlots()[packet.getSlot()] = packet.getItem();
             return InventoryTranslatorRegister.sendPlayerInventory(session); // Too lazy lol
         }
 //        if (packet.getItem() != null)
 //            System.out.println("Caching window " + packet.getWindowId() + " item " + packet.getItem().getId());
-        if (win.isOpen)
+        if (win.isIsOpen())
             InventoryTranslatorRegister.updateSlot(session, packet);
         else
             session.getWindowCache().newCachedPacket(packet.getWindowId(), packet);

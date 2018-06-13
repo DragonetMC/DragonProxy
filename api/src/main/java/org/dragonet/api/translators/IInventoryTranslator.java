@@ -10,10 +10,10 @@
  *
  * @author The Dragonet Team
  */
-package org.dragonet.proxy.network.translator;
+package org.dragonet.api.translators;
 
-import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.cache.CachedWindow;
+import org.dragonet.api.inventories.ICachedWindow;
+import org.dragonet.api.sessions.IUpstreamSession;
 
 public interface IInventoryTranslator {
 
@@ -24,7 +24,7 @@ public interface IInventoryTranslator {
      * @param window
      * @return Can that window be opened on MCPE?
      */
-    boolean prepare(UpstreamSession session, CachedWindow window);
+    boolean prepare(IUpstreamSession session, ICachedWindow window);
 
     /**
      * Opens a window on MCPE.
@@ -33,7 +33,7 @@ public interface IInventoryTranslator {
      * @param window
      * @return Can that window be opened on MCPE?
      */
-    boolean open(UpstreamSession session, CachedWindow window);
+    boolean open(IUpstreamSession session, ICachedWindow window);
 
     /**
      * Update a window's content.
@@ -41,7 +41,7 @@ public interface IInventoryTranslator {
      * @param session
      * @param window
      */
-    void updateContent(UpstreamSession session, CachedWindow window);
+    void updateContent(IUpstreamSession session, ICachedWindow window);
 
     /**
      * Update a single slot in a window.
@@ -50,5 +50,5 @@ public interface IInventoryTranslator {
      * @param window
      * @param slotIndex
      */
-    void updateSlot(UpstreamSession session, CachedWindow window, int slotIndex);
+    void updateSlot(IUpstreamSession session, ICachedWindow window, int slotIndex);
 }

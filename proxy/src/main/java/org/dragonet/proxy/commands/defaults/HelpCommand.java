@@ -12,12 +12,12 @@
  */
 package org.dragonet.proxy.commands.defaults;
 
-import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.commands.Command;
+import org.dragonet.api.commands.Command;
 import org.dragonet.common.maths.MCColor;
 
 import java.util.Map;
 import java.util.TreeMap;
+import org.dragonet.api.ProxyServer;
 
 public class HelpCommand extends Command {
 
@@ -25,7 +25,8 @@ public class HelpCommand extends Command {
         super(name, "Displays commands for DragonProxy");
     }
 
-    public void execute(DragonProxy proxy, String[] args) {
+    @Override
+    public void execute(ProxyServer proxy, String[] args) {
         proxy.getLogger().info(MCColor.GREEN + "----[ All commands for DragonProxy ]----");
 
         Map<String, Command> commands = new TreeMap<>();

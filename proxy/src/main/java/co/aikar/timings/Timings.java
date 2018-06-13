@@ -29,10 +29,10 @@ import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.commands.Command;
-import org.dragonet.protocol.PEPacket;
-import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.proxy.network.translator.IPEPacketTranslator;
+import org.dragonet.api.commands.Command;
+import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.translators.IPCPacketTranslator;
+import org.dragonet.api.translators.IPEPacketTranslator;
 
 public final class Timings {
     private static boolean timingsEnabled = false;

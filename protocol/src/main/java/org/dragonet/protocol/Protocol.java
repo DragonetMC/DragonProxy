@@ -12,6 +12,7 @@
  */
 package org.dragonet.protocol;
 
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.common.utilities.BinaryStream;
 import org.dragonet.common.utilities.Zlib;
 

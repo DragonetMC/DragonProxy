@@ -1,5 +1,7 @@
 package org.dragonet.protocol;
 
+import org.dragonet.api.network.PEPacket;
+
 public class WrappedPEPacket extends PEPacket {
 
     public WrappedPEPacket(byte[] buffer) {

@@ -12,6 +12,8 @@
  */
 package org.dragonet.proxy.commands;
 
+import org.dragonet.api.commands.ICommandRegister;
+import org.dragonet.api.commands.Command;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
 import java.util.Collections;
@@ -23,7 +25,7 @@ import org.dragonet.proxy.configuration.Lang;
 
 import org.dragonet.proxy.commands.defaults.*;
 
-public final class CommandRegister {
+public final class CommandRegister implements ICommandRegister {
 
     private final Map<String, Command> commandMap = Collections.synchronizedMap(new HashMap<String, Command>());
     private final DragonProxy proxy;

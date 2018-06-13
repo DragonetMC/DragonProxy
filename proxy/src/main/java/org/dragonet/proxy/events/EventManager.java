@@ -1,5 +1,10 @@
 package org.dragonet.proxy.events;
 
+import org.dragonet.api.events.WrapedListener;
+import org.dragonet.api.events.HandlerList;
+import org.dragonet.api.events.EventHandler;
+import org.dragonet.api.events.Listener;
+import org.dragonet.api.events.Event;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,13 +18,15 @@ import org.pf4j.PluginStateEvent;
 import org.pf4j.PluginStateListener;
 
 import com.google.common.collect.Lists;
+import org.dragonet.api.ProxyServer;
+import org.dragonet.api.events.IEventManager;
 
-public class EventManager {
+public class EventManager implements IEventManager {
 
-    private DragonProxy proxy;
+    private ProxyServer proxy;
     private HashMap<Class<? extends Event>, HandlerList> usedHandlers = new HashMap<>();
     
-    public EventManager(DragonProxy proxy){
+    public EventManager(ProxyServer proxy){
         this.proxy = proxy;
         proxy.getPluginManager().addPluginStateListener(new PluginStateListener() {
             
@@ -32,6 +39,7 @@ public class EventManager {
         });
     }
     
+    @Override
     public void registerEvents(Plugin plugin, Listener listener){
         Collection<Method> methods = getMethodsRecursively(listener.getClass(), Event.class);
         for(Method method : methods){
@@ -61,18 +69,21 @@ public class EventManager {
         }
     }
     
+    @Override
     public void unregisterEvents(Listener listener){
         for(HandlerList handler : usedHandlers.values()){
             handler.unregisterListener(listener);
         }
     }
       
+    @Override
     public void unregisterEvents(Plugin plugin){
         for(HandlerList handler : usedHandlers.values()){
             handler.unregisterListener(plugin);
         }
     }
     
+    @Override
     public void callEvent(Event event){
         HandlerList handler = usedHandlers.get(event.getClass());
         if(handler != null){
@@ -86,7 +97,8 @@ public class EventManager {
         }
     }
     
-    private Collection<Method> getMethodsRecursively(Class<?> startClass, Class<?> exclusiveParent) {
+    @Override
+    public Collection<Method> getMethodsRecursively(Class<?> startClass, Class<?> exclusiveParent) {
         Collection<Method> methods = Lists.newArrayList(startClass.getDeclaredMethods());
         Class<?> parentClass = startClass.getSuperclass();
 

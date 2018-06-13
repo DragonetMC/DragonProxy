@@ -13,8 +13,9 @@
 package org.dragonet.proxy.configuration;
 
 import java.io.IOException;
+import org.dragonet.api.language.ILang;
 
-public class Lang extends PropertiesConfig {
+public class Lang extends PropertiesConfig implements ILang {
 
     public static final String INIT_LOADING = "init_loading";
     public static final String INIT_MC_PC_SUPPORT = "init_mc_pc_support";
@@ -65,6 +66,7 @@ public class Lang extends PropertiesConfig {
         super("/en_US.properties", langFileName, false);
     }
 
+    @Override
     public String get(String key) {
         String str = getConfig().getProperty(key);
         if(str == null)
@@ -74,6 +76,7 @@ public class Lang extends PropertiesConfig {
         return str;
     }
 
+    @Override
     public String get(String key, Object... repl) {
         return String.format(get(key), repl);
     }

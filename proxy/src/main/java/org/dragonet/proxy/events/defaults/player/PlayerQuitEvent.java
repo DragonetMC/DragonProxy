@@ -1,6 +1,6 @@
 package org.dragonet.proxy.events.defaults.player;
 
-import org.dragonet.proxy.events.HandlerList;
+import org.dragonet.api.events.HandlerList;
 import org.dragonet.proxy.network.UpstreamSession;
 
 public class PlayerQuitEvent extends PlayerEvent{

@@ -37,7 +37,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.dragonet.common.maths.BlockPosition;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.packets.FullChunkDataPacket;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.CacheKey;

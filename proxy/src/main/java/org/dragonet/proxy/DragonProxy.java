@@ -44,93 +44,119 @@ import co.aikar.timings.Timings;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.SystemUtils;
 import org.dragonet.common.utilities.SkinFetcher;
+import org.dragonet.api.ProxyServer;
+import org.dragonet.api.commands.ICommandRegister;
+import org.dragonet.api.commands.IConsoleCommandReader;
+import org.dragonet.api.configuration.IServerConfig;
+import org.dragonet.api.events.IEventManager;
+import org.dragonet.api.language.ILang;
+import org.dragonet.api.logger.IProxyLogger;
+import org.dragonet.api.plugin.IPluginManager;
+import org.dragonet.api.sessions.IRaknetInterface;
+import org.dragonet.api.sessions.ISessionRegister;
+import org.dragonet.api.skins.ISkinFetcher;
+import org.dragonet.api.sound.ISoundTranslator;
+import org.pf4j.AbstractPluginManager;
 
-public class DragonProxy {
+public class DragonProxy implements ProxyServer {
 
     public static final boolean IS_RELEASE = false; // TODO: remove
 
-    private static DragonProxy instance;
+    private static ProxyServer instance;
     private static String[] launchArgs;
     private final Properties properties;
     private boolean isContainer = false;
     private String version;
-    private ProxyLogger logger;
+    private IProxyLogger logger;
     private final TickerThread ticker = new TickerThread(this);
-    private ServerConfig config;
-    private Lang lang;
-    private final SessionRegister sessionRegister;
-    private final RaknetInterface network;
+    private IServerConfig config;
+    private ILang lang;
+    private final ISessionRegister sessionRegister;
+    private final IRaknetInterface network;
     private boolean shuttingDown;
     private final ScheduledExecutorService generalThreadPool;
-    private final CommandRegister commandRegister;
-    private final SkinFetcher skinFetcher;
+    private final ICommandRegister commandRegister;
+    private final ISkinFetcher skinFetcher;
     private final String authMode;
-    private ConsoleCommandReader console;
+    private IConsoleCommandReader console;
     private String motd;
     private boolean debug = false;
-    private final PluginManager pluginManager;
-    private final EventManager eventManager;
-    private final SoundTranslator soundTranslator;
+    private final AbstractPluginManager pluginManager;
+    private final IEventManager eventManager;
+    private final ISoundTranslator soundTranslator;
 
     public static void main(String[] args) {
         launchArgs = args;
         getInstance();
     }
 
-    public static DragonProxy getInstance() {
+    public static ProxyServer getInstance() {
         if (instance == null)
             instance = new DragonProxy();
         return instance;
     }
 
-    public ProxyLogger getLogger() {
+    @Override
+    public IProxyLogger getLogger() {
         return logger;
     }
 
-    public ServerConfig getConfig() {
+    @Override
+    public IServerConfig getConfig() {
         return config;
     }
 
-    public Lang getLang() {
+    @Override
+    public ILang getLang() {
         return lang;
     }
 
-    public SessionRegister getSessionRegister() {
+    @Override
+    public ISessionRegister getSessionRegister() {
         return sessionRegister;
     }
 
-    public RaknetInterface getNetwork() {
+    @Override
+    public IRaknetInterface getNetwork() {
         return network;
     }
 
-    public PluginManager getPluginManager() {
+    @Override
+    public AbstractPluginManager getPluginManager() {
         return pluginManager;
     }
 
-    public EventManager getEventManager() {
+    @Override
+    public IEventManager getEventManager() {
         return eventManager;
     }
 
-    public SoundTranslator getSoundTranslator() {
+    @Override
+    public ISoundTranslator getSoundTranslator() {
         return soundTranslator;
     }
 
+    @Override
     public boolean isShuttingDown() {
         return shuttingDown;
     }
 
+    @Override
     public ScheduledExecutorService getGeneralThreadPool() {
         return generalThreadPool;
     }
 
-    public CommandRegister getCommandRegister() {
+    @Override
+    public ICommandRegister getCommandRegister() {
         return commandRegister;
     }
 
+    @Override
     public String getAuthMode() {
         return authMode;
     }
 
+    @Override
     public boolean isDebug() {
         return debug;
     }
@@ -179,28 +205,28 @@ public class DragonProxy {
 
         // Load language file
         try {
-            lang = new Lang(config.lang);
+            lang = new Lang(config.getLang());
         } catch (IOException ex) {
-            logger.info("Failed to load language file: " + config.lang + "!");
+            logger.info("Failed to load language file: " + config.getLang() + "!");
             ex.printStackTrace();
         }
 
         // Create thread pool
-        logger.info(lang.get(Lang.INIT_CREATING_THREAD_POOL, config.thread_pool_size));
-        generalThreadPool = Executors.newScheduledThreadPool(config.thread_pool_size);
+        logger.info(lang.get(Lang.INIT_CREATING_THREAD_POOL, config.getThread_pool_size()));
+        generalThreadPool = Executors.newScheduledThreadPool(config.getThread_pool_size());
 
         // Initialize console command reader
         console = new ConsoleCommandReader(this);
         console.startConsole();
 
         // set logger colors mod
-        logger.colorful = config.log_colors;
+        logger.colorful = config.isLog_colors();
 
         // Put at the top instead
         if (!IS_RELEASE)
             logger.info("This is a development build. It may contain bugs. Do not use on production.");
 
-        if (config.auto_login) {
+        if (config.getAuto_login()) {
             logger.info("******************************************");
             logger.info("");
             logger.info("\tYou're using autologin, make sure you are the only who can connect on this server !");
@@ -236,7 +262,7 @@ public class DragonProxy {
         logger.info("System arch : " + SystemUtils.OS_ARCH);
         logger.info("System os : " + SystemUtils.OS_NAME + " " + SystemUtils.OS_VERSION);
 
-        authMode = config.mode.toLowerCase();
+        authMode = config.getMode().toLowerCase();
         if (!authMode.equals("cls") && !authMode.equals("online") && !authMode.equals("offline") && !authMode.equals("hybrid"))
             logger.info("Invalid login 'mode' option detected, must be cls/online/offline. You set it to '" + authMode
                     + "'! ");
@@ -295,22 +321,27 @@ public class DragonProxy {
 //        });
     }
 
+    @Override
     public Properties getProperties() {
         return this.properties;
     }
 
+    @Override
     public String getVersion() {
         return this.version;
     }
 
+    @Override
     public String getMotd() {
         return this.motd;
     }
 
+    @Override
     public void onTick() {
         sessionRegister.onTick();
     }
 
+    @Override
     public void checkArguments(String[] args) {
         if (args != null)
             for (String arg : args)
@@ -321,6 +352,7 @@ public class DragonProxy {
                 }
     }
 
+    @Override
     public void shutdown() {
         this.logger.info(lang.get(Lang.SHUTTING_DOWN));
 
@@ -344,6 +376,7 @@ public class DragonProxy {
     /**
      * @return the skinFetcher
      */
+    @Override
     public SkinFetcher getSkinFetcher() {
         return skinFetcher;
     }

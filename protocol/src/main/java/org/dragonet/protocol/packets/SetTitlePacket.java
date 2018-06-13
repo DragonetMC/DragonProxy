@@ -1,7 +1,7 @@
 package org.dragonet.protocol.packets;
 
 import com.github.steveice10.mc.protocol.data.game.TitleAction;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.ProtocolInfo;
 
 public class SetTitlePacket extends PEPacket {

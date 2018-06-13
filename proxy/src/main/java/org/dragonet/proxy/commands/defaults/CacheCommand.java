@@ -12,8 +12,10 @@
  */
 package org.dragonet.proxy.commands.defaults;
 
+import org.dragonet.api.ProxyServer;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.commands.Command;
+import org.dragonet.api.commands.Command;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.proxy.network.UpstreamSession;
 
 public class CacheCommand extends Command {
@@ -22,14 +24,15 @@ public class CacheCommand extends Command {
         super(name, "Cache command, display cached objects info");
     }
 
-    public void execute(DragonProxy proxy, String[] args) {
+    @Override
+    public void execute(ProxyServer proxy, String[] args) {
         if (args.length == 0) {
             if (proxy.getSessionRegister().getAll().isEmpty()) {
                 proxy.getLogger().info("No session, no cache");
                 return;
             }
             proxy.getLogger().info("Display cache info per session");
-            for(UpstreamSession session : proxy.getSessionRegister().getAll().values()) {
+            for(IUpstreamSession session : proxy.getSessionRegister().getAll().values()) {
                 proxy.getLogger().info("Session: " + session.getRaknetID() + " (" + session.getUsername() + ")");
                 proxy.getLogger().info("\tentities :" + session.getEntityCache().getEntities().size());
                 proxy.getLogger().info("\tchunks :" + session.getChunkCache().getChunks().size());

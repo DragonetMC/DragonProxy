@@ -19,8 +19,8 @@ import org.dragonet.common.maths.BlockPosition;
 import org.dragonet.common.maths.Vector3F;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.translators.IPCPacketTranslator;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.packets.LevelSoundEventPacket;
 import org.dragonet.protocol.packets.PlaySoundPacket;
 

@@ -1,7 +1,7 @@
 package org.dragonet.protocol.packets;
 
 import org.dragonet.common.maths.Vector3F;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.ProtocolInfo;
 
 public class SpawnExperienceOrb extends PEPacket {

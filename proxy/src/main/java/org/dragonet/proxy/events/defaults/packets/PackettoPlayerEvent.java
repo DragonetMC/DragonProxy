@@ -1,9 +1,9 @@
 package org.dragonet.proxy.events.defaults.packets;
 
-import org.dragonet.protocol.PEPacket;
-import org.dragonet.proxy.events.Cancellable;
-import org.dragonet.proxy.events.HandlerList;
+import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.events.HandlerList;
 import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.api.events.Cancellable;
 
 public class PackettoPlayerEvent extends PEPacketEvent implements Cancellable{
 

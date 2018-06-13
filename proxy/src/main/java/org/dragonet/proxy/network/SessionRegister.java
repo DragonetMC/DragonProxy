@@ -14,19 +14,18 @@ package org.dragonet.proxy.network;
 
 import co.aikar.timings.Timings;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.dragonet.api.ProxyServer;
+import org.dragonet.api.sessions.ISessionRegister;
+import org.dragonet.api.sessions.IUpstreamSession;
 
-import org.dragonet.proxy.DragonProxy;
+public class SessionRegister implements ISessionRegister {
 
-public class SessionRegister {
+    private final ProxyServer proxy;
+    private final Map<String, IUpstreamSession> clients = new ConcurrentHashMap();
 
-    private final DragonProxy proxy;
-    private final Map<String, UpstreamSession> clients = new ConcurrentHashMap();
-
-    public SessionRegister(DragonProxy proxy) {
+    public SessionRegister(ProxyServer proxy) {
         this.proxy = proxy;
     }
 
@@ -36,7 +35,7 @@ public class SessionRegister {
         Timings.connectionTimer.stopTiming();
     }
 
-    public void newSession(UpstreamSession session) {
+    public void newSession(IUpstreamSession session) {
         clients.put(session.getRaknetID(), session);
     }
 
@@ -44,11 +43,11 @@ public class SessionRegister {
         clients.remove(session.getRaknetID());
     }
 
-    public UpstreamSession getSession(String identifier) {
+    public IUpstreamSession getSession(String identifier) {
         return clients.get(identifier);
     }
 
-    public Map<String, UpstreamSession> getAll() {
+    public Map<String, IUpstreamSession> getAll() {
         return Collections.unmodifiableMap(clients);
     }
 

@@ -48,8 +48,8 @@
 
     <modules>
         <module>commons</module>
-        <module>protocol</module>
         <module>api</module>
+        <module>protocol</module>
         <module>proxy</module>
         <module>plugin</module>
     </modules>

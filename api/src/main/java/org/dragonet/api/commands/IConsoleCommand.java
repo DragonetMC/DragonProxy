@@ -10,21 +10,11 @@
  *
  * @author The Dragonet Team
  */
-package org.dragonet.proxy.network;
+package org.dragonet.api.commands;
 
-public interface IDownstreamSession<PACKET> {
+import org.dragonet.api.ProxyServer;
 
-    public void connect(String addr, int port);
+public interface IConsoleCommand {
 
-    public void disconnect();
-
-    public boolean isConnected();
-
-    public void send(PACKET packet);
-
-    public void send(PACKET... packets);
-
-    public void sendChat(String chat);
-
-    public void onTick();
+    void execute(ProxyServer proxy, String[] args);
 }

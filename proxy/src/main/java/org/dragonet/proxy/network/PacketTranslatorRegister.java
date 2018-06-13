@@ -23,8 +23,8 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSl
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.*;
 import com.github.steveice10.packetlib.packet.Packet;
-import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.proxy.network.translator.IPEPacketTranslator;
+import org.dragonet.api.translators.IPCPacketTranslator;
+import org.dragonet.api.translators.IPEPacketTranslator;
 import org.dragonet.proxy.network.translator.pc.*;
 import org.dragonet.proxy.network.translator.pe.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerBossBarPacket;
@@ -37,11 +37,12 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.Serv
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPaintingPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerCloseWindowPacket;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.packets.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.dragonet.api.sessions.IUpstreamSession;
 
 public final class PacketTranslatorRegister {
 
@@ -150,7 +151,7 @@ public final class PacketTranslatorRegister {
         PE_TO_PC_TRANSLATOR.put(AnimatePacket.class, new PEAnimatePacketTranslator());
     }
 
-    public static PEPacket[] translateToPE(UpstreamSession session, Packet packet) {
+    public static PEPacket[] translateToPE(IUpstreamSession session, Packet packet) {
         if (packet == null)
             return null;
         //session.getProxy().getLogger().debug(packet.toString());

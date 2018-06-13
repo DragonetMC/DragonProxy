@@ -15,11 +15,11 @@ package org.dragonet.proxy.network.translator.pc;
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.translator.IPCPacketTranslator;
+import org.dragonet.api.translators.IPCPacketTranslator;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.packets.AdventureSettingsPacket;
 import org.dragonet.protocol.packets.LevelEventPacket;
 import org.dragonet.protocol.packets.SetPlayerGameTypePacket;

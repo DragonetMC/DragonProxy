@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import org.dragonet.common.maths.BlockPosition;
 import org.dragonet.common.maths.Vector3F;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.packets.LevelEventPacket;
 import org.dragonet.protocol.packets.PlaySoundPacket;
 import org.dragonet.protocol.packets.StopSoundPacket;
@@ -13,7 +13,7 @@ import org.dragonet.protocol.packets.TextPacket;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.JukeboxCache;
-import org.dragonet.proxy.network.translator.IPCPacketTranslator;
+import org.dragonet.api.translators.IPCPacketTranslator;
 import org.dragonet.common.data.ParticleEffects;
 
 import com.github.steveice10.mc.protocol.data.game.world.effect.BreakBlockEffectData;

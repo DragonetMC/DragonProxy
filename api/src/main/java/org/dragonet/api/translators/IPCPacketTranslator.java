@@ -10,12 +10,11 @@
  *
  * @author The Dragonet Team
  */
-package org.dragonet.proxy.network.translator;
-
-import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.protocol.PEPacket;
+package org.dragonet.api.translators;
 
 import com.github.steveice10.packetlib.packet.Packet;
+import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.sessions.IUpstreamSession;
 
 public interface IPCPacketTranslator<P extends Packet> {
 
@@ -26,5 +25,5 @@ public interface IPCPacketTranslator<P extends Packet> {
      * @param packet
      * @return
      */
-    PEPacket[] translate(UpstreamSession session, P packet);
+    PEPacket[] translate(IUpstreamSession session, P packet);
 }

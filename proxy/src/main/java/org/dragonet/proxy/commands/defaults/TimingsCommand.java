@@ -14,8 +14,9 @@ package org.dragonet.proxy.commands.defaults;
 
 import co.aikar.timings.Timings;
 import co.aikar.timings.TimingsExport;
+import org.dragonet.api.ProxyServer;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.commands.Command;
+import org.dragonet.api.commands.Command;
 
 public class TimingsCommand extends Command {
 
@@ -23,7 +24,8 @@ public class TimingsCommand extends Command {
         super(name, "Timings command (start / stop / paste / history)");
     }
 
-    public void execute(DragonProxy proxy, String[] args) {
+    @Override
+    public void execute(ProxyServer proxy, String[] args) {
         if (args.length == 0) {
             proxy.getLogger().info("Timings command (start / stop / paste / history)");
         }

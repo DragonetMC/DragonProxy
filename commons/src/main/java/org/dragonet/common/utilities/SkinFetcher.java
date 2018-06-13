@@ -34,6 +34,7 @@ import java.text.ParseException;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import org.dragonet.api.skins.ISkinFetcher;
 import org.dragonet.common.data.entity.Skin;
 import org.dragonet.common.data.entity.Skin.Cape;
 
@@ -41,7 +42,7 @@ import org.dragonet.common.data.entity.Skin.Cape;
  *
  * @author Epic
  */
-public class SkinFetcher {
+public class SkinFetcher implements ISkinFetcher {
 
     private final Gson gson = new Gson();
     private static final String PROFILE_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";

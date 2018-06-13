@@ -1,4 +1,4 @@
-package org.dragonet.proxy.events;
+package org.dragonet.api.events;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -10,7 +10,7 @@ public class WrapedListener {
     private final Plugin plugin;
     private final Listener listener;
     private final Method method;
-    
+
     public WrapedListener(Plugin plugin, Listener listener, Method method) {
         super();
         this.plugin = plugin;
@@ -18,14 +18,14 @@ public class WrapedListener {
         this.method = method;
     }
 
-    public void callEvent(Event event){
+    public void callEvent(Event event) {
         try {
             method.invoke(listener, event);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             e.printStackTrace();
         }
     }
-    
+
     public Plugin getPlugin() {
         return plugin;
     }

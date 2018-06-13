@@ -1,7 +1,7 @@
 package org.dragonet.proxy.events.defaults.packets;
 
-import org.dragonet.protocol.PEPacket;
-import org.dragonet.proxy.events.Event;
+import org.dragonet.api.network.PEPacket;
+import org.dragonet.api.events.Event;
 
 public abstract class PEPacketEvent extends Event {
 

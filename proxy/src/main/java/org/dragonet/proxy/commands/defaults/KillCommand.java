@@ -12,8 +12,8 @@
  */
 package org.dragonet.proxy.commands.defaults;
 
-import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.commands.Command;
+import org.dragonet.api.ProxyServer;
+import org.dragonet.api.commands.Command;
 
 // Only use if you have to. Clients will eventually timeout.
 public class KillCommand extends Command {
@@ -22,7 +22,8 @@ public class KillCommand extends Command {
         super(name, "Forcefully kill the proxy");
     }
 
-    public void execute(DragonProxy proxy, String[] args) {
+    @Override
+    public void execute(ProxyServer proxy, String[] args) {
         proxy.getLogger().info("Forcefully killing proxy...");
         System.exit(0);
     }

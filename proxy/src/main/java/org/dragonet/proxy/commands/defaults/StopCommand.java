@@ -12,8 +12,8 @@
  */
 package org.dragonet.proxy.commands.defaults;
 
-import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.commands.Command;
+import org.dragonet.api.ProxyServer;
+import org.dragonet.api.commands.Command;
 
 public class StopCommand extends Command {
 
@@ -21,7 +21,8 @@ public class StopCommand extends Command {
         super(name, "Stop the proxy");
     }
 
-    public void execute(DragonProxy proxy, String[] args) {
+    @Override
+    public void execute(ProxyServer proxy, String[] args) {
         proxy.shutdown();
     }
 }

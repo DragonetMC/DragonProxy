@@ -25,6 +25,9 @@ import com.whirvis.jraknet.server.RakNetServer;
 import com.whirvis.jraknet.server.RakNetServerListener;
 import com.whirvis.jraknet.server.ServerPing;
 import com.whirvis.jraknet.session.RakNetClientSession;
+import org.dragonet.api.ProxyServer;
+import org.dragonet.api.sessions.ISessionRegister;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.protocol.ProtocolInfo;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
@@ -35,8 +38,8 @@ public class RaknetInterface implements RakNetServerListener {
 
     public static final Set<String> IMMEDIATE_PACKETS = new HashSet<>();
 
-    private final DragonProxy proxy;
-    private final SessionRegister sessions;
+    private final ProxyServer proxy;
+    private final ISessionRegister sessions;
     private final RakNetServer rakServer;
 
     private long serverId = new Random().nextLong();
@@ -48,7 +51,7 @@ public class RaknetInterface implements RakNetServerListener {
         IMMEDIATE_PACKETS.add("PlayStatus");
     }
 
-    public RaknetInterface(DragonProxy proxy, String ip, int port, String serverName, int maxPlayers) {
+    public RaknetInterface(ProxyServer proxy, String ip, int port, String serverName, int maxPlayers) {
         this.proxy = proxy;
         this.serverName = serverName;
         this.maxPlayers = maxPlayers;
@@ -67,7 +70,7 @@ public class RaknetInterface implements RakNetServerListener {
         }, 500, 500, TimeUnit.MILLISECONDS);
     }
 
-    public DragonProxy getProxy() {
+    public ProxyServer getProxy() {
         return proxy;
     }
 
@@ -83,12 +86,14 @@ public class RaknetInterface implements RakNetServerListener {
         return rakServer;
     }
 
+    @Override
     public void handlePing(ServerPing ping) {
         DragonProxy.getInstance().getLogger().debug("PING " + ping.getSender().toString());
     }
 
+    @Override
     public void handleMessage(RakNetClientSession session, RakNetPacket packet, int channel) {
-        UpstreamSession upstream = sessions.getSession(session.getAddress().toString());
+        IUpstreamSession upstream = sessions.getSession(session.getAddress().toString());
         if (upstream == null)
             return;
         // System.out.println("Received RakNet packet: " +
@@ -96,6 +101,7 @@ public class RaknetInterface implements RakNetServerListener {
         upstream.handlePacketBinary(packet.array());
     }
 
+    @Override
     public void onClientConnect(RakNetClientSession session) {
         DragonProxy.getInstance().getLogger().debug("CLIENT CONNECT");
         String identifier = session.getAddress().toString();
@@ -103,6 +109,7 @@ public class RaknetInterface implements RakNetServerListener {
         sessions.newSession(upstream);
     }
 
+    @Override
     public void onClientDisconnect(RakNetClientSession session, String reason) {
         DragonProxy.getInstance().getLogger().debug("CLIENT DISCONNECT");
         UpstreamSession upstream = sessions.getSession(session.getAddress().toString());
@@ -112,16 +119,19 @@ public class RaknetInterface implements RakNetServerListener {
         // things.
     }
 
+    @Override
     public void onThreadException(Throwable throwable) {
         DragonProxy.getInstance().getLogger().debug("Thread exception: " + throwable.getMessage());
         throwable.printStackTrace();
     }
 
+    @Override
     public void onHandlerException(InetSocketAddress address, Throwable throwable) {
         DragonProxy.getInstance().getLogger().debug("Handler exception: " + throwable.getMessage());
         throwable.printStackTrace();
     }
 
+    @Override
     public void onSessionException(RakNetClientSession session, Throwable throwable) {
         DragonProxy.getInstance().getLogger().debug("Session exception: " + throwable.getMessage());
         throwable.printStackTrace();

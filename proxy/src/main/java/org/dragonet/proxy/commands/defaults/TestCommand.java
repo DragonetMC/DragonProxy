@@ -3,7 +3,7 @@ package org.dragonet.proxy.commands.defaults;
 import org.dragonet.common.maths.Vector3F;
 import org.dragonet.protocol.packets.*;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.commands.Command;
+import org.dragonet.api.commands.Command;
 import org.dragonet.common.gui.CustomFormComponent;
 import org.dragonet.common.gui.DropDownComponent;
 import org.dragonet.common.gui.LabelComponent;
@@ -15,6 +15,7 @@ import org.dragonet.common.maths.BlockPosition;
 
 
 import java.util.Arrays;
+import org.dragonet.api.ProxyServer;
 
 /**
  * Created on 2017/9/13.
@@ -25,7 +26,8 @@ public class TestCommand extends Command {
         super(name);
     }
 
-    public void execute(DragonProxy proxy, String[] args) {
+    @Override
+    public void execute(ProxyServer proxy, String[] args) {
         if (args.length == 0) {
             System.out.println("This is a developer's command! ");
             return;

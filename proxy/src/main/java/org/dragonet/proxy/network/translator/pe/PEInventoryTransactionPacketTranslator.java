@@ -25,7 +25,7 @@ import org.dragonet.protocol.type.transaction.data.UseItemOnEntityData;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.translator.IPEPacketTranslator;
+import org.dragonet.api.translators.IPEPacketTranslator;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.utilities.DebugTools;
 

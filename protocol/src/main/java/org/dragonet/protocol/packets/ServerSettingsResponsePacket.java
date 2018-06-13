@@ -5,7 +5,7 @@
  */
 package org.dragonet.protocol.packets;
 
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.ProtocolInfo;
 
 /**

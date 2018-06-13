@@ -16,8 +16,8 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.Serv
 import org.dragonet.common.data.entity.PEEntityAttribute;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.translators.IPCPacketTranslator;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.packets.RespawnPacket;
 import org.dragonet.protocol.packets.SetHealthPacket;
 import org.dragonet.protocol.packets.UpdateAttributesPacket;

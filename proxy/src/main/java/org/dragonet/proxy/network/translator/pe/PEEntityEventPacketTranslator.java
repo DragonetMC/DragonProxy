@@ -3,7 +3,7 @@ package org.dragonet.proxy.network.translator.pe;
 import org.dragonet.protocol.packets.EntityEventPacket;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.translator.IPEPacketTranslator;
+import org.dragonet.api.translators.IPEPacketTranslator;
 
 import com.github.steveice10.packetlib.packet.Packet;
 

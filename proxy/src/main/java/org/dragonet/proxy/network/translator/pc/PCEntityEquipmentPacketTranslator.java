@@ -5,9 +5,9 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntit
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
-import org.dragonet.proxy.network.translator.IPCPacketTranslator;
+import org.dragonet.api.translators.IPCPacketTranslator;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.packets.MobEquipmentPacket;
 
 public class PCEntityEquipmentPacketTranslator implements IPCPacketTranslator<ServerEntityEquipmentPacket> {

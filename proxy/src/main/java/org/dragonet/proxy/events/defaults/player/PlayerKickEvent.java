@@ -1,8 +1,8 @@
 package org.dragonet.proxy.events.defaults.player;
 
-import org.dragonet.proxy.events.Cancellable;
-import org.dragonet.proxy.events.HandlerList;
+import org.dragonet.api.events.HandlerList;
 import org.dragonet.proxy.network.UpstreamSession;
+import org.dragonet.api.events.Cancellable;
 
 public class PlayerKickEvent extends PlayerEvent implements Cancellable{
 

@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.dragonet.common.data.entity.PEEntityAttribute;
 import org.dragonet.common.data.entity.meta.EntityMetaData;
 import org.dragonet.common.maths.Vector3F;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.ProtocolInfo;
 import org.dragonet.common.data.entity.PEEntityLink;
 

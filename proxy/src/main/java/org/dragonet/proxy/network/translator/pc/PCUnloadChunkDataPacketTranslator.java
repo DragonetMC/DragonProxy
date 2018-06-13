@@ -15,8 +15,8 @@ package org.dragonet.proxy.network.translator.pc;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerUnloadChunkPacket;
 
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.translator.IPCPacketTranslator;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.translators.IPCPacketTranslator;
+import org.dragonet.api.network.PEPacket;
 
 public class PCUnloadChunkDataPacketTranslator implements IPCPacketTranslator<ServerUnloadChunkPacket> {
 

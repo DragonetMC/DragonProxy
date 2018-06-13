@@ -1,4 +1,4 @@
-package org.dragonet.proxy.configuration;
+package org.dragonet.api.configuration;
 
 import java.util.Map;
 

@@ -17,11 +17,11 @@ import com.github.steveice10.mc.protocol.data.game.world.sound.CustomSound;
 
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.translator.IPCPacketTranslator;
+import org.dragonet.api.translators.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerPlaySoundPacket;
 
 import org.dragonet.common.maths.BlockPosition;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.packets.PlaySoundPacket;
 
 public class PCPlaySoundPacketTranslator implements IPCPacketTranslator<ServerPlaySoundPacket> {

@@ -12,6 +12,7 @@
  */
 package org.dragonet.proxy.network;
 
+import org.dragonet.api.sessions.IDownstreamSession;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
 import com.github.steveice10.mc.auth.exception.request.RequestException;
@@ -35,7 +36,7 @@ import org.dragonet.common.data.entity.EntityType;
 import org.dragonet.proxy.network.cache.EntityCache;
 import org.dragonet.proxy.network.cache.JukeboxCache;
 import org.dragonet.proxy.network.cache.WindowCache;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.ProtocolInfo;
 import org.dragonet.protocol.packets.DisconnectPacket;
 import org.dragonet.protocol.packets.FullChunkDataPacket;
@@ -64,6 +65,8 @@ import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.zip.Deflater;
+import org.dragonet.api.ProxyServer;
+import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.common.data.blocks.BlockEnum;
 import org.dragonet.common.data.inventory.ContainerId;
 import org.dragonet.common.data.inventory.Slot;
@@ -75,9 +78,9 @@ import org.dragonet.proxy.network.cache.ChunkCache;
  * Maintaince the connection between the proxy and Minecraft: Pocket Edition
  * clients.
  */
-public class UpstreamSession {
+public class UpstreamSession implements IUpstreamSession {
 
-    private final DragonProxy proxy;
+    private final ProxyServer proxy;
     private final String raknetID;
     private final RakNetClientSession raknetClient;
     private boolean loggedIn = false;
@@ -103,7 +106,7 @@ public class UpstreamSession {
     private final ChunkCache chunkCache = new ChunkCache(this);
     private final JukeboxCache jukeboxCache = new JukeboxCache();
 
-    public UpstreamSession(DragonProxy proxy, String raknetID, RakNetClientSession raknetClient,
+    public UpstreamSession(ProxyServer proxy, String raknetID, RakNetClientSession raknetClient,
             InetSocketAddress remoteAddress) {
         this.proxy = proxy;
         this.raknetID = raknetID;
@@ -112,10 +115,12 @@ public class UpstreamSession {
         this.packetProcessor = new PEPacketProcessor(this);
     }
 
-    public DragonProxy getProxy() {
+    @Override
+    public ProxyServer getProxy() {
         return proxy;
     }
 
+    @Override
     public String getRaknetID() {
         return raknetID;
     }
@@ -124,14 +129,17 @@ public class UpstreamSession {
         return raknetClient;
     }
 
+    @Override
     public boolean isLoggedIn() {
         return loggedIn;
     }
 
+    @Override
     public boolean isSpawned() {
         return spawned;
     }
 
+    @Override
     public InetSocketAddress getRemoteAddress() {
         return remoteAddress;
     }
@@ -144,14 +152,17 @@ public class UpstreamSession {
         return profile;
     }
 
+    @Override
     public String getUsername() {
         return username;
     }
 
+    @Override
     public IDownstreamSession getDownstream() {
         return downstream;
     }
 
+    @Override
     public Map<String, Object> getDataCache() {
         return dataCache;
     }
@@ -175,7 +186,7 @@ public class UpstreamSession {
     public MinecraftProtocol getProtocol() {
         return protocol;
     }
-    
+
     public JukeboxCache getJukeboxCache() {
     	return jukeboxCache;
     }
@@ -189,7 +200,7 @@ public class UpstreamSession {
         if (packet == null)
             return;
 
-        if(!proxy.getConfig().disable_packet_events){
+        if(!proxy.getConfig().getDisable_packet_events()){
             PackettoPlayerEvent packetEvent = new PackettoPlayerEvent(this, packet);
             proxy.getEventManager().callEvent(packetEvent);
             packet = packetEvent.getPacket();

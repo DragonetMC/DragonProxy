@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.Deflater;
 import org.dragonet.common.utilities.Binary;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.Protocol;
 import org.dragonet.protocol.ProtocolInfo;
 import org.dragonet.common.utilities.Zlib;

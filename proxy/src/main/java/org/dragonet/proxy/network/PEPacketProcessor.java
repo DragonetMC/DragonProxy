@@ -34,12 +34,12 @@ import org.dragonet.common.utilities.BinaryStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.dragonet.protocol.ProtocolInfo;
-import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.Protocol;
 
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.ServerConfig;
 import org.dragonet.proxy.events.defaults.packets.PacketfromPlayerEvent;
+import org.dragonet.proxy.protocol.PEPacket;
 
 public class PEPacketProcessor {
 
@@ -66,12 +66,12 @@ public class PEPacketProcessor {
     public PEPacketProcessor(UpstreamSession client) {
         ServerConfig config = DragonProxy.getInstance().getConfig();
 
-        if (config.proxy_type.equalsIgnoreCase("none") || config.proxy_type.equalsIgnoreCase("direct"))
+        if (config.getProxy_type().equalsIgnoreCase("none") || config.getProxy_type().equalsIgnoreCase("direct"))
             authProxy = null;
         else {
-            Proxy.Type type = Proxy.Type.valueOf(config.proxy_type.toUpperCase());
+            Proxy.Type type = Proxy.Type.valueOf(config.getProxy_type().toUpperCase());
             if (type != null)
-                authProxy = new Proxy(type, new InetSocketAddress(config.proxy_ip, config.proxy_port));
+                authProxy = new Proxy(type, new InetSocketAddress(config.getProxy_ip(), config.getProxy_port()));
             else
                 authProxy = null;
         }

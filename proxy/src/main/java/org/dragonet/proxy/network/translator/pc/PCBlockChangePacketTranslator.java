@@ -17,12 +17,12 @@ import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.github.steveice10.mc.protocol.data.game.world.sound.BuiltinSound;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerBlockChangePacket;
 import org.dragonet.proxy.network.UpstreamSession;
-import org.dragonet.proxy.network.translator.IPCPacketTranslator;
+import org.dragonet.api.translators.IPCPacketTranslator;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 
 import org.dragonet.common.data.blocks.GlobalBlockPalette;
 import org.dragonet.common.data.itemsblocks.ItemEntry;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.packets.LevelEventPacket;
 import org.dragonet.protocol.packets.LevelSoundEventPacket;
 import org.dragonet.protocol.packets.PlaySoundPacket;

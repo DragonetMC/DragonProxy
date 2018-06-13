@@ -24,13 +24,13 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindo
 import org.dragonet.common.data.inventory.ContainerId;
 import org.dragonet.common.data.inventory.Slot;
 import org.dragonet.common.maths.BlockPosition;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.packets.ContainerClosePacket;
 import org.dragonet.protocol.packets.InventoryContentPacket;
 import org.dragonet.proxy.network.cache.CachedWindow;
 import org.dragonet.proxy.network.translator.ItemBlockTranslator;
 import org.dragonet.proxy.network.translator.inv.*;
-import org.dragonet.proxy.network.translator.IInventoryTranslator;
+import org.dragonet.api.translators.IInventoryTranslator;
 import org.dragonet.proxy.DragonProxy;
 import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
@@ -54,14 +54,14 @@ public final class InventoryTranslatorRegister {
         ret.items = new Slot[40];
         // hotbar
         for (int i = 36; i < 45; i++)
-            ret.items[i - 36] = ItemBlockTranslator.translateSlotToPE(win.slots[i]);
+            ret.items[i - 36] = ItemBlockTranslator.translateSlotToPE(win.getSlots()[i]);
         // inventory
         for (int i = 9; i < 36; i++)
             // TODO: Add NBT support
-            ret.items[i] = ItemBlockTranslator.translateSlotToPE(win.slots[i]);
+            ret.items[i] = ItemBlockTranslator.translateSlotToPE(win.getSlots()[i]);
         // armors
         for (int i = 5; i < 9; i++)
-            ret.items[i + 31] = ItemBlockTranslator.translateSlotToPE(win.slots[i]);
+            ret.items[i + 31] = ItemBlockTranslator.translateSlotToPE(win.getSlots()[i]);
         // TODO: Add armor support
         return new PEPacket[]{ret};
     }
@@ -77,7 +77,7 @@ public final class InventoryTranslatorRegister {
             translator.prepare(session, cached);
             DragonProxy.getInstance().getGeneralThreadPool().schedule(() -> { // with this -> double chest, without -> content....
                 translator.open(session, cached);
-                cached.isOpen = true;
+                cached.setIsOpen(true);
                 com.github.steveice10.packetlib.packet.Packet[] items = session.getWindowCache().getCachedPackets(win.getWindowId());
                 for (com.github.steveice10.packetlib.packet.Packet item : items)
                     if (item != null)
@@ -134,12 +134,12 @@ public final class InventoryTranslatorRegister {
         }
 
         CachedWindow win = session.getWindowCache().get(openedId);
-        IInventoryTranslator translator = TRANSLATORS.get(win.pcType);
+        IInventoryTranslator translator = TRANSLATORS.get(win.getPcType());
         if (translator == null) {
             session.getDownstream().send(new ClientCloseWindowPacket(packet.getWindowId()));
             return;
         }
-        win.slots = packet.getItems();
+        win.setSlots(packet.getItems());
         translator.updateContent(session, win);
     }
 
@@ -159,16 +159,16 @@ public final class InventoryTranslatorRegister {
             return;
         }
         CachedWindow win = session.getWindowCache().get(openedId);
-        if (win.size <= packet.getSlot()) {
+        if (win.getSize() <= packet.getSlot()) {
             session.getDownstream().send(new ClientCloseWindowPacket(packet.getWindowId()));
             return;
         }
-        IInventoryTranslator translator = TRANSLATORS.get(win.pcType);
+        IInventoryTranslator translator = TRANSLATORS.get(win.getPcType());
         if (translator == null) {
             session.getDownstream().send(new ClientCloseWindowPacket(packet.getWindowId()));
             return;
         }
-        win.slots[packet.getSlot()] = packet.getItem(); // Update here
+        win.getSlots()[packet.getSlot()] = packet.getItem(); // Update here
         translator.updateSlot(session, win, packet.getSlot());
     }
 }

@@ -15,9 +15,9 @@ package org.dragonet.proxy.network.translator.pc;
 import org.dragonet.proxy.network.InventoryTranslatorRegister;
 import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedWindow;
-import org.dragonet.proxy.network.translator.IPCPacketTranslator;
+import org.dragonet.api.translators.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 
 public class PCWindowItemsTranslator implements IPCPacketTranslator<ServerWindowItemsPacket> {
 
@@ -34,7 +34,7 @@ public class PCWindowItemsTranslator implements IPCPacketTranslator<ServerWindow
                 return null;
             }
             // Update items in window cache
-            win.slots = packet.getItems();
+            win.setSlots(packet.getItems());
             return InventoryTranslatorRegister.sendPlayerInventory(session);
         }
         InventoryTranslatorRegister.updateContent(session, packet);

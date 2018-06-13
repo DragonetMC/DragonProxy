@@ -56,7 +56,7 @@ public final class WindowCache {
 
     // We do not do translations here, do it in InventoryTranslatorRegister
     public void cacheWindow(CachedWindow win) {
-        windows.put(win.windowId, win);
+        windows.put(win.getWindowId(), win);
     }
 
     public CachedWindow removeWindow(int id) {

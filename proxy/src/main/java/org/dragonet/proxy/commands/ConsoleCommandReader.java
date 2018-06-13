@@ -20,25 +20,29 @@ import java.util.logging.Logger;
 import org.dragonet.proxy.DragonProxy;
 
 import net.minecrell.terminalconsole.TerminalConsoleAppender;
+import org.dragonet.api.ProxyServer;
+import org.dragonet.api.commands.IConsoleCommandReader;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.UserInterruptException;
 import org.jline.terminal.Terminal;
 
-public class ConsoleCommandReader {
+public class ConsoleCommandReader implements IConsoleCommandReader {
 
-    private final DragonProxy proxy;
+    private final ProxyServer proxy;
     private final Terminal terminal;
     private Thread thread;
 
-    public ConsoleCommandReader(DragonProxy proxy) {
+    public ConsoleCommandReader(ProxyServer proxy) {
         this.proxy = proxy;
         this.terminal = TerminalConsoleAppender.getTerminal();
     }
 
+    @Override
     public void startConsole() {
         thread = new Thread() {
+            @Override
             public void run() {
                 if (terminal != null) {
                     LineReader reader = LineReaderBuilder.builder()

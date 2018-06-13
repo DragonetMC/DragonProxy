@@ -1,6 +1,6 @@
 package org.dragonet.proxy.events.defaults.player;
 
-import org.dragonet.proxy.events.Event;
+import org.dragonet.api.events.Event;
 import org.dragonet.proxy.network.UpstreamSession;
 
 public abstract class PlayerEvent extends Event {

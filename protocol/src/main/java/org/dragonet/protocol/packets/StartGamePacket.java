@@ -4,7 +4,7 @@ import com.github.steveice10.mc.protocol.data.game.setting.Difficulty;
 import org.dragonet.common.maths.BlockPosition;
 import org.dragonet.common.maths.Vector3F;
 import org.dragonet.common.utilities.GameRule;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.ProtocolInfo;
 
 import java.util.Map;

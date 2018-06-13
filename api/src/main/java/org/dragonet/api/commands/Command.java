@@ -1,12 +1,11 @@
-package org.dragonet.proxy.commands;
+package org.dragonet.api.commands;
 
-import org.dragonet.proxy.DragonProxy;
+import org.dragonet.api.ProxyServer;
 
 public abstract class Command {
 
     private final String name;
     protected String description = "";
-    private CommandRegister commandMap = null;
 
     // constructor
     public Command(String name) {
@@ -26,6 +25,6 @@ public abstract class Command {
         return description;
     }
 
-    public abstract void execute(DragonProxy proxy, String[] args);
+    public abstract void execute(ProxyServer proxy, String[] args);
 
 }

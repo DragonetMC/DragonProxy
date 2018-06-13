@@ -1,4 +1,4 @@
-package org.dragonet.protocol;
+package org.dragonet.api.network;
 
 import org.dragonet.common.utilities.BinaryStream;
 

@@ -3,7 +3,7 @@ package org.dragonet.protocol.packets;
 import java.util.Collection;
 
 import org.dragonet.common.data.entity.PEEntityAttribute;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.ProtocolInfo;
 
 /**

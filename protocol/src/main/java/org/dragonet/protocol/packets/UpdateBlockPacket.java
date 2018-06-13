@@ -2,7 +2,7 @@ package org.dragonet.protocol.packets;
 
 import org.dragonet.common.data.blocks.GlobalBlockPalette;
 import org.dragonet.common.maths.BlockPosition;
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.protocol.ProtocolInfo;
 
 /**

@@ -15,7 +15,6 @@ package org.dragonet.proxy.utilities;
 import io.sentry.Sentry;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Date;
 import java.util.logging.ConsoleHandler;
@@ -25,9 +24,10 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+import org.dragonet.api.logger.IProxyLogger;
 import org.dragonet.proxy.DragonProxy;
 
-public class ProxyLogger {
+public class ProxyLogger implements IProxyLogger {
 
     private final java.util.logging.Logger logger;
     private DragonProxy proxy;
@@ -96,23 +96,28 @@ public class ProxyLogger {
         }
     }
 
+    @Override
     public void info(String message) {
-        logger.info(org.dragonet.common.maths.MCColor.printConsole(message, proxy.getConfig().log_colors));
+        logger.info(org.dragonet.common.maths.MCColor.printConsole(message, proxy.getConfig().isLog_colors()));
     }
 
+    @Override
     public void warning(String message) {
-        logger.warning(org.dragonet.common.maths.MCColor.printConsole(message, proxy.getConfig().log_colors));
+        logger.warning(org.dragonet.common.maths.MCColor.printConsole(message, proxy.getConfig().isLog_colors()));
     }
 
+    @Override
     public void severe(String message) {
-        logger.severe(org.dragonet.common.maths.MCColor.printConsole(message, proxy.getConfig().log_colors));
+        logger.severe(org.dragonet.common.maths.MCColor.printConsole(message, proxy.getConfig().isLog_colors()));
     }
 
+    @Override
     public void debug(String message) {
         if (debug)
-            logger.info(org.dragonet.common.maths.MCColor.printConsole(message, proxy.getConfig().log_colors));
+            logger.info(org.dragonet.common.maths.MCColor.printConsole(message, proxy.getConfig().isLog_colors()));
     }
 
+    @Override
     public void stop() {
         for (Handler handler : logger.getHandlers())
             handler.close();
