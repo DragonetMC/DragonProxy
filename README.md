@@ -15,7 +15,8 @@ If you get banned from a server, we do not take responsabilities.
 
 ## Who uses DragonProxy
 See live stats on BStats[![Bstats](https://bstats.org/signatures/server-implementation/DragonProxy.svg)](https://bstats.org/plugin/server-implementation/DragonProxy/)
-If you want your server featured here, please ask on our Discord !
+
+ - If you want your server featured here, please ask on our Discord !
 
 ## Features
 - Currently supporting Bedrock 1.4.2 and Java 1.12.2
