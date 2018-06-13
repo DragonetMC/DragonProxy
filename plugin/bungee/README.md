@@ -5,6 +5,8 @@ This plugin allow XboxLive auth and Mojang auth to works at the same time.
 
 WARNING : works only if Bungeecord if online mode !
 
+[Download on the snapshot build server](https://ci.codemc.org/job/DragonetMC/job/DragonProxy/lastSuccessfulBuild/artifact/plugin/bungee/target/dragonproxy-plugin-bungee-0.3.4.5-SNAPSHOT.jar)
+
 Config :
  - auth_bypass_ip : a list of allowed incoming xboxlive IPs, meaning your DragonProxy server IP (127.0.0.1 if on the same host)
 
