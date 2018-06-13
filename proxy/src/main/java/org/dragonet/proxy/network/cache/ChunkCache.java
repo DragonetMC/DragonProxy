@@ -60,7 +60,7 @@ public class ChunkCache {
     }
 
     public void onTick() {
-        //dequeue update blocks
+        // dequeue update blocks
         int counter = 0;
         while (!updateQueue.isEmpty() && counter <= chunkPerTick) {
             session.sendPacket(updateQueue.poll());
@@ -86,12 +86,13 @@ public class ChunkCache {
     public void update(Column column) {
         ChunkPos columnPos = new ChunkPos(column.getX(), column.getZ());
         chunkCache.put(columnPos, column);
-//        System.out.println("ChunkCache add or update chunk " + column.getX() + ", " + column.getZ());
+        // System.out.println("ChunkCache add or update chunk " + column.getX() + ", " +
+        // column.getZ());
     }
 
     public void remove(int x, int z) {
         ChunkPos columnPos = new ChunkPos(x, z);
-//        System.out.println("ChunkCache remove chunk " + columnPos.toString());
+        // System.out.println("ChunkCache remove chunk " + columnPos.toString());
         if (chunkCache.containsKey(columnPos))
             chunkCache.remove(columnPos);
         if (loadedChunks.contains(columnPos)) {
@@ -102,7 +103,7 @@ public class ChunkCache {
 
     public void sendChunk(int x, int z, boolean force) {
         ChunkPos columnPos = new ChunkPos(x, z);
-//        System.out.println("Try sending chunk " + x + ", " + z);
+        // System.out.println("Try sending chunk " + x + ", " + z);
         if (!loadedChunks.contains(columnPos) || force)
             try {
                 FullChunkDataPacket pePacket = new FullChunkDataPacket();
@@ -136,19 +137,23 @@ public class ChunkCache {
         if (position.getY() < 0) //never behind 0
             return;
         ChunkPos columnPos = new ChunkPos(position.getX() >> 4, position.getZ() >> 4);
-//        System.out.println("translateBlock Position " + position.toString());
+        // System.out.println("translateBlock Position " + position.toString());
         if (chunkCache.containsKey(columnPos))
             try {
                 Column column = chunkCache.get(columnPos);
                 BlockPosition blockPos = columnPos.getBlockInChunk(position.getX(), position.getY(), position.getZ());
-                Chunk chunk = column.getChunks()[position.getY() >> 4];
-                if (chunk != null)
-                    chunk.getBlocks().set(blockPos.x, blockPos.y, blockPos.z, block);
+                if ((position.getY() >> 4) >= 0) {
+                    Chunk chunk = column.getChunks()[position.getY() >> 4];
+                    if (chunk != null)
+                        chunk.getBlocks().set(blockPos.x, blockPos.y, blockPos.z, block);
+                }
             } catch (java.lang.ArrayIndexOutOfBoundsException ex) {
-                this.session.getProxy().getLogger().info("update(" + position.toString() + ", " + block.toString() + ")) fail to get chunk " + (position.getX() >> 4) + "/" + (position.getY() >> 4) + "/" + (position.getZ() >> 4));
+                this.session.getProxy().getLogger()
+                        .info("update(" + position.toString() + ", " + block.toString() + ")) fail to get chunk "
+                                + (position.getX() >> 4) + "/" + (position.getY() >> 4) + "/" + (position.getZ() >> 4));
                 ex.printStackTrace();
             }
-        //enqueue block update
+        // enqueue block update
     }
 
     public final ItemEntry translateBlock(Position position) {
@@ -159,13 +164,16 @@ public class ChunkCache {
             try {
                 Column column = chunkCache.get(columnPos);
                 BlockPosition blockPos = columnPos.getBlockInChunk(position.getX(), position.getY(), position.getZ());
-                Chunk chunk = column.getChunks()[position.getY() >> 4];
-                if (chunk != null) {
-                    BlockState block = chunk.getBlocks().get(blockPos.x, blockPos.y, blockPos.z);
-                    return ItemBlockTranslator.translateToPE(block.getId(), block.getData());
+                if ((position.getY() >> 4) >= 0) {
+                    Chunk chunk = column.getChunks()[position.getY() >> 4];
+                    if (chunk != null) {
+                        BlockState block = chunk.getBlocks().get(blockPos.x, blockPos.y, blockPos.z);
+                        return ItemBlockTranslator.translateToPE(block.getId(), block.getData());
+                    }
                 }
             } catch (java.lang.ArrayIndexOutOfBoundsException ex) {
-                this.session.getProxy().getLogger().info("getBlock(" + position.toString() + ")) fail to get chunk " + (position.getX() >> 4) + "/" + (position.getY() >> 4) + "/" + (position.getZ() >> 4));
+                this.session.getProxy().getLogger().info("getBlock(" + position.toString() + ")) fail to get chunk "
+                        + (position.getX() >> 4) + "/" + (position.getY() >> 4) + "/" + (position.getZ() >> 4));
                 ex.printStackTrace();
             }
         return null;
@@ -179,13 +187,16 @@ public class ChunkCache {
             try {
                 Column column = chunkCache.get(columnPos);
                 BlockPosition blockPos = columnPos.getBlockInChunk(position.getX(), position.getY(), position.getZ());
-                Chunk chunk = column.getChunks()[position.getY() >> 4];
-                if (chunk != null) {
-                    BlockState block = chunk.getBlocks().get(blockPos.x, blockPos.y, blockPos.z);
-                    return new ItemStack(block.getId(), 1, block.getData());
+                if ((position.getY() >> 4) >= 0) {
+                    Chunk chunk = column.getChunks()[position.getY() >> 4];
+                    if (chunk != null) {
+                        BlockState block = chunk.getBlocks().get(blockPos.x, blockPos.y, blockPos.z);
+                        return new ItemStack(block.getId(), 1, block.getData());
+                    }
                 }
             } catch (java.lang.ArrayIndexOutOfBoundsException ex) {
-                this.session.getProxy().getLogger().severe("(getBlock(" + position.toString() + ")) fail to get chunk " + (position.getX() >> 4) + "/" + (position.getY() >> 4) + "/" + (position.getZ() >> 4));
+                this.session.getProxy().getLogger().severe("(getBlock(" + position.toString() + ")) fail to get chunk "
+                        + (position.getX() >> 4) + "/" + (position.getY() >> 4) + "/" + (position.getZ() >> 4));
                 ex.printStackTrace();
             }
         return null;
@@ -200,7 +211,9 @@ public class ChunkCache {
         int centerX = (int) player.x >> 4;
         int centerZ = (int) player.z >> 4;
 
-        int radius = player.spawned ? (int) session.getDataCache().getOrDefault(CacheKey.PLAYER_REQUESTED_CHUNK_RADIUS, 5) : (int) Math.ceil(Math.sqrt(56));
+        int radius = player.spawned
+                ? (int) session.getDataCache().getOrDefault(CacheKey.PLAYER_REQUESTED_CHUNK_RADIUS, 5)
+                : (int) Math.ceil(Math.sqrt(56));
 
         Set<ChunkPos> toLoad = new HashSet();
 
@@ -237,7 +250,8 @@ public class ChunkCache {
                 try {
                     c = column.getChunks()[cy];
                 } catch (Exception ex) {
-                    DragonProxy.getInstance().getLogger().info("Chunk " + columnX + ", " + cy + ", " + columnZ + " not exist !");
+                    DragonProxy.getInstance().getLogger()
+                            .info("Chunk " + columnX + ", " + cy + ", " + columnZ + " not exist !");
                 }
                 if (c == null || c.isEmpty())
                     continue;
@@ -248,10 +262,10 @@ public class ChunkCache {
                         ItemEntry entry = ItemBlockTranslator.translateToPE(block.getId(), block.getData());
 
                         Section section = chunk.sections[cy];
-                        //Block id
+                        // Block id
                         section.blockIds[index(x, y, z)] = (byte) (entry.getId() & 0xFF);
 
-                        //Data value
+                        // Data value
                         int i = dataIndex(x, y, z);
                         byte data = section.blockMetas[i];
                         int newValue = entry.getPEDamage().byteValue();
@@ -269,10 +283,11 @@ public class ChunkCache {
                 List<CompoundTag> blockEntities = new ArrayList<>();
                 for (int i = 0; i < column.getTileEntities().length; i++) {
                     CompoundTag peTag = ItemBlockTranslator.translateBlockEntityToPE(column.getTileEntities()[i]);
-                    if (peTag != null) //filter non handled blocks entities
+                    if (peTag != null) // filter non handled blocks entities
                         blockEntities.add(peTag);
-//                else // debug
-//                    DragonProxy.getInstance().getLogger().debug("NBT null for " + pc.getTileEntities()[i].toString());
+                    // else // debug
+                    // DragonProxy.getInstance().getLogger().debug("NBT null for " +
+                    // pc.getTileEntities()[i].toString());
                 }
                 chunk.blockEntities = NBTIO.write(blockEntities, ByteOrder.LITTLE_ENDIAN, true);
             } catch (IOException ex) {
@@ -281,8 +296,9 @@ public class ChunkCache {
             chunk.encode();
             return chunk;
         }
-//        else
-//            System.out.println("Chunk " + columnX + ", " + columnZ + " not in cache !!!!!!!!!!!!!");
+        // else
+        // System.out.println("Chunk " + columnX + ", " + columnZ + " not in cache
+        // !!!!!!!!!!!!!");
         return null;
     }
 
@@ -294,7 +310,7 @@ public class ChunkCache {
         return (x << 7) | (z << 3) | ((y & 0xF) >> 1);
     }
 
-    //debug
+    // debug
     public void getDebugGrid() {
         CachedEntity player = session.getEntityCache().getClientEntity();
         int viewDistance = (int) session.getDataCache().getOrDefault(CacheKey.PLAYER_REQUESTED_CHUNK_RADIUS, 5);
@@ -304,7 +320,7 @@ public class ChunkCache {
         int centerZ = (int) player.z >> 4;
         ChunkPos playerChunkPos = new ChunkPos(centerX, centerZ);
 
-        //find corners
+        // find corners
         int minX = centerX;
         int maxX = centerX;
         int minZ = centerZ;
@@ -346,12 +362,12 @@ public class ChunkCache {
         System.out.println("Chunk Z : " + minZ + " to " + maxZ);
 
         StringBuilder frame = new StringBuilder();
-        for (int z = minZ; z <= maxZ; z++) { //lines
+        for (int z = minZ; z <= maxZ; z++) { // lines
             StringBuilder line = new StringBuilder();
             if (z == minZ)
                 line.append(pad("" + minX, 5)).append(pad("", width * 2 - 3)).append(pad("" + maxX, 3)).append("\n");
             line.append(pad("" + z, 3) + " ");
-            for (int x = minX; x <= maxX; x++) { //columns
+            for (int x = minX; x <= maxX; x++) { // columns
                 ChunkPos chunkPos = new ChunkPos(x, z);
                 if (chunkCache.keySet().contains(chunkPos))
                     if (chunkPos.equals(playerChunkPos))
