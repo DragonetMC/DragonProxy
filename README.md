@@ -10,7 +10,7 @@ A proxy for to allow **Minecraft: Bedrock** clients to connect to **Minecraft: J
 ## What is DragonProxy
 DragonProxy is a software placed between a Minecraft Bedrock client and a Java Minecraft server.
 
-__Some servers anticheats trigger some movments cheat, use at your own risks.__
+__Some servers anticheats trigger some movements cheat, use at your own risks.__
 If you get banned from a server, we do not take responsabilities.
 
 ## Who uses DragonProxy
@@ -33,8 +33,8 @@ See [#132](https://github.com/DragonetMC/DragonProxy/issues/132).
 
 ## Known bugs
  - No creative inventory
- - Movments on stairs/half blocks is weird
- - Some anticheat plugin trigger bad movments
+ - Movements on stairs/half blocks is weird
+ - Some anticheat plugin trigger bad movements
  - You can get stuck in the ceiling
  - Switching worlds can have issues
  - No hit animation
