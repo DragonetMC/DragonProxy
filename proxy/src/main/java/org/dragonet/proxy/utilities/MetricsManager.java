@@ -18,7 +18,7 @@ public class MetricsManager {
     public MetricsManager(DragonProxy proxy) {
         // Get the config file
         try {
-            config = new PropertiesConfig("/metrics.yml", "metrics.yml", true);
+            config = new PropertiesConfig("/metrics.yml", "metrics.yml", false);
         } catch (IOException ex) {
             proxy.getLogger().severe("Failed to load configuration file! Make sure the file is writable.");
             ex.printStackTrace();
@@ -27,6 +27,8 @@ public class MetricsManager {
         // Check if the config file exists
         if (!config.getConfig().contains("serverUuid") || config.getConfig().getProperty("serverUuid").equals("")) {
 
+            // Add default values
+            config.getConfig().setProperty("enabled", "true");
             // Every server gets it's unique random id.
             config.getConfig().setProperty("serverUuid", UUID.randomUUID().toString());
             // Should failed request be logged?

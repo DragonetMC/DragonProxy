@@ -5,10 +5,6 @@
  */
 package org.dragonet.api.logger;
 
-/**
- *
- * @author Epic
- */
 public interface IProxyLogger {
 
     public abstract void setDebug(boolean debug);
