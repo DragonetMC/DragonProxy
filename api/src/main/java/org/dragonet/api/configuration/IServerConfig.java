@@ -103,11 +103,6 @@ public interface IServerConfig {
     public boolean isLog_colors();
 
     /**
-     * @return the log_debug
-     */
-    public boolean isLog_debug();
-
-    /**
      * @return the authenticate_players
      */
     public boolean isAuthenticate_players();

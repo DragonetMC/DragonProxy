@@ -12,11 +12,11 @@
     <name>DragonProxy</name>
     <description>A proxy to allow Minecraft: Bedrock clients to connect to Minecraft: Java Edition servers.</description>
     <inceptionYear>2016</inceptionYear>
-    <url>https://dragonet.org/</url>
+    <url>http://dragonet.org</url>
 
     <organization>
         <name>DragonetMC</name>
-        <url>https://github.com/DragonetMC/DragonProxy</url>
+        <url>https://github.com/DragonetMC</url>
     </organization>
 
     <scm>
@@ -51,7 +51,7 @@
         <module>api</module>
         <module>protocol</module>
         <module>proxy</module>
-        <module>plugin</module>
+        <!--<module>plugin</module>-->
     </modules>
 
     <properties>

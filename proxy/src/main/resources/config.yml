@@ -71,9 +71,6 @@ log_console: false
 # Should console display colors
 log_colors: true
 
-# Should console display debug info (can spam A LOT)
-log_debug: false
-
 # How many threads will process MCPE packets? Only change if you know what you're doing.
 # Recommanded at least 8 threads.
 # If you using this software at home, you can set to lower value like 8 or 12.

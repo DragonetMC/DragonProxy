@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import org.dragonet.api.ProxyServer;
 import org.dragonet.api.logger.IProxyLogger;
+import org.dragonet.common.maths.MCColor;
 
 public class ProxyLogger implements IProxyLogger {
 
@@ -106,28 +107,28 @@ public class ProxyLogger implements IProxyLogger {
 
     @Override
     public void info(String message) {
-        logger.info(org.dragonet.common.maths.MCColor.printConsole(message, proxy.getConfig().isLog_colors()));
+        logger.info(MCColor.printConsole(message, proxy.getConfig().isLog_colors()));
     }
 
     @Override
     public void warning(String message) {
-        logger.warning(org.dragonet.common.maths.MCColor.printConsole(message, proxy.getConfig().isLog_colors()));
+        logger.warning(MCColor.printConsole(message, proxy.getConfig().isLog_colors()));
     }
 
     @Override
     public void severe(String message) {
-        logger.severe(org.dragonet.common.maths.MCColor.printConsole(message, proxy.getConfig().isLog_colors()));
+        logger.severe(MCColor.printConsole(message, proxy.getConfig().isLog_colors()));
     }
 
     @Override
     public void debug(String message) {
-        if (debug)
-            logger.info(org.dragonet.common.maths.MCColor.printConsole(message, proxy.getConfig().isLog_colors()));
+        if (debug) logger.info(MCColor.printConsole(message, proxy.getConfig().isLog_colors()));
     }
 
     @Override
     public void stop() {
-        for (Handler handler : logger.getHandlers())
+        for (Handler handler : logger.getHandlers()) {
             handler.close();
+        }
     }
 }

@@ -184,6 +184,7 @@ public class DragonProxy implements ProxyServer {
             System.exit(1);
         } catch (org.yaml.snakeyaml.error.YAMLException ex) {
             logger.info("Failed to load configuration file! Make sure it's up to date !");
+            ex.printStackTrace();
             System.exit(1);
         }
 
@@ -236,12 +237,6 @@ public class DragonProxy implements ProxyServer {
 
         // Check for startup arguments
         checkArguments(launchArgs);
-
-        if (config.isLog_debug() && !debug) {
-            logger.setDebug(true);
-            debug = true;
-            logger.info("Proxy running in debug mode.");
-        }
 
         // Load some more stuff
         version = properties.getProperty("git.build.version");

@@ -16,29 +16,28 @@ import org.dragonet.api.configuration.IServerConfig;
 
 public class ServerConfig implements IServerConfig {
 
-    private String lang = "default";
-    private String udp_bind_ip = "0.0.0.0";
-    private int udp_bind_port = 19132;
-    private String proxy_type = "NONE";
-    private String proxy_ip = "";
-    private int proxy_port = 8080;
-    private String motd = "&aServer by DragonProxy";
-    private String remote_server_addr = "mc.hypixel.net";
-    private int remote_server_port = 25565;
-    private String mode = "online";
-    private Boolean auto_login = false;
-    private String online_username = "myUsername";
-    private String online_password = "myPassword";
-    private String cls_server = "http://auth.dragonet.org";
-    private String command_prefix = "/";
-    private int max_players = 10;
-    private boolean log_console = false;
-    private boolean log_colors = true;
-    private boolean log_debug = false;
-    private boolean authenticate_players = true;
-    private int thread_pool_size = 8;
-    private Boolean disable_packet_events = true;
-    private boolean ping_passthrough = false;
+    public String lang = "default";
+    public String udp_bind_ip = "0.0.0.0";
+    public int udp_bind_port = 19132;
+    public String proxy_type = "NONE";
+    public String proxy_ip = "";
+    public int proxy_port = 8080;
+    public String motd = "&aServer by DragonProxy";
+    public String remote_server_addr = "mc.hypixel.net";
+    public int remote_server_port = 25565;
+    public String mode = "online";
+    public Boolean auto_login = false;
+    public String online_username = "myUsername";
+    public String online_password = "myPassword";
+    public String cls_server = "http://auth.dragonet.org";
+    public String command_prefix = "/";
+    public int max_players = 10;
+    public boolean log_console = false;
+    public boolean log_colors = true;
+    public boolean authenticate_players = true;
+    public int thread_pool_size = 8;
+    public Boolean disable_packet_events = true;
+    public boolean ping_passthrough = false;
     
     /**
      * @return the lang
@@ -182,14 +181,6 @@ public class ServerConfig implements IServerConfig {
     @Override
     public boolean isLog_colors() {
         return log_colors;
-    }
-
-    /**
-     * @return the log_debug
-     */
-    @Override
-    public boolean isLog_debug() {
-        return log_debug;
     }
 
     /**

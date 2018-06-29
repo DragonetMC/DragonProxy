@@ -27,8 +27,6 @@ public class MetricsManager {
         // Check if the config file exists
         if (!config.getConfig().contains("serverUuid") || config.getConfig().getProperty("serverUuid").equals("")) {
 
-            // Add default values
-            config.getConfig().setProperty("enabled", "true");
             // Every server gets it's unique random id.
             config.getConfig().setProperty("serverUuid", UUID.randomUUID().toString());
             // Should failed request be logged?
