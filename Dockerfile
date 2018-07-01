@@ -1,4 +1,4 @@
-FROM maven:3.5.2-jdk-8-alpine
+FROM maven:3.5.2-jdk-10-alpine
 
 MAINTAINER https://github.com/DragonetMC
 

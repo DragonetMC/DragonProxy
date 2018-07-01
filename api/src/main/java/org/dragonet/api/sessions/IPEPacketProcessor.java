@@ -1,26 +1,27 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.dragonet.api.sessions;
 
 import org.dragonet.api.network.PEPacket;
 
 /**
+ * Represents a Bedrock edition packet processor.
  *
- * @author Epic
+ * TODO: documentation
  */
 public interface IPEPacketProcessor {
 
-    public IUpstreamSession getClient();
+    /**
+     * Returns the current Bedrock edition session.
+     *
+     * @return the Bedrock edition session.
+     */
+    IUpstreamSession getClient();
 
-    public void putPacket(byte[] packet);
+    void putPacket(byte[] packet);
 
-    public void onTick();
+    void onTick();
 
-    // this method should be in UpstreamSession
-    public void handlePacket(PEPacket packet);
+    // TODO: this method should be in UpstreamSession
+    void handlePacket(PEPacket packet);
 
-    public void setPacketForwardMode(boolean enabled);
+    void setPacketForwardMode(boolean enabled);
 }

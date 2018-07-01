@@ -13,6 +13,12 @@
     <artifactId>dragonproxy-plugin</artifactId>
     <packaging>pom</packaging>
 
+    <name>DragonProxy Plugin</name>
+    <description>
+        The addon plugins for the DragonProxy project, a proxy that allows Minecraft: Bedrock clients to
+        connect to Minecraft: Java Edition servers.
+    </description>
+
     <modules>
         <module>spigot</module>
         <module>bungee</module>
@@ -20,11 +26,11 @@
     </modules>
 
     <dependencies>
-    	<dependency>
-    		<groupId>me.lucko.luckperms</groupId>
-    		<artifactId>luckperms-api</artifactId>
-    		<version>4.1</version>
-    		<scope>provided</scope>
-    	</dependency>
+        <dependency>
+            <groupId>me.lucko.luckperms</groupId>
+            <artifactId>luckperms-api</artifactId>
+            <version>4.1</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

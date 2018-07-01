@@ -1,25 +1,44 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.dragonet.api.sessions;
 
 import org.dragonet.api.ProxyServer;
 
 /**
- *
- * @author Epic
+ * Represents the Raknet server interface.
  */
 public interface IRaknetInterface {
 
-    public ProxyServer getProxy();
+    /**
+     * Returns the proxy instance.
+     *
+     * @return the proxy instance.
+     */
+    ProxyServer getProxy();
 
-    public String getServerName();
+    /**
+     * Returns the current server name.
+     *
+     * @return the current server name.
+     */
+    String getServerName();
 
-    public int getMaxPlayers();
+    /**
+     * Returns the maximum player slot count.
+     *
+     * @return the maximum player slot count.
+     */
+    int getMaxPlayers();
 
-    public void setBroadcastName(String serverName, int players, int maxPlayers);
+    /**
+     * Sets the server broadcast attributes.
+     *
+     * @param serverName the new server name.
+     * @param players the new player count.
+     * @param maxPlayers the new maximum player slot count.
+     */
+    void setBroadcastName(String serverName, int players, int maxPlayers);
 
-    public void shutdown();
+    /**
+     * Shutdowns the Raknet server instance.
+     */
+    void shutdown();
 }

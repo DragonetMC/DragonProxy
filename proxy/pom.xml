@@ -12,6 +12,11 @@
 
     <artifactId>dragonproxy-proxy</artifactId>
 
+    <name>DragonProxy</name>
+    <description>
+        A proxy that allows Minecraft: Bedrock clients to connect to Minecraft: Java Edition servers.
+    </description>
+
     <properties>
         <outputName>dragonproxy-${project.version}</outputName>
     </properties>

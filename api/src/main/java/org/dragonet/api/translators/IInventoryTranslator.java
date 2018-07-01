@@ -1,54 +1,45 @@
-/*
- * GNU LESSER GENERAL PUBLIC LICENSE
- *                       Version 3, 29 June 2007
- *
- * Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
- * Everyone is permitted to copy and distribute verbatim copies
- * of this license document, but changing it is not allowed.
- *
- * You can view LICENCE file for details. 
- *
- * @author The Dragonet Team
- */
 package org.dragonet.api.translators;
 
 import org.dragonet.api.caches.ICachedWindow;
 import org.dragonet.api.sessions.IUpstreamSession;
 
+/**
+ * Represents an inventory translator.
+ */
 public interface IInventoryTranslator {
 
     /**
-     * Prepare a window on MCPE, spawn fakeblocks.
+     * Prepare a window for the Bedrock client, spawn fake blocks.
      *
-     * @param session
-     * @param window
-     * @return Can that window be opened on MCPE?
+     * @param session the upstream session.
+     * @param window the inventory window.
+     * @return true if that window can be opened on bedrock edition successfully.
      */
     boolean prepare(IUpstreamSession session, ICachedWindow window);
 
     /**
-     * Opens a window on MCPE.
+     * Opens a window on the Bedrock client.
      *
-     * @param session
-     * @param window
-     * @return Can that window be opened on MCPE?
+     * @param session the upstream session.
+     * @param window the inventory window.
+     * @return true if that window can be opened on bedrock edition successfully.
      */
     boolean open(IUpstreamSession session, ICachedWindow window);
 
     /**
      * Update a window's content.
      *
-     * @param session
-     * @param window
+     * @param session the upstream session.
+     * @param window the inventory window.
      */
     void updateContent(IUpstreamSession session, ICachedWindow window);
 
     /**
      * Update a single slot in a window.
      *
-     * @param session
-     * @param window
-     * @param slotIndex
+     * @param session the upstream session.
+     * @param window the inventory window.
+     * @param slotIndex the index of the slot.
      */
     void updateSlot(IUpstreamSession session, ICachedWindow window, int slotIndex);
 }

@@ -12,6 +12,12 @@
 
     <artifactId>dragonproxy-plugin-bungee</artifactId>
 
+    <name>DragonProxy Plugin Bungee</name>
+    <description>
+        The BungeeCord addon plugin for the DragonProxy project, a proxy that allows Minecraft: Bedrock clients
+        to connect to Minecraft: Java Edition servers.
+    </description>
+
     <!-- Hacky stuff to change the shaded jar filename -->
     <build>
         <finalName>${project.artifactId}-${project.version}-noshade</finalName>

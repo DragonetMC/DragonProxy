@@ -29,7 +29,6 @@ import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 import org.dragonet.api.ProxyServer;
 import org.dragonet.api.sessions.IUpstreamSession;
 import org.dragonet.api.network.PEPacket;
-import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.Lang;
 
 /**
@@ -49,13 +48,13 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
     }
 
     @Override
-    public void connect(String addr, int port) {
+    public void connect(String address, int port) {
         if (this.protocol == null) {
             upstream.onConnected(); // Clear the flags
             upstream.disconnect("ERROR! ");
             return;
         }
-        remoteClient = new Client(addr, port, protocol, new TcpSessionFactory());
+        remoteClient = new Client(address, port, protocol, new TcpSessionFactory());
         remoteClient.getSession().setConnectTimeout(5);
         remoteClient.getSession().setReadTimeout(5);
         remoteClient.getSession().setWriteTimeout(5);
@@ -87,7 +86,7 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
             @Override
             public void packetReceived(PacketReceivedEvent event) {
                 // Handle the packet
-                onPacketRecieved(event);
+                onPacketReceived(event);
             }
         });
         remoteClient.getSession().connect();
@@ -134,7 +133,7 @@ public class PCDownstreamSession implements IDownstreamSession<Packet> {
     }
 
     @Override
-    public void onPacketRecieved(PacketReceivedEvent event) {
+    public void onPacketReceived(PacketReceivedEvent event) {
         try {
             PEPacket[] packets = PacketTranslatorRegister.translateToPE(upstream, event.getPacket());
             if (packets == null)
