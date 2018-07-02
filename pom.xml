@@ -70,6 +70,10 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
+    <prerequisites>
+        <maven>3.3.9</maven>
+    </prerequisites>
+
     <repositories>
         <repository>
             <id>codemc-repo</id>
@@ -134,12 +138,14 @@
                     </excludes>
                 </configuration>
                 <executions>
+                    <!--
                     <execution>
                         <phase>validate</phase>
                         <goals>
                             <goal>format</goal>
                         </goals>
                     </execution>
+                    -->
                 </executions>
             </plugin>
             <plugin>

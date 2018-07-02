@@ -1,6 +1,6 @@
 package org.dragonet.plugin.bukkit;
 
-import org.dragonet.protocol.PEPacket;
+import org.dragonet.api.network.PEPacket;
 
 public interface BedrockPacketProcessor<P extends PEPacket> {
 

@@ -1,9 +1,9 @@
 package org.dragonet.plugin.bukkit;
 
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.plugin.bukkit.processors.ContainerCloseProcessor;
 import org.dragonet.plugin.bukkit.processors.InventoryTransactionProcessor;
 import org.dragonet.plugin.bukkit.processors.ModalFormResponseProcessor;
-import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.packets.ContainerClosePacket;
 import org.dragonet.protocol.packets.InventoryTransactionPacket;
 import org.dragonet.protocol.packets.ModalFormResponsePacket;

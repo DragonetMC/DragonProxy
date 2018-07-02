@@ -123,7 +123,7 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.19</version>
+            <version>1.21</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -134,7 +134,7 @@
         <dependency>
             <groupId>io.sentry</groupId>
             <artifactId>sentry</artifactId>
-            <version>1.7.0</version>
+            <version>1.7.5</version>
         </dependency>
         <dependency>
             <groupId>net.minecrell</groupId>

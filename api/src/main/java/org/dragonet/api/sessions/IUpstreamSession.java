@@ -1,15 +1,3 @@
-/*
- * GNU LESSER GENERAL PUBLIC LICENSE
- *                       Version 3, 29 June 2007
- *
- * Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
- * Everyone is permitted to copy and distribute verbatim copies
- * of this license document, but changing it is not allowed.
- *
- * You can view LICENCE file for details. 
- *
- * @author The Dragonet Team
- */
 package org.dragonet.api.sessions;
 
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
@@ -26,84 +14,216 @@ import org.dragonet.api.caches.IWindowCache;
 import org.dragonet.api.network.PEPacket;
 import org.dragonet.common.utilities.LoginChainDecoder;
 
-public interface IUpstreamSession<Packet> {
-
-    public ProxyServer getProxy();
-
-    public String getRaknetID();
-
-//    public RakNetClientSession getRaknetClient();
-
-    public boolean isLoggedIn();
-
-    public boolean isSpawned();
-
-    public InetSocketAddress getRemoteAddress();
-
-    public IPEPacketProcessor getPacketProcessor();
-//
-    public LoginChainDecoder getProfile();
-
-    public String getUsername();
-
-    public IDownstreamSession getDownstream();
-
-    public Map<String, Object> getDataCache();
-
-    public Map<UUID, PlayerListEntry> getPlayerInfoCache();
-//
-    public IEntityCache getEntityCache();
-//
-    public IWindowCache getWindowCache();
-//
-    public IChunkCache getChunkCache();
-//
-    public MinecraftProtocol getProtocol();
-//
-    public IJukeboxCache getJukeboxCache();
-
-    public void sendPacket(PEPacket packet);
-//
-    // if sending a packer before spawn, you should set high_priority to true !
-    public void sendPacket(PEPacket packet, boolean high_priority);
-
-    public void sendAllPackets(PEPacket[] packets, boolean high_priority);
-
-    public void connectToServer(String address, int port);
-
-    public void onConnected();
+/**
+ * Represents the Bedrock edition session.
+ */
+public interface IUpstreamSession {
 
     /**
-     * Disconnected from server.
+     * Returns the proxy instance.
      *
-     * @param reason
+     * @return the proxy instance.
      */
-    public void disconnect(String reason);
+    ProxyServer getProxy();
+
+    /**
+     * Returns the RaknetId.
+     *
+     * @return the RaknetId string.
+     */
+    String getRaknetID();
+
+    //RakNetClientSession getRaknetClient();
+
+    /**
+     * Returns if the client is logged in.
+     *
+     * @return true if the client is logged in.
+     */
+    boolean isLoggedIn();
+
+    /**
+     * Returns true if the client is spawned in the map.
+     *
+     * @return true if the client is spawned.
+     */
+    boolean isSpawned();
+
+    /**
+     * Returns the client remote socket address.
+     *
+     * @return the client remote socket address.
+     */
+    InetSocketAddress getRemoteAddress();
+
+    /**
+     * Returns the packet processor.
+     *
+     * @return the packet processor.
+     */
+    IPEPacketProcessor getPacketProcessor();
+
+    /**
+     * Returns the client profile instance.
+     *
+     * @return the client profile instance.
+     */
+    LoginChainDecoder getProfile();
+
+    /**
+     * Returns the client username.
+     *
+     * @return the client username.
+     */
+    String getUsername();
+
+    /**
+     * Returns the associated downstream session.
+     *
+     * @return the Java side downstream session.
+     */
+    IDownstreamSession getDownstream();
+
+    /**
+     * Returns the session data cache.
+     *
+     * @return the session data cache.
+     */
+    Map<String, Object> getDataCache();
+
+    /**
+     * Returns the session player info cache.
+     *
+     * @return the session player info cache.
+     */
+    Map<UUID, PlayerListEntry> getPlayerInfoCache();
+
+    /**
+     * Returns the session entity cache.
+     *
+     * @return the session entity cache.
+     */
+    IEntityCache getEntityCache();
+
+    /**
+     * Returns the session inventory window cache.
+     *
+     * @return the session inventory window cache.
+     */
+    IWindowCache getWindowCache();
+
+    /**
+     * Returns the session map chunk cache.
+     *
+     * @return the session map chunk cache.
+     */
+    IChunkCache getChunkCache();
+
+    /**
+     * Returns the session jukebox cache.
+     *
+     * @return the session jukebox cache.
+     */
+    IJukeboxCache getJukeboxCache();
+
+    /**
+     * Returns the Java edition protocol library instance.
+     *
+     * @return the java edition protocol library instance.
+     */
+    MinecraftProtocol getProtocol();
+
+    /**
+     * Sends a packet to the Bedrock edition client.
+     *
+     * @param packet the Bedrock edition packet.
+     * @param high_priority sends the packet immediately,
+     *                      should be set to true when the packet needs to be handled before
+     *                      the player spawns into the map.
+     */
+    void sendPacket(PEPacket packet, boolean high_priority);
+
+    /**
+     * Sends a packet to the Bedrock edition client.
+     *
+     * @param packet the Bedrock edition packet.
+     */
+    void sendPacket(PEPacket packet);
+
+    /**
+     * Sends packets to the Bedrock edition client.
+     *
+     * @param packets the Bedrock edition packets.
+     * @param high_priority sends the packets immediately,
+     *                      should be set to true when the packets need to be handled before
+     *                      the player spawns into the map.
+     */
+    void sendAllPackets(PEPacket[] packets, boolean high_priority);
+
+    /**
+     * Connects the session to the specified Java edition server address.
+     *
+     * @param address the server address.
+     * @param port the TCP server port number.
+     */
+    void connectToServer(String address, int port);
+
+    /**
+     * The client connection event handler.
+     */
+    void onConnected();
+
+    /**
+     * Disconnects the session from the current server.
+     *
+     * @param reason the reason to be sent to the client.
+     */
+    void disconnect(String reason);
 
     /**
      * Called when this client disconnects.
      *
-     * @param reason The reason of disconnection.
+     * @param reason the reason of disconnection.
      */
-    public void onDisconnect(String reason);
+    void onDisconnect(String reason);
 
-    public void authenticate(String email, String password, Proxy authProxy);
+    /**
+     * Performs the user authentication.
+     *
+     * @param email the account email.
+     * @param password the account password.
+     * @param authProxy the authentication proxy.
+     */
+    void authenticate(String email, String password, Proxy authProxy);
 
-    public void onLogin(PEPacket packet);
+    /**
+     * The login event handler.
+     *
+     * @param packet the login packet.
+     */
+    void onLogin(PEPacket packet);
 
-    public void postLogin();
+    /**
+     * The post login event handler.
+     */
+    void postLogin();
 
-    public void setSpawned();
+    /**
+     * Marks the session as spawned.
+     */
+    void setSpawned();
 
-    public void sendChat(String chat);
+    // TODO: documentation
 
-    public void sendFakeBlock(int x, int y, int z, int id, int meta);
+    void sendChat(String chat);
 
-    public void sendCreativeInventory();
+    void sendFakeBlock(int x, int y, int z, int id, int meta);
 
-    public void handlePacketBinary(byte[] packet);
+    void sendCreativeInventory();
 
-    public void putCachePacket(PEPacket packet);
+    void handlePacketBinary(byte[] packet);
 
-    public void onTick();
+    void putCachePacket(PEPacket packet);
+
+    void onTick();
 }

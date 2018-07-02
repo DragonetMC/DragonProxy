@@ -1,28 +1,50 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.dragonet.api.sessions;
 
-import java.util.Collections;
 import java.util.Map;
 
 /**
- *
- * @author Epic
+ * Represents the session register.
  */
 public interface ISessionRegister {
-    
-    public void onTick();
 
-    public void newSession(IUpstreamSession session);
+    /**
+     * The session register tick handler.
+     */
+    void onTick();
 
-    public void removeSession(IUpstreamSession session);
+    /**
+     * Registers a new upstream session.
+     *
+     * @param session the upstream session.
+     */
+    void newSession(IUpstreamSession session);
 
-    public IUpstreamSession getSession(String identifier);
+    /**
+     * Removes a registered upstream session.
+     *
+     * @param session the upstream session.
+     */
+    void removeSession(IUpstreamSession session);
 
-    public Map<String, IUpstreamSession> getAll();
+    /**
+     * Returns registered new upstream session.
+     *
+     * @param identifier the session identifier string.
+     */
+    IUpstreamSession getSession(String identifier);
 
-    public int getOnlineCount();
+    /**
+     * Returns a copy of the registered sessions.
+     * TODO: actually check if implementation returns a copy
+     *
+     * @return a copy of the registered session map.
+     */
+    Map<String, IUpstreamSession> getAll();
+
+    /**
+     * Returns the count of registered sessions.
+     *
+     * @return the connected session count.
+     */
+    int getOnlineCount();
 }

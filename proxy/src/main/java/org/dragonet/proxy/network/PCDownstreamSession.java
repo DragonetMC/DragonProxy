@@ -34,7 +34,7 @@ import org.dragonet.proxy.configuration.Lang;
 /**
  * Maintaince the connection between the proxy and remote Minecraft server.
  */
-public class PCDownstreamSession implements IDownstreamSession<Packet> {
+public class PCDownstreamSession implements IDownstreamSession {
 
     public MinecraftProtocol protocol;
 

@@ -2,8 +2,8 @@ package org.dragonet.plugin.bukkit;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.dragonet.api.network.PEPacket;
 import org.dragonet.common.utilities.BinaryStream;
-import org.dragonet.protocol.PEPacket;
 import org.dragonet.protocol.Protocol;
 
 public class DPPluginMessageListener implements PluginMessageListener {
