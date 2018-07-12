@@ -19,7 +19,7 @@ import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityTeleportPacket;
 import org.dragonet.proxy.network.CacheKey;
 import org.dragonet.protocol.PEPacket;
-import org.dragonet.protocol.packets.MoveEntityPacket;
+import org.dragonet.protocol.packets.MoveEntityAbsolutePacket;
 
 public class PCEntityTeleportPacketTranslator implements IPCPacketTranslator<ServerEntityTeleportPacket> {
 
@@ -36,7 +36,7 @@ public class PCEntityTeleportPacketTranslator implements IPCPacketTranslator<Ser
         entity.absoluteMove(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch());
 
         if (entity.shouldMove) {
-            MoveEntityPacket pk = new MoveEntityPacket();
+            MoveEntityAbsolutePacket pk = new MoveEntityAbsolutePacket();
             pk.rtid = entity.proxyEid;
             pk.yaw = (byte) (entity.yaw / (360d / 256d));
             pk.headYaw = (byte) (entity.headYaw / (360d / 256d));
