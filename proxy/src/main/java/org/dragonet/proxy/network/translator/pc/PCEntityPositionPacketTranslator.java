@@ -19,7 +19,7 @@ import org.dragonet.proxy.network.UpstreamSession;
 import org.dragonet.proxy.network.cache.CachedEntity;
 import org.dragonet.proxy.network.translator.IPCPacketTranslator;
 import org.dragonet.protocol.PEPacket;
-import org.dragonet.protocol.packets.MoveEntityPacket;
+import org.dragonet.protocol.packets.MoveEntityAbsolutePacket;
 
 
 public class PCEntityPositionPacketTranslator implements IPCPacketTranslator<ServerEntityPositionPacket> {
@@ -38,7 +38,7 @@ public class PCEntityPositionPacketTranslator implements IPCPacketTranslator<Ser
         entity.relativeMove(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ(), packet.getYaw(), packet.getPitch());
 
         if (entity.shouldMove) {
-            MoveEntityPacket pk = new MoveEntityPacket();
+            MoveEntityAbsolutePacket pk = new MoveEntityAbsolutePacket();
             pk.rtid = entity.proxyEid;
             pk.yaw = (byte) (entity.yaw / (360d / 256d));
             pk.headYaw = (byte) (entity.headYaw / (360d / 256d));

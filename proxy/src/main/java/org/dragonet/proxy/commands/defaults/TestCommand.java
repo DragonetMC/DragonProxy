@@ -70,7 +70,7 @@ public class TestCommand extends Command {
         } else if (args[0].equalsIgnoreCase("moveentity")) {
             Vector3F dest = new Vector3F(Float.parseFloat(args[1]), Float.parseFloat(args[2]),
                 Float.parseFloat(args[3]));
-            MoveEntityPacket m = new MoveEntityPacket();
+            MoveEntityAbsolutePacket m = new MoveEntityAbsolutePacket();
             m.rtid = 1L;
             m.teleported = args[4].equalsIgnoreCase("true");
             m.position = dest;
