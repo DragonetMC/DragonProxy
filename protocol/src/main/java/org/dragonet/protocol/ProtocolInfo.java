@@ -115,7 +115,7 @@ public class ProtocolInfo {
     public static final byte PURCHASE_RECEIPT_PACKET = (byte) 0x5c;
     public static final byte PLAYER_SKIN_PACKET = (byte) 0x5d;
     public static final byte SUB_CLIENT_LOGIN_PACKET = (byte) 0x5e;
-    public static final byte W_S_CONNECT_PACKET = (byte) 0x5f;
+    public static final byte INITIATE_WEB_SOCKET_CONNECTION_PACKET = (byte) 0x5f;
     public static final byte SET_LAST_HURT_BY_PACKET = (byte) 0x60;
     public static final byte BOOK_EDIT_PACKET = (byte) 0x61;
     public static final byte NPC_REQUEST_PACKET = (byte) 0x62;
@@ -126,5 +126,12 @@ public class ProtocolInfo {
     public static final byte SERVER_SETTINGS_RESPONSE_PACKET = (byte) 0x67;
     public static final byte SHOW_PROFILE_PACKET = (byte) 0x68;
     public static final byte SET_DEFAULT_GAME_TYPE_PACKET = (byte) 0x69;
+    public static final byte REMOVE_OBJECTIVE_PACKET = (byte) 0x6a;
+    public static final byte SET_DISPLAY_OBJECTIVE_PACKET = (byte) 0x6b;
+    public static final byte SET_SCORE_PACKET = (byte) 0x6d;
+    public static final byte LAB_TABLE_PACKET = (byte) 0x6d;
+    public static final byte UPDATE_BLOCK_SYNCED_PACKET = (byte) 0x6e;
+    public static final byte MOVE_ENTITY_DELTA_PACKET = (byte) 0x6f;
+    public static final byte SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET = (byte) 0x70;
     public static final byte BATCH_PACKET = (byte) 0xff;
 }
