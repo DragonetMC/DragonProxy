@@ -96,6 +96,8 @@ public final class Protocol {
         packets.put(RESOURCE_PACK_CLIENT_RESPONSE_PACKET, ResourcePackClientResponsePacket.class);
         packets.put(RESOURCE_PACK_STACK_PACKET, ResourcePackStackPacket.class);
 
+        packets.put(SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET, SetLocalPlayerAsInitializedPacket.class);
+
         packets.put(BATCH_PACKET, BatchPacket.class);
     }
 
