@@ -29,6 +29,7 @@ public class Lang extends PropertiesConfig {
     public static final String ERROR_CLS_UNREACHABLE = "error_cls_unreachable";
     public static final String ERROR_CLS_ERROR = "error_cls_error";
     public static final String ERROR_CLS_LOGIN = "error_cls_login";
+    public static final String ERROR_MCW10_LOOPBACK = "error_mcw10_loopback";
     //public static final String MESSAGE_ONLINE_NOTICE = "message_online_notice";
     //public static final String MESSAGE_ONLINE_EMAIL = "message_online_email";
     public static final String MESSAGE_LOGIN_PROMPT = "message_login_prompt";
