@@ -82,6 +82,7 @@ The [bukkit](https://github.com/DragonetMC/DragonProxy/tree/master/plugin/spigot
 
 ## Windows 10 localhost problem
 If you try to run DragonProxy on the __same computer__ you start Minecraft W10 Edition, you must [enable loopback for Minecraft protocol](http://pmmp.readthedocs.io/en/rtfd/faq/connecting/win10localhostcantconnect.html) first.
+NOTE: In the next release of DragonNet, this will no longer need to be done manually as the needed changes will be done through the code automatically. But for now, this section will stay until a release that does this on it's own is rolled out.
 
 ## Libraries used
 * [JRakNet by Whirvis](https://github.com/JRakNet/JRakNet)
