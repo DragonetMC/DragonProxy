@@ -39,6 +39,7 @@ import org.dragonet.proxy.utilities.pingpassthrough.PingThread;
 import org.yaml.snakeyaml.Yaml;
 
 import com.github.steveice10.mc.protocol.MinecraftConstants;
+import com.whirvis.jraknet.windows.UniversalWindowsProgram;
 
 import co.aikar.timings.Timings;
 import java.util.concurrent.TimeUnit;
@@ -270,6 +271,11 @@ public class DragonProxy {
         // start and load all plugins of application
         pluginManager.loadPlugins();
         pluginManager.startPlugins();
+        
+        // Add loopback exemption for Minecraft on Windows 10
+        if(!UniversalWindowsProgram.MINECRAFT.addLoopbackExempt()) {
+            logger.error(lang.get(LANG.ERROR_MCW10_LOOPBACK));
+        }
 
         // Bind
         logger.info(lang.get(Lang.INIT_BINDING, config.udp_bind_ip, config.udp_bind_port));
