@@ -20,9 +20,12 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.dragonet.common.data.blocks.Block;
 import org.dragonet.common.data.blocks.GlobalBlockPalette;
+import org.dragonet.common.utilities.SkinFetcher;
 import org.dragonet.protocol.ProtocolInfo;
 import org.dragonet.proxy.commands.CommandRegister;
 import org.dragonet.proxy.commands.ConsoleCommandReader;
@@ -32,19 +35,14 @@ import org.dragonet.proxy.events.EventManager;
 import org.dragonet.proxy.network.RaknetInterface;
 import org.dragonet.proxy.network.SessionRegister;
 import org.dragonet.proxy.network.translator.SoundTranslator;
-import org.dragonet.proxy.utilities.ProxyLogger;
 import org.dragonet.proxy.utilities.MetricsManager;
 import org.dragonet.proxy.utilities.PluginManager;
+import org.dragonet.proxy.utilities.ProxyLogger;
 import org.dragonet.proxy.utilities.pingpassthrough.PingThread;
 import org.yaml.snakeyaml.Yaml;
 
 import com.github.steveice10.mc.protocol.MinecraftConstants;
 import com.whirvis.jraknet.windows.UniversalWindowsProgram;
-
-import co.aikar.timings.Timings;
-import java.util.concurrent.TimeUnit;
-import org.apache.commons.lang3.SystemUtils;
-import org.dragonet.common.utilities.SkinFetcher;
 
 public class DragonProxy {
 
@@ -273,9 +271,9 @@ public class DragonProxy {
         pluginManager.startPlugins();
         
         // Add loopback exemption for Minecraft on Windows 10
-        //if(!UniversalWindowsProgram.MINECRAFT.addLoopbackExempt()) {
-        //    logger.info(lang.get(Lang.ERROR_MCW10_LOOPBACK));
-        //} TODO: FIX THIS BROKEN CODE!!!
+        if(!UniversalWindowsProgram.MINECRAFT.addLoopbackExempt()) {
+            logger.info(lang.get(Lang.ERROR_MCW10_LOOPBACK));
+        }
 
         // Bind
         logger.info(lang.get(Lang.INIT_BINDING, config.udp_bind_ip, config.udp_bind_port));
