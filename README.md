@@ -19,7 +19,7 @@ See live stats on BStats[![Bstats](https://bstats.org/signatures/server-implemen
  - If you want your server featured here, please ask on our Discord !
 
 ## Features
-- Currently supporting Bedrock 1.4.2 and Java 1.12.2
+- Currently supporting Bedrock 1.5.3 and Java 1.12.2
 - Chat supported
 - Chunks supported
 - Movement supported
