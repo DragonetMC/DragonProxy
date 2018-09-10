@@ -36,15 +36,11 @@ public abstract class PEPacket extends BinaryStream {
     }
 
     public void encodeHeader() {
-        // putUnsignedVarInt(pid());
-        putByte((byte) (pid() & 0xFF));
-        putByte((byte) 0x00);
-        putByte((byte) 0x00);
+        putUnsignedVarInt((pid() & 0xFF));
     }
 
     public void decodeHeader() {
-        getByte(); // getUnsignedVarInt();
-        get(2);
+        getUnsignedVarInt();
     }
 
     public abstract int pid();

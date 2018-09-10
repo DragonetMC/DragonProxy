@@ -58,12 +58,9 @@ public class RaknetInterface implements RakNetServerListener {
         this.rakServer.setBroadcastingEnabled(true);
         this.sessions = this.proxy.getSessionRegister();
         this.rakServer.startThreaded();
-        this.updatePing = proxy.getGeneralThreadPool().scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                //TODO option to display minecraft server players instead of proxy
-                setBroadcastName(getServerName(), sessions.getOnlineCount(), getMaxPlayers());
-            }
+        this.updatePing = proxy.getGeneralThreadPool().scheduleAtFixedRate(() -> {
+            //TODO option to display minecraft server players instead of proxy
+            setBroadcastName(getServerName(), sessions.getOnlineCount(), getMaxPlayers());
         }, 500, 500, TimeUnit.MILLISECONDS);
     }
 

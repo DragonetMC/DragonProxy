@@ -1,6 +1,7 @@
 package org.dragonet.protocol.packets;
 
 import com.github.steveice10.mc.protocol.data.game.setting.Difficulty;
+import org.dragonet.common.data.blocks.GlobalBlockPalette;
 import org.dragonet.common.maths.BlockPosition;
 import org.dragonet.common.maths.Vector3F;
 import org.dragonet.common.utilities.GameRule;
@@ -62,6 +63,8 @@ public class StartGamePacket extends PEPacket {
 
     public int enchantmentSeed;
 
+    public String multiplayerCorrelationId = "";
+
     public StartGamePacket() {
 
     }
@@ -121,6 +124,11 @@ public class StartGamePacket extends PEPacket {
         putBoolean(unknownBool);
         putLLong(currentTick);
         putVarInt(enchantmentSeed);
+
+        // Runtime ID table
+        put(GlobalBlockPalette.getCompiledMappings());
+
+        putString(multiplayerCorrelationId);
     }
 
     @Override
