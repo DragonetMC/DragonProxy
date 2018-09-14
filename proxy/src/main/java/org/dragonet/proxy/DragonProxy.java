@@ -271,9 +271,9 @@ public class DragonProxy {
         pluginManager.startPlugins();
         
         // Add loopback exemption for Minecraft on Windows 10
-        //if(!UniversalWindowsProgram.MINECRAFT.addLoopbackExempt()) {
-        //    logger.info(lang.get(Lang.ERROR_MCW10_LOOPBACK));
-        //} TODO: This is still broken
+        if(!UniversalWindowsProgram.MINECRAFT.addLoopbackExempt()) {
+            logger.info(lang.get(Lang.ERROR_MCW10_LOOPBACK));
+        }
 
         // Bind
         logger.info(lang.get(Lang.INIT_BINDING, config.udp_bind_ip, config.udp_bind_port));
