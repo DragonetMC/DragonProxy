@@ -19,7 +19,7 @@ See live stats on BStats[![Bstats](https://bstats.org/signatures/server-implemen
  - If you want your server featured here, please ask on our Discord !
 
 ## Features
-- Currently supporting Bedrock 1.4.2 and Java 1.12.2
+- Currently supporting Bedrock 1.5.3 and Java 1.12.2
 - Chat supported
 - Chunks supported
 - Movement supported
@@ -81,7 +81,7 @@ The [bungeecord](https://github.com/DragonetMC/DragonProxy/tree/master/plugin/bu
 The [bukkit](https://github.com/DragonetMC/DragonProxy/tree/master/plugin/spigot) plugin is used to send custom packets to the Bedrock client, but does not works yet.
 
 ## Windows 10 localhost problem
-If you try to run DragonProxy on the __same computer__ you start Minecraft W10 Edition, you must [enable loopback for Minecraft protocol](http://pmmp.readthedocs.io/en/rtfd/faq/connecting/win10localhostcantconnect.html) first.
+If you try to run DragonProxy on the __same computer__ you start Minecraft W10 Edition, you must [enable loopback for Minecraft protocol](http://pmmp.readthedocs.io/en/rtfd/faq/connecting/win10localhostcantconnect.html) first. **In the next release of DragonNet, this will no longer need to be done manually as the needed changes will be done through the code automatically. But for now, this section will stay until a release that does this on it's own is rolled out.**
 
 ## Libraries used
 * [JRakNet by Whirvis](https://github.com/JRakNet/JRakNet)
