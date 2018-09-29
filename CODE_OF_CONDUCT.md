@@ -62,8 +62,8 @@ Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported by contact the project team at whirvis@gmail.com. We will try,
 but will not guarantee, to review and investigate all complaints and respond
 how we deem necessary. We do however reserve the right and responsibility to
-maintain the confidentiality regarding the reporter of an incident __**unless it
-is deemed necessary to make it public for any reason**__.
+maintain the confidentiality regarding the reporter of an incident unless it
+is deemed necessary to make it public for any reason.
 
 Project maintainers who do not follow or enforce the Code of Conduct may face
 temporary or permanent repercussions as determined by other members of project’s
