@@ -20,9 +20,9 @@ public class ResourcePacksInfoPacket extends PEPacket {
     @Override
     public void encodePayload() {
         // TODO: real encode
-        putBoolean(false);
-        putLShort(0);
-        putLShort(0);
+        putBoolean(false); //mustAccept
+        putLShort(0); //resource pack entries
+        putLShort(0); //behavior pack entries
     }
 
     @Override

@@ -10,16 +10,16 @@ public class ProtocolInfo {
     /**
      * Actual Minecraft: PE protocol version
      */
-    public static final int CURRENT_PROTOCOL = 274;
+    public static final int CURRENT_PROTOCOL = 282;
     /**
      * Current Minecraft PE version reported by the server. This is usually the
      * earliest currently supported version.
      */
-    public static final String MINECRAFT_VERSION = "v1.5.0";
+    public static final String MINECRAFT_VERSION = "v1.6.0";
     /**
      * Version number sent to clients in ping responses.
      */
-    public static final String MINECRAFT_VERSION_NETWORK = "1.5.0";
+    public static final String MINECRAFT_VERSION_NETWORK = "1.6.0";
 
     public static final byte LOGIN_PACKET = (byte) 0x01;
     public static final byte PLAY_STATUS_PACKET = (byte) 0x02;
@@ -132,6 +132,9 @@ public class ProtocolInfo {
     public static final byte LAB_TABLE_PACKET = (byte) 0x6d;
     public static final byte UPDATE_BLOCK_SYNCED_PACKET = (byte) 0x6e;
     public static final byte MOVE_ENTITY_DELTA_PACKET = (byte) 0x6f;
-    public static final byte SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET = (byte) 0x70;
+    public static final byte SET_SCOREBOARD_IDENTITY_PACKET = 0x70;
+    public static final byte SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET = 0x71;
+    public static final byte UPDATE_SOFT_ENUM_PACKET = 0x72;
+    public static final byte NETWORK_STACK_LATENCY_PACKET = 0x73;
     public static final byte BATCH_PACKET = (byte) 0xff;
 }
