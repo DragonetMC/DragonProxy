@@ -59,7 +59,7 @@ in illegal activities), as it is only harmful to the project environment.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contact the project team at whirvis@gmail.com. We will try,
+reported by contacting the project team at whirvis@gmail.com. We will try,
 but will not guarantee, to review and investigate all complaints and respond
 how we deem necessary. We do however reserve the right and responsibility to
 maintain the confidentiality regarding the reporter of an incident unless it
