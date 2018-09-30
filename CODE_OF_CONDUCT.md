@@ -29,7 +29,7 @@ include:
 Examples of unnaceptable behavior by particpants include:
 
 * Being disrespectful towards each other for any reason
-* The needless injnection of politics into the project or its community
+* The needless injection of politics into the project or its community
 * Expecting special treatment based on age, body size, disability, ethnicity,
   sex characteristics, gender identity and expression, level of experience,
   education, socio-economic status, nationality, personal appearance, race,
