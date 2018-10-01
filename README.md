@@ -5,13 +5,13 @@
 Travis: [![TravisCI](https://travis-ci.org/DragonetMC/DragonProxy.svg?branch=master)](https://travis-ci.org/DragonetMC/DragonProxy)
 CodeMC: [![Build Status](https://ci.codemc.org/buildStatus/icon?job=DragonetMC/DragonProxy)](https://ci.codemc.org/job/DragonetMC/job/DragonProxy/)
 
-A proxy for to allow **Minecraft: Bedrock** clients to connect to **Minecraft: Java Edition** servers.
+A proxy made to allow **Minecraft: Bedrock** clients to connect to **Minecraft: Java Edition** servers.
 
 ## What is DragonProxy
 DragonProxy is a software placed between a Minecraft Bedrock client and a Java Minecraft server.
 
 __Some servers anticheats trigger some movements cheat, use at your own risks.__
-If you get banned from a server, we do not take responsabilities.
+If you get banned from a server, we do not take responsibilities.
 
 ## Who uses DragonProxy
 See live stats on BStats[![Bstats](https://bstats.org/signatures/server-implementation/DragonProxy.svg)](https://bstats.org/plugin/server-implementation/DragonProxy/)
@@ -23,7 +23,7 @@ See live stats on BStats[![Bstats](https://bstats.org/signatures/server-implemen
 - Chat supported
 - Chunks supported
 - Movement supported
-- Block break / place supported
+- Blocks breaking & placing supported
 - Entities spawn move and equipment
 - BocksEntities spawn
 - Chests
@@ -48,7 +48,7 @@ See [#132](https://github.com/DragonetMC/DragonProxy/issues/132).
  - [snapshots](https://ci.codemc.org/job/DragonetMC/job/DragonProxy/lastSuccessfulBuild/artifact/proxy/target/)(take first jar) : developments builds, unstable, latest features
 
 ## Compiling
-You will need Java 8 JDK. You can download this from oracle's website or from your operating systems package manager.
+You will need Java 8 JDK. You can download this from Oracle's website or from your operating systems package manager.
 
 You will also need Maven, which you can download from [here](http://maven.apache.org/download.cgi). Then make sure maven is in your `PATH` (theres plenty of tutorials online).
 
