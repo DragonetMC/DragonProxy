@@ -9,7 +9,7 @@
     <version>0.4.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>DragonProxy</name>
+    <name>DragonProxy-Parent</name>
     <description>A proxy to allow Minecraft: Bedrock clients to connect to Minecraft: Java Edition servers.</description>
     <inceptionYear>2016</inceptionYear>
     <url>https://dragonet.org/</url>
@@ -55,6 +55,8 @@
     </licenses>
 
     <modules>
+        <module>api</module>
+        <module>implementation</module>
     </modules>
 
     <properties>
@@ -203,14 +205,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <configuration>
                     <filters>
                         <!-- Ignore manifest signatures for shading the project into an uber-jar to fix -->
