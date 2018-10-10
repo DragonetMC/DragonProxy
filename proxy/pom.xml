@@ -10,7 +10,7 @@
         <version>0.4.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>dragonproxy</artifactId>
+    <artifactId>dragonproxy-proxy</artifactId>
     <packaging>jar</packaging>
 
     <name>DragonProxy</name>
@@ -69,6 +69,12 @@
             <groupId>net.minecrell</groupId>
             <artifactId>terminalconsoleappender</artifactId>
             <version>1.1.1</version>
+        </dependency>
+        <!-- Command line arguments parser -->
+        <dependency>
+            <groupId>net.sf.jopt-simple</groupId>
+            <artifactId>jopt-simple</artifactId>
+            <version>5.0.4</version>
         </dependency>
         <!-- Logger implementation -->
         <dependency>

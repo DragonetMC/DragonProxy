@@ -56,7 +56,7 @@
 
     <modules>
         <module>api</module>
-        <module>implementation</module>
+        <module>proxy</module>
     </modules>
 
     <properties>
