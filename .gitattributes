@@ -1,0 +1,66 @@
+* text=auto
+
+# Documents
+*.doc	 diff=astextplain
+*.DOC	 diff=astextplain
+*.docx diff=astextplain
+*.DOCX diff=astextplain
+*.dot  diff=astextplain
+*.DOT  diff=astextplain
+*.pdf  diff=astextplain
+*.PDF	 diff=astextplain
+*.rtf	 diff=astextplain
+*.RTF	 diff=astextplain
+*.md text
+*.adoc text
+*.textile text
+*.mustache text
+*.csv text
+*.tab text
+*.tsv text
+*.sql text
+
+# Graphics
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.tif binary
+*.tiff binary
+*.ico binary
+*.svg binary
+*.eps binary
+
+
+# These files are text and should be normalized (Convert crlf => lf)
+*.css           text
+*.df            text
+*.htm           text
+*.html          text
+*.java          text
+*.js            text
+*.json          text
+*.jsp           text
+*.jspf          text
+*.jspx          text
+*.properties    text
+*.sh            text
+*.tld           text
+*.txt           text
+*.tag           text
+*.tagx          text
+*.xml           text
+*.yml           text
+
+# These files are binary and should be left untouched
+*.class         binary
+*.dll           binary
+*.ear           binary
+*.gif           binary
+*.ico           binary
+*.jar           binary
+*.jpg           binary
+*.jpeg          binary
+*.png           binary
+*.so            binary
+*.war           binary
