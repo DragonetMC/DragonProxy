@@ -1,9 +1,10 @@
 package org.dragonet.dragonproxy.api;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public interface Proxy {
 
     String getVersion();
-    File getFolder();
+    Path getFolder();
+    void shutdown();
 }

@@ -1,3 +1,6 @@
+# Proxy workspace
+testInstance/
+
 # Git
 *.orig
 !.gitignore

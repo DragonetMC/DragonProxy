@@ -3,16 +3,17 @@ package org.dragonet.dragonproxy.proxy.configuration;
 import ch.jalu.configme.configurationdata.ConfigurationDataBuilder;
 import ch.jalu.configme.resource.YamlFileResource;
 import org.dragonet.dragonproxy.proxy.ProxyFolder;
+import org.dragonet.dragonproxy.proxy.util.FileUtils;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.io.File;
+import java.nio.file.Path;
 
 public class ConfigurationProvider implements Provider<DragonConfiguration> {
 
     @Inject
     @ProxyFolder
-    private File dataFolder;
+    private Path dataFolder;
     @Inject
     private ConfigurationMigrationService migrationService;
 
@@ -21,9 +22,9 @@ public class ConfigurationProvider implements Provider<DragonConfiguration> {
 
     @Override
     public DragonConfiguration get() {
-        File configFile = new File(dataFolder, "config.yml");
-        ch.jalu.configme.utils.Utils.createFileIfNotExists(configFile);
-        return new DragonConfiguration(new YamlFileResource(configFile),
+        Path configFile = dataFolder.resolve("configuration.yml");
+        FileUtils.createFileIfNotExists(configFile);
+        return new DragonConfiguration(new YamlFileResource(configFile.toFile()),
             ConfigurationDataBuilder.createConfiguration(ConfigurationProperty.class), migrationService);
     }
 }

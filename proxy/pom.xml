@@ -16,6 +16,7 @@
     <name>DragonProxy</name>
 
     <dependencies>
+        <!-- Common libraries -->
         <!-- Guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -34,11 +35,27 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.8.1</version>
         </dependency>
+
+        <!-- DragonProxy modules -->
         <!-- The DragonProxy API -->
         <dependency>
             <groupId>org.dragonet.dragonproxy</groupId>
             <artifactId>dragonproxy-api</artifactId>
             <version>0.4.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Dependencies -->
+        <!-- Command line arguments parser -->
+        <dependency>
+            <groupId>net.sf.jopt-simple</groupId>
+            <artifactId>jopt-simple</artifactId>
+            <version>5.0.4</version>
+        </dependency>
+        <!-- Terminal console appender -->
+        <dependency>
+            <groupId>net.minecrell</groupId>
+            <artifactId>terminalconsoleappender</artifactId>
+            <version>1.1.1</version>
         </dependency>
         <!-- Dependency injection library -->
         <dependency>
@@ -52,35 +69,111 @@
             <artifactId>configme</artifactId>
             <version>1.0.1</version>
         </dependency>
+        <!-- EventBus library -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>event-method-asm</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <!-- Netty networking library -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.30.Final</version>
+        </dependency>
         <!-- RakNet networking library -->
         <dependency>
             <groupId>com.whirvis</groupId>
             <artifactId>jraknet</artifactId>
             <version>2.10.6</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-handler</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- Minecraft Java networking library -->
         <dependency>
             <groupId>com.github.steveice10</groupId>
             <artifactId>mcprotocollib</artifactId>
             <version>1.13.1-1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.steveice10</groupId>
+                    <artifactId>opennbt</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.github.steveice10</groupId>
+                    <artifactId>packetlib</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.github.steveice10</groupId>
+                    <artifactId>mcauthlib</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-        <!-- Command line arguments parser -->
         <dependency>
-            <groupId>net.sf.jopt-simple</groupId>
-            <artifactId>jopt-simple</artifactId>
-            <version>5.0.4</version>
+            <groupId>com.github.steveice10</groupId>
+            <artifactId>opennbt</artifactId>
+            <version>1.2-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.steveice10</groupId>
+            <artifactId>packetlib</artifactId>
+            <version>1.4-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-all</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.github.steveice10</groupId>
+            <artifactId>mcauthlib</artifactId>
+            <version>1.1-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Runtime dependencies -->
         <!-- Logger implementation -->
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>1.2.3</version>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>3.4.2</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.11.1</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.11.1</version>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.dragonet.dragonproxy.proxy.DragonProxyMain</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Implementation-Version>${project.versionCode}</Implementation-Version>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
