@@ -165,7 +165,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.dragonet.dragonproxy.proxy.DragonProxyMain</mainClass>
+                            <mainClass>org.dragonet.dragonproxy.proxy.DragonProxyBootstrap</mainClass>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                         <manifestEntries>

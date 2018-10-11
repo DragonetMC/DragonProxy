@@ -8,10 +8,11 @@ import org.slf4j.LoggerFactory;
 
 import java.text.DecimalFormat;
 
-public class DragonProxyMain {
+public class DragonProxyBootstrap {
 
     public static void main(String[] args) {
-        Logger logger = LoggerFactory.getLogger("DragonProxyBootstrap");
+        Logger logger = LoggerFactory.getLogger(DragonProxyBootstrap.class);
+        logger.info("Starting DragonProxy...");
 
         // Check the java version
         if (Float.parseFloat(System.getProperty("java.class.version")) < 52.0) {
@@ -29,7 +30,7 @@ public class DragonProxyMain {
         // Handle command-line options
         OptionSet options = optionParser.parse(args);
         if (options.has("version")) {
-            logger.info("Version: " + DragonProxyMain.class.getPackage().getImplementationVersion());
+            logger.info("Version: " + DragonProxyBootstrap.class.getPackage().getImplementationVersion());
             return;
         }
         int bedrockPort = options.has(bedrockPortOption) ? Integer.parseInt(options.valueOf(bedrockPortOption)) : -1;

@@ -22,7 +22,7 @@ public class DragonProxy implements Proxy {
 
     public DragonProxy(int bedrockPort, int javaPort) {
         // Initialize the logger
-        logger = LoggerFactory.getLogger("DragonProxy");
+        logger = LoggerFactory.getLogger(DragonProxy.class);
         logger.info("Welcome to DragonProxy version " + getVersion());
         // Initialize services
         try {
