@@ -27,6 +27,9 @@ public class DragonConsole extends SimpleTerminalConsole {
 
     @Override
     protected void runCommand(String command) {
+        if(command.equalsIgnoreCase("stop")) {
+            proxy.shutdown();
+        }
     }
 
     @Override

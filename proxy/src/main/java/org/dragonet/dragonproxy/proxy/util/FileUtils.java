@@ -18,6 +18,14 @@ public final class FileUtils {
         }
     }
 
+    public static void createDirectoriesIfNotExist(Path path) {
+        try {
+            Files.createDirectories(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private FileUtils() {
     }
 }

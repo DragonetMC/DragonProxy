@@ -9,6 +9,7 @@ import org.dragonet.dragonproxy.proxy.util.FileUtils;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class LocaleProvider implements Provider<DragonLocale> {
@@ -26,7 +27,9 @@ public class LocaleProvider implements Provider<DragonLocale> {
 
     @Override
     public DragonLocale get() {
-        Path localeFile = dataFolder.resolve("locale_" + configuration.getProperty(ConfigurationProperty.LOCALE) + ".yml");
+        Path localeFolder = dataFolder.resolve("locales");
+        FileUtils.createDirectoriesIfNotExist(localeFolder);
+        Path localeFile = localeFolder.resolve("locale_" + configuration.getProperty(ConfigurationProperty.LOCALE) + ".yml");
         FileUtils.createFileIfNotExists(localeFile);
         return new DragonLocale(new YamlFileResource(localeFile.toFile()),
             ConfigurationDataBuilder.createConfiguration(ConfigurationProperty.class), migrationService);
