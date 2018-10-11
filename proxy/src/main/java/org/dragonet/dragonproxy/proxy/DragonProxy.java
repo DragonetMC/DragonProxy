@@ -80,7 +80,7 @@ public class DragonProxy implements Proxy {
         shutdown = true;
     }
 
-    // TODO: migrate to CommandSource, api
+    @Override
     public DragonConsole getConsole() {
         return console;
     }

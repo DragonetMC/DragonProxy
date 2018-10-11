@@ -1,5 +1,7 @@
 package org.dragonet.dragonproxy.proxy.util;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -7,7 +9,7 @@ import java.nio.file.Path;
 
 public final class FileUtils {
 
-    public static void createFileIfNotExists(Path path) {
+    public static void createFileIfNotExists(@NonNull Path path) {
         try {
             if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
                 return;
@@ -18,7 +20,7 @@ public final class FileUtils {
         }
     }
 
-    public static void createDirectoriesIfNotExist(Path path) {
+    public static void createDirectoriesIfNotExist(@NonNull Path path) {
         try {
             Files.createDirectories(path);
         } catch (IOException e) {
