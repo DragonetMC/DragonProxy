@@ -32,6 +32,6 @@ public class LocaleProvider implements Provider<DragonLocale> {
         Path localeFile = localeFolder.resolve("locale_" + configuration.getProperty(ConfigurationProperty.LOCALE) + ".yml");
         FileUtils.createFileIfNotExists(localeFile);
         return new DragonLocale(new YamlFileResource(localeFile.toFile()),
-            ConfigurationDataBuilder.createConfiguration(ConfigurationProperty.class), migrationService);
+            ConfigurationDataBuilder.createConfiguration(LocaleProperty.class), migrationService);
     }
 }
