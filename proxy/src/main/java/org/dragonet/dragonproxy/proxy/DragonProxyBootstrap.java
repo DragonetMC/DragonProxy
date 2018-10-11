@@ -43,5 +43,7 @@ public class DragonProxyBootstrap {
 
         double bootTime = (System.currentTimeMillis() - startTime) / 1000d;
         logger.info("Done ({}s)!", new DecimalFormat("#.##").format(bootTime));
+
+        proxy.getConsole().start();
     }
 }

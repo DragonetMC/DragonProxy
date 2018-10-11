@@ -2,9 +2,11 @@ package org.dragonet.dragonproxy.proxy;
 
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
+import org.apache.logging.log4j.LogManager;
 import org.dragonet.dragonproxy.api.Proxy;
 import org.dragonet.dragonproxy.proxy.configuration.ConfigurationProvider;
 import org.dragonet.dragonproxy.proxy.configuration.DragonConfiguration;
+import org.dragonet.dragonproxy.proxy.console.DragonConsole;
 import org.dragonet.dragonproxy.proxy.locale.DragonLocale;
 import org.dragonet.dragonproxy.proxy.locale.LocaleProvider;
 import org.slf4j.Logger;
@@ -12,13 +14,18 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DragonProxy implements Proxy {
 
     private Logger logger;
     private Injector injector;
+    private DragonConsole console;
     private DragonConfiguration configuration;
     private DragonLocale locale;
+
+    private AtomicBoolean shutdownInProgress = new AtomicBoolean(false);
+    private boolean shutdown = false;
 
     public DragonProxy(int bedrockPort, int javaPort) {
         // Initialize the logger
@@ -29,7 +36,8 @@ public class DragonProxy implements Proxy {
             initialize();
         } catch (Throwable th) {
             logger.error("A fatal error occurred while initializing the proxy!", th);
-            System.exit(-1);
+            LogManager.shutdown();
+            System.exit(1);
             return;
         }
     }
@@ -45,12 +53,36 @@ public class DragonProxy implements Proxy {
         injector.registerProvider(DragonConfiguration.class, ConfigurationProvider.class);
         injector.registerProvider(DragonLocale.class, LocaleProvider.class);
 
+        // Initiate console
+        console = injector.getSingleton(DragonConsole.class);
+
         // Load configuration
         configuration = injector.getSingleton(DragonConfiguration.class);
         locale = injector.getSingleton(DragonLocale.class);
 
         // Initiate services
 
+    }
+
+    public boolean isShutdown() {
+        return shutdown;
+    }
+
+    @Override
+    public void shutdown() {
+        if (!shutdownInProgress.compareAndSet(false, true)) {
+            return;
+        }
+        logger.info("Shutting down the proxy...");
+
+        // TODO: shutdown
+
+        shutdown = true;
+    }
+
+    // TODO: migrate to CommandSource, api
+    public DragonConsole getConsole() {
+        return console;
     }
 
     @Override
@@ -61,9 +93,5 @@ public class DragonProxy implements Proxy {
     @Override
     public Path getFolder() {
         return Paths.get("");
-    }
-
-    @Override
-    public void shutdown() {
     }
 }
