@@ -65,7 +65,7 @@ command_prefix: '/'
 # Set to -1 for infinite
 max_players: 10
 
-# Should we save console text in a file? (not working for now)
+# Should we save the consoles text in a file? (not working for now)
 log_console: false
 
 # Should the console display colors
