@@ -68,15 +68,15 @@ max_players: 10
 # Should we save console text in a file? (not working for now)
 log_console: false
 
-# Should console display colors
+# Should the console display colors
 log_colors: true
 
-# Should console display debug info (can spam A LOT)
+# Should the console display debug info (can spam A LOT)
 log_debug: false
 
 # How many threads will process MCPE packets? Only change if you know what you're doing.
-# Recommanded at least 8 threads.
-# If you using this software at home, you can set to lower value like 8 or 12.
+# Recommended are at least 8 threads.
+# If you are using this software at home, you can it set to a lower value like 8 or 12.
 thread_pool_size: 8
 
 # Disables Packet events to save performance.
