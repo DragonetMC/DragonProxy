@@ -52,8 +52,19 @@ public class DragonConsole extends SimpleTerminalConsole implements CommandSourc
 
     @Override
     protected void runCommand(String command) {
-        if(command.equalsIgnoreCase("stop")) {
-            proxy.shutdown();
+        switch (command.toLowerCase()){
+            case ("stop"):{
+                proxy.shutdown();
+                break;
+            }
+            case ("help"):{
+                logger.info("\nCommands:\nstop: stop the DragonProxy server\nhelp: show this page");
+                break;
+            }
+            default:{
+                logger.info("Unknown command: " + command);
+                break;
+            }
         }
     }
 
