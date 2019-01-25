@@ -1,7 +1,5 @@
 package org.dragonet.dragonproxy.proxy.packet;
 
-import com.sun.istack.internal.Nullable;
-
 import java.io.Reader;
 import java.util.ArrayList;
 
@@ -21,7 +19,7 @@ public class SendQueue extends Reader {
     }
 
     @Override
-    public synchronized int read(@Nullable char[] cbuf, @Nullable int off, @Nullable int len) {
+    public synchronized int read( char[] cbuf, int off, int len) {
         return read();
     }
 
