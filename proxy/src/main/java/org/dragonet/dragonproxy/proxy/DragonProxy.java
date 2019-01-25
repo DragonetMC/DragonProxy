@@ -15,6 +15,9 @@ package org.dragonet.dragonproxy.proxy;
 
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.logging.log4j.LogManager;
 import org.dragonet.dragonproxy.api.Proxy;
 import org.dragonet.dragonproxy.proxy.configuration.ConfigurationProvider;
@@ -22,25 +25,38 @@ import org.dragonet.dragonproxy.proxy.configuration.DragonConfiguration;
 import org.dragonet.dragonproxy.proxy.console.DragonConsole;
 import org.dragonet.dragonproxy.proxy.locale.DragonLocale;
 import org.dragonet.dragonproxy.proxy.locale.LocaleProvider;
+import org.dragonet.dragonproxy.proxy.server.ServerInit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DragonProxy implements Proxy {
 
+    private LinkedHashMap<String, String> properties = new LinkedHashMap<>();
     private Logger logger;
     private Injector injector;
     private DragonConsole console;
     private DragonConfiguration configuration;
     private DragonLocale locale;
+    private static DragonProxy instance = null;
 
     private AtomicBoolean shutdownInProgress = new AtomicBoolean(false);
     private boolean shutdown = false;
 
-    public DragonProxy(int bedrockPort, int javaPort) {
+    DragonProxy(int bedrockPort, int javaPort) {
+        if(instance == null){
+            instance = this;
+        }
+        else{
+            throw new ExceptionInInitializerError();
+        }
+        //Set properties
+        properties.put("bedrockPort", Integer.toString(bedrockPort));
+        properties.put("javaPort", Integer.toString(javaPort));
         // Initialize the logger
         logger = LoggerFactory.getLogger(DragonProxy.class);
         logger.info("Welcome to DragonProxy version " + getVersion());
@@ -51,7 +67,6 @@ public class DragonProxy implements Proxy {
             logger.error("A fatal error occurred while initializing the proxy!", th);
             LogManager.shutdown();
             System.exit(1);
-            return;
         }
     }
 
@@ -81,6 +96,17 @@ public class DragonProxy implements Proxy {
         return shutdown;
     }
 
+    void start() {
+        NioEventLoopGroup bossGroup = new NioEventLoopGroup();
+        NioEventLoopGroup workerGroup = new NioEventLoopGroup();
+
+        ServerBootstrap bootstrap = new ServerBootstrap()
+            .group(bossGroup, workerGroup)
+            .channel(NioServerSocketChannel.class)
+            .childHandler(new ServerInit());
+        bootstrap.bind(Integer.parseInt(getProperty("javaPort")));
+    }
+
     @Override
     public void shutdown() {
         if (!shutdownInProgress.compareAndSet(false, true)) {
@@ -106,5 +132,24 @@ public class DragonProxy implements Proxy {
     @Override
     public Path getFolder() {
         return Paths.get("");
+    }
+
+    @Override
+    public String getProperty(String key) {
+        return properties.get(key) != null ?properties.get(key) :"null";
+    }
+
+    @Override
+    public void setProperty(String key, String value) {
+        if(properties.get(key) != null) {
+            properties.replace(key, value);
+        }
+        else {
+            properties.put(key, value);
+        }
+    }
+
+    public static DragonProxy getInstance() {
+        return instance;
     }
 }
