@@ -23,4 +23,7 @@ public interface Proxy {
     Path getFolder();
     void shutdown();
     CommandSource getConsole();
+    String getProperty(String key);
+    void setProperty(String key, String value);
+
 }
