@@ -19,12 +19,12 @@ public class SendQueue extends Reader {
     }
 
     @Override
-    public synchronized int read( char[] cbuf, int off, int len) {
+    public synchronized int read(char[] cbuf, int off, int len) {
         return read();
     }
 
     @Override
-    public synchronized int read(){
+    public synchronized int read() {
         try {
             String s = queue.get(0);
             queue.remove(0);
