@@ -9,9 +9,8 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.window.*;
 
 import com.nukkitx.protocol.bedrock.packet.*;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
-import org.dragonet.dragonproxy.proxy.users.User;
 
-//My Ide annoys me!
+//My Ide annoys me
 @SuppressWarnings("unused")
 public final class BedrockToJavaConverter {
     private BedrockToJavaConverter() {}
