@@ -11,7 +11,7 @@ import com.nukkitx.protocol.bedrock.packet.*;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
 import org.dragonet.dragonproxy.proxy.users.User;
 
-//My Ide annoys me
+//My Ide annoys me!
 @SuppressWarnings("unused")
 public final class BedrockToJavaConverter {
     private BedrockToJavaConverter() {}
