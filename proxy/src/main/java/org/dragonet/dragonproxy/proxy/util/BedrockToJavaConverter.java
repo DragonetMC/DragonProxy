@@ -3,12 +3,17 @@ package org.dragonet.dragonproxy.proxy.util;
 import com.flowpowered.math.vector.Vector3i;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
+import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
+import com.github.steveice10.mc.protocol.data.game.entity.player.InteractAction;
 import com.github.steveice10.mc.protocol.data.game.world.block.CommandBlockMode;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerInteractEntityPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.*;
 
+import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientSteerVehiclePacket;
 import com.nukkitx.protocol.bedrock.packet.*;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
+import org.dragonet.dragonproxy.proxy.util.users.User;
 
 //My Ide annoys me
 @SuppressWarnings("unused")
@@ -44,36 +49,24 @@ public final class BedrockToJavaConverter {
         return new ClientCloseWindowPacket(packet.getWindowId());
     }
 
-    public static boolean convert(CraftingEventPacket packet, BedrockSession<User> session) {
-        return false;
-    }
-
-    public static boolean convert(EntityFallPacket packet, BedrockSession<User> session) {
-        return false;
-    }
-
-    public static boolean convert(EntityPickRequestPacket packet, BedrockSession<User> session) {
-        return false;
+    public static ClientPlayerInteractEntityPacket convert(EntityPickRequestPacket packet, BedrockSession<User> session) {
+        return new ClientPlayerInteractEntityPacket((int)packet.getRuntimeEntityId(), InteractAction.INTERACT_AT);
     }
 
     public static boolean convert(EventPacket packet, BedrockSession<User> session) {
         return false;
     }
 
-    public static boolean convert(InteractPacket packet, BedrockSession<User> session) {
-        return false;
+    public static ClientPlayerInteractEntityPacket convert(InteractPacket packet, BedrockSession<User> session) {
+        return new ClientPlayerInteractEntityPacket((int)packet.getRuntimeEntityId(),
+            InteractAction.values()[packet.getAction()],
+            packet.getMousePosition().getX(),
+            packet.getMousePosition().getY(),
+            packet.getMousePosition().getZ(),
+            Hand.MAIN_HAND);
     }
 
     public static boolean convert(InventoryTransactionPacket packet, BedrockSession<User> session) {
-        return false;
-    }
-
-    public static boolean convert(ItemFrameDropItemPacket packet, BedrockSession<User> session) {
-        return false;
-    }
-
-    public static boolean convert(LabTablePacket packet, BedrockSession<User> session) {
-        return false;
     }
 
     public static boolean convert(LevelSoundEventPacket packet, BedrockSession<User> session) {
@@ -132,11 +125,11 @@ public final class BedrockToJavaConverter {
         return false;
     }
 
-    public static boolean convert(RiderJumpPacket packet, BedrockSession<User> session) {
-        return false;
+    public static ClientSteerVehiclePacket convert(RiderJumpPacket packet, BedrockSession<User> session) {
+        return new ClientSteerVehiclePacket(0, 0, true, false);
     }
 
-    public boolean convert(ServerSettingsRequestPacket packet, BedrockSession<User> session) {
+    public static boolean convert(ServerSettingsRequestPacket packet, BedrockSession<User> session) {
         return false;
     }
 
@@ -168,10 +161,6 @@ public final class BedrockToJavaConverter {
         return false;
     }
 
-    public static boolean convert(ChangeDimensionPacket packet, BedrockSession<User> session) {
-        return false;
-    }
-
     public static boolean convert(ChunkRadiusUpdatedPacket packet, BedrockSession<User> session) {
         return false;
     }
@@ -181,10 +170,6 @@ public final class BedrockToJavaConverter {
     }
 
     public static boolean convert(CommandOutputPacket packet, BedrockSession<User> session) {
-        return false;
-    }
-
-    public static boolean convert(ContainerOpenPacket packet, BedrockSession<User> session) {
         return false;
     }
 
