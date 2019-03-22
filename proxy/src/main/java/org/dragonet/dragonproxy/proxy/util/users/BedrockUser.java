@@ -1,6 +1,7 @@
 package org.dragonet.dragonproxy.proxy.util.users;
 
 import com.nukkitx.network.SessionManager;
+import com.nukkitx.network.raknet.session.RakNetSession;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
 import org.dragonet.dragonproxy.proxy.util.Server;
@@ -11,12 +12,12 @@ import java.net.InetSocketAddress;
 public class BedrockUser extends User {
     public static final SessionManager<BedrockSession<BedrockUser>> MANAGER = new SessionManager<>();
 
-    private BedrockUser(InetSocketAddress remote, InetSocketAddress local) {
+    private BedrockUser(InetSocketAddress remote, InetSocketAddress local, RakNetSession s) {
         super(UserType.BEDROCK);
         if(!(MANAGER.get(remote) == null)) {
             throw new RuntimeException();
         }
-        MANAGER.add();
+        MANAGER.add(remote, new BedrockSession<>(s));
     }
 
     @Override
@@ -50,8 +51,8 @@ public class BedrockUser extends User {
         return null;
     }
 
-    public static BedrockUser add(InetSocketAddress remote, InetSocketAddress local) {
-        return new BedrockUser(remote, local);
+    public static BedrockUser add(InetSocketAddress remote, InetSocketAddress local, RakNetSession session) {
+        return new BedrockUser(remote, local, session);
     }
 
     public static BedrockUser get(InetSocketAddress s) {
