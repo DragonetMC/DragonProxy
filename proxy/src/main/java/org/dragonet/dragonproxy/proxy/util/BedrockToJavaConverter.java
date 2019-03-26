@@ -67,6 +67,7 @@ public final class BedrockToJavaConverter {
     }
 
     public static boolean convert(InventoryTransactionPacket packet, BedrockSession<User> session) {
+        return false;
     }
 
     public static boolean convert(LevelSoundEventPacket packet, BedrockSession<User> session) {
