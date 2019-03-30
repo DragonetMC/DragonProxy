@@ -13,24 +13,22 @@
  */
 package org.dragonet.proxy.util;
 
-import java.util.LinkedHashMap;
-
 public final class RemoteServer {
-    private static final LinkedHashMap<String, RemoteServer> servers = new LinkedHashMap<>();
-
     private final String name;
+    private final String address;
     private final int port;
 
-    public RemoteServer getServer(String name) {
-        return servers.get(name);
+    public RemoteServer(String name, String address,  int port) {
+        this.name = name;
+        this.address = address;
+        this.port = port;
     }
 
-    public RemoteServer(String name, int port) {
-        this.name = name;
-        this.port = port;
-        if(servers.containsKey(name)) {
-            throw new RuntimeException();
-        }
-        servers.put(name, this);
+    public String getAddress() {
+        return address;
+    }
+
+    public int getPort() {
+        return port;
     }
 }

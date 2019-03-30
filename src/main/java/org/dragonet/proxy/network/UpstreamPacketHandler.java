@@ -15,23 +15,35 @@ package org.dragonet.proxy.network;
 
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.LoginPacket;
+import com.nukkitx.protocol.bedrock.packet.ResourcePackClientResponsePacket;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.network.session.ProxyBedrockSession;
+import org.dragonet.proxy.network.session.UpstreamSession;
+import org.dragonet.proxy.util.RemoteServer;
 
+/**
+ * Respresents the connection between the mcpe client and the proxy.
+ */
 public class UpstreamPacketHandler implements BedrockPacketHandler {
 
-    private BedrockSession<ProxyBedrockSession> session;
+    private BedrockSession<UpstreamSession> session;
     private DragonProxy proxy;
 
-    public UpstreamPacketHandler(BedrockSession<ProxyBedrockSession> session, DragonProxy proxy) {
+    public UpstreamPacketHandler(BedrockSession<UpstreamSession> session, DragonProxy proxy) {
         this.session = session;
         this.proxy = proxy;
     }
 
     @Override
     public boolean handle(LoginPacket packet) {
-        System.out.println("GOT LoginPacket");
+        UpstreamSession session = new UpstreamSession(this.session.getConnection());
+        session.setRemoteServer(new RemoteServer("local", "127.0.0.1", 25566));
+        return true;
+    }
+
+    @Override
+    public boolean handle(ResourcePackClientResponsePacket packet) {
+        session.getPlayer().postLogin();
         return true;
     }
 }

@@ -27,7 +27,7 @@ import org.dragonet.proxy.locale.DragonLocale;
 import org.dragonet.proxy.locale.LocaleProvider;
 import org.dragonet.proxy.network.ProxyRakNetEventListener;
 import org.dragonet.proxy.network.UpstreamPacketHandler;
-import org.dragonet.proxy.network.session.ProxyBedrockSession;
+import org.dragonet.proxy.network.session.UpstreamSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +39,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class DragonProxy implements Proxy {
 
     private static final boolean RELEASE = false;
+    public static DragonProxy INSTANCE = null;
 
     private Logger logger;
     private Injector injector;
@@ -51,6 +52,7 @@ public class DragonProxy implements Proxy {
     private boolean shutdown = false;
 
     public DragonProxy(int bedrockPort, int javaPort) {
+        INSTANCE = this;
         // Initialize the logger
         logger = LoggerFactory.getLogger(DragonProxy.class);
         logger.info("Welcome to DragonProxy version " + getVersion());
@@ -88,13 +90,13 @@ public class DragonProxy implements Proxy {
         locale = injector.getSingleton(DragonLocale.class);
 
         // Initiate RakNet
-        RakNetServer.Builder<BedrockSession<ProxyBedrockSession>> builder = RakNetServer.builder();
+        RakNetServer.Builder<BedrockSession<UpstreamSession>> builder = RakNetServer.builder();
         builder.eventListener(new ProxyRakNetEventListener())
             .address(new InetSocketAddress("0.0.0.0", 19132))
             .packet(WrappedPacket::new, 0xfe)
-            .sessionManager(ProxyBedrockSession.MANAGER)
+            .sessionManager(UpstreamSession.MANAGER)
             .sessionFactory(rakNetSession -> {
-                BedrockSession<ProxyBedrockSession> session = new BedrockSession<>(rakNetSession);
+                BedrockSession<UpstreamSession> session = new BedrockSession<>(rakNetSession);
                 session.setHandler(new UpstreamPacketHandler(session, this));
                 return session;
             });
@@ -119,6 +121,7 @@ public class DragonProxy implements Proxy {
         logger.info("Shutting down the proxy...");
 
         // TODO: shutdown
+        System.exit(0); // Temporary to fix hanging
 
         shutdown = true;
     }
