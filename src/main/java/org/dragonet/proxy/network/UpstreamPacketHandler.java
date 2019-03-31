@@ -36,8 +36,9 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
 
     @Override
     public boolean handle(LoginPacket packet) {
+        // TODO: move out of here? idk
         UpstreamSession session = new UpstreamSession(this.session.getConnection());
-        session.setRemoteServer(new RemoteServer("local", "127.0.0.1", 25566));
+        session.setRemoteServer(new RemoteServer("local", proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort()));
         return true;
     }
 

@@ -13,16 +13,30 @@
  */
 package org.dragonet.proxy.configuration;
 
-import ch.jalu.configme.SettingsManagerImpl;
-import ch.jalu.configme.configurationdata.ConfigurationData;
-import ch.jalu.configme.migration.MigrationService;
-import ch.jalu.configme.resource.PropertyResource;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.annotation.Nullable;
+import lombok.Getter;
 
-public class DragonConfiguration extends SettingsManagerImpl {
+@Getter
+public class DragonConfiguration {
 
-    public DragonConfiguration(PropertyResource resource, ConfigurationData configurationData, @Nullable MigrationService migrationService) {
-        super(resource, configurationData, migrationService);
-    }
+    private String locale = "EN";
+
+    @JsonProperty("bind-address")
+    private String bindAddress;
+
+    @JsonProperty("bind-port")
+    private int bindPort;
+
+    private String motd;
+    private String motd2;
+
+    @JsonProperty("max-players")
+    private int maxPlayers;
+
+    @JsonProperty("remote-address")
+    private String remoteAddress;
+
+    @JsonProperty("remote-port")
+    private int remotePort;
 }

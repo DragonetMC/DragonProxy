@@ -11,17 +11,12 @@
  * @author Dragonet Foundation
  * @link https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.configuration;
+package org.dragonet.proxy.network.translator;
 
-import ch.jalu.configme.SettingsHolder;
-import ch.jalu.configme.properties.Property;
+import com.nukkitx.protocol.bedrock.session.BedrockSession;
+import org.dragonet.proxy.network.session.UpstreamSession;
 
-import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
+public interface IPacketTranslator<P> {
 
-public class ConfigurationProperty implements SettingsHolder {
-
-    public final static Property<String> LOCALE = newProperty("locale", "EN");
-
-    private ConfigurationProperty() {
-    }
+    void translate(BedrockSession<UpstreamSession> session, P packet);
 }

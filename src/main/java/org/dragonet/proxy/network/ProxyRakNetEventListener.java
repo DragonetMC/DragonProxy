@@ -14,8 +14,11 @@
 package org.dragonet.proxy.network;
 
 import com.nukkitx.network.raknet.RakNetServerEventListener;
+import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.configuration.DragonConfiguration;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
 import java.net.InetSocketAddress;
 
 public class ProxyRakNetEventListener implements RakNetServerEventListener {
@@ -29,6 +32,7 @@ public class ProxyRakNetEventListener implements RakNetServerEventListener {
 
     @Nonnull
     public Advertisement onQuery(InetSocketAddress address) {
-        return new Advertisement("MCPE", "DragonProxy", 332, "1.9.0", 0, 1, "https://github.com/DragonetMC/DragonProxy", "SMP");
+        DragonConfiguration config = DragonProxy.INSTANCE.getConfiguration();
+        return new Advertisement("MCPE", config.getMotd(), 332, "1.9.0", 0, config.getMaxPlayers(), config.getMotd2(), "SMP");
     }
 }

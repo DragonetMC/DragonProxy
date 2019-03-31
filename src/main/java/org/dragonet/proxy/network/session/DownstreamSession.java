@@ -25,6 +25,7 @@ import com.nukkitx.network.raknet.session.RakNetSession;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.dragonet.proxy.util.RemoteServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,25 +71,29 @@ public class DownstreamSession extends ProxySession {
 
     @Override
     public void setRemoteServer(RemoteServer server) {
-        System.out.println("set remote server inside");
         MinecraftProtocol protocol = new MinecraftProtocol("lukeeey21");
         remoteClient = new Client(server.getAddress(), server.getPort(), protocol, new TcpSessionFactory());
         remoteClient.getSession().addListener(new SessionAdapter() {
 
             @Override
             public void connected(ConnectedEvent event) {
-                System.out.println("Player connected to remote " + server.getAddress());
+                logger.info("Player connected to remote " + server.getAddress());
             }
 
             @Override
             public void disconnected(DisconnectedEvent event) {
-                System.out.println("Player  disconnected from remote. Reason: " + event.getReason());
+                logger.info("Player  disconnected from remote. Reason: " + event.getReason());
                 upstream.disconnect(event.getReason());
             }
 
             @Override
             public void packetReceived(PacketReceivedEvent event) {
-                System.out.println("Packet received from remote: " + event.getPacket().getClass().getSimpleName());
+                try {
+                    logger.info("Packet received from remote: " + event.getPacket().getClass().getSimpleName());
+                    PacketTranslatorRegistry.translateToBedrock(upstream, event.getPacket());
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         });
         remoteClient.getSession().connect();

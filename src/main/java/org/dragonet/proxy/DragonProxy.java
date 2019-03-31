@@ -15,38 +15,44 @@ package org.dragonet.proxy;
 
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+
 import com.nukkitx.network.raknet.RakNetServer;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
 import com.nukkitx.protocol.bedrock.wrapper.WrappedPacket;
+import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
-import org.dragonet.dragonproxy.api.Proxy;
-import org.dragonet.proxy.configuration.ConfigurationProvider;
+
 import org.dragonet.proxy.configuration.DragonConfiguration;
 import org.dragonet.proxy.console.DragonConsole;
-import org.dragonet.proxy.locale.DragonLocale;
-import org.dragonet.proxy.locale.LocaleProvider;
 import org.dragonet.proxy.network.ProxyRakNetEventListener;
+import org.dragonet.proxy.network.ProxySessionManager;
 import org.dragonet.proxy.network.UpstreamPacketHandler;
 import org.dragonet.proxy.network.session.UpstreamSession;
+import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class DragonProxy implements Proxy {
+public class DragonProxy {
 
     private static final boolean RELEASE = false;
     public static DragonProxy INSTANCE = null;
 
     private Logger logger;
     private Injector injector;
+    @Getter
     private DragonConsole console;
+    @Getter
     private DragonConfiguration configuration;
-    private DragonLocale locale;
     private RakNetServer raknetServer;
+    private ProxySessionManager sessionManager;
 
     private AtomicBoolean shutdownInProgress = new AtomicBoolean(false);
     private boolean shutdown = false;
@@ -67,7 +73,7 @@ public class DragonProxy implements Proxy {
         }
     }
 
-    private void initialize() {
+    private void initialize() throws Exception {
         if(!RELEASE) {
             logger.warn("This is a development build. It may contain bugs. Do not use on production.");
         }
@@ -79,32 +85,50 @@ public class DragonProxy implements Proxy {
         injector.register(DragonProxy.class, this);
         injector.register(Logger.class, logger);
         injector.provide(ProxyFolder.class, getFolder());
-        injector.registerProvider(DragonConfiguration.class, ConfigurationProvider.class); // TODO: migrate to jackson
-        injector.registerProvider(DragonLocale.class, LocaleProvider.class);
 
         // Initiate console
         console = injector.getSingleton(DragonConsole.class);
 
         // Load configuration
-        configuration = injector.getSingleton(DragonConfiguration.class);
-        locale = injector.getSingleton(DragonLocale.class);
+        // TODO: Tidy this up
+        File fileConfig = new File("configuration.yml");
+        if (!fileConfig.exists()) {
+            // Create default config
+            FileOutputStream fos = new FileOutputStream(fileConfig);
+            InputStream ins = DragonProxy.class.getResourceAsStream("/configuration.yml");
+            int data;
+            while ((data = ins.read()) != -1) {
+                fos.write(data);
+            }
+            ins.close();
+            fos.close();
+        }
+
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        configuration = mapper.readValue(new FileInputStream(fileConfig), DragonConfiguration.class);
+
+        new PacketTranslatorRegistry();
 
         // Initiate RakNet
+        sessionManager = new ProxySessionManager();
+
         RakNetServer.Builder<BedrockSession<UpstreamSession>> builder = RakNetServer.builder();
         builder.eventListener(new ProxyRakNetEventListener())
-            .address(new InetSocketAddress("0.0.0.0", 19132))
+            .address(new InetSocketAddress(configuration.getBindAddress(), configuration.getBindPort()))
             .packet(WrappedPacket::new, 0xfe)
-            .sessionManager(UpstreamSession.MANAGER)
+            .sessionManager(sessionManager)
             .sessionFactory(rakNetSession -> {
                 BedrockSession<UpstreamSession> session = new BedrockSession<>(rakNetSession);
                 session.setHandler(new UpstreamPacketHandler(session, this));
                 return session;
             });
+
         raknetServer = builder.build();
+
         if (raknetServer.bind()) {
-            logger.info("RakNet server started on {}", "0.0.0.0");
+            logger.info("RakNet server started on {}", configuration.getBindAddress());
         } else {
-            logger.error("RakNet server failed to bind to {}", "0.0.0.0");
+            logger.error("RakNet server failed to bind to {}", configuration.getBindAddress());
         }
 
     }
@@ -113,7 +137,6 @@ public class DragonProxy implements Proxy {
         return shutdown;
     }
 
-    @Override
     public void shutdown() {
         if (!shutdownInProgress.compareAndSet(false, true)) {
             return;
@@ -126,17 +149,14 @@ public class DragonProxy implements Proxy {
         shutdown = true;
     }
 
-    @Override
     public DragonConsole getConsole() {
         return console;
     }
 
-    @Override
     public String getVersion() {
         return DragonProxy.class.getPackage().getImplementationVersion();
     }
-
-    @Override
+    
     public Path getFolder() {
         return Paths.get("");
     }
