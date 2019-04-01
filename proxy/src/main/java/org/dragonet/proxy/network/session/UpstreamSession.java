@@ -13,7 +13,6 @@
  */
 package org.dragonet.proxy.network.session;
 
-import com.nukkitx.network.raknet.session.RakNetSession;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
 import org.dragonet.proxy.DragonProxy;
@@ -24,10 +23,10 @@ import javax.annotation.Nonnull;
 public class UpstreamSession extends ProxySession {
 
     private DownstreamSession downstream;
-    private RakNetSession raknetSession;
+    private BedrockSession<UpstreamSession> session;
 
-    public UpstreamSession(RakNetSession session) {
-        raknetSession = session;
+    public UpstreamSession(BedrockSession<UpstreamSession> session) {
+        this.session = session;
     }
 
     @Override
@@ -57,7 +56,7 @@ public class UpstreamSession extends ProxySession {
         if(downstream != null && !downstream.isClosed()) {
             downstream.close();
         }
-        downstream = new DownstreamSession(new BedrockSession<UpstreamSession>(raknetSession), DragonProxy.INSTANCE);
+        downstream = new DownstreamSession(session, DragonProxy.INSTANCE);
         downstream.setRemoteServer(server);
     }
 

@@ -23,8 +23,8 @@ import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.util.RemoteServer;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
+import org.dragonet.proxy.util.RemoteServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +68,7 @@ public class DownstreamSession extends ProxySession {
 
     @Override
     public void setRemoteServer(RemoteServer server) {
-        MinecraftProtocol protocol = new MinecraftProtocol("lukeeey21");
+        MinecraftProtocol protocol = new MinecraftProtocol(upstream.getAuthData().getDisplayName());
         remoteClient = new Client(server.getAddress(), server.getPort(), protocol, new TcpSessionFactory());
         remoteClient.getSession().addListener(new SessionAdapter() {
 
