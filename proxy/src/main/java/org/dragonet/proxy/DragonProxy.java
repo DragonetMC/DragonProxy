@@ -80,7 +80,7 @@ public class DragonProxy {
 
         // Create injector, provide elements from the environment and register providers
         injector = new InjectorBuilder()
-            .addDefaultHandlers("org.dragonet.proxy.proxy")
+            .addDefaultHandlers("org.dragonet.proxy")
             .create();
         injector.register(DragonProxy.class, this);
         injector.register(Logger.class, logger);

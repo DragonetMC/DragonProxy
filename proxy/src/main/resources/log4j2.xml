@@ -5,7 +5,7 @@
             <PatternLayout>
                 <LoggerNamePatternSelector defaultPattern="%highlightError{[%d{HH:mm:ss} %level] [%logger]: %minecraftFormatting{%msg}%n%xEx}">
                     <!-- Don't apply prefix to DragonProxy -->
-                    <PatternMatch key="org.dragonet.proxy.proxy.proxy."
+                    <PatternMatch key="org.dragonet.proxy."
                                   pattern="%highlightError{[%d{HH:mm:ss} %level]: %minecraftFormatting{%msg}%n%xEx}"/>
                 </LoggerNamePatternSelector>
             </PatternLayout>
