@@ -7,19 +7,20 @@ import com.nukkitx.protocol.bedrock.packet.MoveEntityAbsolutePacket;
 import com.nukkitx.protocol.bedrock.packet.SetEntityDataPacket;
 import com.nukkitx.protocol.bedrock.packet.SetEntityMotionPacket;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
-import org.dragonet.proxy.network.session.UpstreamSession;
-import org.dragonet.proxy.network.translator.IPacketTranslator;
-import org.dragonet.proxy.util.Converter;
+import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.translator.PacketTranslator;
 
-public class PCServerEntityTeleportPacketTranslator implements IPacketTranslator<ServerEntityTeleportPacket> {
+public class PCServerEntityTeleportPacketTranslator implements PacketTranslator<ServerEntityTeleportPacket> {
+    public static final PCServerEntityTeleportPacketTranslator INSTANCE = new PCServerEntityTeleportPacketTranslator();
+
     @Override
-    public void translate(BedrockSession<UpstreamSession> session, ServerEntityTeleportPacket packet) {
+    public void translate(ProxySession session, ServerEntityTeleportPacket packet) {
         MoveEntityAbsolutePacket p = new MoveEntityAbsolutePacket();
 
         p.setRuntimeEntityId(packet.getEntityId());
 
         p.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
 
-        session.sendPacket(p);
+        session.getUpstream().sendPacket(p);
     }
 }
