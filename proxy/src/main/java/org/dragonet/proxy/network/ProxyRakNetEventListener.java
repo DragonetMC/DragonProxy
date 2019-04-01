@@ -18,7 +18,6 @@ import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.DragonConfiguration;
 
 import javax.annotation.Nonnull;
-import javax.inject.Inject;
 import java.net.InetSocketAddress;
 
 public class ProxyRakNetEventListener implements RakNetServerEventListener {

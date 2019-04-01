@@ -26,8 +26,8 @@ import org.apache.logging.log4j.LogManager;
 
 import org.dragonet.proxy.configuration.DragonConfiguration;
 import org.dragonet.proxy.console.DragonConsole;
-import org.dragonet.proxy.network.ProxyRakNetEventListener;
 import org.dragonet.proxy.network.ProxySessionManager;
+import org.dragonet.proxy.network.ProxyRakNetEventListener;
 import org.dragonet.proxy.network.UpstreamPacketHandler;
 import org.dragonet.proxy.network.session.UpstreamSession;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
@@ -80,7 +80,7 @@ public class DragonProxy {
 
         // Create injector, provide elements from the environment and register providers
         injector = new InjectorBuilder()
-            .addDefaultHandlers("org.dragonet.proxy")
+            .addDefaultHandlers("org.dragonet.proxy.proxy")
             .create();
         injector.register(DragonProxy.class, this);
         injector.register(Logger.class, logger);
