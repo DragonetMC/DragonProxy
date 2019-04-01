@@ -18,22 +18,25 @@ import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockChangeRecord;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMultiBlockChangePacket;
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
-import com.nukkitx.protocol.bedrock.session.BedrockSession;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
-public class PCServerMultiBlockChangeTranslator implements PacketTranslator<ServerMultiBlockChangePacket> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class PCMultiBlockChangePacketTranslator implements PacketTranslator<ServerMultiBlockChangePacket> {
+    public static final PCMultiBlockChangePacketTranslator INSTANCE = new PCMultiBlockChangePacketTranslator();
 
     @Override
     public void translate(ProxySession session, ServerMultiBlockChangePacket packet) {
-        for(BlockChangeRecord c : packet.getRecords()) {
-            UpdateBlockPacket p = new UpdateBlockPacket();
+        for(BlockChangeRecord record : packet.getRecords()) {
+            UpdateBlockPacket updateBlock = new UpdateBlockPacket();
 
-            Position pos = c.getPosition();
-            
-            p.setBlockPosition(new Vector3i(pos.getX(), pos.getY(), pos.getY()));
+            Position pos = record.getPosition();
 
-            session.getUpstream().sendPacket(p);
+            updateBlock.setBlockPosition(new Vector3i(pos.getX(), pos.getY(), pos.getY()));
+
+            session.getUpstream().sendPacket(updateBlock);
         }
     }
 }

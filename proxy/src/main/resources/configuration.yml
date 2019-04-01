@@ -19,3 +19,10 @@ max-players: 1
 # TODO: Add support for multiple servers
 remote-address: '127.0.0.1'
 remote-port: 25566
+
+# TODO
+#remote-servers:
+#  local:
+#    address: '127.0.0.1'
+#    port: 25566
+#    default: true

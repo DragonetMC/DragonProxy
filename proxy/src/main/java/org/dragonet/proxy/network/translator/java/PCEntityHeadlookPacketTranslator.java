@@ -13,18 +13,15 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerAbilitiesPacket;
-import com.nukkitx.protocol.bedrock.packet.AdventureSettingsPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityHeadLookPacket;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
-public class PCServerPlayerAbilitiesTranslator implements PacketTranslator<ServerPlayerAbilitiesPacket> {
+public class PCEntityHeadlookPacketTranslator implements PacketTranslator<ServerEntityHeadLookPacket> {
+    public static final PCEntityHeadlookPacketTranslator INSTANCE = new PCEntityHeadlookPacketTranslator();
 
     @Override
-    public void translate(ProxySession session, ServerPlayerAbilitiesPacket packet) {
-        AdventureSettingsPacket bedrockPacket = new AdventureSettingsPacket();
-        // TODO
+    public void translate(ProxySession session, ServerEntityHeadLookPacket packet) {
 
-        session.getUpstream().sendPacketImmediately(bedrockPacket);
     }
 }

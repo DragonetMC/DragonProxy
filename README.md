@@ -16,8 +16,6 @@ If you get banned from a server, we do not take responsibilities.
 ## Who uses DragonProxy
 See live stats on BStats[![Bstats](https://bstats.org/signatures/server-implementation/DragonProxy.svg)](https://bstats.org/plugin/server-implementation/DragonProxy/)
 
-![Screenshot](https://github.com/DragonetMC/DragonProxy/raw/master/screenshots/hypixel-2.png)
-
 ## Download
  - [release](https://github.com/DragonetMC/DragonProxy/releases) : stable builds
  - [snapshots](https://ci.codemc.org/job/DragonetMC/job/DragonProxy/lastSuccessfulBuild/artifact/target/): developments builds, unstable, latest features

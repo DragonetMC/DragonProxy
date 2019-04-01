@@ -35,16 +35,16 @@ public class PacketTranslatorRegistry<P> {
     public static final PacketTranslatorRegistry<Packet> JAVA_TO_BEDROCK = new PacketTranslatorRegistry<>();
 
     static {
-        JAVA_TO_BEDROCK.addTranslator(ServerJoinGamePacket.class, PCServerJoinGamePacketTranslator.INSTANCE)
-            .addTranslator(ServerMultiBlockChangePacket.class, PCMultiBlockChangeTranslator.INSTANCE)
-            .addTranslator(ServerDifficultyPacket.class, PCServerDifficultyTranslator.INSTANCE)
-            .addTranslator(ServerTitlePacket.class, PCServerTitleTranslator.INSTANCE)
-            .addTranslator(ServerEntityHeadLookPacket.class, PCServerEntityHeadlookPacketTranslator.INSTANCE)
-            .addTranslator(ServerEntityPositionPacket.class, PCServerEntityPositionPacketTranslator.INSTANCE)
-            .addTranslator(ServerEntityPositionRotationPacket.class, PCServerEntityPositionRotationPacketTranslator.INSTANCE)
-            .addTranslator(ServerEntityTeleportPacket.class, PCServerEntityTeleportPacketTranslator.INSTANCE)
-            .addTranslator(ServerEntityVelocityPacket.class, PCServerEntityVelocityPacketTranslator.INSTANCE)
-            .addTranslator(ServerUpdateTimePacket.class, PCServerUpdateTimePacketTranslator.INSTANCE);
+        JAVA_TO_BEDROCK.addTranslator(ServerJoinGamePacket.class, PCJoinGamePacketTranslator.INSTANCE)
+            .addTranslator(ServerMultiBlockChangePacket.class, PCMultiBlockChangePacketTranslator.INSTANCE)
+            .addTranslator(ServerDifficultyPacket.class, PCDifficultyPacketTranslator.INSTANCE)
+            .addTranslator(ServerTitlePacket.class, PCTitlePacketTranslator.INSTANCE)
+            .addTranslator(ServerEntityHeadLookPacket.class, PCEntityHeadlookPacketTranslator.INSTANCE)
+            .addTranslator(ServerEntityPositionPacket.class, PCEntityPositionPacketTranslator.INSTANCE)
+            .addTranslator(ServerEntityPositionRotationPacket.class, PCEntityPositionRotationPacketTranslator.INSTANCE)
+            .addTranslator(ServerEntityTeleportPacket.class, PCEntityTeleportPacketTranslator.INSTANCE)
+            .addTranslator(ServerEntityVelocityPacket.class, PCEntityVelocityPacketTranslator.INSTANCE)
+            .addTranslator(ServerUpdateTimePacket.class, PCUpdateTimePacketTranslator.INSTANCE);
     }
 
     private final Map<Class<?>, PacketTranslator<P>> translators = new HashMap<>();

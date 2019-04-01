@@ -28,7 +28,7 @@ import net.minidev.json.JSONValue;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.data.AuthDataImpl;
-import org.dragonet.proxy.util.RemoteServer;
+import org.dragonet.proxy.remote.RemoteServer;
 
 import java.text.ParseException;
 import java.util.Arrays;

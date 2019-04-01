@@ -27,7 +27,7 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
-import org.dragonet.proxy.util.RemoteServer;
+import org.dragonet.proxy.remote.RemoteServer;
 
 import javax.annotation.Nonnull;
 
@@ -93,11 +93,11 @@ public class ProxySession implements PlayerSession {
 
     @Override
     public void onDisconnect(@Nonnull DisconnectReason disconnectReason) {
-
+        downstream.getSession().disconnect("Disconnect");
     }
 
     @Override
     public void onDisconnect(@Nonnull String s) {
-
+        downstream.getSession().disconnect("Disconnect");
     }
 }

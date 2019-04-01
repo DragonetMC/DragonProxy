@@ -15,6 +15,7 @@ package org.dragonet.proxy;
 
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -69,21 +70,26 @@ public class DragonProxy {
         Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("DragonProxy Ticker").setDaemon(true).build()));
     private Logger logger;
     private Injector injector;
-    @Getter
-    private DragonConsole console;
-    @Getter
-    private DragonConfiguration configuration;
     private RakNetServer raknetServer;
     private ProxySessionManager sessionManager;
-
     private AtomicBoolean shutdownInProgress = new AtomicBoolean(false);
+
+    @Getter
+    private DragonConsole console;
+
+    @Getter
+    private DragonConfiguration configuration;
+
+    @Getter
     private boolean shutdown = false;
 
     public DragonProxy(int bedrockPort, int javaPort) {
         INSTANCE = this;
+
         // Initialize the logger
         logger = LoggerFactory.getLogger(DragonProxy.class);
         logger.info("Welcome to DragonProxy version " + getVersion());
+
         // Initialize services
         try {
             initialize();
@@ -91,7 +97,6 @@ public class DragonProxy {
             logger.error("A fatal error occurred while initializing the proxy!", th);
             LogManager.shutdown();
             System.exit(1);
-            return;
         }
     }
 
@@ -101,6 +106,7 @@ public class DragonProxy {
         }
 
         // Create injector, provide elements from the environment and register providers
+        // TODO: Remove
         injector = new InjectorBuilder()
             .addDefaultHandlers("org.dragonet.proxy")
             .create();
@@ -155,10 +161,6 @@ public class DragonProxy {
 
     }
 
-    public boolean isShutdown() {
-        return shutdown;
-    }
-
     public void shutdown() {
         if (!shutdownInProgress.compareAndSet(false, true)) {
             return;
@@ -169,10 +171,6 @@ public class DragonProxy {
         System.exit(0); // Temporary to fix hanging
 
         shutdown = true;
-    }
-
-    public DragonConsole getConsole() {
-        return console;
     }
 
     public String getVersion() {

@@ -13,18 +13,22 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
-import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMultiBlockChangePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDifficultyPacket;
+import com.nukkitx.protocol.bedrock.packet.SetDifficultyPacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PCMultiBlockChangeTranslator implements PacketTranslator<ServerMultiBlockChangePacket> {
-    public static final PCMultiBlockChangeTranslator INSTANCE = new PCMultiBlockChangeTranslator();
+public class PCDifficultyPacketTranslator implements PacketTranslator<ServerDifficultyPacket> {
+    public static final PCDifficultyPacketTranslator INSTANCE = new PCDifficultyPacketTranslator();
 
     @Override
-    public void translate(ProxySession session, ServerMultiBlockChangePacket packet) {
-        // TODO
+    public void translate(ProxySession session, ServerDifficultyPacket packet) {
+        SetDifficultyPacket bedrockPacket = new SetDifficultyPacket();
+        bedrockPacket.setDifficulty(packet.getDifficulty().ordinal());
+
+        session.getUpstream().sendPacketImmediately(bedrockPacket);
     }
 }

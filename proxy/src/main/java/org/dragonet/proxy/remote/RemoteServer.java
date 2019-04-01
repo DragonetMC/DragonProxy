@@ -11,24 +11,16 @@
  * @author Dragonet Foundation
  * @link https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.util;
+package org.dragonet.proxy.remote;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
 public final class RemoteServer {
     private final String name;
     private final String address;
     private final int port;
-
-    public RemoteServer(String name, String address,  int port) {
-        this.name = name;
-        this.address = address;
-        this.port = port;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public int getPort() {
-        return port;
-    }
+    //private final boolean defaultServer;
 }
