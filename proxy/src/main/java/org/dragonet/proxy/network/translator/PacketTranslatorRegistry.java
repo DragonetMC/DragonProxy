@@ -16,16 +16,15 @@ package org.dragonet.proxy.network.translator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDifficultyPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerTitlePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMultiBlockChangePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerUpdateTimePacket;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.google.common.base.Preconditions;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.java.PCMultiBlockChangeTranslator;
-import org.dragonet.proxy.network.translator.java.PCServerDifficultyTranslator;
-import org.dragonet.proxy.network.translator.java.PCServerJoinGamePacketTranslator;
-import org.dragonet.proxy.network.translator.java.PCServerTitleTranslator;
+import org.dragonet.proxy.network.translator.java.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +38,13 @@ public class PacketTranslatorRegistry<P> {
         JAVA_TO_BEDROCK.addTranslator(ServerJoinGamePacket.class, PCServerJoinGamePacketTranslator.INSTANCE)
             .addTranslator(ServerMultiBlockChangePacket.class, PCMultiBlockChangeTranslator.INSTANCE)
             .addTranslator(ServerDifficultyPacket.class, PCServerDifficultyTranslator.INSTANCE)
-            .addTranslator(ServerTitlePacket.class, PCServerTitleTranslator.INSTANCE);
+            .addTranslator(ServerTitlePacket.class, PCServerTitleTranslator.INSTANCE)
+            .addTranslator(ServerEntityHeadLookPacket.class, PCServerEntityHeadlookPacketTranslator.INSTANCE)
+            .addTranslator(ServerEntityPositionPacket.class, PCServerEntityPositionPacketTranslator.INSTANCE)
+            .addTranslator(ServerEntityPositionRotationPacket.class, PCServerEntityPositionRotationPacketTranslator.INSTANCE)
+            .addTranslator(ServerEntityTeleportPacket.class, PCServerEntityTeleportPacketTranslator.INSTANCE)
+            .addTranslator(ServerEntityVelocityPacket.class, PCServerEntityVelocityPacketTranslator.INSTANCE)
+            .addTranslator(ServerUpdateTimePacket.class, PCServerUpdateTimePacketTranslator.INSTANCE);
     }
 
     private final Map<Class<?>, PacketTranslator<P>> translators = new HashMap<>();
