@@ -14,14 +14,17 @@
 package org.dragonet.proxy.network.translator.java;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMultiBlockChangePacket;
-import com.nukkitx.protocol.bedrock.session.BedrockSession;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.IPacketTranslator;
+import org.dragonet.proxy.network.translator.PacketTranslator;
 
-public class PCMultiBlockChangeTranslator implements IPacketTranslator<ServerMultiBlockChangePacket> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class PCMultiBlockChangeTranslator implements PacketTranslator<ServerMultiBlockChangePacket> {
+    public static final PCMultiBlockChangeTranslator INSTANCE = new PCMultiBlockChangeTranslator();
 
     @Override
-    public void translate(BedrockSession<ProxySession> session, ServerMultiBlockChangePacket packet) {
+    public void translate(ProxySession session, ServerMultiBlockChangePacket packet) {
         // TODO
     }
 }

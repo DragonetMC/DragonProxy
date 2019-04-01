@@ -13,10 +13,9 @@
  */
 package org.dragonet.proxy.network.translator;
 
-import com.nukkitx.protocol.bedrock.session.BedrockSession;
 import org.dragonet.proxy.network.session.ProxySession;
 
-public interface IPacketTranslator<P> {
+public interface PacketTranslator<P> {
 
-    void translate(BedrockSession<ProxySession> session, P packet);
+    void translate(ProxySession session, P packet);
 }

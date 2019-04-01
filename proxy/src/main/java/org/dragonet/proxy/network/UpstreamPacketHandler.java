@@ -20,6 +20,7 @@ import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
 import com.nukkitx.protocol.bedrock.packet.ResourcePackClientResponsePacket;
 import com.nukkitx.protocol.bedrock.packet.ResourcePacksInfoPacket;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -36,15 +37,11 @@ import java.util.Arrays;
  * Respresents the connection between the mcpe client and the proxy.
  */
 @Log4j2
+@RequiredArgsConstructor
 public class UpstreamPacketHandler implements BedrockPacketHandler {
 
-    private BedrockSession<ProxySession> upstream;
-    private DragonProxy proxy;
-
-    public UpstreamPacketHandler(BedrockSession<ProxySession> upstream, DragonProxy proxy) {
-        this.upstream = upstream;
-        this.proxy = proxy;
-    }
+    private final DragonProxy proxy;
+    private final BedrockSession<ProxySession> upstream;
 
     @Override
     public boolean handle(LoginPacket packet) {

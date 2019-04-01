@@ -1,0 +1,3 @@
+[submodule "proxy/src/main/resources/data"]
+	path = proxy/src/main/resources/data
+	url = https://github.com/NukkitX/Data

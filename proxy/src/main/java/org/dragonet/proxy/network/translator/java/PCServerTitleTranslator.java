@@ -15,14 +15,17 @@ package org.dragonet.proxy.network.translator.java;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerTitlePacket;
 import com.nukkitx.protocol.bedrock.packet.SetTitlePacket;
-import com.nukkitx.protocol.bedrock.session.BedrockSession;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.IPacketTranslator;
+import org.dragonet.proxy.network.translator.PacketTranslator;
 
-public class PCServerTitleTranslator implements IPacketTranslator<ServerTitlePacket> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class PCServerTitleTranslator implements PacketTranslator<ServerTitlePacket> {
+    public static PCServerTitleTranslator INSTANCE = new PCServerTitleTranslator();
 
     @Override
-    public void translate(BedrockSession<ProxySession> session, ServerTitlePacket packet) {
+    public void translate(ProxySession session, ServerTitlePacket packet) {
         SetTitlePacket bedrockPacket = new SetTitlePacket();
 
         switch(packet.getAction()) {
@@ -50,6 +53,6 @@ public class PCServerTitleTranslator implements IPacketTranslator<ServerTitlePac
         bedrockPacket.setFadeOutTime(packet.getFadeOut());
         bedrockPacket.setStayTime(packet.getStay());
 
-        session.sendPacket(bedrockPacket);
+        session.getUpstream().sendPacketImmediately(bedrockPacket);
     }
 }

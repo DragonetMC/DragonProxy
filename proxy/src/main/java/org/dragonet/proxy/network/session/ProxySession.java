@@ -65,7 +65,7 @@ public class ProxySession implements PlayerSession {
             public void packetReceived(PacketReceivedEvent event) {
                 try {
                     log.info("Packet received from remote: " + event.getPacket().getClass().getSimpleName());
-                    PacketTranslatorRegistry.translateToBedrock(upstream, event.getPacket());
+                    PacketTranslatorRegistry.JAVA_TO_BEDROCK.translate(ProxySession.this, event.getPacket());
                 } catch (Exception e) {
                     log.throwing(e);
                 }

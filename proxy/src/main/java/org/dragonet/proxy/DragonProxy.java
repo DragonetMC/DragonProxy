@@ -34,7 +34,6 @@ import org.dragonet.proxy.network.ProxyRakNetEventListener;
 import org.dragonet.proxy.network.ProxySessionManager;
 import org.dragonet.proxy.network.UpstreamPacketHandler;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +41,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.Executors;
@@ -131,20 +129,18 @@ public class DragonProxy {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         configuration = mapper.readValue(new FileInputStream(fileConfig), DragonConfiguration.class);
 
-        new PacketTranslatorRegistry();
-
         // Initiate RakNet
         sessionManager = new ProxySessionManager();
 
         RakNetServer.Builder<BedrockSession<ProxySession>> builder = RakNetServer.builder();
         builder.eventListener(new ProxyRakNetEventListener(sessionManager))
-            .address(new InetSocketAddress(configuration.getBindAddress(), configuration.getBindPort()))
+            .address(configuration.getBindAddress(), configuration.getBindPort())
             .packet(WrappedPacket::new, 0xfe)
             .sessionManager(sessionManager)
             .executor(ForkJoinPool.commonPool())
             .sessionFactory(rakNetSession -> {
                 BedrockSession<ProxySession> session = new BedrockSession<>(rakNetSession);
-                session.setHandler(new UpstreamPacketHandler(session, this));
+                session.setHandler(new UpstreamPacketHandler(this, session));
                 return session;
             });
 
