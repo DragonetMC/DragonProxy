@@ -15,13 +15,13 @@ package org.dragonet.proxy.network.translator.java;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMultiBlockChangePacket;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
-import org.dragonet.proxy.network.session.UpstreamSession;
+import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.IPacketTranslator;
 
 public class PCMultiBlockChangeTranslator implements IPacketTranslator<ServerMultiBlockChangePacket> {
 
     @Override
-    public void translate(BedrockSession<UpstreamSession> session, ServerMultiBlockChangePacket packet) {
+    public void translate(BedrockSession<ProxySession> session, ServerMultiBlockChangePacket packet) {
         // TODO
     }
 }

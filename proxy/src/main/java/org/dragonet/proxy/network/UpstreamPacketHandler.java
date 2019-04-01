@@ -16,18 +16,21 @@ package org.dragonet.proxy.network;
 import com.nimbusds.jose.JWSObject;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.LoginPacket;
+import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
 import com.nukkitx.protocol.bedrock.packet.ResourcePackClientResponsePacket;
+import com.nukkitx.protocol.bedrock.packet.ResourcePacksInfoPacket;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
 import lombok.extern.log4j.Log4j2;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.network.session.UpstreamSession;
+import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.data.AuthDataImpl;
 import org.dragonet.proxy.util.RemoteServer;
 
 import java.text.ParseException;
+import java.util.Arrays;
 
 /**
  * Respresents the connection between the mcpe client and the proxy.
@@ -35,20 +38,23 @@ import java.text.ParseException;
 @Log4j2
 public class UpstreamPacketHandler implements BedrockPacketHandler {
 
-    private BedrockSession<UpstreamSession> session;
+    private BedrockSession<ProxySession> upstream;
     private DragonProxy proxy;
 
-    public UpstreamPacketHandler(BedrockSession<UpstreamSession> session, DragonProxy proxy) {
-        this.session = session;
+    public UpstreamPacketHandler(BedrockSession<ProxySession> upstream, DragonProxy proxy) {
+        this.upstream = upstream;
         this.proxy = proxy;
     }
 
     @Override
     public boolean handle(LoginPacket packet) {
-        // TODO: move out of here? idk
-        UpstreamSession session = new UpstreamSession(this.session);
-        this.session.setPlayer(session);
-
+        // Check for supported protocol
+        int index = Arrays.binarySearch(DragonProxy.BEDROCK_SUPPORTED_PROTOCOLS, packet.getProtocolVersion());
+        if (index < 0) {
+            upstream.disconnect();
+            return true;
+        }
+        upstream.setPacketCodec(DragonProxy.BEDROCK_SUPPORTED_CODECS[index]);
 
         try {
             // Get chain data that contains identity info
@@ -60,24 +66,43 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
             JWSObject identity = JWSObject.parse((String) identityObject);
             JSONObject extraData = (JSONObject) identity.getPayload().toJSONObject().get("extraData");
 
-            this.session.setAuthData(new AuthDataImpl(
+            this.upstream.setAuthData(new AuthDataImpl(
                 extraData.getAsString("displayName"),
                 extraData.getAsString("identity"),
                 extraData.getAsString("XUID")
             ));
         } catch (ParseException | ClassCastException | NullPointerException e) {
             // Invalid chain data
-            this.session.disconnect();
+            this.upstream.disconnect();
             return true;
         }
 
-        session.setRemoteServer(new RemoteServer("local", proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort()));
+        // Tell the Bedrock client login was successful.
+        PlayStatusPacket playStatus = new PlayStatusPacket();
+        playStatus.setStatus(PlayStatusPacket.Status.LOGIN_SUCCESS);
+        upstream.sendPacketImmediately(playStatus);
+
+        // Start Resource pack handshake
+        ResourcePacksInfoPacket resourcePacksInfo = new ResourcePacksInfoPacket();
+        upstream.sendPacketImmediately(resourcePacksInfo);
         return true;
     }
 
     @Override
     public boolean handle(ResourcePackClientResponsePacket packet) {
-        session.getPlayer().postLogin();
+        switch (packet.getStatus()) {
+            case COMPLETED:
+            case HAVE_ALL_PACKS:
+                // Start connecting to remote server
+                RemoteServer remoteServer = new RemoteServer("local", proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort());
+                upstream.setPlayer(new ProxySession(proxy, upstream, remoteServer));
+                break;
+            default:
+                // Anything else shouldn't happen so disconnect
+                upstream.disconnect("disconnectionScreen.resourcePack");
+                break;
+        }
+        log.info("{} connected", upstream.getAuthData().getDisplayName());
         return true;
     }
 }

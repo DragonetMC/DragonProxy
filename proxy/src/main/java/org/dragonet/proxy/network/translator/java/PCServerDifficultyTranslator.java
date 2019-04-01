@@ -16,13 +16,13 @@ package org.dragonet.proxy.network.translator.java;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDifficultyPacket;
 import com.nukkitx.protocol.bedrock.packet.SetDifficultyPacket;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
-import org.dragonet.proxy.network.session.UpstreamSession;
+import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.IPacketTranslator;
 
 public class PCServerDifficultyTranslator implements IPacketTranslator<ServerDifficultyPacket> {
 
     @Override
-    public void translate(BedrockSession<UpstreamSession> session, ServerDifficultyPacket packet) {
+    public void translate(BedrockSession<ProxySession> session, ServerDifficultyPacket packet) {
         SetDifficultyPacket bedrockPacket = new SetDifficultyPacket();
         bedrockPacket.setDifficulty(packet.getDifficulty().ordinal());
 

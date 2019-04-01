@@ -15,12 +15,18 @@ package org.dragonet.proxy.network;
 
 import com.nukkitx.network.SessionManager;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
-import org.dragonet.proxy.network.session.UpstreamSession;
+import org.dragonet.proxy.network.session.ProxySession;
 
-public class ProxySessionManager extends SessionManager<BedrockSession<UpstreamSession>> {
+public class ProxySessionManager extends SessionManager<BedrockSession<ProxySession>> {
 
     @Override
-    protected void onAddSession(BedrockSession<UpstreamSession> session) {
-        System.out.println("onAddSession called");
+    protected void onAddSession(BedrockSession<ProxySession> session) {
+        //System.out.println("onAddSession called");
+    }
+
+    public void onTick() {
+        for (BedrockSession session : sessions.values()) {
+            executor.execute(session::onTick);
+        }
     }
 }

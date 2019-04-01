@@ -16,7 +16,7 @@ package org.dragonet.proxy.network.translator;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
-import org.dragonet.proxy.network.session.UpstreamSession;
+import org.dragonet.proxy.network.session.ProxySession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ public class PacketTranslatorRegistry {
         //javaToBedrock.put(ServerTitlePacket.class, new PCServerTitleTranslator());
     }
 
-    public static void translateToBedrock(BedrockSession<UpstreamSession> session, Packet packet) {
+    public static void translateToBedrock(BedrockSession<ProxySession> session, Packet packet) {
         IPacketTranslator<Packet> target = (IPacketTranslator<Packet>) javaToBedrock.get(packet.getClass());
         if(target == null) {
             logger.warn("Packet not translated " + packet.getClass().getSimpleName());
@@ -50,7 +50,7 @@ public class PacketTranslatorRegistry {
         target.translate(session, packet);
     }
 
-    public static void translateToJava(BedrockSession<UpstreamSession> session, BedrockPacket packet) {
+    public static void translateToJava(BedrockSession<ProxySession> session, BedrockPacket packet) {
         IPacketTranslator<BedrockPacket> target = (IPacketTranslator<BedrockPacket>) bedrockToJava.get(packet.getClass());
         if(target == null) {
             logger.warn("Packet not translated " + packet.getClass().getSimpleName());
