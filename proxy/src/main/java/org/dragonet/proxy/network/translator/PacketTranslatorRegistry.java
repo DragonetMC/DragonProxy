@@ -13,14 +13,10 @@
  */
 package org.dragonet.proxy.network.translator;
 
-import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDifficultyPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.ServerTitlePacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerAbilitiesPacket;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
 import org.dragonet.proxy.network.session.UpstreamSession;
-import org.dragonet.proxy.network.translator.java.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -16,20 +16,19 @@ package org.dragonet.proxy;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 
 import java.text.DecimalFormat;
 
-public class DragonProxyBootstrap {
+@Log4j2
+public class Bootstrap {
 
     public static void main(String[] args) {
-        Logger logger = LoggerFactory.getLogger(DragonProxyBootstrap.class);
-        logger.info("Starting DragonProxy...");
+        log.info("Starting DragonProxy...");
 
         // Check the java version
         if (Float.parseFloat(System.getProperty("java.class.version")) < 52.0) {
-            logger.error("DragonProxy requires Java 8! Current version: " + System.getProperty("java.version"));
+            log.error("DragonProxy requires Java 8! Current version: " + System.getProperty("java.version"));
             return;
         }
 
@@ -43,7 +42,7 @@ public class DragonProxyBootstrap {
         // Handle command-line options
         OptionSet options = optionParser.parse(args);
         if (options.has("version")) {
-            logger.info("Version: " + DragonProxyBootstrap.class.getPackage().getImplementationVersion());
+            log.info("Version: " + Bootstrap.class.getPackage().getImplementationVersion());
             return;
         }
         int bedrockPort = options.has(bedrockPortOption) ? Integer.parseInt(options.valueOf(bedrockPortOption)) : -1;
@@ -55,7 +54,7 @@ public class DragonProxyBootstrap {
         Runtime.getRuntime().addShutdownHook(new Thread(proxy::shutdown, "Shutdown thread"));
 
         double bootTime = (System.currentTimeMillis() - startTime) / 1000d;
-        logger.info("Done ({}s)!", new DecimalFormat("#.##").format(bootTime));
+        log.info("Done ({}s)!", new DecimalFormat("#.##").format(bootTime));
 
         proxy.getConsole().start();
     }

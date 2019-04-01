@@ -26,8 +26,8 @@ import org.apache.logging.log4j.LogManager;
 
 import org.dragonet.proxy.configuration.DragonConfiguration;
 import org.dragonet.proxy.console.DragonConsole;
-import org.dragonet.proxy.network.ProxyRakNetEventListener;
 import org.dragonet.proxy.network.ProxySessionManager;
+import org.dragonet.proxy.network.ProxyRakNetEventListener;
 import org.dragonet.proxy.network.UpstreamPacketHandler;
 import org.dragonet.proxy.network.session.UpstreamSession;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;

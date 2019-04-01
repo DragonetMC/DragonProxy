@@ -13,7 +13,6 @@
  */
 package org.dragonet.proxy.network;
 
-import com.github.steveice10.mc.protocol.MinecraftProtocol;
 import com.github.steveice10.packetlib.Client;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
 import org.dragonet.proxy.DragonProxy;

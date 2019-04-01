@@ -20,18 +20,15 @@ import com.github.steveice10.packetlib.event.session.DisconnectedEvent;
 import com.github.steveice10.packetlib.event.session.PacketReceivedEvent;
 import com.github.steveice10.packetlib.event.session.SessionAdapter;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
-import com.nukkitx.network.SessionManager;
-import com.nukkitx.network.raknet.session.RakNetSession;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.dragonet.proxy.util.RemoteServer;
+import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import java.net.InetSocketAddress;
 
 public class DownstreamSession extends ProxySession {
 

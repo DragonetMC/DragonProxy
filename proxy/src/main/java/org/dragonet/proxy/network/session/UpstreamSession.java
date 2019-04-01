@@ -13,18 +13,13 @@
  */
 package org.dragonet.proxy.network.session;
 
-import com.nukkitx.network.SessionManager;
 import com.nukkitx.network.raknet.session.RakNetSession;
 import com.nukkitx.network.util.DisconnectReason;
-import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.util.RemoteServer;
-import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import java.net.InetSocketAddress;
 
 public class UpstreamSession extends ProxySession {
 

@@ -1,7 +1,7 @@
 # http://editorconfig.org/
 
 # Top-most EditorConfig file
-root = yes
+root = true
 
 # Unix-style newlines with a newline ending every file
 [*]

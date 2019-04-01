@@ -16,11 +16,6 @@ package org.dragonet.proxy.network.session;
 import com.nukkitx.protocol.PlayerSession;
 import org.dragonet.proxy.util.RemoteServer;
 
-import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 public abstract class ProxySession implements PlayerSession, AutoCloseable {
 
     public abstract RemoteServer getRemoteServer();
