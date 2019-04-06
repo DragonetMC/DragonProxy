@@ -22,6 +22,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerUpdate
 import com.github.steveice10.packetlib.packet.Packet;
 import com.google.common.base.Preconditions;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.java.*;
@@ -46,11 +47,12 @@ public class PacketTranslatorRegistry<P> {
             .addTranslator(ServerEntityVelocityPacket.class, PCEntityVelocityPacketTranslator.INSTANCE)
             .addTranslator(ServerUpdateTimePacket.class, PCUpdateTimePacketTranslator.INSTANCE);
     }
-
+@Getter
     private final Map<Class<?>, PacketTranslator<P>> translators = new HashMap<>();
 
     public void translate(ProxySession session, P packet) {
         Class<?> packetClass = packet.getClass();
+        log.info(packetClass.getSimpleName());
         PacketTranslator<P> target = translators.get(packetClass);
         if (target == null) {
             log.warn("Could not translate packet {}", packetClass.getSimpleName());

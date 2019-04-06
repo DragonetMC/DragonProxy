@@ -13,24 +13,40 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.flowpowered.math.vector.Vector2f;
 import com.flowpowered.math.vector.Vector3f;
 import com.flowpowered.math.vector.Vector3i;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
+import com.nukkitx.network.VarInts;
 import com.nukkitx.protocol.bedrock.data.GamePublishSetting;
 import com.nukkitx.protocol.bedrock.data.GameRule;
+import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
+import com.nukkitx.protocol.bedrock.v332.BedrockUtils;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Log4j2
 public class PCJoinGamePacketTranslator implements PacketTranslator<ServerJoinGamePacket> {
     public static final PCJoinGamePacketTranslator INSTANCE = new PCJoinGamePacketTranslator();
 
     @Override
     public void translate(ProxySession session, ServerJoinGamePacket packet) {
+        log.info("JoinGamePacketTranslator");
         StartGamePacket startGamePacket = new StartGamePacket();
         startGamePacket.setUniqueEntityId(packet.getEntityId());
         startGamePacket.setRuntimeEntityId(packet.getEntityId());
@@ -76,10 +92,15 @@ public class PCJoinGamePacketTranslator implements PacketTranslator<ServerJoinGa
         startGamePacket.setEnchantmentSeed(1);
         startGamePacket.setMultiplayerCorrelationId("");
 
-        //startGamePacket.setCachedPalette();
+        startGamePacket.setCachedPalette(DragonProxy.INSTANCE.getPaletteManager().getCachedPalette());
 
         // TODO: 01/04/2019 Add support for deserializing the chunk in the protocol library
 
-        //session.getUpstream().sendPacketImmediately(startGamePacket);
+        session.getUpstream().sendPacketImmediately(startGamePacket);
+
+        PlayStatusPacket playStatus = new PlayStatusPacket();
+        playStatus.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
+        session.getUpstream().sendPacketImmediately(playStatus);
     }
+
 }

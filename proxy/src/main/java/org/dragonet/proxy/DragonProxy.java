@@ -15,18 +15,26 @@ package org.dragonet.proxy;
 
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.github.steveice10.packetlib.packet.Packet;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.nukkitx.network.VarInts;
 import com.nukkitx.network.raknet.RakNetServer;
 import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import com.nukkitx.protocol.bedrock.session.BedrockSession;
 import com.nukkitx.protocol.bedrock.v291.Bedrock_v291;
 import com.nukkitx.protocol.bedrock.v313.Bedrock_v313;
+import com.nukkitx.protocol.bedrock.v332.BedrockUtils;
 import com.nukkitx.protocol.bedrock.v332.Bedrock_v332;
 import com.nukkitx.protocol.bedrock.v340.Bedrock_v340;
 import com.nukkitx.protocol.bedrock.wrapper.WrappedPacket;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.dragonet.proxy.configuration.DragonConfiguration;
@@ -35,6 +43,9 @@ import org.dragonet.proxy.network.ProxyRakNetEventListener;
 import org.dragonet.proxy.network.ProxySessionManager;
 import org.dragonet.proxy.network.UpstreamPacketHandler;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
+import org.dragonet.proxy.util.PaletteManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +55,9 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
@@ -63,6 +77,8 @@ public class DragonProxy {
         }
     }
 
+    public static final ObjectMapper JSON_MAPPER = new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
     private static final boolean RELEASE = false;
     public static DragonProxy INSTANCE = null;
 
@@ -79,6 +95,9 @@ public class DragonProxy {
 
     @Getter
     private DragonConfiguration configuration;
+
+    @Getter
+    private PaletteManager paletteManager;
 
     @Getter
     private boolean shutdown = false;
@@ -135,6 +154,8 @@ public class DragonProxy {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         configuration = mapper.readValue(new FileInputStream(fileConfig), DragonConfiguration.class);
 
+        paletteManager = new PaletteManager();
+
         // Initiate RakNet
         sessionManager = new ProxySessionManager();
 
@@ -158,7 +179,6 @@ public class DragonProxy {
             logger.error("RakNet server failed to bind to {}", configuration.getBindAddress());
         }
         timerService.schedule(sessionManager::onTick, 50, TimeUnit.MILLISECONDS);
-
     }
 
     public void shutdown() {
