@@ -22,10 +22,13 @@ import com.github.steveice10.packetlib.event.session.SessionAdapter;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.PlayerSession;
-import com.nukkitx.protocol.bedrock.session.BedrockSession;
+import com.nukkitx.protocol.bedrock.BedrockServerSession;
+
 import lombok.Data;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.network.session.data.AuthData;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.dragonet.proxy.remote.RemoteServer;
 
@@ -35,30 +38,34 @@ import javax.annotation.Nonnull;
 @Log4j2
 public class ProxySession implements PlayerSession {
     private final DragonProxy proxy;
-    private final RemoteServer remoteServer;
-    private BedrockSession<ProxySession> upstream;
-    private final Client downstream;
+    private RemoteServer remoteServer;
+    private BedrockServerSession bedrockSession;
+    private Client downstream;
     private volatile boolean closed;
 
-    public ProxySession(DragonProxy proxy, BedrockSession<ProxySession> upstream, RemoteServer remoteServer) {
-        this.proxy = proxy;
-        this.upstream = upstream;
-        this.remoteServer = remoteServer;
+    @Setter
+    private AuthData authData;
 
+    public ProxySession(DragonProxy proxy, BedrockServerSession bedrockSession) {
+        this.proxy = proxy;
+        this.bedrockSession = bedrockSession;
+    }
+
+    public void connect(RemoteServer server) {
         // Connect client
-        MinecraftProtocol protocol = new MinecraftProtocol(upstream.getAuthData().getDisplayName());
-        downstream = new Client(remoteServer.getAddress(), remoteServer.getPort(), protocol, new TcpSessionFactory());
+        MinecraftProtocol protocol = new MinecraftProtocol(authData.getDisplayName());
+        downstream = new Client(server.getAddress(), server.getPort(), protocol, new TcpSessionFactory());
         downstream.getSession().addListener(new SessionAdapter() {
 
             @Override
             public void connected(ConnectedEvent event) {
-                log.info("Player connected to remote " + remoteServer.getAddress());
+                log.info("Player connected to remote " + server.getAddress());
             }
 
             @Override
             public void disconnected(DisconnectedEvent event) {
                 log.info("Player  disconnected from remote. Reason: " + event.getReason());
-                upstream.disconnect(event.getReason());
+                bedrockSession.disconnect(event.getReason());
             }
 
             @Override
@@ -72,6 +79,7 @@ public class ProxySession implements PlayerSession {
             }
         });
         downstream.getSession().connect();
+        remoteServer = server;
     }
 
     public RemoteServer getRemoteServer() {
@@ -87,7 +95,7 @@ public class ProxySession implements PlayerSession {
     public void close() {
         if (!isClosed()) {
             downstream.getSession().disconnect("Disconnect");
-            upstream.disconnect();
+            bedrockSession.disconnect();
         }
     }
 

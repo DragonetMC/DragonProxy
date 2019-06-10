@@ -36,7 +36,7 @@ public class PCMultiBlockChangePacketTranslator implements PacketTranslator<Serv
 
             updateBlock.setBlockPosition(new Vector3i(pos.getX(), pos.getY(), pos.getY()));
 
-            session.getUpstream().sendPacket(updateBlock);
+            session.getBedrockSession().sendPacket(updateBlock);
         }
     }
 }

@@ -31,6 +31,6 @@ public class PCEntityPositionPacketTranslator implements PacketTranslator<Server
         moveEntity.setOnGround(packet.isOnGround());
         moveEntity.setTeleported(false);
 
-        session.getUpstream().sendPacket(moveEntity);
+        session.getBedrockSession().sendPacket(moveEntity);
     }
 }

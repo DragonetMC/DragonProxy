@@ -96,11 +96,11 @@ public class PCJoinGamePacketTranslator implements PacketTranslator<ServerJoinGa
 
         // TODO: 01/04/2019 Add support for deserializing the chunk in the protocol library
 
-        session.getUpstream().sendPacketImmediately(startGamePacket);
+        session.getBedrockSession().sendPacketImmediately(startGamePacket);
 
         PlayStatusPacket playStatus = new PlayStatusPacket();
         playStatus.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
-        session.getUpstream().sendPacketImmediately(playStatus);
+        session.getBedrockSession().sendPacketImmediately(playStatus);
     }
 
 }

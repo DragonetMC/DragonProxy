@@ -53,6 +53,6 @@ public class PCTitlePacketTranslator implements PacketTranslator<ServerTitlePack
         bedrockPacket.setFadeOutTime(packet.getFadeOut());
         bedrockPacket.setStayTime(packet.getStay());
 
-        session.getUpstream().sendPacketImmediately(bedrockPacket);
+        session.getBedrockSession().sendPacketImmediately(bedrockPacket);
     }
 }

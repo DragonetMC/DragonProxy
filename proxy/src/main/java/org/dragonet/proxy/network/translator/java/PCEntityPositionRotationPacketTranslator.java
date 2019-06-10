@@ -30,6 +30,6 @@ public class PCEntityPositionRotationPacketTranslator implements PacketTranslato
 
         p.setPosition(new Vector3f(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ()));
 
-        session.getUpstream().sendPacket(p);
+        session.getBedrockSession().sendPacket(p);
     }
 }

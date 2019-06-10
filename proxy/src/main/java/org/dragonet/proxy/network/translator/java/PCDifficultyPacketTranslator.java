@@ -29,6 +29,6 @@ public class PCDifficultyPacketTranslator implements PacketTranslator<ServerDiff
         SetDifficultyPacket bedrockPacket = new SetDifficultyPacket();
         bedrockPacket.setDifficulty(packet.getDifficulty().ordinal());
 
-        session.getUpstream().sendPacketImmediately(bedrockPacket);
+        session.getBedrockSession().sendPacketImmediately(bedrockPacket);
     }
 }

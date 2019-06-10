@@ -28,7 +28,7 @@ public class PCEntityVelocityPacketTranslator implements PacketTranslator<Server
         entityMotion.setRuntimeEntityId(packet.getEntityId());
         entityMotion.setMotion(new Vector3f(packet.getMotionX(), packet.getMotionY(), packet.getMotionZ()));
 
-        session.getUpstream().sendPacket(entityMotion);
+        session.getBedrockSession().sendPacket(entityMotion);
 
     }
 }

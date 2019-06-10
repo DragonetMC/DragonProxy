@@ -26,6 +26,6 @@ public class PCUpdateTimePacketTranslator implements PacketTranslator<ServerUpda
         SetTimePacket setTime = new SetTimePacket();
         setTime.setTime((int) packet.getTime());
 
-        session.getUpstream().sendPacket(setTime);
+        session.getBedrockSession().sendPacket(setTime);
     }
 }

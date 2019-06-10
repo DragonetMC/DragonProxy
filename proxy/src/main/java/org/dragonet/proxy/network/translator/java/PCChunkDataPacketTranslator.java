@@ -33,6 +33,6 @@ public class PCChunkDataPacketTranslator implements PacketTranslator<ServerChunk
 
         // TODO: 01/04/2019 Finish off chunk data
 
-        session.getUpstream().sendPacketImmediately(fullChunkData);
+        session.getBedrockSession().sendPacketImmediately(fullChunkData);
     }
 }

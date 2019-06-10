@@ -47,7 +47,7 @@ public class PacketTranslatorRegistry<P> {
             .addTranslator(ServerEntityVelocityPacket.class, PCEntityVelocityPacketTranslator.INSTANCE)
             .addTranslator(ServerUpdateTimePacket.class, PCUpdateTimePacketTranslator.INSTANCE);
     }
-@Getter
+
     private final Map<Class<?>, PacketTranslator<P>> translators = new HashMap<>();
 
     public void translate(ProxySession session, P packet) {
