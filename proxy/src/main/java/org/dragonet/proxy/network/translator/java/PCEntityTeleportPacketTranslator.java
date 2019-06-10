@@ -24,13 +24,14 @@ public class PCEntityTeleportPacketTranslator implements PacketTranslator<Server
 
     @Override
     public void translate(ProxySession session, ServerEntityTeleportPacket packet) {
-        MoveEntityAbsolutePacket moveEntity = new MoveEntityAbsolutePacket();
+        MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
 
-        moveEntity.setRuntimeEntityId(packet.getEntityId());
-        moveEntity.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
-        moveEntity.setOnGround(packet.isOnGround());
-        moveEntity.setTeleported(true);
+        moveEntityPacket.setRuntimeEntityId(packet.getEntityId());
+        moveEntityPacket.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
+        moveEntityPacket.setRotation(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
+        moveEntityPacket.setOnGround(packet.isOnGround());
+        moveEntityPacket.setTeleported(true);
 
-        session.getBedrockSession().sendPacket(moveEntity);
+        session.getBedrockSession().sendPacket(moveEntityPacket);
     }
 }

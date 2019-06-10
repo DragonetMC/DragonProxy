@@ -49,7 +49,7 @@ public class DragonConsole extends SimpleTerminalConsole {
     }
 
     @Override
-    protected void runCommand(String command) {
+    public void runCommand(String command) {
         switch (command.toLowerCase()) {
             case ("stop"): {
                 proxy.shutdown();

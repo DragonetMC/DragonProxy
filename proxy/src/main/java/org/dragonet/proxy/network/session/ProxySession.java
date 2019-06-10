@@ -93,9 +93,13 @@ public class ProxySession implements PlayerSession {
 
     @Override
     public void close() {
+        disconnect("Closed");
+    }
+
+    public void disconnect(String reason) {
         if (!isClosed()) {
-            downstream.getSession().disconnect("Disconnect");
-            bedrockSession.disconnect();
+            downstream.getSession().disconnect(reason);
+            bedrockSession.disconnect(reason, false);
         }
     }
 

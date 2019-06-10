@@ -14,6 +14,7 @@
 package org.dragonet.proxy.network;
 
 import com.nimbusds.jose.JWSObject;
+import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.BedrockServerSession;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
@@ -25,6 +26,7 @@ import net.minidev.json.JSONValue;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.data.AuthData;
+import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.dragonet.proxy.remote.RemoteServer;
 
 import java.text.ParseException;
@@ -43,8 +45,6 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
         this.proxy = proxy;
         this.session = new ProxySession(proxy, bedrockSession);
     }
-
-
 
     @Override
     public boolean handle(LoginPacket packet) {
@@ -108,6 +108,12 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
                 break;
         }
         log.info("{} connected", session.getAuthData().getDisplayName());
+        return true;
+    }
+
+    @Override
+    public boolean handle(TextPacket packet) {
+        PacketTranslatorRegistry.BEDROCK_TO_JAVA.translate(session, packet);
         return true;
     }
 }

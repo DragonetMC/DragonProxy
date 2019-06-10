@@ -23,6 +23,7 @@ import org.dragonet.proxy.network.translator.PacketTranslator;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PCChunkDataPacketTranslator implements PacketTranslator<ServerChunkDataPacket> {
+    public static final PCChunkDataPacketTranslator INSTANCE = new PCChunkDataPacketTranslator();
 
     @Override
     public void translate(ProxySession session, ServerChunkDataPacket packet) {
@@ -30,9 +31,10 @@ public class PCChunkDataPacketTranslator implements PacketTranslator<ServerChunk
         FullChunkDataPacket fullChunkData = new FullChunkDataPacket();
         fullChunkData.setChunkX(column.getX());
         fullChunkData.setChunkZ(column.getZ());
+        fullChunkData.setData(new byte[0]);
 
         // TODO: 01/04/2019 Finish off chunk data
 
-        session.getBedrockSession().sendPacketImmediately(fullChunkData);
+        //session.getBedrockSession().sendPacket(fullChunkData);
     }
 }

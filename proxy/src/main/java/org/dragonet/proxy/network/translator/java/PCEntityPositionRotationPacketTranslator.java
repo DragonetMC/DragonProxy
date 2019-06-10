@@ -24,12 +24,14 @@ public class PCEntityPositionRotationPacketTranslator implements PacketTranslato
 
     @Override
     public void translate(ProxySession session, ServerEntityPositionRotationPacket packet) {
-        MoveEntityAbsolutePacket p = new MoveEntityAbsolutePacket();
+        MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
 
-        p.setRuntimeEntityId(packet.getEntityId());
+        moveEntityPacket.setRuntimeEntityId(packet.getEntityId());
+        moveEntityPacket.setPosition(new Vector3f(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ()));
+        moveEntityPacket.setTeleported(false);
+        moveEntityPacket.setOnGround(true);
+        moveEntityPacket.setRotation(new Vector3f(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ()));
 
-        p.setPosition(new Vector3f(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ()));
-
-        session.getBedrockSession().sendPacket(p);
+        session.getBedrockSession().sendPacket(moveEntityPacket);
     }
 }

@@ -22,6 +22,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePack
 import com.nukkitx.network.VarInts;
 import com.nukkitx.protocol.bedrock.data.GamePublishSetting;
 import com.nukkitx.protocol.bedrock.data.GameRule;
+import com.nukkitx.protocol.bedrock.packet.FullChunkDataPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import com.nukkitx.protocol.bedrock.v332.BedrockUtils;
@@ -46,7 +47,6 @@ public class PCJoinGamePacketTranslator implements PacketTranslator<ServerJoinGa
 
     @Override
     public void translate(ProxySession session, ServerJoinGamePacket packet) {
-        log.info("JoinGamePacketTranslator");
         StartGamePacket startGamePacket = new StartGamePacket();
         startGamePacket.setUniqueEntityId(packet.getEntityId());
         startGamePacket.setRuntimeEntityId(packet.getEntityId());
@@ -97,6 +97,20 @@ public class PCJoinGamePacketTranslator implements PacketTranslator<ServerJoinGa
         // TODO: 01/04/2019 Add support for deserializing the chunk in the protocol library
 
         session.getBedrockSession().sendPacketImmediately(startGamePacket);
+
+        Vector3f pos = new Vector3f(-249, 67, -275);
+        int chunkX = pos.getFloorX() >> 4;
+        int chunkZ = pos.getFloorX() >> 4;
+
+        for (int x = -3; x < 3; x++) {
+            for (int z = -3; z < 3; z++) {
+                FullChunkDataPacket data = new FullChunkDataPacket();
+                data.setChunkX(chunkX + x);
+                data.setChunkZ(chunkZ + z);
+                data.setData(new byte[0]);
+                session.getBedrockSession().sendPacketImmediately(data);
+            }
+        }
 
         PlayStatusPacket playStatus = new PlayStatusPacket();
         playStatus.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
