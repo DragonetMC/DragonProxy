@@ -39,4 +39,13 @@ public class DragonConfiguration {
 
     @JsonProperty("remote-port")
     private int remotePort;
+    
+    @JsonProperty("java")
+    private boolean java;
+    
+    @JsonProperty("password")
+    private String password;
+    
+    @JsonProperty("username")
+    private String username;
 }
