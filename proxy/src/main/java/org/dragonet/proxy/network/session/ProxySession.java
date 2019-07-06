@@ -53,7 +53,12 @@ public class ProxySession implements PlayerSession {
 
     public void connect(RemoteServer server) {
         // Connect client
-        MinecraftProtocol protocol = new MinecraftProtocol(authData.getDisplayName());
+        MinecraftProtocol protocol = null;
+        if(DragonProxy.configuration.isJava()) {
+            protocol = new MinecraftProtocol(DragonProxy.configuration.getUsername(), DragonProxy.configuration.getPassword());
+        } else {
+            protocol = new MinecraftProtocol(authData.getName());
+        }
         downstream = new Client(server.getAddress(), server.getPort(), protocol, new TcpSessionFactory());
         downstream.getSession().addListener(new SessionAdapter() {
 
