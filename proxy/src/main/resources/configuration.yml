@@ -20,6 +20,13 @@ max-players: 1
 remote-address: '127.0.0.1'
 remote-port: 25566
 
+#java login credentials
+
+#will this use java credentials?
+java: false
+password: ""
+username: ""
+
 # TODO
 #remote-servers:
 #  local:
