@@ -48,6 +48,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
+                    <finalName>DragonProxy</finalName>
                     <archive>
                         <manifest>
                             <mainClass>org.dragonet.proxy.Bootstrap</mainClass>

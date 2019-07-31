@@ -13,6 +13,7 @@
  */
 package org.dragonet.proxy.network;
 
+import com.github.steveice10.mc.protocol.data.status.ServerStatusInfo;
 import com.nukkitx.protocol.bedrock.BedrockPong;
 import com.nukkitx.protocol.bedrock.BedrockServerEventHandler;
 
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.DragonConfiguration;
 import org.dragonet.proxy.network.session.ProxySession;
+import sun.misc.MessageUtils;
 
 import java.net.InetSocketAddress;
 
@@ -37,17 +39,29 @@ public class ProxyServerEventListener implements BedrockServerEventHandler {
 
     @Override
     public BedrockPong onQuery(InetSocketAddress address) {
-        DragonConfiguration config = DragonProxy.INSTANCE.getConfiguration();
+        DragonConfiguration config = proxy.getConfiguration();
 
         BedrockPong pong = new BedrockPong();
         pong.setEdition("MCPE");
-        pong.setMotd(config.getMotd());
-        pong.setPlayerCount(0);
-        pong.setMaximumPlayerCount(config.getMaxPlayers());
-        pong.setSubMotd(config.getMotd2());
         pong.setGameType("Default");
         pong.setNintendoLimited(false);
         pong.setProtocolVersion(DragonProxy.BEDROCK_CODEC.getProtocolVersion());
+
+        if (config.isPingPassthrough()) {
+            ServerStatusInfo serverInfo = proxy.getPingPassthroughThread().getInfo();
+
+            if (serverInfo != null) {
+                pong.setMotd(serverInfo.getDescription().getText());
+                pong.setSubMotd(config.getMotd2());
+                pong.setPlayerCount(serverInfo.getPlayerInfo().getOnlinePlayers());
+                pong.setMaximumPlayerCount(serverInfo.getPlayerInfo().getMaxPlayers());
+            }
+        } else {
+            pong.setPlayerCount(1);
+            pong.setMaximumPlayerCount(config.getMaxPlayers());
+            pong.setMotd(config.getMotd());
+            pong.setSubMotd(config.getMotd2());
+        }
 
         return pong;
     }

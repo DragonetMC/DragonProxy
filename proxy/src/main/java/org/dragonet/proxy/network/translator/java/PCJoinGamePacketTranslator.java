@@ -19,31 +19,48 @@ import com.flowpowered.math.vector.Vector2f;
 import com.flowpowered.math.vector.Vector3f;
 import com.flowpowered.math.vector.Vector3i;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
+import com.nukkitx.nbt.CompoundTagBuilder;
+import com.nukkitx.nbt.NbtUtils;
+import com.nukkitx.nbt.stream.NBTOutputStream;
+import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.network.VarInts;
 import com.nukkitx.protocol.bedrock.data.GamePublishSetting;
 import com.nukkitx.protocol.bedrock.data.GameRule;
-import com.nukkitx.protocol.bedrock.packet.FullChunkDataPacket;
+import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
-import com.nukkitx.protocol.bedrock.v332.BedrockUtils;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.buffer.Unpooled;
+
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
-import java.io.InputStream;
-import java.util.ArrayList;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Log4j2
 public class PCJoinGamePacketTranslator implements PacketTranslator<ServerJoinGamePacket> {
     public static final PCJoinGamePacketTranslator INSTANCE = new PCJoinGamePacketTranslator();
+
+    private static final CompoundTag EMPTY_TAG = CompoundTagBuilder.builder().buildRootTag();
+    private static final byte[] EMPTY_LEVEL_CHUNK_DATA;
+
+    static {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            outputStream.write(new byte[258]); // Biomes + Border Size + Extra Data Size
+
+            try (NBTOutputStream stream = NbtUtils.createNetworkWriter(outputStream)) {
+                stream.write(EMPTY_TAG);
+            }
+
+            EMPTY_LEVEL_CHUNK_DATA = outputStream.toByteArray();
+        }catch (IOException e) {
+            throw new AssertionError("Unable to generate empty level chunk data");
+        }
+    }
 
     @Override
     public void translate(ProxySession session, ServerJoinGamePacket packet) {
@@ -61,16 +78,16 @@ public class PCJoinGamePacketTranslator implements PacketTranslator<ServerJoinGa
         startGamePacket.setDifficulty(packet.getDifficulty().ordinal());
         startGamePacket.setDefaultSpawn(new Vector3i(-249, 67, -275));
         startGamePacket.setAcheivementsDisabled(true);
-        startGamePacket.setTime(1300);
+        startGamePacket.setTime(0);
         startGamePacket.setEduLevel(false);
         startGamePacket.setEduFeaturesEnabled(false);
         startGamePacket.setRainLevel(0);
         startGamePacket.setLightningLevel(0);
-        startGamePacket.setMultiplayerGame(false);
+        startGamePacket.setMultiplayerGame(true);
         startGamePacket.setBroadcastingToLan(true);
-        startGamePacket.getGamerules().add((new GameRule("showcoordinates", true)));
-        startGamePacket.setPlatformBroadcastMode(GamePublishSetting.FRIENDS_OF_FRIENDS);
-        startGamePacket.setXblBroadcastMode(GamePublishSetting.FRIENDS_OF_FRIENDS);
+        startGamePacket.getGamerules().add((new GameRule<>("showcoordinates", true)));
+        startGamePacket.setPlatformBroadcastMode(GamePublishSetting.PUBLIC);
+        startGamePacket.setXblBroadcastMode(GamePublishSetting.PUBLIC);
         startGamePacket.setCommandsEnabled(true);
         startGamePacket.setTexturePacksRequired(false);
         startGamePacket.setBonusChestEnabled(false);
@@ -88,8 +105,8 @@ public class PCJoinGamePacketTranslator implements PacketTranslator<ServerJoinGa
         startGamePacket.setLevelId("oerjhii");
         startGamePacket.setWorldName("world");
         startGamePacket.setPremiumWorldTemplateId("00000000-0000-0000-0000-000000000000");
-        startGamePacket.setCurrentTick(1);
-        startGamePacket.setEnchantmentSeed(1);
+        startGamePacket.setCurrentTick(0);
+        startGamePacket.setEnchantmentSeed(0);
         startGamePacket.setMultiplayerCorrelationId("");
 
         startGamePacket.setCachedPalette(DragonProxy.INSTANCE.getPaletteManager().getCachedPalette());
@@ -104,10 +121,11 @@ public class PCJoinGamePacketTranslator implements PacketTranslator<ServerJoinGa
 
         for (int x = -3; x < 3; x++) {
             for (int z = -3; z < 3; z++) {
-                FullChunkDataPacket data = new FullChunkDataPacket();
+                LevelChunkPacket data = new LevelChunkPacket();
                 data.setChunkX(chunkX + x);
                 data.setChunkZ(chunkZ + z);
-                data.setData(new byte[0]);
+                data.setSubChunksLength(0);
+                data.setData(EMPTY_LEVEL_CHUNK_DATA);
                 session.getBedrockSession().sendPacketImmediately(data);
             }
         }

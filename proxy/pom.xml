@@ -11,7 +11,6 @@
 
     <artifactId>dragonproxy</artifactId>
 
-
     <dependencies>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -161,24 +160,11 @@
         <!-- Nukkit -->
         <dependency>
             <groupId>com.nukkitx.protocol</groupId>
-            <artifactId>bedrock-v354</artifactId>
-            <version>2.0.2</version>
+            <artifactId>bedrock-v361</artifactId>
+            <version>2.1.2</version>
             <scope>compile</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.nukkitx.protocol</groupId>
-            <artifactId>bedrock-v340</artifactId>
-            <version>2.0.2</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.nukkitx.protocol</groupId>
-            <artifactId>bedrock-v332</artifactId>
-            <version>2.0.2</version>
-            <scope>compile</scope>
-        </dependency>
 
         <!-- Runtime dependencies -->
         <!-- Logger implementation -->

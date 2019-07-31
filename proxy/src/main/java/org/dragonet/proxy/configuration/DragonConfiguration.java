@@ -39,4 +39,10 @@ public class DragonConfiguration {
 
     @JsonProperty("remote-port")
     private int remotePort;
+
+    @JsonProperty("ping-passthrough")
+    private boolean pingPassthrough;
+
+    @JsonProperty("thread-pool-size")
+    private int threadPoolSize;
 }

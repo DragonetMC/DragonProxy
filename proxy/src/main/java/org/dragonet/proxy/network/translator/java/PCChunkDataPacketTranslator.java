@@ -15,7 +15,7 @@ package org.dragonet.proxy.network.translator.java;
 
 import com.github.steveice10.mc.protocol.data.game.chunk.Column;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
-import com.nukkitx.protocol.bedrock.packet.FullChunkDataPacket;
+import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
@@ -28,7 +28,7 @@ public class PCChunkDataPacketTranslator implements PacketTranslator<ServerChunk
     @Override
     public void translate(ProxySession session, ServerChunkDataPacket packet) {
         Column column = packet.getColumn();
-        FullChunkDataPacket fullChunkData = new FullChunkDataPacket();
+        LevelChunkPacket fullChunkData = new LevelChunkPacket();
         fullChunkData.setChunkX(column.getX());
         fullChunkData.setChunkZ(column.getZ());
         fullChunkData.setData(new byte[0]);

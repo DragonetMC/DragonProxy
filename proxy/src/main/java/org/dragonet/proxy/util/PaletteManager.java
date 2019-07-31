@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.nukkitx.network.VarInts;
-import com.nukkitx.protocol.bedrock.v332.BedrockUtils;
+import com.nukkitx.protocol.bedrock.v361.BedrockUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.Getter;
@@ -49,11 +49,12 @@ public class PaletteManager {
 
         cachedPalette = Unpooled.buffer();
 
-        VarInts.writeInt(cachedPalette, entries.size());
+        VarInts.writeUnsignedInt(cachedPalette, entries.size());
 
         for (RuntimeEntry entry : entries) {
             BedrockUtils.writeString(cachedPalette, entry.name);
             cachedPalette.writeShortLE(entry.data);
+            cachedPalette.writeShortLE(entry.id);
         }
 
     }

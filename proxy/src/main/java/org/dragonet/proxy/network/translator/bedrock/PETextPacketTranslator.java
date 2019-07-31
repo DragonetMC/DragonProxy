@@ -23,8 +23,8 @@ public class PETextPacketTranslator implements PacketTranslator<TextPacket> {
 
     @Override
     public void translate(ProxySession session, TextPacket packet) {
-        if(packet.getMessage().charAt(0) == '.') {
-            ClientChatPacket chatPacket = new ClientChatPacket(packet.getMessage().replace(".", "/"));
+        if(packet.getMessage().charAt(0) == '.' && packet.getMessage().charAt(1) == '/') {
+            ClientChatPacket chatPacket = new ClientChatPacket(packet.getMessage().replace("./", "/"));
             session.getDownstream().getSession().send(chatPacket);
             return;
         }
@@ -33,4 +33,3 @@ public class PETextPacketTranslator implements PacketTranslator<TextPacket> {
         session.getDownstream().getSession().send(chatPacket);
     }
 }
-

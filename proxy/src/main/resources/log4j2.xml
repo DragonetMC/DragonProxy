@@ -21,7 +21,7 @@
     </Appenders>
 
     <Loggers>
-        <Root level="TRACE">
+        <Root level="INFO">
             <AppenderRef ref="TerminalConsole"/>
             <AppenderRef ref="File"/>
         </Root>

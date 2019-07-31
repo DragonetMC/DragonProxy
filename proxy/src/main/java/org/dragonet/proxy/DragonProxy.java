@@ -19,11 +19,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.nukkitx.protocol.bedrock.*;
 
-import com.nukkitx.protocol.bedrock.v332.Bedrock_v332;
-import com.nukkitx.protocol.bedrock.v340.Bedrock_v340;
-import com.nukkitx.protocol.bedrock.v354.Bedrock_v354;
+import com.nukkitx.protocol.bedrock.*;
+import com.nukkitx.protocol.bedrock.v361.Bedrock_v361;
 
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
@@ -48,9 +46,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DragonProxy {
-
-    public static final BedrockPacketCodec BEDROCK_CODEC = Bedrock_v354.V354_CODEC;
-    public static final BedrockPacketCodec[] BEDROCK_SUPPORTED_CODECS = {Bedrock_v332.V332_CODEC, Bedrock_v340.V340_CODEC, BEDROCK_CODEC};
+    public static final BedrockPacketCodec BEDROCK_CODEC = Bedrock_v361.V361_CODEC;
+    public static final BedrockPacketCodec[] BEDROCK_SUPPORTED_CODECS = {BEDROCK_CODEC};
     public static final int[] BEDROCK_SUPPORTED_PROTOCOLS;
 
     static {
@@ -82,6 +79,12 @@ public class DragonProxy {
     private PaletteManager paletteManager;
 
     @Getter
+    private PingPassthroughThread pingPassthroughThread;
+
+    @Getter
+    private ScheduledExecutorService generalThreadPool;
+
+    @Getter
     private boolean shutdown = false;
 
     public DragonProxy(int bedrockPort, int javaPort) {
@@ -103,7 +106,7 @@ public class DragonProxy {
 
     private void initialize() throws Exception {
         if(!RELEASE) {
-            logger.warn("This is a development build. It may contain bugs. Do not use on production.");
+            logger.warn("This is a development build. It may contain bugs. Do not use in production.");
         }
 
         // Create injector, provide elements from the environment and register providers
@@ -120,11 +123,11 @@ public class DragonProxy {
 
         // Load configuration
         // TODO: Tidy this up
-        File fileConfig = new File("configuration.yml");
+        File fileConfig = new File("config.yml");
         if (!fileConfig.exists()) {
             // Create default config
             FileOutputStream fos = new FileOutputStream(fileConfig);
-            InputStream ins = DragonProxy.class.getResourceAsStream("/configuration.yml");
+            InputStream ins = DragonProxy.class.getResourceAsStream("/config.yml");
             int data;
             while ((data = ins.read()) != -1) {
                 fos.write(data);
@@ -136,7 +139,16 @@ public class DragonProxy {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         configuration = mapper.readValue(new FileInputStream(fileConfig), DragonConfiguration.class);
 
+        generalThreadPool = Executors.newScheduledThreadPool(configuration.getThreadPoolSize());
+
         paletteManager = new PaletteManager();
+
+        pingPassthroughThread = new PingPassthroughThread(this);
+
+        if(configuration.isPingPassthrough()) {
+            generalThreadPool.scheduleAtFixedRate(pingPassthroughThread, 1, 1, TimeUnit.SECONDS);
+            logger.info("Ping passthrough enabled");
+        }
 
         BedrockServer server = new BedrockServer(new InetSocketAddress(configuration.getBindAddress(), configuration.getBindPort()));
         server.setHandler(new ProxyServerEventListener(this));
@@ -155,6 +167,8 @@ public class DragonProxy {
             return;
         }
         logger.info("Shutting down the proxy...");
+
+        generalThreadPool.shutdown();
 
         // TODO: shutdown
         System.exit(0); // Temporary to fix hanging

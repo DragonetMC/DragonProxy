@@ -160,7 +160,7 @@
                     <header>licenseheader.txt</header>
                     <includes>
                         <include>src/test/java/**</include>
-                        <include>src/main/java/**</include>
+                        <include>proxy/src/main/java/**</include>
                     </includes>
                     <mapping>
                         <java>SLASHSTAR_STYLE</java>
