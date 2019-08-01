@@ -105,11 +105,11 @@ public class ProxySession implements PlayerSession {
 
     @Override
     public void onDisconnect(@Nonnull DisconnectReason disconnectReason) {
-        downstream.getSession().disconnect("Disconnect");
+       disconnect("Disconnect");
     }
 
     @Override
     public void onDisconnect(@Nonnull String s) {
-        downstream.getSession().disconnect("Disconnect");
+        disconnect("Disconnect");
     }
 }

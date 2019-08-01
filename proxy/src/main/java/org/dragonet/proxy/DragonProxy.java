@@ -32,14 +32,13 @@ import org.dragonet.proxy.util.PaletteManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.net.InetSocketAddress;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import java.nio.file.StandardCopyOption;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -122,22 +121,16 @@ public class DragonProxy {
         console = injector.getSingleton(DragonConsole.class);
 
         // Load configuration
-        // TODO: Tidy this up
-        File fileConfig = new File("config.yml");
-        if (!fileConfig.exists()) {
-            // Create default config
-            FileOutputStream fos = new FileOutputStream(fileConfig);
-            InputStream ins = DragonProxy.class.getResourceAsStream("/config.yml");
-            int data;
-            while ((data = ins.read()) != -1) {
-                fos.write(data);
+        try {
+            if(!Files.exists(Paths.get("config.yml"))) {
+                Files.copy(getClass().getResourceAsStream("/config.yml"), Paths.get("config.yml"), StandardCopyOption.REPLACE_EXISTING);
             }
-            ins.close();
-            fos.close();
+        } catch (IOException ex) {
+            logger.error("Failed to copy config file: " + ex.getMessage());
         }
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        configuration = mapper.readValue(new FileInputStream(fileConfig), DragonConfiguration.class);
+        configuration = mapper.readValue(new FileInputStream("config.yml"), DragonConfiguration.class);
 
         generalThreadPool = Executors.newScheduledThreadPool(configuration.getThreadPoolSize());
 

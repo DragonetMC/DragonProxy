@@ -54,9 +54,6 @@
                             <mainClass>org.dragonet.proxy.Bootstrap</mainClass>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
-                        <manifestEntries>
-                            <Implementation-Version>${project.versionCode}</Implementation-Version>
-                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
