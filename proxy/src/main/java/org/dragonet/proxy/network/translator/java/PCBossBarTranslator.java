@@ -35,7 +35,7 @@ public class PCBossBarTranslator implements PacketTranslator<ServerBossBarPacket
         bossEventPacket.setHealthPercentage(packet.getHealth());
         bossEventPacket.setTitle(packet.getTitle().getText());
         bossEventPacket.setPlayerUniqueEntityId(((Integer) session.getDataCache().get("player_eid")).longValue());
-        bossEventPacket.setBossUniqueEntityId(2); // TODO
+        bossEventPacket.setBossUniqueEntityId(0); // TODO
 
         switch(packet.getAction()) {
             case ADD:
@@ -45,6 +45,8 @@ public class PCBossBarTranslator implements PacketTranslator<ServerBossBarPacket
                 log.warn("Unhandled boss bar action: " + packet.getAction().name());
         }
 
-        session.getBedrockSession().sendPacketImmediately(bossEventPacket);
+        log.warn("Sending boss event packet");
+
+        session.getBedrockSession().sendPacket(bossEventPacket);
     }
 }

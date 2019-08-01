@@ -137,7 +137,7 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
         playStatus.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
         session.getBedrockSession().sendPacketImmediately(playStatus);
 
-        // Add the player to the cache
+        // Add the player to the cache (still need to remove them, but thats a TODO)
         session.getEntityCache().getEntities().put(((Integer) packet.getEntityId()).longValue(), new CachedEntity(packet.getEntityId()));
     }
 

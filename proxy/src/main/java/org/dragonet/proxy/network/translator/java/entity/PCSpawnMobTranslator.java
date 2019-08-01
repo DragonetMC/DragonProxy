@@ -35,6 +35,7 @@ public class PCSpawnMobTranslator implements PacketTranslator<ServerSpawnMobPack
         addEntityPacket.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
         addEntityPacket.setMotion(new Vector3f(packet.getMotionX(), packet.getMotionY(), packet.getMotionZ()));
         addEntityPacket.setRotation(Vector3f.ZERO);
+        addEntityPacket.setEntityType(37);
 
         EntityDataDictionary metadata = addEntityPacket.getMetadata();
         metadata.put(EntityData.NAMETAG, "testing");
@@ -43,10 +44,10 @@ public class PCSpawnMobTranslator implements PacketTranslator<ServerSpawnMobPack
         metadata.put(EntityData.MAX_AIR, (short) 400);
         metadata.put(EntityData.AIR, (short) 0);
 
-        //log.warn("SPAWN MOB");
+        log.warn("SPAWN MOB");
 
         addEntityPacket.getMetadata().putAll(metadata);
 
-        //session.getBedrockSession().sendPacket(addEntityPacket);
+        session.getBedrockSession().sendPacket(addEntityPacket);
     }
 }
