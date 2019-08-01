@@ -36,23 +36,6 @@ public class PCNotifyClientTranslator implements PacketTranslator<ServerNotifyCl
                 setGameTypePacket.setGamemode(MagicValues.value(Integer.class, packet.getValue()));
 
                 session.getBedrockSession().sendPacket(setGameTypePacket);
-                break;
-            case START_RAIN:
-                LevelEventPacket startRainPacket = new LevelEventPacket();
-                startRainPacket.setEvent(LevelEventPacket.Event.START_RAIN);
-                startRainPacket.setData(ThreadLocalRandom.current().nextInt(50000) + 10000);
-                startRainPacket.setPosition(new Vector3f(0, 0, 0));
-
-                session.getBedrockSession().sendPacket(startRainPacket);
-                break;
-            case STOP_RAIN:
-                LevelEventPacket stopRainPacket = new LevelEventPacket();
-                stopRainPacket.setEvent(LevelEventPacket.Event.STOP_RAIN);
-                stopRainPacket.setData(ThreadLocalRandom.current().nextInt(50000) + 10000);
-                stopRainPacket.setPosition(new Vector3f(0, 0, 0));
-
-                session.getBedrockSession().sendPacket(stopRainPacket);
-                break;
         }
     }
 }
