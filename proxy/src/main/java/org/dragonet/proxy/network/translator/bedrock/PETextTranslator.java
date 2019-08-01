@@ -18,8 +18,8 @@ import com.nukkitx.protocol.bedrock.packet.TextPacket;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
-public class PETextPacketTranslator implements PacketTranslator<TextPacket> {
-    public static final PETextPacketTranslator INSTANCE = new PETextPacketTranslator();
+public class PETextTranslator implements PacketTranslator<TextPacket> {
+    public static final PETextTranslator INSTANCE = new PETextTranslator();
 
     @Override
     public void translate(ProxySession session, TextPacket packet) {

@@ -13,15 +13,19 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityHeadLookPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDisconnectPacket;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
-public class PCEntityHeadlookPacketTranslator implements PacketTranslator<ServerEntityHeadLookPacket> {
-    public static final PCEntityHeadlookPacketTranslator INSTANCE = new PCEntityHeadlookPacketTranslator();
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class PCDisconnectTranslator implements PacketTranslator<ServerDisconnectPacket> {
+    public static final PCDisconnectTranslator INSTANCE = new PCDisconnectTranslator();
 
     @Override
-    public void translate(ProxySession session, ServerEntityHeadLookPacket packet) {
-
+    public void translate(ProxySession session, ServerDisconnectPacket packet) {
+        session.disconnect(packet.getReason().getText());
     }
 }
+

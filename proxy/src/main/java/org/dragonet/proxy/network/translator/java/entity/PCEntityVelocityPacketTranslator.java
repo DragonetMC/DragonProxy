@@ -11,7 +11,7 @@
  * @author Dragonet Foundation
  * @link https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.java;
+package org.dragonet.proxy.network.translator.java.entity;
 
 import com.flowpowered.math.vector.Vector3f;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityVelocityPacket;

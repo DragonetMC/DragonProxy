@@ -11,15 +11,15 @@
  * @author Dragonet Foundation
  * @link https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.java;
+package org.dragonet.proxy.network.translator.java.world;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerUpdateTimePacket;
 import com.nukkitx.protocol.bedrock.packet.SetTimePacket;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
-public class PCUpdateTimePacketTranslator implements PacketTranslator<ServerUpdateTimePacket> {
-    public static final PCUpdateTimePacketTranslator INSTANCE = new PCUpdateTimePacketTranslator();
+public class PCUpdateTimeTranslator implements PacketTranslator<ServerUpdateTimePacket> {
+    public static final PCUpdateTimeTranslator INSTANCE = new PCUpdateTimeTranslator();
 
     @Override
     public void translate(ProxySession session, ServerUpdateTimePacket packet) {

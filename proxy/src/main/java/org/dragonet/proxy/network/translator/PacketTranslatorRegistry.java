@@ -17,16 +17,22 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMultiBlockChangePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerUpdateTimePacket;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.google.common.base.Preconditions;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
+import com.nukkitx.protocol.bedrock.packet.AnimatePacket;
+import com.nukkitx.protocol.bedrock.packet.CommandRequestPacket;
 import com.nukkitx.protocol.bedrock.packet.TextPacket;
-import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.bedrock.*;
 import org.dragonet.proxy.network.translator.java.*;
+import org.dragonet.proxy.network.translator.java.entity.*;
+import org.dragonet.proxy.network.translator.java.world.PCChunkDataTranslator;
+import org.dragonet.proxy.network.translator.java.world.PCNotifyClientTranslator;
+import org.dragonet.proxy.network.translator.java.world.PCUpdateTimeTranslator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,22 +43,25 @@ public class PacketTranslatorRegistry<P> {
     public static final PacketTranslatorRegistry<Packet> JAVA_TO_BEDROCK = new PacketTranslatorRegistry<>();
 
     static {
-        JAVA_TO_BEDROCK.addTranslator(ServerJoinGamePacket.class, PCJoinGamePacketTranslator.INSTANCE)
-            .addTranslator(ServerMultiBlockChangePacket.class, PCMultiBlockChangePacketTranslator.INSTANCE)
-            .addTranslator(ServerDifficultyPacket.class, PCDifficultyPacketTranslator.INSTANCE)
-            .addTranslator(ServerTitlePacket.class, PCTitlePacketTranslator.INSTANCE)
+        JAVA_TO_BEDROCK.addTranslator(ServerJoinGamePacket.class, PCJoinGameTranslator.INSTANCE)
+            .addTranslator(ServerMultiBlockChangePacket.class, PCMultiBlockChangeTranslator.INSTANCE)
+            .addTranslator(ServerDifficultyPacket.class, PCDifficultyTranslator.INSTANCE)
+            .addTranslator(ServerTitlePacket.class, PCTitleTranslator.INSTANCE)
             .addTranslator(ServerEntityHeadLookPacket.class, PCEntityHeadlookPacketTranslator.INSTANCE)
             .addTranslator(ServerEntityPositionPacket.class, PCEntityPositionPacketTranslator.INSTANCE)
             .addTranslator(ServerEntityPositionRotationPacket.class, PCEntityPositionRotationPacketTranslator.INSTANCE)
             .addTranslator(ServerEntityTeleportPacket.class, PCEntityTeleportPacketTranslator.INSTANCE)
             .addTranslator(ServerEntityVelocityPacket.class, PCEntityVelocityPacketTranslator.INSTANCE)
-            .addTranslator(ServerUpdateTimePacket.class, PCUpdateTimePacketTranslator.INSTANCE)
-            .addTranslator(ServerChatPacket.class, PCServerChatPacketTranslator.INSTANCE)
+            .addTranslator(ServerUpdateTimePacket.class, PCUpdateTimeTranslator.INSTANCE)
+            .addTranslator(ServerChatPacket.class, PCChatTranslator.INSTANCE)
             .addTranslator(ServerEntityDestroyPacket.class, PCServerEntityDestroyPacketTranslator.INSTANCE)
-            .addTranslator(ServerChunkDataPacket.class, PCChunkDataPacketTranslator.INSTANCE)
-            .addTranslator(ServerDisconnectPacket.class, PCDisconnectPacketTranslator.INSTANCE);
+            .addTranslator(ServerChunkDataPacket.class, PCChunkDataTranslator.INSTANCE)
+            .addTranslator(ServerDisconnectPacket.class, PCDisconnectTranslator.INSTANCE)
+            .addTranslator(ServerNotifyClientPacket.class, PCNotifyClientTranslator.INSTANCE);
 
-        BEDROCK_TO_JAVA.addTranslator(TextPacket.class, PETextPacketTranslator.INSTANCE);
+        BEDROCK_TO_JAVA.addTranslator(TextPacket.class, PETextTranslator.INSTANCE)
+            .addTranslator(AnimatePacket.class, PEAnimateTranslator.INSTANCE)
+            .addTranslator(CommandRequestPacket.class, PECommandRequestTranslator.INSTANCE);
     }
 
     private final Map<Class<?>, PacketTranslator<P>> translators = new HashMap<>();

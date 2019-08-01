@@ -13,20 +13,22 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
-import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDisconnectPacket;
-import com.nukkitx.protocol.bedrock.packet.DisconnectPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDifficultyPacket;
+import com.nukkitx.protocol.bedrock.packet.SetDifficultyPacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PCDisconnectPacketTranslator implements PacketTranslator<ServerDisconnectPacket> {
-    public static final PCDisconnectPacketTranslator INSTANCE = new PCDisconnectPacketTranslator();
+public class PCDifficultyTranslator implements PacketTranslator<ServerDifficultyPacket> {
+    public static final PCDifficultyTranslator INSTANCE = new PCDifficultyTranslator();
 
     @Override
-    public void translate(ProxySession session, ServerDisconnectPacket packet) {
-        session.disconnect(packet.getReason().getText());
+    public void translate(ProxySession session, ServerDifficultyPacket packet) {
+        SetDifficultyPacket bedrockPacket = new SetDifficultyPacket();
+        bedrockPacket.setDifficulty(packet.getDifficulty().ordinal());
+
+        session.getBedrockSession().sendPacketImmediately(bedrockPacket);
     }
 }
-

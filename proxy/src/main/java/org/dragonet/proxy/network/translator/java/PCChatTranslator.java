@@ -13,11 +13,8 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
-import com.github.steveice10.mc.protocol.data.message.Message;
 import com.github.steveice10.mc.protocol.data.message.TranslationMessage;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerChatPacket;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.nukkitx.protocol.bedrock.packet.TextPacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,14 +23,10 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.MessageTranslator;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Log4j2
-public class PCServerChatPacketTranslator implements PacketTranslator<ServerChatPacket> {
-    public static final PCServerChatPacketTranslator INSTANCE = new PCServerChatPacketTranslator();
+public class PCChatTranslator implements PacketTranslator<ServerChatPacket> {
+    public static final PCChatTranslator INSTANCE = new PCChatTranslator();
 
     @Override
     public void translate(ProxySession session, ServerChatPacket packet) {

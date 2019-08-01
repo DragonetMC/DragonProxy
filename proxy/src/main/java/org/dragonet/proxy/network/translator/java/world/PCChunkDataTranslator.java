@@ -11,7 +11,7 @@
  * @author Dragonet Foundation
  * @link https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.java;
+package org.dragonet.proxy.network.translator.java.world;
 
 import com.github.steveice10.mc.protocol.data.game.chunk.Column;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
@@ -22,8 +22,8 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PCChunkDataPacketTranslator implements PacketTranslator<ServerChunkDataPacket> {
-    public static final PCChunkDataPacketTranslator INSTANCE = new PCChunkDataPacketTranslator();
+public class PCChunkDataTranslator implements PacketTranslator<ServerChunkDataPacket> {
+    public static final PCChunkDataTranslator INSTANCE = new PCChunkDataTranslator();
 
     @Override
     public void translate(ProxySession session, ServerChunkDataPacket packet) {

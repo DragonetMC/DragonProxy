@@ -28,7 +28,7 @@ remote-port: 25565
 #    default: true
 
 # Whether or not to use the motd and player count of the primary remote server
-ping-passthrough: true
+ping-passthrough: false
 
 # The amount of threads that will be used.
 # Only change if you know what you are doing

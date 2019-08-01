@@ -13,8 +13,6 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
 import com.flowpowered.math.vector.Vector2f;
 import com.flowpowered.math.vector.Vector3f;
 import com.flowpowered.math.vector.Vector3i;
@@ -23,7 +21,6 @@ import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.nbt.NbtUtils;
 import com.nukkitx.nbt.stream.NBTOutputStream;
 import com.nukkitx.nbt.tag.CompoundTag;
-import com.nukkitx.network.VarInts;
 import com.nukkitx.protocol.bedrock.data.GamePublishSetting;
 import com.nukkitx.protocol.bedrock.data.GameRule;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
@@ -42,8 +39,8 @@ import java.io.IOException;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Log4j2
-public class PCJoinGamePacketTranslator implements PacketTranslator<ServerJoinGamePacket> {
-    public static final PCJoinGamePacketTranslator INSTANCE = new PCJoinGamePacketTranslator();
+public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePacket> {
+    public static final PCJoinGameTranslator INSTANCE = new PCJoinGameTranslator();
 
     private static final CompoundTag EMPTY_TAG = CompoundTagBuilder.builder().buildRootTag();
     private static final byte[] EMPTY_LEVEL_CHUNK_DATA;

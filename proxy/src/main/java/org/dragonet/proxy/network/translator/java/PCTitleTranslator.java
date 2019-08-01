@@ -21,8 +21,8 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PCTitlePacketTranslator implements PacketTranslator<ServerTitlePacket> {
-    public static PCTitlePacketTranslator INSTANCE = new PCTitlePacketTranslator();
+public class PCTitleTranslator implements PacketTranslator<ServerTitlePacket> {
+    public static PCTitleTranslator INSTANCE = new PCTitleTranslator();
 
     @Override
     public void translate(ProxySession session, ServerTitlePacket packet) {

@@ -11,7 +11,7 @@
  * @author Dragonet Foundation
  * @link https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.java;
+package org.dragonet.proxy.network.translator.java.player;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerAbilitiesPacket;
 import com.nukkitx.protocol.bedrock.packet.AdventureSettingsPacket;

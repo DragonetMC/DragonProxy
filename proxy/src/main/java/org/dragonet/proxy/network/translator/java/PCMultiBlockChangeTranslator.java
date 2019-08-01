@@ -24,8 +24,8 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PCMultiBlockChangePacketTranslator implements PacketTranslator<ServerMultiBlockChangePacket> {
-    public static final PCMultiBlockChangePacketTranslator INSTANCE = new PCMultiBlockChangePacketTranslator();
+public class PCMultiBlockChangeTranslator implements PacketTranslator<ServerMultiBlockChangePacket> {
+    public static final PCMultiBlockChangeTranslator INSTANCE = new PCMultiBlockChangeTranslator();
 
     @Override
     public void translate(ProxySession session, ServerMultiBlockChangePacket packet) {
