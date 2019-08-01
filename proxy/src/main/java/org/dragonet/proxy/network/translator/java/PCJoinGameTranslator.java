@@ -23,6 +23,8 @@ import com.nukkitx.nbt.stream.NBTOutputStream;
 import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.data.GamePublishSetting;
 import com.nukkitx.protocol.bedrock.data.GameRule;
+import com.nukkitx.protocol.bedrock.data.ItemData;
+import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
@@ -31,6 +33,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.network.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
@@ -61,6 +64,9 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
 
     @Override
     public void translate(ProxySession session, ServerJoinGamePacket packet) {
+        // Cache the player's entity id
+        session.getDataCache().put("player_eid", packet.getEntityId());
+
         StartGamePacket startGamePacket = new StartGamePacket();
         startGamePacket.setUniqueEntityId(packet.getEntityId());
         startGamePacket.setRuntimeEntityId(packet.getEntityId());
@@ -130,6 +136,9 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
         PlayStatusPacket playStatus = new PlayStatusPacket();
         playStatus.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
         session.getBedrockSession().sendPacketImmediately(playStatus);
+
+        // Add the player to the cache
+        session.getEntityCache().getEntities().put(((Integer) packet.getEntityId()).longValue(), new CachedEntity(packet.getEntityId()));
     }
 
 }

@@ -58,7 +58,6 @@ public class ProxyServerEventListener implements BedrockServerEventHandler {
                 pong.setMaximumPlayerCount(serverInfo.getPlayerInfo().getMaxPlayers());
             }
         } else {
-            System.out.println("MAX PLAYERS " + config.getMaxPlayers());
             pong.setPlayerCount(0);
             pong.setMaximumPlayerCount(config.getMaxPlayers());
             pong.setMotd(config.getMotd());

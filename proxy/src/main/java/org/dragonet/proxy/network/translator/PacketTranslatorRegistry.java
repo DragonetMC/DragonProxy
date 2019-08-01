@@ -15,6 +15,8 @@ package org.dragonet.proxy.network.translator;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.*;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMultiBlockChangePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
@@ -30,9 +32,8 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.bedrock.*;
 import org.dragonet.proxy.network.translator.java.*;
 import org.dragonet.proxy.network.translator.java.entity.*;
-import org.dragonet.proxy.network.translator.java.world.PCChunkDataTranslator;
-import org.dragonet.proxy.network.translator.java.world.PCNotifyClientTranslator;
-import org.dragonet.proxy.network.translator.java.world.PCUpdateTimeTranslator;
+import org.dragonet.proxy.network.translator.java.player.*;
+import org.dragonet.proxy.network.translator.java.world.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +58,12 @@ public class PacketTranslatorRegistry<P> {
             .addTranslator(ServerEntityDestroyPacket.class, PCServerEntityDestroyPacketTranslator.INSTANCE)
             .addTranslator(ServerChunkDataPacket.class, PCChunkDataTranslator.INSTANCE)
             .addTranslator(ServerDisconnectPacket.class, PCDisconnectTranslator.INSTANCE)
-            .addTranslator(ServerNotifyClientPacket.class, PCNotifyClientTranslator.INSTANCE);
+            .addTranslator(ServerNotifyClientPacket.class, PCNotifyClientTranslator.INSTANCE)
+            .addTranslator(ServerBossBarPacket.class, PCBossBarTranslator.INSTANCE)
+            //.addTranslator(ServerSpawnPlayerPacket.class, PCSpawnPlayerTranslator.INSTANCE)
+            .addTranslator(ServerSpawnMobPacket.class, PCSpawnMobTranslator.INSTANCE)
+            .addTranslator(ServerEntityEffectPacket.class, PCEntityEffectTranslator.INSTANCE)
+            .addTranslator(ServerEntityRemoveEffectPacket.class, PCEntityRemoveEffectTranslator.INSTANCE);
 
         BEDROCK_TO_JAVA.addTranslator(TextPacket.class, PETextTranslator.INSTANCE)
             .addTranslator(AnimatePacket.class, PEAnimateTranslator.INSTANCE)
@@ -70,7 +76,7 @@ public class PacketTranslatorRegistry<P> {
         Class<?> packetClass = packet.getClass();
         PacketTranslator<P> target = translators.get(packetClass);
         if (target == null) {
-            //log.warn("Could not translate packet {}", packetClass.getSimpleName());
+            log.info("Unhandled packet received from remote: {}", packetClass.getSimpleName());
             return;
         }
         target.translate(session, packet);

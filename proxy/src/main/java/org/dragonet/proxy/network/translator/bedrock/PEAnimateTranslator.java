@@ -14,7 +14,6 @@
 package org.dragonet.proxy.network.translator.bedrock;
 
 import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
-import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerSwingArmPacket;
 import com.nukkitx.protocol.bedrock.packet.AnimatePacket;
 import org.dragonet.proxy.network.session.ProxySession;

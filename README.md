@@ -2,36 +2,43 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://discord.gg/CmkxTz2)
-Travis: [![TravisCI](https://travis-ci.org/DragonetMC/DragonProxy.svg?branch=master)](https://travis-ci.org/DragonetMC/DragonProxy)
-CodeMC: [![Build Status](https://ci.codemc.org/buildStatus/icon?job=DragonetMC/DragonProxy)](https://ci.codemc.org/job/DragonetMC/job/DragonProxy/)
+[![Build Status](https://ci.codemc.org/buildStatus/icon?job=DragonetMC/DragonProxy)](https://ci.codemc.org/job/DragonetMC/job/DragonProxy/)
 
 A proxy made to allow **Minecraft: Bedrock** clients to connect to **Minecraft: Java Edition** servers.
 
-## What is DragonProxy
-DragonProxy is a proxy between a Minecraft Bedrock client and a Java Minecraft server.
+### What is DragonProxy
+DragonProxy is a proxy between a Minecraft: Bedrock Edition client and a Minecraft: Java Edition server.
 
-__Some servers anticheats trigger some movements cheat, use at your own risks.__
-If you get banned from a server, we do not take responsibilities.
+### What's been done so far
+The project has been undergoing a rewrite for some time, and development has recently picked up again.
 
-## Who uses DragonProxy
-See live stats on BStats[![Bstats](https://bstats.org/signatures/server-implementation/DragonProxy.svg)](https://bstats.org/plugin/server-implementation/DragonProxy/)
+- [x] RakNet broadcasting
+- [x] Joining the remote server
+- [x] Chat and commands support
+  - [ ] Proper translation support
+- [ ] Chunk loading
+- [ ] Player movement
+- [ ] Inventory support
+- [ ] Viewing entities
+- [x] Effects
+- [ ] Block breaking / placing
+- [ ] Authentication (online mode)
+- [x] Titles
+- [ ] Bossbar
+- [ ] Scoreboard
 
-## Download
- - [release](https://github.com/DragonetMC/DragonProxy/releases) : stable builds
- - [snapshots](https://ci.codemc.org/job/DragonetMC/job/DragonProxy/lastSuccessfulBuild/artifact/target/): developments builds, unstable, latest features
+A more comprehensive TODO list will be created in an issue in the future.
 
-## Compiling
-TODO
+### Download
+No updated releases are currently available.
+ - [snapshots](https://ci.codemc.org/job/DragonetMC/job/DragonProxy/lastSuccessfulBuild/artifact/target/): developments builds, unstable, latest features (recommended)
 
-## Installing
-TODO
+### Compiling
+Clone the repo recursively and then run `mvn clean install`. The output jar will can be found at `bootstrap/target/DragonProxy.jar`.
 
-## Libraries used
-TODO
+### Libraries used
+* [NukkitX Protocol Library](https://github.com/NukkitX/Protocol)
 * [MCProtocolLib by Steveice10](https://github.com/Steveice10/MCProtocolLib)
 
-## Useful resources:
-* [The NukkitX project](https://github.com/NukkitX/Nukkit)
-* [The MINET project](https://github.com/NiclasOlofsson/MiNET)
-* [The PocketMine-MP project](https://github.com/pmmp/PocketMine-MP)
-* [The java protocol documentation](http://wiki.vg)
+  
+[![HitCount](http://hits.dwyl.io/DragonetMC/DragonProxy.svg)](http://hits.dwyl.io/DragonetMC/DragonProxy)

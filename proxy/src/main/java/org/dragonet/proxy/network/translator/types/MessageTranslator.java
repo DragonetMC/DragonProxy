@@ -11,7 +11,7 @@
  * @author Dragonet Foundation
  * @link https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator;
+package org.dragonet.proxy.network.translator.types;
 
 import com.github.steveice10.mc.protocol.data.message.ChatColor;
 import com.github.steveice10.mc.protocol.data.message.ChatFormat;
