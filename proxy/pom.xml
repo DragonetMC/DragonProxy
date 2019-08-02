@@ -114,7 +114,7 @@
         <dependency>
             <groupId>com.github.steveice10</groupId>
             <artifactId>mcprotocollib</artifactId>
-            <version>1.13.1-1-SNAPSHOT</version>
+            <version>1.14.4-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.github.steveice10</groupId>

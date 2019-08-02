@@ -31,11 +31,8 @@ import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.PlayerSession;
 import com.nukkitx.protocol.bedrock.BedrockServerSession;
 
-import com.nukkitx.protocol.bedrock.data.GamePublishSetting;
-import com.nukkitx.protocol.bedrock.data.GameRule;
-import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
-import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
-import com.nukkitx.protocol.bedrock.packet.TextPacket;
+import com.nukkitx.protocol.bedrock.data.*;
+import com.nukkitx.protocol.bedrock.packet.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -48,12 +45,14 @@ import org.dragonet.proxy.network.cache.EntityCache;
 import org.dragonet.proxy.network.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.data.AuthData;
 import org.dragonet.proxy.network.session.data.AuthState;
+import org.dragonet.proxy.network.session.data.ClientData;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.dragonet.proxy.remote.RemoteAuthType;
 import org.dragonet.proxy.remote.RemoteServer;
 import org.dragonet.proxy.util.TextFormat;
 
 import javax.annotation.Nonnull;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -79,6 +78,7 @@ public class ProxySession implements PlayerSession {
     private EntityCache entityCache;
 
     private AuthData authData;
+    private ClientData clientData;
 
     public ProxySession(DragonProxy proxy, BedrockServerSession bedrockSession) {
         this.proxy = proxy;
@@ -103,6 +103,12 @@ public class ProxySession implements PlayerSession {
             @Override
             public void disconnected(DisconnectedEvent event) {
                 log.info("Player  disconnected from remote. Reason: " + event.getReason());
+
+                if(dataCache.get("auth_state") == AuthState.AUTHENTICATING) {
+                    sendMessage(TextFormat.GOLD + "Disconnected from remote: " + TextFormat.WHITE + event.getReason());
+                    sendMessage(TextFormat.AQUA + "Enter your credentials again to retry");
+                    return;
+                }
                 bedrockSession.disconnect(event.getReason());
             }
 
@@ -179,6 +185,54 @@ public class ProxySession implements PlayerSession {
         });
     }
 
+    public void spawn() {
+        PlayerListPacket.Entry entry = new PlayerListPacket.Entry(authData.getIdentity());
+        entry.setEntityId(1);
+        entry.setName(authData.getDisplayName());
+        entry.setSkinId(clientData.getSkinId());
+        entry.setSkinData(clientData.getSkinData());
+        entry.setCapeData(clientData.getCapeData());
+        entry.setGeometryName(clientData.getSkinGeometryName());
+        entry.setGeometryData(new String(clientData.getSkinGeometry(), StandardCharsets.UTF_8));
+        entry.setXuid(authData.getXuid() == null ? "" : authData.getXuid());
+        entry.setPlatformChatId("");
+
+        PlayerListPacket playerListPacket = new PlayerListPacket();
+        playerListPacket.setType(PlayerListPacket.Type.ADD);
+        playerListPacket.getEntries().add(entry);
+
+        //bedrockSession.sendPacket(playerListPacket);
+
+        AddPlayerPacket addPlayerPacket = new AddPlayerPacket();
+        addPlayerPacket.setPlatformChatId("");
+        addPlayerPacket.setWorldFlags(0);
+        addPlayerPacket.setCustomFlags(0);
+        addPlayerPacket.setCommandPermission(0);
+        addPlayerPacket.setPlayerFlags(0);
+        addPlayerPacket.setDeviceId("");
+        addPlayerPacket.setUuid(authData.getIdentity());
+        addPlayerPacket.setUsername(authData.getDisplayName());
+        addPlayerPacket.setPosition(Vector3f.ZERO);
+        addPlayerPacket.setRotation(Vector3f.ZERO);
+        addPlayerPacket.setHand(ItemData.AIR);
+        addPlayerPacket.setMotion(Vector3f.ZERO);
+        addPlayerPacket.setRuntimeEntityId(1);
+        addPlayerPacket.setUniqueEntityId(1);
+
+        EntityDataDictionary metadata = addPlayerPacket.getMetadata();
+        metadata.put(EntityData.NAMETAG, "testing");
+        metadata.put(EntityData.ENTITY_AGE, 0);
+        metadata.put(EntityData.SCALE, 1f);
+        metadata.put(EntityData.MAX_AIR, (short) 400);
+        metadata.put(EntityData.AIR, (short) 0);
+
+        log.warn("SPAWN PLAYER");
+
+        addPlayerPacket.getMetadata().putAll(metadata);
+
+        //bedrockSession.sendPacket(addPlayerPacket);
+    }
+
     public void sendFakeStartGame() {
         StartGamePacket startGamePacket = new StartGamePacket();
         startGamePacket.setUniqueEntityId(entityCache.nextFakePlayerid());
@@ -232,6 +286,8 @@ public class ProxySession implements PlayerSession {
         PlayStatusPacket playStatusPacket = new PlayStatusPacket();
         playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
         bedrockSession.sendPacketImmediately(playStatusPacket);
+
+        spawn();
     }
 
     public void sendMessage(String text) {
@@ -262,7 +318,9 @@ public class ProxySession implements PlayerSession {
 
     public void disconnect(String reason) {
         if (!isClosed()) {
-            downstream.getSession().disconnect(reason);
+            if(downstream != null) {
+                downstream.getSession().disconnect(reason);
+            }
             bedrockSession.disconnect(reason, false);
         }
     }

@@ -78,7 +78,7 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
         startGamePacket.setDimensionId(0);
         startGamePacket.setGeneratorId(0);
         startGamePacket.setLevelGamemode(packet.getGameMode().ordinal());
-        startGamePacket.setDifficulty(packet.getDifficulty().ordinal());
+        startGamePacket.setDifficulty(0);
         startGamePacket.setDefaultSpawn(new Vector3i(-249, 67, -275));
         startGamePacket.setAcheivementsDisabled(true);
         startGamePacket.setTime(0);
@@ -139,6 +139,8 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
 
         // Add the player to the cache (still need to remove them, but thats a TODO)
         session.getEntityCache().getEntities().put(((Integer) packet.getEntityId()).longValue(), new CachedEntity(packet.getEntityId()));
+
+        session.spawn();
     }
 
 }

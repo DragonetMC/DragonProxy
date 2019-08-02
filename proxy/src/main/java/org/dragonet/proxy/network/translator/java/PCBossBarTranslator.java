@@ -35,7 +35,7 @@ public class PCBossBarTranslator implements PacketTranslator<ServerBossBarPacket
         bossEventPacket.setHealthPercentage(packet.getHealth());
         bossEventPacket.setTitle(packet.getTitle().getText());
         bossEventPacket.setPlayerUniqueEntityId(((Integer) session.getDataCache().get("player_eid")).longValue());
-        bossEventPacket.setBossUniqueEntityId(0); // TODO
+        bossEventPacket.setBossUniqueEntityId(((Integer) session.getDataCache().get("player_eid")).longValue()); // TODO
 
         switch(packet.getAction()) {
             case ADD:

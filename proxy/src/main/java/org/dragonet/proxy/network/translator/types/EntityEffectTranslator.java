@@ -12,14 +12,14 @@ public class EntityEffectTranslator {
     private static Map<Effect, BedrockEffect> effectMap = new HashMap<>();
 
     static {
-        effectMap.put(Effect.SPEED, BedrockEffect.SPEED);
-        effectMap.put(Effect.SLOWNESS, BedrockEffect.SLOWNESS);
-        effectMap.put(Effect.DIG_SPEED, BedrockEffect.HASTE);
-        effectMap.put(Effect.DIG_SLOWNESS, BedrockEffect.MINING_FATIGUE);
-        effectMap.put(Effect.DAMAGE_BOOST, BedrockEffect.STRENGTH);
+        effectMap.put(Effect.FASTER_MOVEMENT, BedrockEffect.SPEED);
+        effectMap.put(Effect.SLOWER_MOVEMENT, BedrockEffect.SLOWNESS);
+        effectMap.put(Effect.FASTER_DIG, BedrockEffect.HASTE);
+        effectMap.put(Effect.SLOWER_DIG, BedrockEffect.MINING_FATIGUE);
+        effectMap.put(Effect.INCREASE_DAMAGE, BedrockEffect.STRENGTH);
         effectMap.put(Effect.HEAL, BedrockEffect.INSTANT_HEALTH);
-        effectMap.put(Effect.DAMAGE, BedrockEffect.INSTANT_DAMAGE);
-        effectMap.put(Effect.JUMP_BOOST, BedrockEffect.JUMP_BOOST);
+        effectMap.put(Effect.HARM, BedrockEffect.INSTANT_DAMAGE);
+        effectMap.put(Effect.JUMP, BedrockEffect.JUMP_BOOST);
         effectMap.put(Effect.CONFUSION, BedrockEffect.NAUSEA);
         effectMap.put(Effect.REGENERATION, BedrockEffect.REGENERATION);
         effectMap.put(Effect.RESISTANCE, BedrockEffect.RESISTANCE);
@@ -31,14 +31,12 @@ public class EntityEffectTranslator {
         effectMap.put(Effect.HUNGER, BedrockEffect.HUNGER);
         effectMap.put(Effect.WEAKNESS, BedrockEffect.WEAKNESS);
         effectMap.put(Effect.POISON, BedrockEffect.POISON);
-        effectMap.put(Effect.WITHER_EFFECT, BedrockEffect.WITHER);
+        effectMap.put(Effect.WITHER, BedrockEffect.WITHER);
         effectMap.put(Effect.HEALTH_BOOST, BedrockEffect.HEALTH_BOOST);
-        effectMap.put(Effect.ABSORPTION, BedrockEffect.ABSORPTION);
+        effectMap.put(Effect.ABSORBTION, BedrockEffect.ABSORPTION);
         effectMap.put(Effect.SATURATION, BedrockEffect.SATURATION);
         effectMap.put(Effect.LEVITATION, BedrockEffect.LEVITATION);
-
-        // TODO: add this when we upgrade to MCProtocolLib 1.14
-        //effectMap.put(Effect.CONDUIT_POWER, BedrockEffect.CONDUIT_POWER);
+        effectMap.put(Effect.CONDUIT_POWER, BedrockEffect.CONDUIT_POWER);
     }
 
     /**

@@ -34,8 +34,7 @@ remote-port: 25565
 remote-auth: credentials
 
 # Whether or not Bedrock clients should be authenticated with xbox live
-# Not implemented yet
-#xbox-auth: false
+xbox-auth: false
 
 # Whether or not to use the motd and player count of the primary remote server
 ping-passthrough: false

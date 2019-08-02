@@ -26,8 +26,8 @@ public class PEAnimateTranslator implements PacketTranslator<AnimatePacket> {
     public void translate(ProxySession session, AnimatePacket packet) {
         switch(packet.getAction()) {
             case SWING_ARM:
-                ClientPlayerSwingArmPacket swingArmPacket = new ClientPlayerSwingArmPacket(Hand.MAIN_HAND);
-                session.getDownstream().getSession().send(swingArmPacket);
+                //ClientPlayerSwingArmPacket swingArmPacket = new ClientPlayerSwingArmPacket(Hand.MAIN_HAND);
+                //session.getDownstream().getSession().send(swingArmPacket);
         }
     }
 }

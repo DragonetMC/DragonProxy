@@ -13,6 +13,8 @@
  */
 package org.dragonet.proxy.network;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -22,6 +24,7 @@ import com.nukkitx.protocol.bedrock.BedrockServerSession;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
 
+import com.nukkitx.protocol.bedrock.util.EncryptionUtils;
 import lombok.extern.log4j.Log4j2;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -34,17 +37,22 @@ import org.dragonet.proxy.form.components.LabelComponent;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.data.AuthData;
 import org.dragonet.proxy.network.session.data.AuthState;
+import org.dragonet.proxy.network.session.data.ClientData;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.dragonet.proxy.remote.RemoteAuthType;
 import org.dragonet.proxy.remote.RemoteServer;
+import org.dragonet.proxy.util.BedrockLoginUtils;
 import org.dragonet.proxy.util.TextFormat;
 
+import java.io.IOException;
+import java.security.interfaces.ECPublicKey;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 /**
  * Respresents the connection between the mcpe client and the proxy.
+ * Most of the LoginPacket code is from the NukkitX project.
  */
 @Log4j2
 public class UpstreamPacketHandler implements BedrockPacketHandler {
@@ -67,30 +75,64 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
         }
         session.getBedrockSession().setPacketCodec(DragonProxy.BEDROCK_SUPPORTED_CODECS[index]);
 
+        JsonNode certData;
         try {
-            // Get chain data that contains identity info
-            JSONObject chainData = (JSONObject) JSONValue.parse(packet.getChainData().array());
-            JSONArray chainArray = (JSONArray) chainData.get("chain");
-
-            Object identityObject = chainArray.get(chainArray.size() - 1);
-
-            JWSObject identity = JWSObject.parse((String) identityObject);
-            JSONObject extraData = (JSONObject) identity.getPayload().toJSONObject().get("extraData");
-
-            session.setAuthData(new AuthData(
-                extraData.getAsString("displayName"),
-                extraData.getAsString("identity"),
-                extraData.getAsString("XUID")
-            ));
-
-            session.setUsername(session.getAuthData().getDisplayName());
-        } catch (ParseException | ClassCastException | NullPointerException e) {
-            // Invalid chain data
-            session.getBedrockSession().disconnect();
-            return true;
+            certData = DragonProxy.JSON_MAPPER.readTree(packet.getChainData().toByteArray());
+        } catch (IOException ex) {
+            throw new RuntimeException("Certificate JSON could not be read");
         }
 
-        // Tell the Bedrock client login was successful.
+        JsonNode certChainData = certData.get("chain");
+        if (certChainData.getNodeType() != JsonNodeType.ARRAY) {
+            throw new RuntimeException("Certificate data is not valid");
+        }
+
+        boolean validChain;
+        try {
+            validChain = BedrockLoginUtils.validateChainData(certChainData);
+
+            JWSObject jwt = JWSObject.parse(certChainData.get(certChainData.size() - 1).asText());
+            JsonNode payload = DragonProxy.JSON_MAPPER.readTree(jwt.getPayload().toBytes());
+
+            if (payload.get("extraData").getNodeType() != JsonNodeType.OBJECT) {
+                throw new RuntimeException("AuthData was not found!");
+            }
+
+            JSONObject extraData = (JSONObject) jwt.getPayload().toJSONObject().get("extraData");
+
+            session.setAuthData(DragonProxy.JSON_MAPPER.convertValue(extraData, AuthData.class));
+
+            if (payload.get("identityPublicKey").getNodeType() != JsonNodeType.STRING) {
+                throw new RuntimeException("Identity Public Key was not found!");
+            }
+
+            if(!validChain) {
+                if(proxy.getConfiguration().isXboxAuth()) {
+                    session.disconnect("You must be authenticated with xbox live");
+                    return true;
+                }
+
+                session.getAuthData().setXuid(null); // TODO: ideally the class should be immutable
+            }
+
+            ECPublicKey identityPublicKey = EncryptionUtils.generateKey(payload.get("identityPublicKey").textValue());
+            JWSObject clientJwt = JWSObject.parse(packet.getSkinData().toString());
+            EncryptionUtils.verifyJwt(clientJwt, identityPublicKey);
+
+            JsonNode clientPayload = DragonProxy.JSON_MAPPER.readTree(clientJwt.getPayload().toBytes());
+            session.setClientData(DragonProxy.JSON_MAPPER.convertValue(clientPayload, ClientData.class));
+
+            session.setUsername(session.getAuthData().getDisplayName());
+
+            if (EncryptionUtils.canUseEncryption()) {
+                //BedrockLoginUtils.startEncryptionHandshake(session, identityPublicKey);
+            }
+        } catch (Exception ex) {
+            session.disconnect("disconnectionScreen.internalError.cantConnect");
+            throw new RuntimeException("Unable to complete login", ex);
+        }
+
+        // Tell the Bedrock client login was successful
         PlayStatusPacket playStatus = new PlayStatusPacket();
         playStatus.setStatus(PlayStatusPacket.Status.LOGIN_SUCCESS);
         session.getBedrockSession().sendPacketImmediately(playStatus);
@@ -136,7 +178,9 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
     public boolean handle(MovePlayerPacket packet) {
         if(session.getDataCache().get("auth_state") == AuthState.AUTHENTICATING) {
             session.sendLoginForm(); // TODO: remove
+            return true;
         }
+        //PacketTranslatorRegistry.BEDROCK_TO_JAVA.translate(session, packet);
         return true;
     }
 

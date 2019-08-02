@@ -26,6 +26,9 @@ The project has been undergoing a rewrite for some time, and development has rec
 - [x] Titles
 - [ ] Bossbar
 - [ ] Scoreboard
+- [ ] Backwards compatiblity
+  - [ ] Bedrock
+  - [ ] Java (may require a MCProtocolLib fork or wrapper)
 
 A more comprehensive TODO list will be created in an issue in the future.
 

@@ -13,19 +13,19 @@
  */
 package org.dragonet.proxy.network.session.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
 @Getter
-public class AuthData {
-    private final String displayName;
-    private final UUID identity;
-    private final String xuid;
-
-    public AuthData(String displayName, String identity, String xuid) {
-        this.displayName = displayName;
-        this.identity = UUID.fromString(identity);
-        this.xuid = xuid;
-    }
+public final class AuthData {
+    @JsonProperty
+    private String displayName;
+    @JsonProperty
+    private UUID identity;
+    @JsonProperty("XUID")
+    @Setter
+    private String xuid;
 }

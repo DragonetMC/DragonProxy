@@ -26,10 +26,12 @@ import com.google.common.base.Preconditions;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.packet.AnimatePacket;
 import com.nukkitx.protocol.bedrock.packet.CommandRequestPacket;
+import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
 import com.nukkitx.protocol.bedrock.packet.TextPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.bedrock.*;
+import org.dragonet.proxy.network.translator.bedrock.player.PEMovePlayerTranslator;
 import org.dragonet.proxy.network.translator.java.*;
 import org.dragonet.proxy.network.translator.java.entity.*;
 import org.dragonet.proxy.network.translator.java.player.*;
@@ -60,14 +62,15 @@ public class PacketTranslatorRegistry<P> {
             .addTranslator(ServerDisconnectPacket.class, PCDisconnectTranslator.INSTANCE)
             .addTranslator(ServerNotifyClientPacket.class, PCNotifyClientTranslator.INSTANCE)
             .addTranslator(ServerBossBarPacket.class, PCBossBarTranslator.INSTANCE)
-            //.addTranslator(ServerSpawnPlayerPacket.class, PCSpawnPlayerTranslator.INSTANCE)
+            .addTranslator(ServerSpawnPlayerPacket.class, PCSpawnPlayerTranslator.INSTANCE)
             .addTranslator(ServerSpawnMobPacket.class, PCSpawnMobTranslator.INSTANCE)
             .addTranslator(ServerEntityEffectPacket.class, PCEntityEffectTranslator.INSTANCE)
             .addTranslator(ServerEntityRemoveEffectPacket.class, PCEntityRemoveEffectTranslator.INSTANCE);
 
         BEDROCK_TO_JAVA.addTranslator(TextPacket.class, PETextTranslator.INSTANCE)
             .addTranslator(AnimatePacket.class, PEAnimateTranslator.INSTANCE)
-            .addTranslator(CommandRequestPacket.class, PECommandRequestTranslator.INSTANCE);
+            .addTranslator(CommandRequestPacket.class, PECommandRequestTranslator.INSTANCE)
+            .addTranslator(MovePlayerPacket.class, PEMovePlayerTranslator.INSTANCE);
     }
 
     private final Map<Class<?>, PacketTranslator<P>> translators = new HashMap<>();
