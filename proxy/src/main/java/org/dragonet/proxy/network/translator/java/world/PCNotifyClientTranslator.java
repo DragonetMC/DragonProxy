@@ -63,7 +63,7 @@ public class PCNotifyClientTranslator implements PacketTranslator<ServerNotifyCl
                 }
                 break;
             case INVALID_BED:
-                log.warn("Invalid bed:");
+                log.warn("Invalid bed");
                 break;
         }
     }

@@ -79,6 +79,9 @@ public class PacketTranslatorRegistry<P> {
             log.info("Unhandled packet received from remote: {}", packetClass.getSimpleName());
             return;
         }
+        if (session.getDownstream() == null) {
+            return;
+        }
         target.translate(session, packet);
     }
 

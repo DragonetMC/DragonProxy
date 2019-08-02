@@ -22,7 +22,7 @@ The project has been undergoing a rewrite for some time, and development has rec
 - [ ] Viewing entities
 - [x] Effects
 - [ ] Block breaking / placing
-- [ ] Authentication (online mode)
+- [x] Authentication (online mode)
 - [x] Titles
 - [ ] Bossbar
 - [ ] Scoreboard
@@ -31,7 +31,7 @@ A more comprehensive TODO list will be created in an issue in the future.
 
 ### Download
 No updated releases are currently available.
- - [snapshots](https://ci.codemc.org/job/DragonetMC/job/DragonProxy/lastSuccessfulBuild/artifact/target/): developments builds, unstable, latest features (recommended)
+ - [snapshots](https://ci.codemc.org/job/DragonetMC/job/DragonProxy/lastSuccessfulBuild/): developments builds, unstable, latest features (recommended)
 
 ### Compiling
 Clone the repo recursively and then run `mvn clean install`. The output jar will can be found at `bootstrap/target/DragonProxy.jar`.

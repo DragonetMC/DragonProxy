@@ -14,9 +14,15 @@ public class EntityCache implements Cache {
     @Getter
     private Map<Long, CachedEntity> entities = new HashMap<>();
 
+    private int fakePlayersIds;
+
     public CachedEntity getById(long entityId) {
         // TODO: convert to proxy entity id first?
         return entities.get(entityId);
+    }
+
+    public int nextFakePlayerid() {
+        return fakePlayersIds++;
     }
 
     @Override

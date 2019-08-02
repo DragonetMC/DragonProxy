@@ -13,7 +13,12 @@
  */
 package org.dragonet.proxy.network.session;
 
+import com.flowpowered.math.vector.Vector2f;
+import com.flowpowered.math.vector.Vector3f;
+import com.flowpowered.math.vector.Vector3i;
+import com.github.steveice10.mc.auth.exception.request.RequestException;
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
+import com.github.steveice10.mc.protocol.data.message.ChatColor;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDeclareCommandsPacket;
 import com.github.steveice10.packetlib.Client;
 import com.github.steveice10.packetlib.event.session.ConnectedEvent;
@@ -21,51 +26,72 @@ import com.github.steveice10.packetlib.event.session.DisconnectedEvent;
 import com.github.steveice10.packetlib.event.session.PacketReceivedEvent;
 import com.github.steveice10.packetlib.event.session.SessionAdapter;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
+import com.google.gson.JsonArray;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.PlayerSession;
 import com.nukkitx.protocol.bedrock.BedrockServerSession;
 
+import com.nukkitx.protocol.bedrock.data.GamePublishSetting;
+import com.nukkitx.protocol.bedrock.data.GameRule;
+import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
+import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
+import com.nukkitx.protocol.bedrock.packet.TextPacket;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.form.CustomForm;
+import org.dragonet.proxy.form.components.InputComponent;
+import org.dragonet.proxy.form.components.LabelComponent;
 import org.dragonet.proxy.network.cache.EntityCache;
+import org.dragonet.proxy.network.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.data.AuthData;
+import org.dragonet.proxy.network.session.data.AuthState;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
+import org.dragonet.proxy.remote.RemoteAuthType;
 import org.dragonet.proxy.remote.RemoteServer;
+import org.dragonet.proxy.util.TextFormat;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
 @Log4j2
 public class ProxySession implements PlayerSession {
     private final DragonProxy proxy;
     private RemoteServer remoteServer;
+    private MinecraftProtocol protocol;
     private BedrockServerSession bedrockSession;
     private Client downstream;
     private volatile boolean closed;
 
-    @Getter
-    private Map<String, Object> dataCache = new HashMap<>();
+    private String username;
 
-    @Getter
+    private Map<String, Object> dataCache = new HashMap<>();
+    private Map<Integer, CompletableFuture> formCache = new HashMap<>();
+
+    private AtomicInteger formIdCounter = new AtomicInteger();
+
     private EntityCache entityCache;
 
-    @Setter
     private AuthData authData;
 
     public ProxySession(DragonProxy proxy, BedrockServerSession bedrockSession) {
         this.proxy = proxy;
         this.bedrockSession = bedrockSession;
-        this.entityCache = proxy.getEntityCache(); // TODO: per session?
+        this.entityCache = proxy.getEntityCache();
+
+        dataCache.put("auth_state", AuthState.NONE);
     }
 
     public void connect(RemoteServer server) {
-        // Connect client
-        MinecraftProtocol protocol = new MinecraftProtocol(authData.getDisplayName());
+        if(protocol == null) {
+            protocol = new MinecraftProtocol(authData.getDisplayName());
+        }
         downstream = new Client(server.getAddress(), server.getPort(), protocol, new TcpSessionFactory());
         downstream.getSession().addListener(new SessionAdapter() {
 
@@ -92,6 +118,132 @@ public class ProxySession implements PlayerSession {
         });
         downstream.getSession().connect();
         remoteServer = server;
+    }
+
+    public void authenticate(String email, String password) {
+        proxy.getGeneralThreadPool().execute(() -> {
+            try {
+                protocol = new MinecraftProtocol(email, password);
+
+                sendMessage(TextFormat.GREEN + "Login successful! Joining server...");
+
+                if(!username.equals(protocol.getProfile().getName())) {
+                    username = protocol.getProfile().getName();
+                    sendMessage(TextFormat.AQUA + "You username was changed to " + TextFormat.DARK_AQUA + username + TextFormat.AQUA + " like your Mojang account username");
+                }
+
+                // Empty line to seperate DragonProxy messages from server messages
+                sendMessage(" ");
+
+                // Start connecting to remote server
+                RemoteServer remoteServer = new RemoteServer("local", proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort());
+                connect(remoteServer);
+
+                dataCache.put("auth_state", AuthState.AUTHENTICATED);
+
+                log.info("Player " + authData.getDisplayName() + " has been authenticated");
+            } catch (RequestException e) {
+                log.warn("Failed to authenticate player: " + e.getMessage());
+                sendMessage(TextFormat.RED + e.getMessage());
+            }
+        });
+    }
+
+    public void sendLoginForm() {
+        CustomForm form = new CustomForm(TextFormat.BLUE + "Login to Mojang account")
+            .addComponent(new LabelComponent("DragonProxy is a piece of software that allows Minecraft: Bedrock players to join Minecraft: Java servers."))
+            .addComponent(new LabelComponent(TextFormat.GREEN + "Please enter your Mojang account credentials to authenticate"))
+            .addComponent(new InputComponent(TextFormat.AQUA + "Email", "steve@example.com"))
+            .addComponent(new InputComponent(TextFormat.AQUA + "Password", "123456"));
+
+        form.send(this).whenComplete((data, throwable) -> {
+            if(dataCache.get("auth_state") == AuthState.AUTHENTICATED) {
+                return; // If multiple forms have been sent to the client, allow the player to actually close them
+            }
+            if(data == null) {
+                sendLoginForm();
+                return;
+            }
+
+            String email = data.get(2).getAsString();
+            String password = data.get(3).getAsString();
+
+            if(email == null || password == null) {
+                // This never seems to be fired? Im guessing if one field is null the entire response is null?
+                // Anyway, its here just in case
+                sendMessage(TextFormat.RED + "Please fill in all the required fields. Move to show the form again.");
+                return;
+            }
+
+            authenticate(email, password);
+        });
+    }
+
+    public void sendFakeStartGame() {
+        StartGamePacket startGamePacket = new StartGamePacket();
+        startGamePacket.setUniqueEntityId(entityCache.nextFakePlayerid());
+        startGamePacket.setRuntimeEntityId(entityCache.nextFakePlayerid());
+        startGamePacket.setPlayerGamemode(0);
+        startGamePacket.setPlayerPosition(Vector3f.ZERO);
+        startGamePacket.setRotation(Vector2f.ZERO);
+
+        startGamePacket.setSeed(1111);
+        startGamePacket.setDimensionId(0);
+        startGamePacket.setGeneratorId(0);
+        startGamePacket.setLevelGamemode(0);
+        startGamePacket.setDifficulty(0);
+        startGamePacket.setDefaultSpawn(Vector3i.ZERO);
+        startGamePacket.setAcheivementsDisabled(true);
+        startGamePacket.setTime(0);
+        startGamePacket.setEduLevel(false);
+        startGamePacket.setEduFeaturesEnabled(false);
+        startGamePacket.setRainLevel(0);
+        startGamePacket.setLightningLevel(0);
+        startGamePacket.setMultiplayerGame(true);
+        startGamePacket.setBroadcastingToLan(true);
+        //startGamePacket.getGamerules().add((new GameRule<>("showcoordinates", true)));
+        startGamePacket.setPlatformBroadcastMode(GamePublishSetting.PUBLIC);
+        startGamePacket.setXblBroadcastMode(GamePublishSetting.PUBLIC);
+        startGamePacket.setCommandsEnabled(true);
+        startGamePacket.setTexturePacksRequired(false);
+        startGamePacket.setBonusChestEnabled(false);
+        startGamePacket.setStartingWithMap(false);
+        startGamePacket.setTrustingPlayers(true);
+        startGamePacket.setDefaultPlayerPermission(1);
+        startGamePacket.setServerChunkTickRange(4);
+        startGamePacket.setBehaviorPackLocked(false);
+        startGamePacket.setResourcePackLocked(false);
+        startGamePacket.setFromLockedWorldTemplate(false);
+        startGamePacket.setUsingMsaGamertagsOnly(false);
+        startGamePacket.setFromWorldTemplate(false);
+        startGamePacket.setWorldTemplateOptionLocked(false);
+
+        startGamePacket.setLevelId("oerjhii");
+        startGamePacket.setWorldName("world");
+        startGamePacket.setPremiumWorldTemplateId("00000000-0000-0000-0000-000000000000");
+        startGamePacket.setCurrentTick(0);
+        startGamePacket.setEnchantmentSeed(0);
+        startGamePacket.setMultiplayerCorrelationId("");
+
+        startGamePacket.setCachedPalette(DragonProxy.INSTANCE.getPaletteManager().getCachedPalette());
+        bedrockSession.sendPacketImmediately(startGamePacket);
+
+        // Spawn
+        PlayStatusPacket playStatusPacket = new PlayStatusPacket();
+        playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
+        bedrockSession.sendPacketImmediately(playStatusPacket);
+    }
+
+    public void sendMessage(String text) {
+        TextPacket packet = new TextPacket();
+        packet.setType(TextPacket.Type.RAW);
+        packet.setNeedsTranslation(false);
+        packet.setXuid("");
+        packet.setSourceName("");
+        packet.setPlatformChatId("");
+        packet.setMessage(text);
+
+        bedrockSession.sendPacket(packet);
     }
 
     public RemoteServer getRemoteServer() {

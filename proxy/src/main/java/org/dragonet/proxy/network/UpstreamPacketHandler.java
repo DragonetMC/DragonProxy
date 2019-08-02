@@ -13,6 +13,9 @@
  */
 package org.dragonet.proxy.network;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.nimbusds.jose.JWSObject;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.BedrockServerSession;
@@ -24,13 +27,21 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.form.CustomForm;
+import org.dragonet.proxy.form.Form;
+import org.dragonet.proxy.form.components.InputComponent;
+import org.dragonet.proxy.form.components.LabelComponent;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.data.AuthData;
+import org.dragonet.proxy.network.session.data.AuthState;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
+import org.dragonet.proxy.remote.RemoteAuthType;
 import org.dragonet.proxy.remote.RemoteServer;
+import org.dragonet.proxy.util.TextFormat;
 
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Respresents the connection between the mcpe client and the proxy.
@@ -71,6 +82,8 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
                 extraData.getAsString("identity"),
                 extraData.getAsString("XUID")
             ));
+
+            session.setUsername(session.getAuthData().getDisplayName());
         } catch (ParseException | ClassCastException | NullPointerException e) {
             // Invalid chain data
             session.getBedrockSession().disconnect();
@@ -92,6 +105,13 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
     public boolean handle(ResourcePackClientResponsePacket packet) {
         switch (packet.getStatus()) {
             case COMPLETED:
+                if(proxy.getConfiguration().getRemoteAuthType() == RemoteAuthType.CREDENTIALS) {
+                    session.getDataCache().put("auth_state", AuthState.AUTHENTICATING);
+                    session.sendFakeStartGame();
+                    session.sendLoginForm();
+                    return true;
+                }
+
                 // Start connecting to remote server
                 RemoteServer remoteServer = new RemoteServer("local", proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort());
                 session.connect(remoteServer);
@@ -105,9 +125,35 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
             default:
                 // Anything else shouldn't happen so disconnect
                 session.getBedrockSession().disconnect("disconnectionScreen.resourcePack");
-                break;
+                return false;
         }
+
         log.info("{} connected", session.getAuthData().getDisplayName());
+        return true;
+    }
+
+    @Override
+    public boolean handle(MovePlayerPacket packet) {
+        if(session.getDataCache().get("auth_state") == AuthState.AUTHENTICATING) {
+            session.sendLoginForm(); // TODO: remove
+        }
+        return true;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean handle(ModalFormResponsePacket packet) {
+        if(session.getFormCache().containsKey(packet.getFormId())) {
+            CompletableFuture<JsonArray> future = session.getFormCache().get(packet.getFormId());
+            JsonElement data = new JsonParser().parse(packet.getFormData());
+
+            if(!data.isJsonArray()) {
+                future.complete(null);
+                return true;
+            }
+
+            future.complete(new JsonParser().parse(packet.getFormData()).getAsJsonArray());
+        }
         return true;
     }
 

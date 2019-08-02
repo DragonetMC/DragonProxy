@@ -16,6 +16,7 @@ package org.dragonet.proxy;
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -134,6 +135,7 @@ public class DragonProxy {
         }
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        mapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
         configuration = mapper.readValue(new FileInputStream("config.yml"), DragonConfiguration.class);
 
         generalThreadPool = Executors.newScheduledThreadPool(configuration.getThreadPoolSize());

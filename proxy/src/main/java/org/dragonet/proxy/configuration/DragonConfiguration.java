@@ -16,6 +16,7 @@ package org.dragonet.proxy.configuration;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
+import org.dragonet.proxy.remote.RemoteAuthType;
 
 @Getter
 public class DragonConfiguration {
@@ -39,6 +40,12 @@ public class DragonConfiguration {
 
     @JsonProperty("remote-port")
     private int remotePort;
+
+    @JsonProperty("remote-auth")
+    private RemoteAuthType remoteAuthType;
+
+    @JsonProperty("xbox-auth")
+    private boolean xboxAuth;
 
     @JsonProperty("ping-passthrough")
     private boolean pingPassthrough;
