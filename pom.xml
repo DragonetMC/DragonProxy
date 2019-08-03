@@ -159,7 +159,7 @@
                 <configuration>
                     <header>licenseheader.txt</header>
                     <includes>
-                        <include>src/test/java/**</include>
+                        <include>bootstrap/src/main/java/**</include>
                         <include>proxy/src/main/java/**</include>
                     </includes>
                     <mapping>

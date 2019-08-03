@@ -1,23 +1,158 @@
 package org.dragonet.proxy.network.translator.types;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.stream.JsonWriter;
 import com.nukkitx.protocol.bedrock.data.ItemData;
+import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.translator.types.item.ItemEntry;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+@Log4j2
 public class ItemTranslator {
-    public static final Map<Integer, ItemEntry.JavaItem> BEDROCK_TO_JAVA = new HashMap<>();
-    public static final Map<Integer, ItemEntry.BedrockItem> JAVA_TO_BEDROCK = new HashMap<>();
+    public static final Map<String, ItemEntry.BedrockItem> BEDROCK_ITEMS = new HashMap<>();
+    public static final Map<String, ItemEntry.JavaItem> JAVA_ITEMS = new HashMap<>();
+
+    public static Map<String, Map<Integer, String>> BEDROCK_TO_JAVA_MAP = new HashMap<>();
+    public static Map<String, Map<String, Object>> JAVA_TO_BEDROCK_MAP = new HashMap<>();
+
+    public ItemTranslator() {
+        loadBedrockItems();
+        loadJavaItems();
+        addToArray();
+    }
+
+    private void loadBedrockItems() {
+        log.warn("Loading bedrock items");
+        // Load bedrock items
+        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("runtime_item_ids.json");
+        if (stream == null) {
+            throw new AssertionError("Bedrock item Runtime ID table not found");
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        CollectionType type = mapper.getTypeFactory().constructCollectionType(ArrayList.class, ItemEntry.BedrockItem.class);
+
+        ArrayList<ItemEntry.BedrockItem> entries = new ArrayList<>();
+        try {
+            entries = mapper.readValue(stream, type);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        for(ItemEntry.BedrockItem item : entries) {
+            BEDROCK_ITEMS.put(item.getId(), item);
+        }
+    }
+
+    private void loadJavaItems() {
+        log.warn("Loading java items");
+        // Load java items
+        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("java_items.json");
+        if (stream == null) {
+            throw new AssertionError("Java item Runtime ID table not found");
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        CollectionType type = mapper.getTypeFactory().constructCollectionType(ArrayList.class, ItemEntry.JavaItem.class);
+
+        ArrayList<ItemEntry.JavaItem> entries = new ArrayList<>();
+        try {
+            entries = mapper.readValue(stream,  type);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        for(ItemEntry.JavaItem item : entries) {
+            JAVA_ITEMS.put(item.getId(), item);
+        }
+    }
+
+    private void addToArray() {
+        Map<ItemEntry.JavaItem, List<ItemEntry.BedrockItem>> conversions = new HashMap<>();
+
+        JsonArray array = new JsonArray();
+
+        for(Map.Entry<String, ItemEntry.JavaItem> javaItem : JAVA_ITEMS.entrySet()) {
+            for(Map.Entry<String, ItemEntry.BedrockItem> bedrockItem : BEDROCK_ITEMS.entrySet()) {
+                if(bedrockItem.getValue().getId().equalsIgnoreCase(javaItem.getKey())) {
+                    ItemEntry.JavaItem item = javaItem.getValue();
+                    conversions.computeIfAbsent(item, (x) -> new ArrayList<>());
+                    conversions.get(item).add(bedrockItem.getValue());
+                }
+            }
+        }
+
+        for(Map.Entry<ItemEntry.JavaItem, List<ItemEntry.BedrockItem>> entry : conversions.entrySet()) {
+            for(ItemEntry.BedrockItem item : entry.getValue()) {
+                JAVA_TO_BEDROCK_MAP.computeIfAbsent(entry.getKey().getId(), (x) -> new HashMap<>());
+                BEDROCK_TO_JAVA_MAP.computeIfAbsent(item.getId(), (x) -> new HashMap<>());
+                Map<String, Object> map = JAVA_TO_BEDROCK_MAP.get(entry.getKey().getId());
+
+                map.put("name", item.getId());
+                map.put("id", item.getId());
+                map.put("data", 0); 
+
+                // This is what we will use in the future
+                JsonObject object = new JsonObject();
+                object.addProperty("java_identifier", entry.getKey().getId());
+                object.addProperty("java_protocol_id", entry.getKey().getRuntimeId());
+                object.addProperty("bedrock_identifier", item.getId());
+                object.addProperty("bedrock_runtime_id", item.getRuntimeId());
+                object.addProperty("bedrock_data", 0); // TODO
+                array.add(object);
+
+                BEDROCK_TO_JAVA_MAP.get(item.getId()).put(0, entry.getKey().getId());
+            }
+        }
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(DragonProxy.INSTANCE.getFolder().toFile().getAbsolutePath() + "/item_mappings.json"));
+            writer.write(array.toString());
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static ItemData translateToBedrock(ItemStack item) {
-        // TODO (this translates a stick currently)
-        if(item.getId() == 545) {
-            ItemData data = ItemData.of(280, (short) 0, item.getAmount());
-            return data;
+        for(Map.Entry<String, ItemEntry.JavaItem> javaItems : JAVA_ITEMS.entrySet()) {
+            if(javaItems.getValue().getRuntimeId() != item.getId()){
+                continue;
+            }
+            ItemEntry.JavaItem javaItem = javaItems.getValue();
+            String identifier = getBedrockIdentifier(javaItem.getId());
+            if(!BEDROCK_ITEMS.containsKey(identifier)) {
+                continue;
+            }
+            ItemEntry.BedrockItem bedrockItem = BEDROCK_ITEMS.get(identifier);
+            return ItemData.of(bedrockItem.getRuntimeId(), (short) 0, item.getAmount());
         }
         return ItemData.AIR;
+    }
+
+    private static String getBedrockIdentifier(String javaIdentifier) {
+        if (!JAVA_TO_BEDROCK_MAP.containsKey(javaIdentifier)) {
+            return javaIdentifier;
+        }
+        return (String) JAVA_TO_BEDROCK_MAP.get(javaIdentifier).get("id");
     }
 
     public static ItemData translateSlotToBedrock(ItemStack item) {

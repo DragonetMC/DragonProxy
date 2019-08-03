@@ -111,7 +111,7 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
         startGamePacket.setMultiplayerCorrelationId("");
 
         startGamePacket.setCachedPalette(DragonProxy.INSTANCE.getPaletteManager().getCachedPalette());
-        // TODO: send item entries
+        startGamePacket.setItemEntries(DragonProxy.INSTANCE.getPaletteManager().getItemEntries());
 
         // TODO: 01/04/2019 Add support for deserializing the chunk in the protocol library
 

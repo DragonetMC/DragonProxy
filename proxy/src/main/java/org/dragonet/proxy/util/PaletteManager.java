@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.nukkitx.network.VarInts;
+import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import com.nukkitx.protocol.bedrock.v361.BedrockUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -25,13 +26,19 @@ import org.dragonet.proxy.DragonProxy;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
+@Getter
 public class PaletteManager {
-
-    @Getter
     private ByteBuf cachedPalette;
+    private List<StartGamePacket.ItemEntry> itemEntries;
 
     public PaletteManager() {
+        loadBlocks();
+        loadItems();
+    }
+
+    private void loadBlocks() {
         InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("data/runtimeid_table.json");
         if (stream == null) {
             throw new AssertionError("Static Runtime ID table not found");
@@ -57,6 +64,29 @@ public class PaletteManager {
             cachedPalette.writeShortLE(entry.id);
         }
 
+    }
+
+    private void loadItems() {
+        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("runtime_item_ids.json");
+        if (stream == null) {
+            throw new AssertionError("Static Runtime Item ID table not found");
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        CollectionType type = mapper.getTypeFactory().constructCollectionType(ArrayList.class, RuntimeEntry.class);
+
+        ArrayList<RuntimeEntry> entries = new ArrayList<>();
+        try {
+            entries = mapper.readValue(stream, type);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        itemEntries = new ArrayList<>();
+
+        for(RuntimeEntry entry : entries) {
+            itemEntries.add(new StartGamePacket.ItemEntry(entry.name, (short) entry.id));
+        }
     }
 
     private static class RuntimeEntry {

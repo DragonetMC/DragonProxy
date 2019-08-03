@@ -1,21 +1,29 @@
 package org.dragonet.proxy.network.translator.types.item;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 public class ItemEntry {
     @Getter
-    @AllArgsConstructor
     public static class BedrockItem {
-        private int runtimeId; // or legacy id?
-        private int data;
+        @JsonProperty("name")
         private String id;
+
+        @JsonProperty("id")
+        private int runtimeId;
+
+        public BedrockItem() {}
+        public BedrockItem(String id, int runtimeId) {
+            this.id = id;
+            this.runtimeId = runtimeId;
+        }
     }
 
     @Getter
-    @AllArgsConstructor
     public static class JavaItem {
+        @JsonProperty("identifier")
         private String id;
+        @JsonProperty("protocol_id")
         private int runtimeId; // or legacy id?
     }
 }
