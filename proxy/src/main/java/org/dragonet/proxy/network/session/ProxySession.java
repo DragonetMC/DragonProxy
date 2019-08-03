@@ -41,7 +41,9 @@ import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.form.CustomForm;
 import org.dragonet.proxy.form.components.InputComponent;
 import org.dragonet.proxy.form.components.LabelComponent;
+import org.dragonet.proxy.network.cache.ChunkCache;
 import org.dragonet.proxy.network.cache.EntityCache;
+import org.dragonet.proxy.network.cache.WindowCache;
 import org.dragonet.proxy.network.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.data.AuthData;
 import org.dragonet.proxy.network.session.data.AuthState;
@@ -76,6 +78,8 @@ public class ProxySession implements PlayerSession {
     private AtomicInteger formIdCounter = new AtomicInteger();
 
     private EntityCache entityCache;
+    private WindowCache windowCache;
+    private ChunkCache chunkCache;
 
     private AuthData authData;
     private ClientData clientData;
@@ -83,7 +87,10 @@ public class ProxySession implements PlayerSession {
     public ProxySession(DragonProxy proxy, BedrockServerSession bedrockSession) {
         this.proxy = proxy;
         this.bedrockSession = bedrockSession;
-        this.entityCache = proxy.getEntityCache();
+
+        entityCache = new EntityCache();
+        windowCache = new WindowCache();
+        chunkCache = new ChunkCache();
 
         dataCache.put("auth_state", AuthState.NONE);
     }

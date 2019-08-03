@@ -30,6 +30,7 @@ import org.dragonet.proxy.configuration.DragonConfiguration;
 import org.dragonet.proxy.console.DragonConsole;
 import org.dragonet.proxy.network.ProxyServerEventListener;
 import org.dragonet.proxy.network.cache.EntityCache;
+import org.dragonet.proxy.network.cache.WindowCache;
 import org.dragonet.proxy.util.PaletteManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,9 +89,6 @@ public class DragonProxy {
     @Getter
     private boolean shutdown = false;
 
-    @Getter
-    private EntityCache entityCache;
-
     public DragonProxy(int bedrockPort, int javaPort) {
         INSTANCE = this;
 
@@ -141,8 +139,6 @@ public class DragonProxy {
         generalThreadPool = Executors.newScheduledThreadPool(configuration.getThreadPoolSize());
 
         paletteManager = new PaletteManager();
-
-        entityCache = new EntityCache();
 
         pingPassthroughThread = new PingPassthroughThread(this);
 

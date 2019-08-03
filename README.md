@@ -24,7 +24,7 @@ The project has been undergoing a rewrite for some time, and development has rec
 - [ ] Block breaking / placing
 - [x] Authentication (online mode)
 - [x] Titles
-- [ ] Bossbar
+- [x] Bossbar
 - [ ] Scoreboard
 - [ ] Backwards compatiblity
   - [ ] Bedrock

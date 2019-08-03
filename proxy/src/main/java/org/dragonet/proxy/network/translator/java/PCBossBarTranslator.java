@@ -31,21 +31,30 @@ public class PCBossBarTranslator implements PacketTranslator<ServerBossBarPacket
         BossEventPacket bossEventPacket = new BossEventPacket();
         bossEventPacket.setColor(1);
         bossEventPacket.setOverlay(1);
-        bossEventPacket.setDarkenSky(packet.getDarkenSky() ? 1 : 0);
-        bossEventPacket.setHealthPercentage(packet.getHealth());
-        bossEventPacket.setTitle(packet.getTitle().getText());
+        bossEventPacket.setDarkenSky(1);
         bossEventPacket.setPlayerUniqueEntityId(((Integer) session.getDataCache().get("player_eid")).longValue());
         bossEventPacket.setBossUniqueEntityId(((Integer) session.getDataCache().get("player_eid")).longValue()); // TODO
 
         switch(packet.getAction()) {
             case ADD:
+                bossEventPacket.setTitle(packet.getTitle().getText());
                 bossEventPacket.setType(BossEventPacket.Type.SHOW);
+                bossEventPacket.setHealthPercentage(packet.getHealth());
+                break;
+            case REMOVE:
+                bossEventPacket.setType(BossEventPacket.Type.HIDE);
+                break;
+            case UPDATE_HEALTH:
+                bossEventPacket.setType(BossEventPacket.Type.HEALTH_PERCENTAGE);
+                bossEventPacket.setHealthPercentage(packet.getHealth());
+                break;
+            case UPDATE_TITLE:
+                bossEventPacket.setType(BossEventPacket.Type.TITLE);
+                bossEventPacket.setTitle(packet.getTitle().getText());
                 break;
             default:
                 log.warn("Unhandled boss bar action: " + packet.getAction().name());
         }
-
-        log.warn("Sending boss event packet");
 
         session.getBedrockSession().sendPacket(bossEventPacket);
     }

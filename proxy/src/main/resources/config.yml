@@ -31,7 +31,7 @@ remote-port: 25565
 # Accepted values:
 #   credentials   : This will display a form when you join the proxy asking you to enter your Mojang credentials
 #   offline       :  No authentication, cant join premium servers such as Hypixel
-remote-auth: credentials
+remote-auth: offline
 
 # Whether or not Bedrock clients should be authenticated with xbox live
 xbox-auth: false
