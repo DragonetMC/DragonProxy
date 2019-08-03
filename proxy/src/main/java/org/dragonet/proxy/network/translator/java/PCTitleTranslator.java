@@ -19,6 +19,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.types.MessageTranslator;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PCTitleTranslator implements PacketTranslator<ServerTitlePacket> {
@@ -31,15 +32,15 @@ public class PCTitleTranslator implements PacketTranslator<ServerTitlePacket> {
         switch(packet.getAction()) {
             case ACTION_BAR:
                 bedrockPacket.setType(SetTitlePacket.Type.SET_ACTIONBAR_MESSAGE);
-                bedrockPacket.setText(packet.getActionBar().getText());
+                bedrockPacket.setText(MessageTranslator.translate(packet.getActionBar().getText()));
                 break;
             case TITLE:
                 bedrockPacket.setType(SetTitlePacket.Type.SET_TITLE);
-                bedrockPacket.setText(packet.getTitle().getText());
+                bedrockPacket.setText(MessageTranslator.translate(packet.getTitle().getText()));
                 break;
             case SUBTITLE:
                 bedrockPacket.setType(SetTitlePacket.Type.SET_SUBTITLE);
-                bedrockPacket.setText(packet.getSubtitle().getText());
+                bedrockPacket.setText(MessageTranslator.translate(packet.getSubtitle().getText()));
                 break;
             case RESET:
                 bedrockPacket.setType(SetTitlePacket.Type.RESET_TITLE);

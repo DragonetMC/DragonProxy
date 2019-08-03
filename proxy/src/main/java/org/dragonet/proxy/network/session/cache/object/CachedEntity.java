@@ -1,4 +1,4 @@
-package org.dragonet.proxy.network.cache.object;
+package org.dragonet.proxy.network.session.cache.object;
 
 import com.flowpowered.math.vector.Vector3f;
 import lombok.Getter;

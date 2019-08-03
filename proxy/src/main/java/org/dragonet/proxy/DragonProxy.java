@@ -26,11 +26,10 @@ import com.nukkitx.protocol.bedrock.v361.Bedrock_v361;
 
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
+import org.dragonet.proxy.command.CommandManager;
 import org.dragonet.proxy.configuration.DragonConfiguration;
 import org.dragonet.proxy.console.DragonConsole;
 import org.dragonet.proxy.network.ProxyServerEventListener;
-import org.dragonet.proxy.network.cache.EntityCache;
-import org.dragonet.proxy.network.cache.WindowCache;
 import org.dragonet.proxy.util.PaletteManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +72,9 @@ public class DragonProxy {
 
     @Getter
     private DragonConsole console;
+
+    @Getter
+    private CommandManager commandManager;
 
     @Getter
     private DragonConfiguration configuration;
@@ -139,6 +141,8 @@ public class DragonProxy {
         generalThreadPool = Executors.newScheduledThreadPool(configuration.getThreadPoolSize());
 
         paletteManager = new PaletteManager();
+
+        commandManager = new CommandManager();
 
         pingPassthroughThread = new PingPassthroughThread(this);
 

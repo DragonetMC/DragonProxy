@@ -4,8 +4,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSl
 import com.nukkitx.protocol.bedrock.data.ContainerId;
 import com.nukkitx.protocol.bedrock.data.ItemData;
 import com.nukkitx.protocol.bedrock.packet.InventoryContentPacket;
-import com.nukkitx.protocol.bedrock.packet.InventorySlotPacket;
-import org.dragonet.proxy.network.cache.object.CachedWindow;
+import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.session.ProxySession;
 
 public class InventoryTranslator {

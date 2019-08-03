@@ -30,6 +30,7 @@ import java.util.List;
 // It may need cleaning up.
 public class MessageTranslator {
 
+    // TODO: allow translating to Java text
     public static String translate(Message message) {
         JsonParser parser = new JsonParser();
         if (isMessage(message.getText())) {

@@ -1,9 +1,8 @@
-package org.dragonet.proxy.network.cache;
+package org.dragonet.proxy.network.session.cache;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.dragonet.proxy.network.cache.object.CachedEntity;
-import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 
 import java.util.HashMap;
 import java.util.Map;

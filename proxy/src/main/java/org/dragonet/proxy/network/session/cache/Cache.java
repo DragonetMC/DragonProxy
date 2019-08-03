@@ -1,4 +1,4 @@
-package org.dragonet.proxy.network.cache;
+package org.dragonet.proxy.network.session.cache;
 
 public interface Cache {
 

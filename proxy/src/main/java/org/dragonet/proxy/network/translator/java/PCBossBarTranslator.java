@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.types.MessageTranslator;
 
 @Log4j2
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -37,7 +38,7 @@ public class PCBossBarTranslator implements PacketTranslator<ServerBossBarPacket
 
         switch(packet.getAction()) {
             case ADD:
-                bossEventPacket.setTitle(packet.getTitle().getText());
+                bossEventPacket.setTitle(MessageTranslator.translate(packet.getTitle().getText()));
                 bossEventPacket.setType(BossEventPacket.Type.SHOW);
                 bossEventPacket.setHealthPercentage(packet.getHealth());
                 break;
@@ -50,7 +51,7 @@ public class PCBossBarTranslator implements PacketTranslator<ServerBossBarPacket
                 break;
             case UPDATE_TITLE:
                 bossEventPacket.setType(BossEventPacket.Type.TITLE);
-                bossEventPacket.setTitle(packet.getTitle().getText());
+                bossEventPacket.setTitle(MessageTranslator.translate(packet.getTitle().getText()));
                 break;
             default:
                 log.warn("Unhandled boss bar action: " + packet.getAction().name());

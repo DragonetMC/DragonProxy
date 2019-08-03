@@ -1,11 +1,10 @@
-package org.dragonet.proxy.network.cache;
+package org.dragonet.proxy.network.session.cache;
 
 import lombok.Getter;
-import org.dragonet.proxy.network.cache.object.CachedWindow;
+import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
 public class WindowCache implements Cache {

@@ -18,15 +18,15 @@ import com.flowpowered.math.vector.Vector3f;
 import com.flowpowered.math.vector.Vector3i;
 import com.github.steveice10.mc.auth.exception.request.RequestException;
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
-import com.github.steveice10.mc.protocol.data.message.ChatColor;
-import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDeclareCommandsPacket;
+import com.github.steveice10.mc.protocol.data.game.ClientRequest;
+import com.github.steveice10.mc.protocol.data.game.statistic.Statistic;
+import com.github.steveice10.mc.protocol.packet.ingame.client.ClientRequestPacket;
 import com.github.steveice10.packetlib.Client;
 import com.github.steveice10.packetlib.event.session.ConnectedEvent;
 import com.github.steveice10.packetlib.event.session.DisconnectedEvent;
 import com.github.steveice10.packetlib.event.session.PacketReceivedEvent;
 import com.github.steveice10.packetlib.event.session.SessionAdapter;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
-import com.google.gson.JsonArray;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.PlayerSession;
 import com.nukkitx.protocol.bedrock.BedrockServerSession;
@@ -34,22 +34,19 @@ import com.nukkitx.protocol.bedrock.BedrockServerSession;
 import com.nukkitx.protocol.bedrock.data.*;
 import com.nukkitx.protocol.bedrock.packet.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.form.CustomForm;
 import org.dragonet.proxy.form.components.InputComponent;
 import org.dragonet.proxy.form.components.LabelComponent;
-import org.dragonet.proxy.network.cache.ChunkCache;
-import org.dragonet.proxy.network.cache.EntityCache;
-import org.dragonet.proxy.network.cache.WindowCache;
-import org.dragonet.proxy.network.cache.object.CachedEntity;
+import org.dragonet.proxy.network.session.cache.ChunkCache;
+import org.dragonet.proxy.network.session.cache.EntityCache;
+import org.dragonet.proxy.network.session.cache.WindowCache;
+import org.dragonet.proxy.network.session.cache.WorldCache;
 import org.dragonet.proxy.network.session.data.AuthData;
 import org.dragonet.proxy.network.session.data.AuthState;
 import org.dragonet.proxy.network.session.data.ClientData;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
-import org.dragonet.proxy.remote.RemoteAuthType;
 import org.dragonet.proxy.remote.RemoteServer;
 import org.dragonet.proxy.util.TextFormat;
 
@@ -74,12 +71,14 @@ public class ProxySession implements PlayerSession {
 
     private Map<String, Object> dataCache = new HashMap<>();
     private Map<Integer, CompletableFuture> formCache = new HashMap<>();
+    private Map<String, CompletableFuture> futureMap = new HashMap<>(); // TODO
 
     private AtomicInteger formIdCounter = new AtomicInteger();
 
     private EntityCache entityCache;
     private WindowCache windowCache;
     private ChunkCache chunkCache;
+    private WorldCache worldCache;
 
     private AuthData authData;
     private ClientData clientData;
@@ -91,6 +90,7 @@ public class ProxySession implements PlayerSession {
         entityCache = new EntityCache();
         windowCache = new WindowCache();
         chunkCache = new ChunkCache();
+        worldCache = new WorldCache();
 
         dataCache.put("auth_state", AuthState.NONE);
     }
@@ -160,6 +160,18 @@ public class ProxySession implements PlayerSession {
                 sendMessage(TextFormat.RED + e.getMessage());
             }
         });
+    }
+
+    public CompletableFuture<Map<Statistic, Integer>> fetchStatistics() {
+        CompletableFuture<Map<Statistic, Integer>> future = new CompletableFuture<>();
+
+        // TODO: this can overwrite the previous future even if its not yet been completed
+        // We may want to add better handling for this
+        futureMap.put("stats", future);
+
+        ClientRequestPacket packet = new ClientRequestPacket(ClientRequest.STATS);
+        downstream.getSession().send(packet);
+        return future;
     }
 
     public void sendLoginForm() {

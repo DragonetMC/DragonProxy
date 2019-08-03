@@ -1,6 +1,5 @@
-package org.dragonet.proxy.network.cache;
+package org.dragonet.proxy.network.session.cache;
 
-import com.github.steveice10.mc.protocol.data.game.chunk.Column;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;

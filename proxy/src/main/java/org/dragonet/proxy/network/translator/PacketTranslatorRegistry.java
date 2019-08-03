@@ -69,7 +69,8 @@ public class PacketTranslatorRegistry<P> {
             .addTranslator(ServerEntityEffectPacket.class, PCEntityEffectTranslator.INSTANCE)
             .addTranslator(ServerEntityRemoveEffectPacket.class, PCEntityRemoveEffectTranslator.INSTANCE)
             .addTranslator(ServerSetSlotPacket.class, PCSetSlotTranslator.INSTANCE)
-            .addTranslator(ServerWindowItemsPacket.class, PCWindowItemsTranslator.INSTANCE);
+            .addTranslator(ServerWindowItemsPacket.class, PCWindowItemsTranslator.INSTANCE)
+            .addTranslator(ServerStatisticsPacket.class, PCStatisticsTranslator.INSTANCE);
 
         BEDROCK_TO_JAVA.addTranslator(TextPacket.class, PETextTranslator.INSTANCE)
             .addTranslator(AnimatePacket.class, PEAnimateTranslator.INSTANCE)

@@ -4,7 +4,7 @@
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://discord.gg/CmkxTz2)
 [![Build Status](https://ci.codemc.org/buildStatus/icon?job=DragonetMC/DragonProxy)](https://ci.codemc.org/job/DragonetMC/job/DragonProxy/)
 
-A proxy made to allow **Minecraft: Bedrock** clients to connect to **Minecraft: Java Edition** servers.
+A proxy made to allow **Minecraft: Bedrock Edition** clients to connect to **Minecraft: Java Edition** servers.
 
 ### What is DragonProxy
 DragonProxy is a proxy between a Minecraft: Bedrock Edition client and a Minecraft: Java Edition server.
@@ -26,6 +26,10 @@ The project has been undergoing a rewrite for some time, and development has rec
 - [x] Titles
 - [x] Bossbar
 - [ ] Scoreboard
+- [ ] Statistics viewing
+  - [x] General
+  - [ ] Items
+  - [ ] Mobs
 - [ ] Backwards compatiblity
   - [ ] Bedrock
   - [ ] Java (may require a MCProtocolLib fork or wrapper)

@@ -1,4 +1,4 @@
-package org.dragonet.proxy.network.cache.object;
+package org.dragonet.proxy.network.session.cache.object;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.window.WindowType;
