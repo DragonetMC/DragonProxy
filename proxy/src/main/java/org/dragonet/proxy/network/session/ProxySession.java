@@ -93,6 +93,8 @@ public class ProxySession implements PlayerSession {
         worldCache = new WorldCache();
 
         dataCache.put("auth_state", AuthState.NONE);
+
+        bedrockSession.addDisconnectHandler((reason) -> downstream.getSession().disconnect(reason.name()));
     }
 
     public void connect(RemoteServer server) {
