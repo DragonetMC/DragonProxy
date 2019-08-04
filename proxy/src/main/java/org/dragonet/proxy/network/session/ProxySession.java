@@ -213,7 +213,7 @@ public class ProxySession implements PlayerSession {
     public void spawn() {
         PlayerListPacket.Entry entry = new PlayerListPacket.Entry(authData.getIdentity());
         entry.setEntityId(1);
-        entry.setName(authData.getDisplayName());
+        entry.setName(authData.getDisplayName() + "test");
         entry.setSkinId(clientData.getSkinId());
         entry.setSkinData(clientData.getSkinData());
         entry.setCapeData(clientData.getCapeData());

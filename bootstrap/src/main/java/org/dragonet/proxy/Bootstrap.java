@@ -16,6 +16,7 @@ package org.dragonet.proxy;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 import java.text.DecimalFormat;
@@ -38,6 +39,7 @@ public class Bootstrap {
         OptionSpec<String> bedrockPortOption = optionParser.accepts("bedrockPort", "Overrides the bedrock UDP bind port").withRequiredArg();
         OptionSpec<String> javaPortOption = optionParser.accepts("javaPort", "Overrides the java TCP bind port").withRequiredArg();
         optionParser.accepts("help", "Display help/usage information").forHelp();
+        optionParser.accepts("enable-experimental-item-nbt", "Enables experimental Item NBT translation (doesnt work on some servers for some reason)");
 
         // Handle command-line options
         OptionSet options = optionParser.parse(args);
@@ -45,11 +47,17 @@ public class Bootstrap {
             log.info("Version: " + Bootstrap.class.getPackage().getImplementationVersion());
             return;
         }
+
         int bedrockPort = options.has(bedrockPortOption) ? Integer.parseInt(options.valueOf(bedrockPortOption)) : -1;
         int javaPort = options.has(javaPortOption) ? Integer.parseInt(options.valueOf(bedrockPortOption)) : -1;
 
         long startTime = System.currentTimeMillis();
         DragonProxy proxy = new DragonProxy(bedrockPort, javaPort);
+
+        if(options.has("enable-experimental-item-nbt"))  {
+            proxy.setExperimentalItemNBT(true);
+            log.warn("Experimental item nbt translation enabled");
+        }
 
         Runtime.getRuntime().addShutdownHook(new Thread(proxy::shutdown, "Shutdown thread"));
 

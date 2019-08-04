@@ -25,6 +25,7 @@ import com.nukkitx.protocol.bedrock.*;
 import com.nukkitx.protocol.bedrock.v361.Bedrock_v361;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.dragonet.proxy.command.CommandManager;
 import org.dragonet.proxy.configuration.DragonConfiguration;
@@ -91,6 +92,9 @@ public class DragonProxy {
 
     @Getter
     private boolean shutdown = false;
+
+    @Getter @Setter
+    private boolean experimentalItemNBT = false;
 
     public DragonProxy(int bedrockPort, int javaPort) {
         INSTANCE = this;

@@ -1,13 +1,12 @@
 package org.dragonet.proxy.network.translator.types;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
+import com.github.steveice10.opennbt.tag.builtin.*;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.stream.JsonWriter;
+import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.protocol.bedrock.data.ItemData;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
@@ -17,8 +16,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -143,7 +140,11 @@ public class ItemTranslator {
                 continue;
             }
             ItemEntry.BedrockItem bedrockItem = BEDROCK_ITEMS.get(identifier);
-            return ItemData.of(bedrockItem.getRuntimeId(), (short) 0, item.getAmount());
+            if(item.getNBT() == null || !DragonProxy.INSTANCE.isExperimentalItemNBT()) {
+                return ItemData.of(bedrockItem.getRuntimeId(), (short) 0, item.getAmount());
+            }
+
+            return ItemData.of(bedrockItem.getRuntimeId(), (short) 0, item.getAmount(), translateItemNBT(item.getNBT()));
         }
         return ItemData.AIR;
     }
@@ -162,5 +163,60 @@ public class ItemTranslator {
 
         ItemData data = translateToBedrock(item);
         return data;
+    }
+
+    public static com.nukkitx.nbt.tag.CompoundTag translateItemNBT(CompoundTag tag) {
+        CompoundTagBuilder root = CompoundTagBuilder.builder();
+        CompoundTagBuilder display = CompoundTagBuilder.builder();
+
+        if(tag.contains("name")) {
+            display.stringTag("Name", (String) tag.get("name").getValue());
+            tag.remove("name");
+        }
+        if(tag.contains("lore")) {
+            com.nukkitx.nbt.tag.ListTag list = (com.nukkitx.nbt.tag.ListTag) translateRawNBT(tag.get("lore"));
+            display.listTag("Lore", com.nukkitx.nbt.tag.StringTag.class, list.getValue()); // TODO: fix unchecked assignment
+            tag.remove("lore");
+        }
+
+        root.tag(display.build("display"));
+
+        if(tag.getValue() != null && !tag.getValue().isEmpty()) {
+            for(String tagName : tag.getValue().keySet()) {
+                com.nukkitx.nbt.tag.Tag bedrockTag = translateRawNBT(tag.get(tagName));
+                if(bedrockTag == null) {
+                    continue;
+                }
+                root.tag(bedrockTag);
+            }
+        }
+        return root.buildRootTag();
+    }
+
+    public static com.nukkitx.nbt.tag.Tag translateRawNBT(Tag tag) {
+        if(tag instanceof StringTag) {
+            return new com.nukkitx.nbt.tag.StringTag(tag.getName(), (String) tag.getValue());
+        }
+        if(tag instanceof ListTag) {
+            ListTag listTag = (ListTag) tag;
+            List<com.nukkitx.nbt.tag.Tag> tags = new ArrayList<>();
+
+            for(Object value : listTag.getValue()) {
+                if(!(value instanceof Tag)) {
+                    continue;
+                }
+                Tag tagValue = (Tag) value;
+                com.nukkitx.nbt.tag.Tag bedrockTag = translateRawNBT(tagValue);
+                if(bedrockTag != null) {
+                    tags.add(bedrockTag);
+                }
+            }
+            return new com.nukkitx.nbt.tag.ListTag(listTag.getName(), listTag.getElementType(), tags);
+        }
+        if(tag instanceof CompoundTag) {
+            return translateRawNBT(tag);
+        }
+
+        return null;
     }
 }
