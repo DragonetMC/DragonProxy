@@ -44,10 +44,10 @@ public class PCSpawnMobTranslator implements PacketTranslator<ServerSpawnMobPack
         metadata.put(EntityData.MAX_AIR, (short) 400);
         metadata.put(EntityData.AIR, (short) 400);
 
-        log.warn("SPAWN MOB");
+        //log.warn("SPAWN MOB");
 
         addEntityPacket.getMetadata().putAll(metadata);
 
-        session.getBedrockSession().sendPacket(addEntityPacket);
+        //session.getBedrockSession().sendPacket(addEntityPacket);
     }
 }

@@ -92,9 +92,6 @@ public class DragonProxy {
     @Getter
     private volatile boolean running = true;
 
-    @Getter @Setter
-    private boolean experimentalItemNBT = false;
-
     public DragonProxy(int bedrockPort, int javaPort) {
         INSTANCE = this;
 

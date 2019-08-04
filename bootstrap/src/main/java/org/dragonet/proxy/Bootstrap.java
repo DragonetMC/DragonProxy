@@ -39,7 +39,6 @@ public class Bootstrap {
         OptionSpec<String> bedrockPortOption = optionParser.accepts("bedrockPort", "Overrides the bedrock UDP bind port").withRequiredArg();
         OptionSpec<String> javaPortOption = optionParser.accepts("javaPort", "Overrides the java TCP bind port").withRequiredArg();
         optionParser.accepts("help", "Display help/usage information").forHelp();
-        optionParser.accepts("enable-experimental-item-nbt", "Enables experimental Item NBT translation (doesnt work on some servers for some reason)");
 
         // Handle command-line options
         OptionSet options = optionParser.parse(args);
@@ -53,11 +52,6 @@ public class Bootstrap {
 
         long startTime = System.currentTimeMillis();
         DragonProxy proxy = new DragonProxy(bedrockPort, javaPort);
-
-        if(options.has("enable-experimental-item-nbt"))  {
-            proxy.setExperimentalItemNBT(true);
-            log.warn("Experimental item nbt translation enabled");
-        }
 
         Runtime.getRuntime().addShutdownHook(new Thread(proxy::shutdown, "Shutdown thread"));
 

@@ -120,6 +120,7 @@ public class ProxySession implements PlayerSession {
                 if(dataCache.get("auth_state") == AuthState.AUTHENTICATING) {
                     sendMessage(TextFormat.GOLD + "Disconnected from remote: " + TextFormat.WHITE + event.getReason());
                     sendMessage(TextFormat.AQUA + "Enter your credentials again to retry");
+                    dataCache.put("auth_state", AuthState.AUTHENTICATING);
                     return;
                 }
                 bedrockSession.disconnect(event.getReason());

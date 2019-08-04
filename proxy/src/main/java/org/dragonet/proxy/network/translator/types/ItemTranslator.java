@@ -3,6 +3,7 @@ package org.dragonet.proxy.network.translator.types;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
+import com.github.steveice10.mc.protocol.data.message.Message;
 import com.github.steveice10.opennbt.tag.builtin.*;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -128,7 +129,6 @@ public class ItemTranslator {
         }
     }
 
-
     public static ItemData translateToBedrock(ItemStack item) {
         for(Map.Entry<String, ItemEntry.JavaItem> javaItems : JAVA_ITEMS.entrySet()) {
             if(javaItems.getValue().getRuntimeId() != item.getId()){
@@ -140,7 +140,7 @@ public class ItemTranslator {
                 continue;
             }
             ItemEntry.BedrockItem bedrockItem = BEDROCK_ITEMS.get(identifier);
-            if(item.getNBT() == null || !DragonProxy.INSTANCE.isExperimentalItemNBT()) {
+            if(item.getNBT() == null) {
                 return ItemData.of(bedrockItem.getRuntimeId(), (short) 0, item.getAmount());
             }
 
@@ -167,19 +167,21 @@ public class ItemTranslator {
 
     public static com.nukkitx.nbt.tag.CompoundTag translateItemNBT(CompoundTag tag) {
         CompoundTagBuilder root = CompoundTagBuilder.builder();
-        CompoundTagBuilder display = CompoundTagBuilder.builder();
 
-        if(tag.contains("name")) {
-            display.stringTag("Name", (String) tag.get("name").getValue());
-            tag.remove("name");
-        }
-        if(tag.contains("lore")) {
-            com.nukkitx.nbt.tag.ListTag list = (com.nukkitx.nbt.tag.ListTag) translateRawNBT(tag.get("lore"));
-            display.listTag("Lore", com.nukkitx.nbt.tag.StringTag.class, list.getValue()); // TODO: fix unchecked assignment
-            tag.remove("lore");
-        }
+        if(!tag.contains("display")) {
+            CompoundTagBuilder display = CompoundTagBuilder.builder();
 
-        root.tag(display.build("display"));
+            if (tag.contains("name")) {
+                display.stringTag("Name", Message.fromString((String) tag.get("name").getValue()).getFullText());
+                tag.remove("name");
+            }
+            if (tag.contains("lore")) {
+                //com.nukkitx.nbt.tag.ListTag list = (com.nukkitx.nbt.tag.ListTag) translateRawNBT(tag.get("lore"));
+                //display.listTag("Lore", com.nukkitx.nbt.tag.StringTag.class, list.getValue()); // TODO: fix unchecked assignment
+                tag.remove("lore");
+            }
+            root.tag(display.build("display"));
+        }
 
         if(tag.getValue() != null && !tag.getValue().isEmpty()) {
             for(String tagName : tag.getValue().keySet()) {
@@ -194,8 +196,11 @@ public class ItemTranslator {
     }
 
     public static com.nukkitx.nbt.tag.Tag translateRawNBT(Tag tag) {
-        if(tag instanceof StringTag) {
-            return new com.nukkitx.nbt.tag.StringTag(tag.getName(), (String) tag.getValue());
+        if(tag instanceof ByteArrayTag) {
+            return new com.nukkitx.nbt.tag.ByteArrayTag(tag.getName(), (byte[]) tag.getValue());
+        }
+        if(tag instanceof StringTag) {  
+            return new com.nukkitx.nbt.tag.StringTag(tag.getName(), MessageTranslator.translate(((String) tag.getValue())));
         }
         if(tag instanceof ListTag) {
             ListTag listTag = (ListTag) tag;
@@ -211,10 +216,24 @@ public class ItemTranslator {
                     tags.add(bedrockTag);
                 }
             }
-            return new com.nukkitx.nbt.tag.ListTag(listTag.getName(), listTag.getElementType(), tags);
+            // TODO: unchecked?
+            // TODO: map element type from Java NBT tag to NukkitX tag
+            return new com.nukkitx.nbt.tag.ListTag(listTag.getName(), com.nukkitx.nbt.tag.StringTag.class, tags);
         }
         if(tag instanceof CompoundTag) {
-            return translateRawNBT(tag);
+            CompoundTag compound = (CompoundTag) tag;
+            CompoundTagBuilder builder = CompoundTagBuilder.builder();
+
+            if(compound.getValue() != null && !compound.getValue().isEmpty()) {
+                for(String tagName : compound.getValue().keySet()) {
+                    com.nukkitx.nbt.tag.Tag bedrockTag = translateRawNBT(compound.get(tagName));
+                    if(bedrockTag == null) {
+                        continue;
+                    }
+                    builder.tag(bedrockTag);
+                }
+                return builder.build(tag.getName());
+            }
         }
 
         return null;

@@ -84,7 +84,7 @@ public class PacketTranslatorRegistry<P> {
         Class<?> packetClass = packet.getClass();
         PacketTranslator<P> target = translators.get(packetClass);
         if (target == null) {
-            log.info("Unhandled packet received from remote: {}", packetClass.getSimpleName());
+           // log.info("Unhandled packet received from remote: {}", packetClass.getSimpleName());
             return;
         }
         if (session.getDownstream() == null) {
