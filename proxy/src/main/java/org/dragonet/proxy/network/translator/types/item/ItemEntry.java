@@ -7,23 +7,23 @@ public class ItemEntry {
     @Getter
     public static class BedrockItem {
         @JsonProperty("name")
-        private String id;
+        private String identifier;
 
         @JsonProperty("id")
         private int runtimeId;
 
         public BedrockItem() {}
-        public BedrockItem(String id, int runtimeId) {
-            this.id = id;
+        public BedrockItem(String identifier, int runtimeId) {
+            this.identifier = identifier;
             this.runtimeId = runtimeId;
         }
     }
 
     @Getter
     public static class JavaItem {
-        @JsonProperty("identifier")
-        private String id;
+        @JsonProperty
+        private String identifier;
         @JsonProperty("protocol_id")
-        private int runtimeId; // or legacy id?
+        private int runtimeId;
     }
 }

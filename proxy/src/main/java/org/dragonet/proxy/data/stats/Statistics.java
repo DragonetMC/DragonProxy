@@ -1,4 +1,4 @@
-package org.dragonet.proxy.stats;
+package org.dragonet.proxy.data.stats;
 
 import com.github.steveice10.mc.protocol.data.game.statistic.GenericStatistic;
 import lombok.extern.log4j.Log4j2;

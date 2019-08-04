@@ -31,7 +31,7 @@ public class PCSpawnPlayerTranslator implements PacketTranslator<ServerSpawnPlay
         addPlayerPacket.setUniqueEntityId(packet.getEntityId());
         addPlayerPacket.setRuntimeEntityId(packet.getEntityId());
         addPlayerPacket.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
-        addPlayerPacket.setRotation(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
+        addPlayerPacket.setRotation(new Vector3f(packet.getYaw(), packet.getPitch(), 0));
         addPlayerPacket.setMotion(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
         addPlayerPacket.setUsername(session.getAuthData().getDisplayName());
         addPlayerPacket.setUuid(session.getAuthData().getIdentity());
@@ -44,9 +44,7 @@ public class PCSpawnPlayerTranslator implements PacketTranslator<ServerSpawnPlay
         addPlayerPacket.setPlayerPermission(0);
         addPlayerPacket.setPlatformChatId("");
 
-        // TODO: yaw and pitch
-
-        log.warn("SPAWN PLAYER");
+        log.warn("Received spawn player packet");
         //session.getBedrockSession().sendPacketImmediately(addPlayerPacket);
     }
 }

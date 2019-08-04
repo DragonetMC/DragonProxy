@@ -42,7 +42,7 @@ public class PCSpawnMobTranslator implements PacketTranslator<ServerSpawnMobPack
         metadata.put(EntityData.ENTITY_AGE, 0);
         metadata.put(EntityData.SCALE, 1f);
         metadata.put(EntityData.MAX_AIR, (short) 400);
-        metadata.put(EntityData.AIR, (short) 0);
+        metadata.put(EntityData.AIR, (short) 400);
 
         log.warn("SPAWN MOB");
 

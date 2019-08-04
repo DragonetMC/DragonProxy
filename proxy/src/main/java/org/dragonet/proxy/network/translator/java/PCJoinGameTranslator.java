@@ -31,8 +31,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
 import java.io.ByteArrayOutputStream;
@@ -66,10 +68,10 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
         session.getDataCache().put("player_eid", packet.getEntityId());
 
         StartGamePacket startGamePacket = new StartGamePacket();
-        startGamePacket.setUniqueEntityId(packet.getEntityId());
-        startGamePacket.setRuntimeEntityId(packet.getEntityId());
+        startGamePacket.setUniqueEntityId(1);//packet.getEntityId());
+        startGamePacket.setRuntimeEntityId(1);//packet.getEntityId());
         startGamePacket.setPlayerGamemode(packet.getGameMode().ordinal());
-        startGamePacket.setPlayerPosition(new Vector3f(-249, 67, -275));
+        startGamePacket.setPlayerPosition(new Vector3f(0, 50, 0));
         startGamePacket.setRotation(new Vector2f(1, 1));
 
         startGamePacket.setSeed(1111);
@@ -77,7 +79,7 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
         startGamePacket.setGeneratorId(0);
         startGamePacket.setLevelGamemode(packet.getGameMode().ordinal());
         startGamePacket.setDifficulty(0);
-        startGamePacket.setDefaultSpawn(new Vector3i(-249, 67, -275));
+        startGamePacket.setDefaultSpawn(new Vector3i(0, 50, 0));
         startGamePacket.setAcheivementsDisabled(true);
         startGamePacket.setTime(0);
         startGamePacket.setEduLevel(false);
@@ -103,7 +105,7 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
         startGamePacket.setFromWorldTemplate(false);
         startGamePacket.setWorldTemplateOptionLocked(false);
 
-        startGamePacket.setLevelId("oerjhii");
+        startGamePacket.setLevelId("world");
         startGamePacket.setWorldName("world");
         startGamePacket.setPremiumWorldTemplateId("00000000-0000-0000-0000-000000000000");
         startGamePacket.setCurrentTick(0);
@@ -137,7 +139,7 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
         session.getBedrockSession().sendPacketImmediately(playStatus);
 
         // Add the player to the cache (still need to remove them, but thats a TODO)
-        session.getEntityCache().getEntities().put(((Integer) packet.getEntityId()).longValue(), new CachedEntity(packet.getEntityId()));
+        session.getEntityCache().getEntities().put((long) 1, new CachedPlayer(packet.getEntityId()));
 
         session.spawn();
     }

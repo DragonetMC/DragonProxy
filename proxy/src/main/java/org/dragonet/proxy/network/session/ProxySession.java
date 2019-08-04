@@ -43,6 +43,7 @@ import org.dragonet.proxy.network.session.cache.ChunkCache;
 import org.dragonet.proxy.network.session.cache.EntityCache;
 import org.dragonet.proxy.network.session.cache.WindowCache;
 import org.dragonet.proxy.network.session.cache.WorldCache;
+import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.session.data.AuthData;
 import org.dragonet.proxy.network.session.data.AuthState;
 import org.dragonet.proxy.network.session.data.ClientData;
@@ -54,6 +55,7 @@ import javax.annotation.Nonnull;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -79,6 +81,8 @@ public class ProxySession implements PlayerSession {
     private WindowCache windowCache;
     private ChunkCache chunkCache;
     private WorldCache worldCache;
+
+    private CachedPlayer cachedEntity;
 
     private AuthData authData;
     private ClientData clientData;
@@ -222,36 +226,10 @@ public class ProxySession implements PlayerSession {
         playerListPacket.setType(PlayerListPacket.Type.ADD);
         playerListPacket.getEntries().add(entry);
 
-        //bedrockSession.sendPacket(playerListPacket);
-
-        AddPlayerPacket addPlayerPacket = new AddPlayerPacket();
-        addPlayerPacket.setPlatformChatId("");
-        addPlayerPacket.setWorldFlags(0);
-        addPlayerPacket.setCustomFlags(0);
-        addPlayerPacket.setCommandPermission(0);
-        addPlayerPacket.setPlayerFlags(0);
-        addPlayerPacket.setDeviceId("");
-        addPlayerPacket.setUuid(authData.getIdentity());
-        addPlayerPacket.setUsername(authData.getDisplayName());
-        addPlayerPacket.setPosition(Vector3f.ZERO);
-        addPlayerPacket.setRotation(Vector3f.ZERO);
-        addPlayerPacket.setHand(ItemData.AIR);
-        addPlayerPacket.setMotion(Vector3f.ZERO);
-        addPlayerPacket.setRuntimeEntityId(1);
-        addPlayerPacket.setUniqueEntityId(1);
-
-        EntityDataDictionary metadata = addPlayerPacket.getMetadata();
-        metadata.put(EntityData.NAMETAG, "testing");
-        metadata.put(EntityData.ENTITY_AGE, 0);
-        metadata.put(EntityData.SCALE, 1f);
-        metadata.put(EntityData.MAX_AIR, (short) 400);
-        metadata.put(EntityData.AIR, (short) 0);
+        cachedEntity = (CachedPlayer) entityCache.getById(1); // TODO
+        //cachedEntity.spawn(this); // Crashes
 
         log.warn("SPAWN PLAYER");
-
-        addPlayerPacket.getMetadata().putAll(metadata);
-
-        //bedrockSession.sendPacket(addPlayerPacket);
     }
 
     public void sendFakeStartGame() {

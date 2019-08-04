@@ -1,8 +1,7 @@
-package org.dragonet.proxy.stats;
+package org.dragonet.proxy.data.stats;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;

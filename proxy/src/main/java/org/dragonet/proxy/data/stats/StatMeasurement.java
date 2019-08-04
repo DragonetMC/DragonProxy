@@ -1,4 +1,4 @@
-package org.dragonet.proxy.stats;
+package org.dragonet.proxy.data.stats;
 
 public enum StatMeasurement {
     NONE,

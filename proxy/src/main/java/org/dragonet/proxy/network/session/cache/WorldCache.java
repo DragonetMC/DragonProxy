@@ -2,7 +2,7 @@ package org.dragonet.proxy.network.session.cache;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.dragonet.proxy.stats.StatInfo;
+import org.dragonet.proxy.data.stats.StatInfo;
 
 import java.util.HashMap;
 import java.util.Map;

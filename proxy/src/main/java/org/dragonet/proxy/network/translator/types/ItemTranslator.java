@@ -57,7 +57,7 @@ public class ItemTranslator {
         }
 
         for(ItemEntry.BedrockItem item : entries) {
-            BEDROCK_ITEMS.put(item.getId(), item);
+            BEDROCK_ITEMS.put(item.getIdentifier(), item);
         }
     }
 
@@ -80,7 +80,7 @@ public class ItemTranslator {
         }
 
         for(ItemEntry.JavaItem item : entries) {
-            JAVA_ITEMS.put(item.getId(), item);
+            JAVA_ITEMS.put(item.getIdentifier(), item);
         }
     }
 
@@ -91,7 +91,7 @@ public class ItemTranslator {
 
         for(Map.Entry<String, ItemEntry.JavaItem> javaItem : JAVA_ITEMS.entrySet()) {
             for(Map.Entry<String, ItemEntry.BedrockItem> bedrockItem : BEDROCK_ITEMS.entrySet()) {
-                if(bedrockItem.getValue().getId().equalsIgnoreCase(javaItem.getKey())) {
+                if(bedrockItem.getValue().getIdentifier().equalsIgnoreCase(javaItem.getKey())) {
                     ItemEntry.JavaItem item = javaItem.getValue();
                     conversions.computeIfAbsent(item, (x) -> new ArrayList<>());
                     conversions.get(item).add(bedrockItem.getValue());
@@ -101,24 +101,24 @@ public class ItemTranslator {
 
         for(Map.Entry<ItemEntry.JavaItem, List<ItemEntry.BedrockItem>> entry : conversions.entrySet()) {
             for(ItemEntry.BedrockItem item : entry.getValue()) {
-                JAVA_TO_BEDROCK_MAP.computeIfAbsent(entry.getKey().getId(), (x) -> new HashMap<>());
-                BEDROCK_TO_JAVA_MAP.computeIfAbsent(item.getId(), (x) -> new HashMap<>());
-                Map<String, Object> map = JAVA_TO_BEDROCK_MAP.get(entry.getKey().getId());
+                JAVA_TO_BEDROCK_MAP.computeIfAbsent(entry.getKey().getIdentifier(), (x) -> new HashMap<>());
+                BEDROCK_TO_JAVA_MAP.computeIfAbsent(item.getIdentifier(), (x) -> new HashMap<>());
+                Map<String, Object> map = JAVA_TO_BEDROCK_MAP.get(entry.getKey().getIdentifier());
 
-                map.put("name", item.getId());
-                map.put("id", item.getId());
-                map.put("data", 0); 
+                map.put("name", item.getIdentifier());
+                map.put("id", item.getIdentifier());
+                map.put("data", 0);
 
                 // This is what we will use in the future
                 JsonObject object = new JsonObject();
-                object.addProperty("java_identifier", entry.getKey().getId());
+                object.addProperty("java_identifier", entry.getKey().getIdentifier());
                 object.addProperty("java_protocol_id", entry.getKey().getRuntimeId());
-                object.addProperty("bedrock_identifier", item.getId());
+                object.addProperty("bedrock_identifier", item.getIdentifier());
                 object.addProperty("bedrock_runtime_id", item.getRuntimeId());
                 object.addProperty("bedrock_data", 0); // TODO
                 array.add(object);
 
-                BEDROCK_TO_JAVA_MAP.get(item.getId()).put(0, entry.getKey().getId());
+                BEDROCK_TO_JAVA_MAP.get(item.getIdentifier()).put(0, entry.getKey().getIdentifier());
             }
         }
 
@@ -138,7 +138,7 @@ public class ItemTranslator {
                 continue;
             }
             ItemEntry.JavaItem javaItem = javaItems.getValue();
-            String identifier = getBedrockIdentifier(javaItem.getId());
+            String identifier = getBedrockIdentifier(javaItem.getIdentifier());
             if(!BEDROCK_ITEMS.containsKey(identifier)) {
                 continue;
             }

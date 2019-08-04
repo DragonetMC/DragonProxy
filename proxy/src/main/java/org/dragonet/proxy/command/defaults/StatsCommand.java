@@ -1,14 +1,13 @@
 package org.dragonet.proxy.command.defaults;
 
-import com.github.steveice10.mc.protocol.data.MagicValues;
 import com.github.steveice10.mc.protocol.data.game.statistic.*;
 import org.dragonet.proxy.command.ProxyCommand;
 import org.dragonet.proxy.form.CustomForm;
 import org.dragonet.proxy.form.components.LabelComponent;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.WorldCache;
-import org.dragonet.proxy.stats.StatInfo;
-import org.dragonet.proxy.stats.Statistics;
+import org.dragonet.proxy.data.stats.StatInfo;
+import org.dragonet.proxy.data.stats.Statistics;
 import org.dragonet.proxy.util.TextFormat;
 
 import java.util.Map;
