@@ -176,8 +176,8 @@ public class ItemTranslator {
                 tag.remove("name");
             }
             if (tag.contains("lore")) {
-                //com.nukkitx.nbt.tag.ListTag list = (com.nukkitx.nbt.tag.ListTag) translateRawNBT(tag.get("lore"));
-                //display.listTag("Lore", com.nukkitx.nbt.tag.StringTag.class, list.getValue()); // TODO: fix unchecked assignment
+                com.nukkitx.nbt.tag.ListTag list = (com.nukkitx.nbt.tag.ListTag) translateRawNBT(tag.get("lore"));
+                display.listTag("Lore", com.nukkitx.nbt.tag.StringTag.class, list.getValue()); // TODO: fix unchecked assignment
                 tag.remove("lore");
             }
             root.tag(display.build("display"));
@@ -199,7 +199,7 @@ public class ItemTranslator {
         if(tag instanceof ByteArrayTag) {
             return new com.nukkitx.nbt.tag.ByteArrayTag(tag.getName(), (byte[]) tag.getValue());
         }
-        if(tag instanceof StringTag) {  
+        if(tag instanceof StringTag) {
             return new com.nukkitx.nbt.tag.StringTag(tag.getName(), MessageTranslator.translate(((String) tag.getValue())));
         }
         if(tag instanceof ListTag) {
