@@ -20,10 +20,9 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
-import com.nukkitx.protocol.bedrock.*;
+import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
+import com.nukkitx.protocol.bedrock.BedrockServer;
 import com.nukkitx.protocol.bedrock.v361.Bedrock_v361;
-
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.dragonet.proxy.command.CommandManager;
@@ -35,12 +34,12 @@ import org.dragonet.proxy.util.PaletteManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -90,7 +89,7 @@ public class DragonProxy {
     private ScheduledExecutorService generalThreadPool;
 
     @Getter
-    private boolean shutdown = false;
+    private volatile boolean running = true;
 
     public DragonProxy(int bedrockPort, int javaPort) {
         INSTANCE = this;
@@ -109,7 +108,7 @@ public class DragonProxy {
         }
     }
 
-    private void initialize() throws Exception {
+    private void initialize() throws IOException {
         if(!RELEASE) {
             logger.warn("This is a development build. It may contain bugs. Do not use in production.");
         }
@@ -164,6 +163,16 @@ public class DragonProxy {
                 logger.error("RakNet server failed to bind to {}, {}", configuration.getBindAddress(), throwable.getMessage());
             }
         }).join();
+
+
+        while (this.running) {
+            try {
+                synchronized (this) {
+                    this.wait();
+                }
+            } catch (InterruptedException ignored) {
+            }
+        }
     }
 
     public void shutdown() {
@@ -174,10 +183,11 @@ public class DragonProxy {
 
         generalThreadPool.shutdown();
 
-        // TODO: shutdown
-        System.exit(0); // Temporary to fix hanging
+        this.running = false;
 
-        shutdown = true;
+        synchronized (this) {
+            this.notify();
+        }
     }
 
     public String getVersion() {

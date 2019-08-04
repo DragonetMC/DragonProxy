@@ -45,7 +45,7 @@ public class DragonConsole extends SimpleTerminalConsole {
 
     @Override
     protected boolean isRunning() {
-        return !proxy.isShutdown();
+        return !proxy.isRunning();
     }
 
     @Override
