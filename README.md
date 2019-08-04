@@ -19,6 +19,7 @@ The project has been undergoing a rewrite for some time, and development has rec
 - [ ] Chunk loading
 - [ ] Player movement
 - [ ] Inventory support
+  - [x] Item NBT translation (name and lore, more to come soon)
 - [ ] Viewing entities
 - [x] Effects
 - [ ] Block breaking / placing
@@ -49,4 +50,3 @@ Clone the repo recursively and then run `mvn clean install`. The output jar will
 
   
 [![HitCount](http://hits.dwyl.io/DragonetMC/DragonProxy.svg)](http://hits.dwyl.io/DragonetMC/DragonProxy)
- 

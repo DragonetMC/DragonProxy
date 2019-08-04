@@ -151,30 +151,6 @@
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>3.1.0</version>
             </plugin>
-            <!-- License header plugin -->
-            <plugin>
-                <groupId>com.mycila</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <version>3.0</version>
-                <configuration>
-                    <header>licenseheader.txt</header>
-                    <includes>
-                        <include>bootstrap/src/main/java/**</include>
-                        <include>proxy/src/main/java/**</include>
-                    </includes>
-                    <mapping>
-                        <java>SLASHSTAR_STYLE</java>
-                    </mapping>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>format</goal>
-                        </goals>
-                        <phase>process-sources</phase>
-                    </execution>
-                </executions>
-            </plugin>
             <!-- Include resource files -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
