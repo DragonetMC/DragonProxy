@@ -59,7 +59,7 @@ public class ItemTranslator {
     }
 
     private void loadBedrockItems() {
-        log.warn("Loading bedrock items");
+        log.info("Loading bedrock items");
         // Load bedrock items
         InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("runtime_item_ids.json");
         if (stream == null) {
@@ -82,7 +82,7 @@ public class ItemTranslator {
     }
 
     private void loadJavaItems() {
-        log.warn("Loading java items");
+        log.info("Loading java items");
         // Load java items
         InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("java_items.json");
         if (stream == null) {
