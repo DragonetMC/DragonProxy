@@ -51,6 +51,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.DecimalFormat;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -98,8 +99,12 @@ public class DragonProxy {
     @Getter
     private volatile boolean running = true;
 
+    private long startTime;
+
     public DragonProxy(int bedrockPort, int javaPort) {
         INSTANCE = this;
+
+        startTime = System.currentTimeMillis();
 
         log.info("Welcome to DragonProxy version " + getVersion());
 
@@ -157,6 +162,11 @@ public class DragonProxy {
                 log.error("RakNet server failed to bind to {}, {}", configuration.getBindAddress(), throwable.getMessage());
             }
         }).join();
+
+        double bootTime = (System.currentTimeMillis() - startTime) / 1000d;
+        log.info("Done ({}s)!", new DecimalFormat("#.##").format(bootTime));
+
+        console.start();
 
         while (this.running) {
             try {

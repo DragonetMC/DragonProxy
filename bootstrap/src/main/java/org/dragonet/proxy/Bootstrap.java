@@ -50,14 +50,8 @@ public class Bootstrap {
         int bedrockPort = options.has(bedrockPortOption) ? Integer.parseInt(options.valueOf(bedrockPortOption)) : -1;
         int javaPort = options.has(javaPortOption) ? Integer.parseInt(options.valueOf(bedrockPortOption)) : -1;
 
-        long startTime = System.currentTimeMillis();
         DragonProxy proxy = new DragonProxy(bedrockPort, javaPort);
 
         Runtime.getRuntime().addShutdownHook(new Thread(proxy::shutdown, "Shutdown thread"));
-
-        double bootTime = (System.currentTimeMillis() - startTime) / 1000d;
-        log.info("Done ({}s)!", new DecimalFormat("#.##").format(bootTime));
-
-        proxy.getConsole().start();
     }
 }

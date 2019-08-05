@@ -128,7 +128,7 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
 
         session.getBedrockSession().sendPacketImmediately(startGamePacket);
 
-        Vector3f pos = new Vector3f(-249, 67, -275);
+        Vector3f pos = new Vector3f(0, 50, 0);
         int chunkX = pos.getFloorX() >> 4;
         int chunkZ = pos.getFloorX() >> 4;
 

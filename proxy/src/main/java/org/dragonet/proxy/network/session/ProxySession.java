@@ -244,7 +244,7 @@ public class ProxySession implements PlayerSession {
         startGamePacket.setUniqueEntityId(entityCache.nextFakePlayerid());
         startGamePacket.setRuntimeEntityId(entityCache.nextFakePlayerid());
         startGamePacket.setPlayerGamemode(0);
-        startGamePacket.setPlayerPosition(Vector3f.ZERO);
+        startGamePacket.setPlayerPosition(new Vector3f(0, 50, 0));
         startGamePacket.setRotation(Vector2f.ZERO);
 
         startGamePacket.setSeed(1111);

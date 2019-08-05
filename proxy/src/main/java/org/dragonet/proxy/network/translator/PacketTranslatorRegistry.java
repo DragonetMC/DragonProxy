@@ -28,10 +28,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.Serve
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMultiBlockChangePacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerUpdateTimePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.world.*;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.google.common.base.Preconditions;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
@@ -79,7 +76,8 @@ public class PacketTranslatorRegistry<P> {
             .addTranslator(ServerEntityRemoveEffectPacket.class, PCEntityRemoveEffectTranslator.INSTANCE)
             .addTranslator(ServerSetSlotPacket.class, PCSetSlotTranslator.INSTANCE)
             .addTranslator(ServerWindowItemsPacket.class, PCWindowItemsTranslator.INSTANCE)
-            .addTranslator(ServerStatisticsPacket.class, PCStatisticsTranslator.INSTANCE);
+            .addTranslator(ServerStatisticsPacket.class, PCStatisticsTranslator.INSTANCE)
+            .addTranslator(ServerSpawnParticlePacket.class, PCSpawnParticleTranslator.INSTANCE);
 
         BEDROCK_TO_JAVA.addTranslator(TextPacket.class, PETextTranslator.INSTANCE)
             .addTranslator(AnimatePacket.class, PEAnimateTranslator.INSTANCE)
