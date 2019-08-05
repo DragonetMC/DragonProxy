@@ -26,11 +26,13 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.ServerTitlePacket;
 import com.nukkitx.protocol.bedrock.packet.SetTitlePacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.types.MessageTranslator;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Log4j2
 public class PCTitleTranslator implements PacketTranslator<ServerTitlePacket> {
     public static PCTitleTranslator INSTANCE = new PCTitleTranslator();
 

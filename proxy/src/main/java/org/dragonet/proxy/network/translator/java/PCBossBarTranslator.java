@@ -22,6 +22,8 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
+import com.github.steveice10.mc.protocol.data.game.BossBarAction;
+import com.github.steveice10.mc.protocol.data.game.BossBarColor;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerBossBarPacket;
 import com.nukkitx.protocol.bedrock.packet.BossEventPacket;
 import lombok.AccessLevel;
@@ -61,6 +63,10 @@ public class PCBossBarTranslator implements PacketTranslator<ServerBossBarPacket
             case UPDATE_TITLE:
                 bossEventPacket.setType(BossEventPacket.Type.TITLE);
                 bossEventPacket.setTitle(MessageTranslator.translate(packet.getTitle().getText()));
+                break;
+            case UPDATE_STYLE:
+                //bossEventPacket.setType(BossEventPacket.Type.OVERLAY);
+                //bossEventPacket.setOverlay(0);
                 break;
             default:
                 log.warn("Unhandled boss bar action: " + packet.getAction().name());

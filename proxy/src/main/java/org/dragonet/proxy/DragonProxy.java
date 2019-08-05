@@ -22,8 +22,6 @@
  */
 package org.dragonet.proxy;
 
-import ch.jalu.injector.Injector;
-import ch.jalu.injector.InjectorBuilder;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,7 +31,7 @@ import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import com.nukkitx.protocol.bedrock.BedrockServer;
 import com.nukkitx.protocol.bedrock.v361.Bedrock_v361;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.dragonet.proxy.command.CommandManager;
 import org.dragonet.proxy.configuration.DragonConfiguration;
@@ -44,7 +42,9 @@ import org.dragonet.proxy.util.PaletteManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
@@ -55,7 +55,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 
+@Log4j2
 public class DragonProxy {
     public static final BedrockPacketCodec BEDROCK_CODEC = Bedrock_v361.V361_CODEC;
     public static final BedrockPacketCodec[] BEDROCK_SUPPORTED_CODECS = {BEDROCK_CODEC};
@@ -72,11 +74,6 @@ public class DragonProxy {
 
     private static final boolean RELEASE = false;
     public static DragonProxy INSTANCE = null;
-
-    private final ScheduledExecutorService timerService = Executors.unconfigurableScheduledExecutorService(
-        Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("DragonProxy Ticker").setDaemon(true).build()));
-    private Logger logger;
-    private Injector injector;
 
     private AtomicBoolean shutdownInProgress = new AtomicBoolean(false);
 
@@ -104,36 +101,23 @@ public class DragonProxy {
     public DragonProxy(int bedrockPort, int javaPort) {
         INSTANCE = this;
 
-        // Initialize the logger
-        logger = LoggerFactory.getLogger(DragonProxy.class);
-        logger.info("Welcome to DragonProxy version " + getVersion());
+        log.info("Welcome to DragonProxy version " + getVersion());
 
         // Initialize services
         try {
             initialize();
         } catch (Throwable th) {
-            logger.error("A fatal error occurred while initializing the proxy!", th);
-            LogManager.shutdown();
+            log.error("A fatal error occurred while initializing the proxy!", th);
             System.exit(1);
         }
     }
 
     private void initialize() throws IOException {
         if(!RELEASE) {
-            logger.warn("This is a development build. It may contain bugs. Do not use in production.");
+            log.warn("This is a development build. It may contain bugs. Do not use in production.");
         }
 
-        // Create injector, provide elements from the environment and register providers
-        // TODO: Remove
-        injector = new InjectorBuilder()
-            .addDefaultHandlers("org.dragonet.proxy")
-            .create();
-        injector.register(DragonProxy.class, this);
-        injector.register(Logger.class, logger);
-        injector.provide(ProxyFolder.class, getFolder());
-
-        // Initiate console
-        console = injector.getSingleton(DragonConsole.class);
+       console = new DragonConsole(this);
 
         // Load configuration
         try {
@@ -141,7 +125,7 @@ public class DragonProxy {
                 Files.copy(getClass().getResourceAsStream("/config.yml"), Paths.get("config.yml"), StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException ex) {
-            logger.error("Failed to copy config file: " + ex.getMessage());
+            log.error("Failed to copy config file: " + ex.getMessage());
         }
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
@@ -160,7 +144,7 @@ public class DragonProxy {
 
         if(configuration.isPingPassthrough()) {
             generalThreadPool.scheduleAtFixedRate(pingPassthroughThread, 1, 1, TimeUnit.SECONDS);
-            logger.info("Ping passthrough enabled");
+            log.info("Ping passthrough enabled");
         }
 
         BedrockServer server = new BedrockServer(new InetSocketAddress(configuration.getBindAddress(), configuration.getBindPort()));
@@ -168,12 +152,11 @@ public class DragonProxy {
 
         server.bind().whenComplete((aVoid, throwable) -> {
             if (throwable == null) {
-                logger.info("RakNet server started on {}", configuration.getBindAddress());
+                log.info("RakNet server started on {}", configuration.getBindAddress());
             } else {
-                logger.error("RakNet server failed to bind to {}, {}", configuration.getBindAddress(), throwable.getMessage());
+                log.error("RakNet server failed to bind to {}, {}", configuration.getBindAddress(), throwable.getMessage());
             }
         }).join();
-
 
         while (this.running) {
             try {
@@ -189,7 +172,7 @@ public class DragonProxy {
         if (!shutdownInProgress.compareAndSet(false, true)) {
             return;
         }
-        logger.info("Shutting down the proxy...");
+        log.info("Shutting down the proxy...");
 
         generalThreadPool.shutdown();
 

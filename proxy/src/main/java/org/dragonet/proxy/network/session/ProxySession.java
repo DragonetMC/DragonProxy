@@ -64,7 +64,6 @@ import javax.annotation.Nonnull;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -125,13 +124,6 @@ public class ProxySession implements PlayerSession {
             @Override
             public void disconnected(DisconnectedEvent event) {
                 log.info("Player  disconnected from remote. Reason: " + event.getReason());
-
-                if(dataCache.get("auth_state") == AuthState.AUTHENTICATING) {
-                    sendMessage(TextFormat.GOLD + "Disconnected from remote: " + TextFormat.WHITE + event.getReason());
-                    sendMessage(TextFormat.AQUA + "Enter your credentials again to retry");
-                    dataCache.put("auth_state", AuthState.AUTHENTICATING);
-                    return;
-                }
                 bedrockSession.disconnect(event.getReason());
             }
 
@@ -167,6 +159,11 @@ public class ProxySession implements PlayerSession {
                 // Start connecting to remote server
                 RemoteServer remoteServer = new RemoteServer("local", proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort());
                 connect(remoteServer);
+
+                // Enable coordinates now
+                GameRulesChangedPacket gameRulesChangedPacket = new GameRulesChangedPacket();
+                gameRulesChangedPacket.getGameRules().add(new GameRule<>("showcoordinates", true));
+                bedrockSession.sendPacket(gameRulesChangedPacket);
 
                 dataCache.put("auth_state", AuthState.AUTHENTICATED);
 
