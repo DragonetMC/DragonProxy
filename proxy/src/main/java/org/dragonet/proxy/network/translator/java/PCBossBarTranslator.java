@@ -32,6 +32,7 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.types.MessageTranslator;
+import org.dragonet.proxy.util.TextFormat;
 
 @Log4j2
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -69,7 +70,7 @@ public class PCBossBarTranslator implements PacketTranslator<ServerBossBarPacket
                 //bossEventPacket.setOverlay(0);
                 break;
             default:
-                log.warn("Unhandled boss bar action: " + packet.getAction().name());
+                log.info(TextFormat.GRAY + "(debug) Unhandled boss bar action: " + packet.getAction().name());
         }
 
         session.getBedrockSession().sendPacket(bossEventPacket);

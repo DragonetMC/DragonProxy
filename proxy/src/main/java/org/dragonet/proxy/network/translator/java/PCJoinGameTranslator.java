@@ -77,8 +77,8 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
         session.getDataCache().put("player_eid", packet.getEntityId());
 
         StartGamePacket startGamePacket = new StartGamePacket();
-        startGamePacket.setUniqueEntityId(1);//packet.getEntityId());
-        startGamePacket.setRuntimeEntityId(1);//packet.getEntityId());
+        startGamePacket.setUniqueEntityId(packet.getEntityId());
+        startGamePacket.setRuntimeEntityId(packet.getEntityId());
         startGamePacket.setPlayerGamemode(packet.getGameMode().ordinal());
         startGamePacket.setPlayerPosition(new Vector3f(0, 50, 0));
         startGamePacket.setRotation(new Vector2f(1, 1));
@@ -148,9 +148,9 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
         session.getBedrockSession().sendPacketImmediately(playStatus);
 
         // Add the player to the cache (still need to remove them, but thats a TODO)
-        session.getEntityCache().getEntities().put((long) 1, new CachedPlayer(packet.getEntityId()));
+        session.getEntityCache().getEntities().put((long) packet.getEntityId(), new CachedPlayer(packet.getEntityId()));
 
-        session.spawn();
+        session.spawn(packet.getEntityId());
     }
 
 }

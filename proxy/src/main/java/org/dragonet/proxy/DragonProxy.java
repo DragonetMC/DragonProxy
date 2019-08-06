@@ -188,6 +188,8 @@ public class DragonProxy {
 
         this.running = false;
 
+        System.exit(0); // Fix hanging
+
         synchronized (this) {
             this.notify();
         }

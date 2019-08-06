@@ -39,6 +39,9 @@ public class PCTitleTranslator implements PacketTranslator<ServerTitlePacket> {
     @Override
     public void translate(ProxySession session, ServerTitlePacket packet) {
         SetTitlePacket bedrockPacket = new SetTitlePacket();
+        bedrockPacket.setFadeInTime(packet.getFadeIn());
+        bedrockPacket.setFadeOutTime(packet.getFadeOut());
+        bedrockPacket.setStayTime(packet.getStay());
 
         switch(packet.getAction()) {
             case ACTION_BAR:
@@ -60,10 +63,6 @@ public class PCTitleTranslator implements PacketTranslator<ServerTitlePacket> {
                 bedrockPacket.setType(SetTitlePacket.Type.CLEAR_TITLE);
                 break;
         }
-
-        bedrockPacket.setFadeInTime(packet.getFadeIn());
-        bedrockPacket.setFadeOutTime(packet.getFadeOut());
-        bedrockPacket.setStayTime(packet.getStay());
 
         session.getBedrockSession().sendPacketImmediately(bedrockPacket);
     }

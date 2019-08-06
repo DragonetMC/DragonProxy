@@ -217,10 +217,10 @@ public class ProxySession implements PlayerSession {
         });
     }
 
-    public void spawn() {
+    public void spawn(long entityId) {
         PlayerListPacket.Entry entry = new PlayerListPacket.Entry(authData.getIdentity());
-        entry.setEntityId(1);
-        entry.setName(authData.getDisplayName() + "test");
+        entry.setEntityId(entityId);
+        entry.setName(authData.getDisplayName());
         entry.setSkinId(clientData.getSkinId());
         entry.setSkinData(clientData.getSkinData());
         entry.setCapeData(clientData.getCapeData());
@@ -233,7 +233,9 @@ public class ProxySession implements PlayerSession {
         playerListPacket.setType(PlayerListPacket.Type.ADD);
         playerListPacket.getEntries().add(entry);
 
-        cachedEntity = (CachedPlayer) entityCache.getById(1); // TODO
+        bedrockSession.sendPacket(playerListPacket);
+
+        cachedEntity = (CachedPlayer) entityCache.getById(entityId); // TODO
         //cachedEntity.spawn(this); // Crashes
 
         log.warn("SPAWN PLAYER");
@@ -293,7 +295,7 @@ public class ProxySession implements PlayerSession {
         playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
         bedrockSession.sendPacketImmediately(playStatusPacket);
 
-        spawn();
+        spawn(1);
     }
 
     public void sendMessage(String text) {

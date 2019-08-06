@@ -36,6 +36,7 @@ import com.nukkitx.protocol.bedrock.packet.ShowCreditsPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.util.TextFormat;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -67,7 +68,7 @@ public class PCNotifyClientTranslator implements PacketTranslator<ServerNotifyCl
             case THUNDER_STRENGTH:
                 double thunderStrength = ((ThunderStrengthValue) packet.getValue()).getStrength();
 
-                log.warn("Thunder strength: " + thunderStrength);
+                log.info(TextFormat.DARK_AQUA + "Thunder strength: " + thunderStrength);
                 if(thunderStrength > 0.0) {
                     // TODO: this doesnt work?
                     session.getBedrockSession().sendPacket(createLevelEvent(START_THUNDER, (int) thunderStrength * 65535));
@@ -83,13 +84,13 @@ public class PCNotifyClientTranslator implements PacketTranslator<ServerNotifyCl
                 session.getBedrockSession().sendPacket(showCreditsPacket);
                 break;
             case DEMO_MESSAGE:
-                log.warn("Demo message received");
+                log.info(TextFormat.AQUA + "Demo message received");
                 break;
             case INVALID_BED:
-                log.warn("Invalid bed");
+                log.info(TextFormat.AQUA + "Invalid bed");
                 break;
             case ARROW_HIT_PLAYER:
-                log.warn("Arrow hit player!");
+                log.info(TextFormat.AQUA + "Arrow hit player!");
                 break;
         }
     }

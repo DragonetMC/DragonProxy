@@ -27,7 +27,7 @@ The project has been undergoing a rewrite for some time, and development has rec
 - [x] Titles
 - [x] Bossbar
 - [ ] Scoreboard
-- [ ] Statistics viewing
+- [ ] Statistics viewing (./stats)
   - [x] General
   - [ ] Items
   - [ ] Mobs

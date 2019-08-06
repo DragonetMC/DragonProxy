@@ -32,14 +32,12 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.world.*;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.google.common.base.Preconditions;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
-import com.nukkitx.protocol.bedrock.packet.AnimatePacket;
-import com.nukkitx.protocol.bedrock.packet.CommandRequestPacket;
-import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
-import com.nukkitx.protocol.bedrock.packet.TextPacket;
+import com.nukkitx.protocol.bedrock.packet.*;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.bedrock.*;
 import org.dragonet.proxy.network.translator.bedrock.player.PEMovePlayerTranslator;
+import org.dragonet.proxy.network.translator.bedrock.player.PEPlayerActionTranslator;
 import org.dragonet.proxy.network.translator.java.*;
 import org.dragonet.proxy.network.translator.java.entity.*;
 import org.dragonet.proxy.network.translator.java.player.*;
@@ -77,12 +75,15 @@ public class PacketTranslatorRegistry<P> {
             .addTranslator(ServerSetSlotPacket.class, PCSetSlotTranslator.INSTANCE)
             .addTranslator(ServerWindowItemsPacket.class, PCWindowItemsTranslator.INSTANCE)
             .addTranslator(ServerStatisticsPacket.class, PCStatisticsTranslator.INSTANCE)
-            .addTranslator(ServerSpawnParticlePacket.class, PCSpawnParticleTranslator.INSTANCE);
+            .addTranslator(ServerSpawnParticlePacket.class, PCSpawnParticleTranslator.INSTANCE)
+            .addTranslator(ServerExplosionPacket.class, PCExplosionTranslator.INSTANCE);
 
         BEDROCK_TO_JAVA.addTranslator(TextPacket.class, PETextTranslator.INSTANCE)
             .addTranslator(AnimatePacket.class, PEAnimateTranslator.INSTANCE)
             .addTranslator(CommandRequestPacket.class, PECommandRequestTranslator.INSTANCE)
-            .addTranslator(MovePlayerPacket.class, PEMovePlayerTranslator.INSTANCE);
+            .addTranslator(MovePlayerPacket.class, PEMovePlayerTranslator.INSTANCE)
+            .addTranslator(PlayerActionPacket.class, PEPlayerActionTranslator.INSTANCE)
+            .addTranslator(InventoryTransactionPacket.class, PEInventoryTransactionTranslator.INSTANCE);
     }
 
     private final Map<Class<?>, PacketTranslator<P>> translators = new HashMap<>();
