@@ -24,15 +24,19 @@ package org.dragonet.proxy.network.translator.java.world;
 
 import com.flowpowered.math.vector.Vector3f;
 import com.github.steveice10.mc.protocol.data.MagicValues;
+import com.github.steveice10.mc.protocol.data.game.world.notify.DemoMessageValue;
+import com.github.steveice10.mc.protocol.data.game.world.notify.EnterCreditsValue;
 import com.github.steveice10.mc.protocol.data.game.world.notify.RainStrengthValue;
 import com.github.steveice10.mc.protocol.data.game.world.notify.ThunderStrengthValue;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
 import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
 import static com.nukkitx.protocol.bedrock.packet.LevelEventPacket.Event.*;
 import com.nukkitx.protocol.bedrock.packet.SetPlayerGameTypePacket;
+import com.nukkitx.protocol.bedrock.packet.ShowCreditsPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.util.TextFormat;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -64,15 +68,29 @@ public class PCNotifyClientTranslator implements PacketTranslator<ServerNotifyCl
             case THUNDER_STRENGTH:
                 double thunderStrength = ((ThunderStrengthValue) packet.getValue()).getStrength();
 
-                log.warn("Thunder strength: " + thunderStrength);
+                log.info(TextFormat.DARK_AQUA + "Thunder strength: " + thunderStrength);
                 if(thunderStrength > 0.0) {
+                    // TODO: this doesnt work?
                     session.getBedrockSession().sendPacket(createLevelEvent(START_THUNDER, (int) thunderStrength * 65535));
                 } else {
                     session.getBedrockSession().sendPacket(createLevelEvent(STOP_THUNDER, 0));
                 }
                 break;
+            case ENTER_CREDITS:
+                ShowCreditsPacket showCreditsPacket = new ShowCreditsPacket();
+                showCreditsPacket.setRuntimeEntityId(session.getCachedEntity().getEntityId());
+                showCreditsPacket.setStatus(ShowCreditsPacket.Status.START_CREDITS);
+
+                session.getBedrockSession().sendPacket(showCreditsPacket);
+                break;
+            case DEMO_MESSAGE:
+                log.info(TextFormat.AQUA + "Demo message received");
+                break;
             case INVALID_BED:
-                log.warn("Invalid bed");
+                log.info(TextFormat.AQUA + "Invalid bed");
+                break;
+            case ARROW_HIT_PLAYER:
+                log.info(TextFormat.AQUA + "Arrow hit player!");
                 break;
         }
     }

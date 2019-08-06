@@ -228,4 +228,17 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
         PacketTranslatorRegistry.BEDROCK_TO_JAVA.translate(session, packet);
         return true;
     }
+
+    @Override
+    public boolean handle(PlayerActionPacket packet) {
+        PacketTranslatorRegistry.BEDROCK_TO_JAVA.translate(session, packet);
+        return true;
+    }
+
+    @Override
+    public boolean handle(InventoryTransactionPacket packet) {
+        PacketTranslatorRegistry.BEDROCK_TO_JAVA.translate(session, packet);
+        return true;
+    }
+
 }

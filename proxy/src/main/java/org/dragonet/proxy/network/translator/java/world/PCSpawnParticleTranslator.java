@@ -20,22 +20,30 @@
  * @author Dragonet Foundation
  * @link https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.java;
+package org.dragonet.proxy.network.translator.java.world;
 
-import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDisconnectPacket;
+import com.flowpowered.math.vector.Vector3f;
+import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerSpawnParticlePacket;
+import com.nukkitx.protocol.bedrock.packet.SpawnParticleEffectPacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.types.MessageTranslator;
 
+@Log4j2
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PCDisconnectTranslator implements PacketTranslator<ServerDisconnectPacket> {
-    public static final PCDisconnectTranslator INSTANCE = new PCDisconnectTranslator();
+public class PCSpawnParticleTranslator implements PacketTranslator<ServerSpawnParticlePacket> {
+    public static final PCSpawnParticleTranslator INSTANCE = new PCSpawnParticleTranslator();
 
     @Override
-    public void translate(ProxySession session, ServerDisconnectPacket packet) {
-        session.disconnect(MessageTranslator.translate(packet.getReason().getText()));
+    public void translate(ProxySession session, ServerSpawnParticlePacket packet) {
+        // This doesnt work yet, ffs Mojang
+        SpawnParticleEffectPacket spawnParticlePacket = new SpawnParticleEffectPacket();
+        spawnParticlePacket.setDimensionId(0);
+        spawnParticlePacket.setIdentifier("minecraft:heart");
+        spawnParticlePacket.setPosition(new Vector3f(0, 48, 2));
+
+        //session.getBedrockSession().sendPacket(spawnParticlePacket);
     }
 }
-

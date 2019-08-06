@@ -5,7 +5,7 @@
     <parent>
         <artifactId>dragonproxy-parent</artifactId>
         <groupId>org.dragonet.proxy</groupId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -17,100 +17,56 @@
             <artifactId>jackson-core</artifactId>
             <version>2.9.0</version>
         </dependency>
-
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.9.0</version>
         </dependency>
-
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
             <version>2.9.0</version>
-        </dependency>
-        <!-- Common annotations -->
-        <!-- Checker qual, contains @NonNull -->
-        <dependency>
-            <groupId>org.checkerframework</groupId>
-            <artifactId>checker-qual</artifactId>
-            <version>2.6.0</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>2.11.2</version>
         </dependency>
-        <!-- Guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>27.0.1-jre</version>
         </dependency>
-        <!-- GSON -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.8.5</version>
         </dependency>
-        <!-- Apache commons -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.8.1</version>
         </dependency>
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.25</version>
         </dependency>
-
-        <!-- Dependencies -->
-        <!-- Terminal console appender -->
         <dependency>
             <groupId>net.minecrell</groupId>
             <artifactId>terminalconsoleappender</artifactId>
             <version>1.1.1</version>
         </dependency>
-        <!-- Dependency injection library -->
         <dependency>
             <groupId>ch.jalu</groupId>
             <artifactId>injector</artifactId>
             <version>1.0</version>
         </dependency>
-        <!-- Configuration library -->
         <dependency>
             <groupId>ch.jalu</groupId>
             <artifactId>configme</artifactId>
             <version>1.0.1</version>
         </dependency>
-        <!-- EventBus library -->
-        <dependency>
-            <groupId>net.kyori</groupId>
-            <artifactId>event-method-asm</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-        <!-- Netty networking library -->
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>4.1.33.Final</version>
-        </dependency>
-        <!-- RakNet networking library -->
-        <dependency>
-            <groupId>com.whirvis</groupId>
-            <artifactId>jraknet</artifactId>
-            <version>2.10.7</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-handler</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!-- Minecraft Java networking library -->
         <dependency>
             <groupId>com.github.steveice10</groupId>
             <artifactId>mcprotocollib</artifactId>
@@ -151,23 +107,12 @@
             <artifactId>mcauthlib</artifactId>
             <version>1.1-SNAPSHOT</version>
         </dependency>
-        <!-- Text api -->
-        <dependency>
-            <groupId>net.kyori</groupId>
-            <artifactId>text</artifactId>
-            <version>1.12-1.6.5</version>
-        </dependency>
-        <!-- Nukkit -->
         <dependency>
             <groupId>com.nukkitx.protocol</groupId>
             <artifactId>bedrock-v361</artifactId>
             <version>2.1.2</version>
             <scope>compile</scope>
         </dependency>
-
-
-        <!-- Runtime dependencies -->
-        <!-- Logger implementation -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>

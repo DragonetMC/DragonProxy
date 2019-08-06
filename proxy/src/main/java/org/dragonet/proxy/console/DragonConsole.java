@@ -22,30 +22,17 @@
  */
 package org.dragonet.proxy.console;
 
-import net.kyori.text.Component;
-import net.kyori.text.serializer.ComponentSerializers;
+import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import net.minecrell.terminalconsole.SimpleTerminalConsole;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.dragonet.proxy.DragonProxy;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
-import org.slf4j.Logger;
 
-import javax.inject.Inject;
-
+@Log4j2
+@AllArgsConstructor
 public class DragonConsole extends SimpleTerminalConsole {
-
-    @Inject
     private DragonProxy proxy;
-    @Inject
-    private Logger logger;
-
-    DragonConsole() {
-    }
-
-    public void sendMessage(@NonNull Component component) {
-        logger.info(ComponentSerializers.LEGACY.serialize(component));
-    }
 
     @Override
     protected LineReader buildReader(LineReaderBuilder builder) {
@@ -65,14 +52,14 @@ public class DragonConsole extends SimpleTerminalConsole {
                 break;
             }
             case ("help"): {
-                logger.info("\nCommands:\nstop: stop the DragonProxy server\nhelp: show this page");
+                log.info("\nCommands:\nstop: stop the DragonProxy server\nhelp: show this page");
                 break;
             }
             case "kill":
                 System.exit(0);
                 break;
             default: {
-                logger.info("Unknown command: " + command);
+                log.info("Unknown command: " + command);
                 break;
             }
         }

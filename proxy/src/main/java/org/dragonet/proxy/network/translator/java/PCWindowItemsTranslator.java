@@ -41,7 +41,7 @@ public class PCWindowItemsTranslator implements PacketTranslator<ServerWindowIte
     public void translate(ProxySession session, ServerWindowItemsPacket packet) {
         WindowCache windowCache = session.getWindowCache();
         if(!windowCache.getWindows().containsKey(packet.getWindowId())) {
-            log.warn("WindowItemsTranslator: Window not in cache, id: " + packet.getWindowId());
+            log.info("(debug) WindowItemsTranslator: Window not in cache, id: " + packet.getWindowId());
             return;
         }
         CachedWindow window = windowCache.getWindows().get(packet.getWindowId());
