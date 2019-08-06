@@ -48,3 +48,5 @@ Clone the repo recursively and then run `mvn clean install`. The output jar will
 ### Libraries used
 * [NukkitX Protocol Library](https://github.com/NukkitX/Protocol)
 * [MCProtocolLib by Steveice10](https://github.com/Steveice10/MCProtocolLib)
+
+CircleCI: [![CircleCI](https://circleci.com/gh/DragonetMC/DragonProxy.svg?style=svg)](https://circleci.com/gh/DragonetMC/DragonProxy)
