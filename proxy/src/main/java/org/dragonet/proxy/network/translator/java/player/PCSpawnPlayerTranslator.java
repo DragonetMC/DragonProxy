@@ -53,7 +53,7 @@ public class PCSpawnPlayerTranslator implements PacketTranslator<ServerSpawnPlay
         addPlayerPacket.setPlayerPermission(0);
         addPlayerPacket.setPlatformChatId("");
 
-        log.warn("Received spawn player packet");
+        //log.warn("Received spawn player packet");
         //session.getBedrockSession().sendPacket(addPlayerPacket);
     }
 }

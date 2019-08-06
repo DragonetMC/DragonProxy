@@ -39,8 +39,8 @@ public class CachedPlayer extends CachedEntity {
         AddPlayerPacket addPlayerPacket = new AddPlayerPacket();
         addPlayerPacket.setUuid(session.getAuthData().getIdentity());
         addPlayerPacket.setUsername(session.getAuthData().getDisplayName());
-        addPlayerPacket.setRuntimeEntityId(1);
-        addPlayerPacket.setUniqueEntityId(1);
+        addPlayerPacket.setRuntimeEntityId(entityId);
+        addPlayerPacket.setUniqueEntityId(entityId);
         addPlayerPacket.setPlatformChatId("");
         addPlayerPacket.setPosition(new Vector3f(0, 50, 0));
         addPlayerPacket.setMotion(Vector3f.ZERO);

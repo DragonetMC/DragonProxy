@@ -22,9 +22,13 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
+import com.flowpowered.math.vector.Vector3f;
 import com.github.steveice10.mc.protocol.data.game.BossBarAction;
 import com.github.steveice10.mc.protocol.data.game.BossBarColor;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerBossBarPacket;
+import com.nukkitx.protocol.bedrock.data.EntityData;
+import com.nukkitx.protocol.bedrock.data.EntityDataDictionary;
+import com.nukkitx.protocol.bedrock.packet.AddEntityPacket;
 import com.nukkitx.protocol.bedrock.packet.BossEventPacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -41,16 +45,20 @@ public class PCBossBarTranslator implements PacketTranslator<ServerBossBarPacket
 
     @Override
     public void translate(ProxySession session, ServerBossBarPacket packet) {
+        // NOTE: see https://github.com/DragonetMC/DragonProxy/issues/424
         BossEventPacket bossEventPacket = new BossEventPacket();
         bossEventPacket.setColor(1);
         bossEventPacket.setOverlay(1);
         bossEventPacket.setDarkenSky(1);
-        bossEventPacket.setPlayerUniqueEntityId(((Integer) session.getDataCache().get("player_eid")).longValue());
-        bossEventPacket.setBossUniqueEntityId(((Integer) session.getDataCache().get("player_eid")).longValue()); // TODO
+        bossEventPacket.setPlayerUniqueEntityId(session.getCachedEntity().getEntityId());
+        bossEventPacket.setBossUniqueEntityId(2); // TODO
 
         switch(packet.getAction()) {
             case ADD:
-                bossEventPacket.setTitle(MessageTranslator.translate(packet.getTitle().getText()));
+                // See the documentation for addFakeEntity() below
+                addFakeEntity(session);
+
+                bossEventPacket.setTitle(MessageTranslator.translate(packet.getTitle().getFullText()));
                 bossEventPacket.setType(BossEventPacket.Type.SHOW);
                 bossEventPacket.setHealthPercentage(packet.getHealth());
                 break;
@@ -63,7 +71,7 @@ public class PCBossBarTranslator implements PacketTranslator<ServerBossBarPacket
                 break;
             case UPDATE_TITLE:
                 bossEventPacket.setType(BossEventPacket.Type.TITLE);
-                bossEventPacket.setTitle(MessageTranslator.translate(packet.getTitle().getText()));
+                bossEventPacket.setTitle(MessageTranslator.translate(packet.getTitle().getFullText()));
                 break;
             case UPDATE_STYLE:
                 //bossEventPacket.setType(BossEventPacket.Type.OVERLAY);
@@ -74,5 +82,29 @@ public class PCBossBarTranslator implements PacketTranslator<ServerBossBarPacket
         }
 
         session.getBedrockSession().sendPacket(bossEventPacket);
+    }
+
+    /**
+     * This method sends a fake entity to the bedrock client as an entity is needed
+     * for the bossbar to be displayed.
+     *
+     * In the future maybe this could be tied to a real entity, once the spawn mob translator
+     * is finished.
+     */
+    private void addFakeEntity(ProxySession session) {
+        AddEntityPacket addEntityPacket = new AddEntityPacket();
+        addEntityPacket.setUniqueEntityId(2);
+        addEntityPacket.setRuntimeEntityId(2);
+        addEntityPacket.setIdentifier("minecraft:slime");
+        addEntityPacket.setPosition(new Vector3f(0, 60, 0));
+        addEntityPacket.setMotion(new Vector3f(0, 0, 0));
+        addEntityPacket.setRotation(Vector3f.ZERO);
+        addEntityPacket.setEntityType(37);
+
+        EntityDataDictionary metadata = new EntityDataDictionary();
+        metadata.put(EntityData.SCALE, 0);
+        addEntityPacket.getMetadata().putAll(metadata);
+
+        session.getBedrockSession().sendPacket(addEntityPacket);
     }
 }
