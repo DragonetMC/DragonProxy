@@ -32,6 +32,7 @@ import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.types.InventoryTranslator;
+import org.dragonet.proxy.util.TextFormat;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Log4j2
@@ -42,7 +43,7 @@ public class PCSetSlotTranslator implements PacketTranslator<ServerSetSlotPacket
     public void translate(ProxySession session, ServerSetSlotPacket packet) {
         WindowCache windowCache = session.getWindowCache();
         if(!windowCache.getWindows().containsKey(packet.getWindowId())) {
-            log.warn("SetSlotTranslator: Window not in cache, id: " + packet.getWindowId());
+            log.info(TextFormat.GRAY + "(debug) SetSlotTranslator: Window not in cache, id: " + packet.getWindowId());
             return;
         }
         CachedWindow window = windowCache.getWindows().get(packet.getWindowId());

@@ -20,22 +20,31 @@
  * @author Dragonet Foundation
  * @link https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.java;
+package org.dragonet.proxy.network.translator.java.world;
 
-import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDisconnectPacket;
+import com.flowpowered.math.vector.Vector3f;
+import com.flowpowered.math.vector.Vector3i;
+import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerExplosionPacket;
+import com.nukkitx.protocol.bedrock.packet.ExplodePacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.types.MessageTranslator;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PCDisconnectTranslator implements PacketTranslator<ServerDisconnectPacket> {
-    public static final PCDisconnectTranslator INSTANCE = new PCDisconnectTranslator();
+public class PCExplosionTranslator implements PacketTranslator<ServerExplosionPacket> {
+    public static final PCExplosionTranslator INSTANCE = new PCExplosionTranslator();
 
     @Override
-    public void translate(ProxySession session, ServerDisconnectPacket packet) {
-        session.disconnect(MessageTranslator.translate(packet.getReason().getText()));
+    public void translate(ProxySession session, ServerExplosionPacket packet) {
+        ExplodePacket explodePacket = new ExplodePacket();
+        explodePacket.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
+        explodePacket.setRadius(packet.getRadius());
+
+        packet.getExploded().forEach((record) -> {
+            explodePacket.getRecords().add(new Vector3i(record.getX(), record.getY(), record.getZ()));
+        });
+
+        session.getBedrockSession().sendPacket(explodePacket);
     }
 }
-

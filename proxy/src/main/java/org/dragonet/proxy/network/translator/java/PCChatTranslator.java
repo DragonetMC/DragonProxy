@@ -59,8 +59,6 @@ public class PCChatTranslator implements PacketTranslator<ServerChatPacket> {
         }
 
         if(packet.getMessage() instanceof TranslationMessage) {
-            log.warn("needs translation");
-
             textPacket.setNeedsTranslation(true);
             textPacket.setType(TextPacket.Type.TRANSLATION);
             textPacket.setMessage(MessageTranslator.translationTranslateText((TranslationMessage) packet.getMessage()));

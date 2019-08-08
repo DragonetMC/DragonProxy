@@ -64,7 +64,6 @@ import javax.annotation.Nonnull;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -125,13 +124,6 @@ public class ProxySession implements PlayerSession {
             @Override
             public void disconnected(DisconnectedEvent event) {
                 log.info("Player  disconnected from remote. Reason: " + event.getReason());
-
-                if(dataCache.get("auth_state") == AuthState.AUTHENTICATING) {
-                    sendMessage(TextFormat.GOLD + "Disconnected from remote: " + TextFormat.WHITE + event.getReason());
-                    sendMessage(TextFormat.AQUA + "Enter your credentials again to retry");
-                    dataCache.put("auth_state", AuthState.AUTHENTICATING);
-                    return;
-                }
                 bedrockSession.disconnect(event.getReason());
             }
 
@@ -167,6 +159,11 @@ public class ProxySession implements PlayerSession {
                 // Start connecting to remote server
                 RemoteServer remoteServer = new RemoteServer("local", proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort());
                 connect(remoteServer);
+
+                // Enable coordinates now
+                GameRulesChangedPacket gameRulesChangedPacket = new GameRulesChangedPacket();
+                gameRulesChangedPacket.getGameRules().add(new GameRule<>("showcoordinates", true));
+                bedrockSession.sendPacket(gameRulesChangedPacket);
 
                 dataCache.put("auth_state", AuthState.AUTHENTICATED);
 
@@ -220,10 +217,10 @@ public class ProxySession implements PlayerSession {
         });
     }
 
-    public void spawn() {
+    public void spawn(long entityId) {
         PlayerListPacket.Entry entry = new PlayerListPacket.Entry(authData.getIdentity());
-        entry.setEntityId(1);
-        entry.setName(authData.getDisplayName() + "test");
+        entry.setEntityId(entityId);
+        entry.setName(authData.getDisplayName());
         entry.setSkinId(clientData.getSkinId());
         entry.setSkinData(clientData.getSkinData());
         entry.setCapeData(clientData.getCapeData());
@@ -236,7 +233,9 @@ public class ProxySession implements PlayerSession {
         playerListPacket.setType(PlayerListPacket.Type.ADD);
         playerListPacket.getEntries().add(entry);
 
-        cachedEntity = (CachedPlayer) entityCache.getById(1); // TODO
+        bedrockSession.sendPacket(playerListPacket);
+
+        cachedEntity = (CachedPlayer) entityCache.getById(entityId); // TODO
         //cachedEntity.spawn(this); // Crashes
 
         log.warn("SPAWN PLAYER");
@@ -247,7 +246,7 @@ public class ProxySession implements PlayerSession {
         startGamePacket.setUniqueEntityId(entityCache.nextFakePlayerid());
         startGamePacket.setRuntimeEntityId(entityCache.nextFakePlayerid());
         startGamePacket.setPlayerGamemode(0);
-        startGamePacket.setPlayerPosition(Vector3f.ZERO);
+        startGamePacket.setPlayerPosition(new Vector3f(0, 50, 0));
         startGamePacket.setRotation(Vector2f.ZERO);
 
         startGamePacket.setSeed(1111);
@@ -296,7 +295,7 @@ public class ProxySession implements PlayerSession {
         playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
         bedrockSession.sendPacketImmediately(playStatusPacket);
 
-        spawn();
+        spawn(1);
     }
 
     public void sendMessage(String text) {
