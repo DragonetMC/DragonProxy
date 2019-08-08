@@ -34,6 +34,7 @@ import com.nukkitx.protocol.bedrock.data.ItemData;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.translator.types.item.ItemEntry;
+import org.dragonet.proxy.util.TextFormat;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -98,6 +99,7 @@ public class ItemTranslator {
                 continue;
             }
             ItemEntry.BedrockItem bedrockItem = BEDROCK_ITEMS.get(identifier);
+
             if(item.getNBT() == null) {
                 return ItemData.of(bedrockItem.getRuntimeId(), (short) getBedrockData(javaItem.getIdentifier()), item.getAmount());
             }
