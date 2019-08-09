@@ -30,17 +30,23 @@ import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import com.nukkitx.protocol.bedrock.v361.BedrockUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import lombok.Getter;
 import org.dragonet.proxy.DragonProxy;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
 public class PaletteManager {
     private ByteBuf cachedPalette;
     private List<StartGamePacket.ItemEntry> itemEntries;
+    private static final Int2IntArrayMap legacyToRuntimeId = new Int2IntArrayMap();
+    private static final Int2IntArrayMap runtimeIdToLegacy = new Int2IntArrayMap();
+    private static final AtomicInteger runtimeIdAllocator = new AtomicInteger(0);
 
     public PaletteManager() {
         loadBlocks();
@@ -68,6 +74,7 @@ public class PaletteManager {
         VarInts.writeUnsignedInt(cachedPalette, entries.size());
 
         for (RuntimeEntry entry : entries) {
+            registerMapping((entry.id << 4) | entry.data);
             BedrockUtils.writeString(cachedPalette, entry.name);
             cachedPalette.writeShortLE(entry.data);
             cachedPalette.writeShortLE(entry.id);
@@ -96,6 +103,25 @@ public class PaletteManager {
         for(RuntimeEntry entry : entries) {
             itemEntries.add(new StartGamePacket.ItemEntry(entry.name, (short) entry.id));
         }
+    }
+
+    public static int getOrCreateRuntimeId(int id, int meta) {
+        return getOrCreateRuntimeId((id << 4) | meta);
+    }
+
+    public static int getOrCreateRuntimeId(int legacyId) throws NoSuchElementException {
+        int runtimeId = legacyToRuntimeId.get(legacyId);
+        if (runtimeId == -1) {
+            throw new NoSuchElementException("Unmapped block registered id:" + (legacyId >>> 4) + " meta:" + (legacyId & 0xf));
+        }
+        return runtimeId;
+    }
+
+    private static int registerMapping(int legacyId) {
+        int runtimeId = runtimeIdAllocator.getAndIncrement();
+        runtimeIdToLegacy.put(runtimeId, legacyId);
+        legacyToRuntimeId.put(legacyId, runtimeId);
+        return runtimeId;
     }
 
     private static class RuntimeEntry {

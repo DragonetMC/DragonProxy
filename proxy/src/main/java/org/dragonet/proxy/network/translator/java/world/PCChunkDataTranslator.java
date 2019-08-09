@@ -22,28 +22,38 @@
  */
 package org.dragonet.proxy.network.translator.java.world;
 
+import com.flowpowered.math.vector.Vector2f;
 import com.github.steveice10.mc.protocol.data.game.chunk.Column;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.data.chunk.ChunkData;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Log4j2
 public class PCChunkDataTranslator implements PacketTranslator<ServerChunkDataPacket> {
     public static final PCChunkDataTranslator INSTANCE = new PCChunkDataTranslator();
 
     @Override
     public void translate(ProxySession session, ServerChunkDataPacket packet) {
         Column column = packet.getColumn();
-        LevelChunkPacket fullChunkData = new LevelChunkPacket();
-        fullChunkData.setChunkX(column.getX());
-        fullChunkData.setChunkZ(column.getZ());
-        fullChunkData.setData(new byte[0]);
 
-        // TODO: 01/04/2019 Finish off chunk data
+        session.getChunkCache().getChunks().put(new Vector2f(column.getX(), column.getZ()), column);
 
-        //session.getBedrockSession().sendPacket(fullChunkData);
+        ChunkData chunkData = session.getChunkCache().translateChunk(column.getX(), column.getZ());
+        if(chunkData != null) {
+            LevelChunkPacket levelChunkPacket = chunkData.createChunkPacket();
+            levelChunkPacket.setChunkX(column.getX());
+            levelChunkPacket.setChunkZ(column.getZ());
+            levelChunkPacket.setCachingEnabled(false);
+
+            session.getBedrockSession().sendPacket(levelChunkPacket);
+        } else {
+            log.warn("ChunkData is null");
+        }
     }
 }
