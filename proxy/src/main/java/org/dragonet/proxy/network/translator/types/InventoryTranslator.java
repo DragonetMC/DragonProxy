@@ -28,6 +28,7 @@ import com.nukkitx.protocol.bedrock.data.ItemData;
 import com.nukkitx.protocol.bedrock.packet.InventoryContentPacket;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.util.TextFormat;
 
 public class InventoryTranslator {
 
