@@ -34,6 +34,7 @@ import com.nukkitx.protocol.bedrock.data.ItemData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.data.chunk.ChunkData;
 import org.dragonet.proxy.data.chunk.ChunkSection;
 import org.dragonet.proxy.network.session.ProxySession;
@@ -72,8 +73,31 @@ public class ChunkCache implements Cache {
                 chunkData.sections[i] = new ChunkSection();
             }
 
-            // TODO: translate blocks and stuff
-            return chunkData;
+            // Blocks
+            for (int y = 0; y < 256; y++) {
+                int cy = y >> 4;
+
+                Chunk c = null;
+                try {
+                    c = column.getChunks()[cy];
+                } catch (Exception ex) {
+                    log.warn("Chunk " + columnX + ", " + cy + ", " + columnZ + " not exist !");
+                }
+                if (c == null || c.isEmpty())
+                    continue;
+                BlockStorage blocks = c.getBlocks();
+                for (int x = 0; x < 16; x++)
+                    for (int z = 0; z < 16; z++) {
+                        BlockState block = blocks.get(x, y & 0xF, z);
+                        ItemData entry = ItemTranslator.translateToBedrock(new ItemStack(block.getId()));
+
+                        ChunkSection section = chunkData.sections[cy];
+                        int lol = DragonProxy.INSTANCE.getPaletteManager().fromLegacy(entry.getId(), (byte) 0);
+                        // Block id
+                        section.setFullBlock(x, y >> 4, z, 0, 5 << 2);
+
+                    }
+            }
         }
         return null;
     }

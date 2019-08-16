@@ -53,7 +53,7 @@ public class PCChunkDataTranslator implements PacketTranslator<ServerChunkDataPa
 
             session.getBedrockSession().sendPacket(levelChunkPacket);
         } else {
-            log.warn("ChunkData is null");
+            //log.warn("ChunkData is null");
         }
     }
 }

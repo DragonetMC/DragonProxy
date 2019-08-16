@@ -117,6 +117,14 @@ public class PaletteManager {
         return runtimeId;
     }
 
+    public int fromLegacy(int id, byte data) {
+        int runtimeId;
+        if ((runtimeId = legacyToRuntimeId.get((id << 4) | data)) == -1) {
+            throw new IllegalArgumentException("Unknown legacy id");
+        }
+        return runtimeId;
+    }
+
     private static int registerMapping(int legacyId) {
         int runtimeId = runtimeIdAllocator.getAndIncrement();
         runtimeIdToLegacy.put(runtimeId, legacyId);

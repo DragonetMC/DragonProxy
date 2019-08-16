@@ -18,11 +18,10 @@ import org.dragonet.proxy.data.chunk.palette.PaletteVersion;
 import org.dragonet.proxy.util.PaletteManager;
 
 public class BlockStorage {
-
     private static final int SIZE = 4096;
 
     private final TIntArrayList ids;
-    private Palette palette;
+    public Palette palette;
 
     public BlockStorage() {
         this(PaletteVersion.V2);
