@@ -156,7 +156,8 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
     public boolean handle(ResourcePackClientResponsePacket packet) {
         switch (packet.getStatus()) {
             case COMPLETED:
-                if(proxy.getConfiguration().getRemoteAuthType() == RemoteAuthType.CREDENTIALS) {
+                if(proxy.getConfiguration().getRemoteAuthType() == RemoteAuthType.CREDENTIALS
+                    || proxy.getConfiguration().getRemoteAuthType() == RemoteAuthType.ONLINE) {
                     session.getDataCache().put("auth_state", AuthState.AUTHENTICATING);
                     session.sendFakeStartGame();
                     session.sendLoginForm();

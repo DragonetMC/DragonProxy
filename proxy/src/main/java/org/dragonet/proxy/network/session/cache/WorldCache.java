@@ -24,6 +24,8 @@ package org.dragonet.proxy.network.session.cache;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.dragonet.proxy.data.scoreboard.Scoreboard;
 import org.dragonet.proxy.data.stats.StatInfo;
 
 import java.util.HashMap;
@@ -34,6 +36,9 @@ import java.util.Map;
 public class WorldCache implements Cache {
     private Map<StatInfo, Integer> statistics = new HashMap();
     private double rainLevel = 0.0;
+
+    @Setter
+    private Scoreboard scoreboard;
 
     @Override
     public void purge() {

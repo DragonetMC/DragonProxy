@@ -26,6 +26,10 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.scoreboard.ServerDisplayScoreboardPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.scoreboard.ServerScoreboardObjectivePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.scoreboard.ServerTeamPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.scoreboard.ServerUpdateScorePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.*;
@@ -41,6 +45,10 @@ import org.dragonet.proxy.network.translator.bedrock.player.PEPlayerActionTransl
 import org.dragonet.proxy.network.translator.java.*;
 import org.dragonet.proxy.network.translator.java.entity.*;
 import org.dragonet.proxy.network.translator.java.player.*;
+import org.dragonet.proxy.network.translator.java.scoreboard.PCDisplayScoreboardTranslator;
+import org.dragonet.proxy.network.translator.java.scoreboard.PCScoreboardObjectiveTranslator;
+import org.dragonet.proxy.network.translator.java.scoreboard.PCTeamTranslator;
+import org.dragonet.proxy.network.translator.java.scoreboard.PCUpdateScoreTranslator;
 import org.dragonet.proxy.network.translator.java.world.*;
 
 import java.util.HashMap;
@@ -76,7 +84,11 @@ public class PacketTranslatorRegistry<P> {
             .addTranslator(ServerWindowItemsPacket.class, PCWindowItemsTranslator.INSTANCE)
             .addTranslator(ServerStatisticsPacket.class, PCStatisticsTranslator.INSTANCE)
             .addTranslator(ServerSpawnParticlePacket.class, PCSpawnParticleTranslator.INSTANCE)
-            .addTranslator(ServerExplosionPacket.class, PCExplosionTranslator.INSTANCE);
+            .addTranslator(ServerExplosionPacket.class, PCExplosionTranslator.INSTANCE)
+            .addTranslator(ServerScoreboardObjectivePacket.class, PCScoreboardObjectiveTranslator.INSTANCE)
+            .addTranslator(ServerTeamPacket.class, PCTeamTranslator.INSTANCE)
+            .addTranslator(ServerDisplayScoreboardPacket.class, PCDisplayScoreboardTranslator.INSTANCE)
+            .addTranslator(ServerUpdateScorePacket.class, PCUpdateScoreTranslator.INSTANCE);
 
         BEDROCK_TO_JAVA.addTranslator(TextPacket.class, PETextTranslator.INSTANCE)
             .addTranslator(AnimatePacket.class, PEAnimateTranslator.INSTANCE)

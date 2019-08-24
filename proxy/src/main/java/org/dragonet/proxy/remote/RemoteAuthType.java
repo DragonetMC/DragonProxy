@@ -24,5 +24,6 @@ package org.dragonet.proxy.remote;
 
 public enum RemoteAuthType {
     CREDENTIALS,
+    ONLINE, // Same as credentials, but i would prefer you to use credentials
     OFFLINE
 }
