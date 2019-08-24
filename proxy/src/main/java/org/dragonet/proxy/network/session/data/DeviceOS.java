@@ -37,5 +37,6 @@ public enum DeviceOS {
     WIN32,
     DEDICATED,
     ORBIS,
-    NX
+    NX,
+    XBOXONE
 }
