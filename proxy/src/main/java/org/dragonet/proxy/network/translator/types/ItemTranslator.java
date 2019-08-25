@@ -96,11 +96,11 @@ public class ItemTranslator {
             }
             ItemEntry.BedrockItem bedrockItem = BEDROCK_ITEMS.get(identifier);
 
-            if(item.getNBT() == null) {
+            if(item.getNbt() == null) {
                 return ItemData.of(bedrockItem.getRuntimeId(), (short) getBedrockData(javaItem.getIdentifier()), item.getAmount());
             }
 
-            return ItemData.of(bedrockItem.getRuntimeId(), (short) getBedrockData(javaItem.getIdentifier()), item.getAmount(), translateItemNBT(item.getNBT()));
+            return ItemData.of(bedrockItem.getRuntimeId(), (short) getBedrockData(javaItem.getIdentifier()), item.getAmount(), translateItemNBT(item.getNbt()));
         }
         return ItemData.AIR;
     }

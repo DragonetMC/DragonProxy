@@ -36,10 +36,10 @@ public class PCEntityPositionRotationPacketTranslator implements PacketTranslato
         MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
 
         moveEntityPacket.setRuntimeEntityId(packet.getEntityId());
-        moveEntityPacket.setPosition(new Vector3f(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ()));
+        moveEntityPacket.setPosition(new Vector3f(packet.getMoveX(), packet.getMoveY(), packet.getMoveZ()));
         moveEntityPacket.setTeleported(false);
         moveEntityPacket.setOnGround(true);
-        moveEntityPacket.setRotation(new Vector3f(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ()));
+        moveEntityPacket.setRotation(new Vector3f(packet.getMoveX(), packet.getMoveY(), packet.getMoveZ()));
 
         session.getBedrockSession().sendPacket(moveEntityPacket);
     }

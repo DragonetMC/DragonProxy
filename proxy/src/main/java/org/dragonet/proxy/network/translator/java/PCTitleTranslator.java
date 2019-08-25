@@ -46,7 +46,7 @@ public class PCTitleTranslator implements PacketTranslator<ServerTitlePacket> {
         switch(packet.getAction()) {
             case ACTION_BAR:
                 bedrockPacket.setType(SetTitlePacket.Type.SET_ACTIONBAR_MESSAGE);
-                bedrockPacket.setText(MessageTranslator.translate(packet.getActionBar().getText()));
+                bedrockPacket.setText(MessageTranslator.translate(packet.getTitle().getText()));
                 break;
             case TITLE:
                 bedrockPacket.setType(SetTitlePacket.Type.SET_TITLE);
@@ -54,7 +54,7 @@ public class PCTitleTranslator implements PacketTranslator<ServerTitlePacket> {
                 break;
             case SUBTITLE:
                 bedrockPacket.setType(SetTitlePacket.Type.SET_SUBTITLE);
-                bedrockPacket.setText(MessageTranslator.translate(packet.getSubtitle().getText()));
+                bedrockPacket.setText(MessageTranslator.translate(packet.getTitle().getText()));
                 break;
             case RESET:
                 bedrockPacket.setType(SetTitlePacket.Type.RESET_TITLE);

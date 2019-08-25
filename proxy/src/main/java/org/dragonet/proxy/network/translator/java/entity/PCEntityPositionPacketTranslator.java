@@ -36,8 +36,8 @@ public class PCEntityPositionPacketTranslator implements PacketTranslator<Server
         MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
 
         moveEntityPacket.setRuntimeEntityId(packet.getEntityId());
-        moveEntityPacket.setPosition(new Vector3f(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ()));
-        moveEntityPacket.setRotation(new Vector3f(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ()));
+        moveEntityPacket.setPosition(new Vector3f(packet.getMoveX(), packet.getMoveZ(), packet.getMoveZ()));
+        moveEntityPacket.setRotation(new Vector3f(packet.getMoveX(), packet.getMoveY(), packet.getMoveZ()));
         moveEntityPacket.setOnGround(packet.isOnGround());
         moveEntityPacket.setTeleported(false);
 
