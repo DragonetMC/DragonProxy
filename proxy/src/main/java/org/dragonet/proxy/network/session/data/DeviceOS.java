@@ -36,6 +36,7 @@ public enum DeviceOS {
     WIN10,
     WIN32,
     DEDICATED,
+    TV_OS,
     ORBIS,
     NX,
     XBOXONE
