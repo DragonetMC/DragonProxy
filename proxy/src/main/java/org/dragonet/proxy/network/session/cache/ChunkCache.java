@@ -93,7 +93,7 @@ public class ChunkCache implements Cache {
 
                         ChunkSection section = chunkData.getSection(cy);
                         int runtimeId = PaletteManager.fromLegacy(entry.getId(), (byte) entry.getDamage());
-                        section.setFullBlock(x, y >> 4, z, 0, runtimeId << 2 | entry.getDamage());
+                        section.setFullBlock(x, y >> 4, z, 0, runtimeId << 2 | entry.getDamage()); // Im not sure about this
                     }
                 }
             }
