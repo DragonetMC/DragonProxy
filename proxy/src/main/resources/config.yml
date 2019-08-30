@@ -39,7 +39,7 @@ remote-auth: offline
 xbox-auth: false
 
 # Whether or not to use the motd and player count of the primary remote server
-ping-passthrough: false
+ping-passthrough: true
 
 # The amount of threads that will be used.
 # Only change if you know what you are doing

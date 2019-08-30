@@ -29,9 +29,13 @@ import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.data.chunk.BlockStorage;
 import org.dragonet.proxy.data.chunk.ChunkData;
+import org.dragonet.proxy.data.chunk.ChunkSection;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+
+import java.util.Arrays;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Log4j2
@@ -47,13 +51,18 @@ public class PCChunkDataTranslator implements PacketTranslator<ServerChunkDataPa
         ChunkData chunkData = session.getChunkCache().translateChunk(column.getX(), column.getZ());
         if(chunkData != null) {
             LevelChunkPacket levelChunkPacket = chunkData.createChunkPacket();
-            levelChunkPacket.setChunkX(column.getX());
-            levelChunkPacket.setChunkZ(column.getZ());
             levelChunkPacket.setCachingEnabled(false);
 
+            for (ChunkSection section : chunkData.getSections()) {
+                //log.info("      Chunk section      ");
+                for(BlockStorage storage : section.getBlockStorageArray()) {
+                    int[] blocks = storage.getPalette().toArray();
+                    //log.info(column.getX() + " : " + column.getZ() + "  -  BlockStorage length=" + blocks.length + "[" + Arrays.toString(blocks) + "]");
+                }
+            }
             session.getBedrockSession().sendPacket(levelChunkPacket);
         } else {
-            //log.warn("ChunkData is null");
+            log.warn("ChunkData is null");
         }
     }
 }

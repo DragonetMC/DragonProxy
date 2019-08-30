@@ -40,6 +40,7 @@ import org.dragonet.proxy.data.chunk.ChunkSection;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.types.ItemTranslator;
 import org.dragonet.proxy.network.translator.types.item.ItemEntry;
+import org.dragonet.proxy.util.PaletteManager;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -66,38 +67,37 @@ public class ChunkCache implements Cache {
 
         if (chunks.containsKey(columnPos)) {
             Column column = chunks.get(columnPos);
-            ChunkData chunkData = new ChunkData();
-            chunkData.sections = new ChunkSection[16];
+            ChunkData chunkData = new ChunkData(columnX, columnZ);
 
             for (int i = 0; i < 16; i++) {
-                chunkData.sections[i] = new ChunkSection();
+                chunkData.getOrCreateSection(i);
             }
 
             // Blocks
             for (int y = 0; y < 256; y++) {
                 int cy = y >> 4;
 
-                Chunk c = null;
+                Chunk javaChunk = null;
                 try {
-                    c = column.getChunks()[cy];
+                    javaChunk = column.getChunks()[cy];
                 } catch (Exception ex) {
                     log.warn("Chunk " + columnX + ", " + cy + ", " + columnZ + " not exist !");
                 }
-                if (c == null || c.isEmpty())
+                if (javaChunk == null || javaChunk.isEmpty())
                     continue;
-                BlockStorage blocks = c.getBlocks();
-                for (int x = 0; x < 16; x++)
+                BlockStorage blocks = javaChunk.getBlocks();
+                for (int x = 0; x < 16; x++) {
                     for (int z = 0; z < 16; z++) {
                         BlockState block = blocks.get(x, y & 0xF, z);
                         ItemData entry = ItemTranslator.translateToBedrock(new ItemStack(block.getId()));
 
-                        ChunkSection section = chunkData.sections[cy];
-                        int lol = DragonProxy.INSTANCE.getPaletteManager().fromLegacy(entry.getId(), (byte) 0);
-                        // Block id
-                        section.setFullBlock(x, y >> 4, z, 0, 5 << 2);
-
+                        ChunkSection section = chunkData.getSection(cy);
+                        int runtimeId = PaletteManager.fromLegacy(entry.getId(), (byte) entry.getDamage());
+                        section.setFullBlock(x, y >> 4, z, 0, runtimeId << 2 | entry.getDamage());
                     }
+                }
             }
+            return chunkData;
         }
         return null;
     }

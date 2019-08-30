@@ -8,9 +8,10 @@
  * Copyright (C) 2019 NukkitX
  * https://github.com/NukkitX/Nukkit
  */
-package org.dragonet.proxy.data.chunk.palette;
 
-public interface Palette {
+package org.dragonet.proxy.data.chunk.bitarray;
+
+public interface BitArray {
 
     void set(int index, int value);
 
@@ -20,7 +21,7 @@ public interface Palette {
 
     int[] getWords();
 
-    PaletteVersion getVersion();
+    BitArrayVersion getVersion();
 
-    Palette copy();
+    BitArray copy();
 }

@@ -8,88 +8,137 @@
  * Copyright (C) 2019 NukkitX
  * https://github.com/NukkitX/Nukkit
  */
+
 package org.dragonet.proxy.data.chunk;
 
 import com.nukkitx.network.VarInts;
 import gnu.trove.list.array.TIntArrayList;
 import io.netty.buffer.ByteBuf;
-import org.dragonet.proxy.data.chunk.palette.Palette;
-import org.dragonet.proxy.data.chunk.palette.PaletteVersion;
+import io.netty.buffer.ByteBufInputStream;
+import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.data.chunk.bitarray.BitArray;
+import org.dragonet.proxy.data.chunk.bitarray.BitArrayVersion;
 import org.dragonet.proxy.util.PaletteManager;
 
+import java.io.IOException;
+import java.nio.ByteOrder;
+import java.util.Arrays;
+
+@Log4j2
 public class BlockStorage {
+
     private static final int SIZE = 4096;
 
-    private final TIntArrayList ids;
-    public Palette palette;
+    @Getter
+    private final TIntArrayList palette;
+    @Getter
+    private BitArray bitArray;
 
     public BlockStorage() {
-        this(PaletteVersion.V2);
+        this(BitArrayVersion.V2);
     }
 
-    public BlockStorage(PaletteVersion version) {
-        this.palette = version.createPalette(SIZE);
-        this.ids = new TIntArrayList(16, -1);
-        this.ids.add(0); // Air is at the start of every palette.
+    public BlockStorage(BitArrayVersion version) {
+        this.bitArray = version.createPalette(SIZE);
+        this.palette = new TIntArrayList(16, -1);
+        this.palette.add(0); // Air is at the start of every palette.
+
+//        for(PaletteManager.RuntimeEntry entry : DragonProxy.INSTANCE.getPaletteManager().getEntries() ) {
+//            log.info("1: " + entry.getId() + " // 2: " + (entry.getId() | entry.getData()) + " // 3: " + PaletteManager.getOrCreateRuntimeId(entry.getId(), entry.getData()));
+//            this.palette.add(PaletteManager.getOrCreateRuntimeId(entry.getId(), entry.getData()));
+//        }
     }
 
-    private BlockStorage(Palette palette, TIntArrayList ids) {
-        this.ids = ids;
+    private BlockStorage(BitArray bitArray, TIntArrayList palette) {
         this.palette = palette;
+        this.bitArray = bitArray;
     }
 
-    public synchronized int getFullBlock(int xzy) {
-        return this.palette.get(xzy);
+    public synchronized int getFullBlock(int index) {
+        return this.legacyIdFor(this.bitArray.get(index));
     }
 
     public synchronized void setFullBlock(int index, int legacyId) {
-        this.palette.set(index, this.idFor(legacyId));
+        int idx = this.idFor(legacyId);
+        this.bitArray.set(index, idx);
     }
 
     public synchronized void writeToNetwork(ByteBuf buffer) {
-        buffer.writeByte(getPaletteHeader(palette.getVersion(), true));
+        buffer.writeByte(getPaletteHeader(bitArray.getVersion(), true));
 
-        for (int word : palette.getWords()) {
+        for (int word : bitArray.getWords()) {
             buffer.writeIntLE(word);
         }
 
-        VarInts.writeUnsignedInt(buffer, ids.size());
-        ids.forEach(id -> {
-            VarInts.writeUnsignedInt(buffer, id);
+        VarInts.writeInt(buffer, palette.size());
+        palette.forEach(id -> {
+            VarInts.writeInt(buffer, id);
             return true;
         });
     }
 
     public synchronized void writeToStorage(ByteBuf buffer) {
-        buffer.writeByte(getPaletteHeader(palette.getVersion(), false));
-        for (int word : palette.getWords()) {
+        buffer.writeByte(getPaletteHeader(bitArray.getVersion(), false));
+        for (int word : bitArray.getWords()) {
             buffer.writeIntLE(word);
         }
 
         //TODO: Write persistent NBT tags
     }
 
-    private synchronized void onResize(PaletteVersion version) {
-        Palette oldPalette = this.palette;
-        this.palette = version.createPalette(SIZE);
+//    public synchronized void readFromStorage(ByteBuf buffer) {
+//        BitArrayVersion version = getVersionFromHeader(buffer.readByte());
+//
+//        int expectedWordCount = version.getWordsForSize(SIZE);
+//        int[] words = new int[expectedWordCount];
+//        for (int i = 0; i < expectedWordCount; i++) {
+//            words[i] = buffer.readIntLE();
+//        }
+//        this.bitArray = version.createPalette(SIZE, words);
+//
+//        this.palette.clear();
+//        this.palette.add(0);
+//        int paletteSize = buffer.readIntLE();
+//        try (ByteBufInputStream stream = new ByteBufInputStream(buffer); NBTInputStream nbtStream =
+//            new NBTInputStream(stream, ByteOrder.LITTLE_ENDIAN, false)) {
+//            for (int i = 0; i < paletteSize; i++) {
+//                CompoundTag tag = (CompoundTag) Tag.readNamedTag(nbtStream);
+//                int id = PaletteManager.getLegacyIdFromName(tag.getString("name"));
+//                int data = tag.getShort("data");
+//                if (id == 0) {
+//                    continue;
+//                }
+//
+//                this.palette.add(PaletteManager.getOrCreateRuntimeId(id, data));
+//            }
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+
+    private void onResize(BitArrayVersion version) {
+        BitArray newBitArray = version.createPalette(SIZE);
 
         for (int i = 0; i < SIZE; i++) {
-            this.palette.set(i, oldPalette.get(i));
+            newBitArray.set(i, this.bitArray.get(i));
         }
+        this.bitArray = newBitArray;
     }
 
     private int idFor(int legacyId) {
         int runtimeId = PaletteManager.getOrCreateRuntimeId(legacyId);
-        int index = this.ids.indexOf(runtimeId);
+        int index = this.palette.indexOf(runtimeId);
         if (index != -1) {
             return index;
         }
 
-        index = this.ids.size();
-        this.ids.add(runtimeId);
-        PaletteVersion version = this.palette.getVersion();
+        index = this.palette.size();
+        this.palette.add(runtimeId);
+        BitArrayVersion version = this.bitArray.getVersion();
         if (index > version.getMaxEntryValue()) {
-            PaletteVersion next = version.next();
+            BitArrayVersion next = version.next();
             if (next != null) {
                 this.onResize(next);
             }
@@ -97,12 +146,21 @@ public class BlockStorage {
         return index;
     }
 
-    private static int getPaletteHeader(PaletteVersion version, boolean runtime) {
-        return (version.getVersion() << 1) | (runtime ? 1 : 0);
+    private int legacyIdFor(int index) {
+        int runtimeId = this.palette.get(index);
+        return PaletteManager.getLegacyId(runtimeId);
+    }
+
+    private static int getPaletteHeader(BitArrayVersion version, boolean runtime) {
+        return (version.getId() << 1) | (runtime ? 1 : 0);
+    }
+
+    private static BitArrayVersion getVersionFromHeader(byte header) {
+        return BitArrayVersion.get(header >> 1, true);
     }
 
     public boolean isEmpty() {
-        for (int word : this.palette.getWords()) {
+        for (int word : this.bitArray.getWords()) {
             if (word != 0) {
                 return false;
             }
@@ -111,6 +169,6 @@ public class BlockStorage {
     }
 
     public BlockStorage copy() {
-        return new BlockStorage(this.palette.copy(), new TIntArrayList(this.ids));
+        return new BlockStorage(this.bitArray.copy(), new TIntArrayList(this.palette));
     }
 }

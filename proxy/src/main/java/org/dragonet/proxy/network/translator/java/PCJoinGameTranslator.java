@@ -80,7 +80,7 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
         startGamePacket.setUniqueEntityId(packet.getEntityId());
         startGamePacket.setRuntimeEntityId(packet.getEntityId());
         startGamePacket.setPlayerGamemode(packet.getGameMode().ordinal());
-        startGamePacket.setPlayerPosition(new Vector3f(0, 50, 0));
+        startGamePacket.setPlayerPosition(new Vector3f(-23, 70, 0)); // Hypixel bedwars lobby spawn
         startGamePacket.setRotation(new Vector2f(1, 1));
 
         startGamePacket.setSeed(1111);
@@ -88,7 +88,7 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
         startGamePacket.setGeneratorId(0);
         startGamePacket.setLevelGamemode(packet.getGameMode().ordinal());
         startGamePacket.setDifficulty(0);
-        startGamePacket.setDefaultSpawn(new Vector3i(0, 50, 0));
+        startGamePacket.setDefaultSpawn(new Vector3i(-23, 70, 0));
         startGamePacket.setAcheivementsDisabled(true);
         startGamePacket.setTime(0);
         startGamePacket.setEduLevel(false);
@@ -128,7 +128,7 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
 
         session.getBedrockSession().sendPacketImmediately(startGamePacket);
 
-        Vector3f pos = new Vector3f(0, 50, 0);
+        Vector3f pos = new Vector3f(-23, 70, 0);
         int chunkX = pos.getFloorX() >> 4;
         int chunkZ = pos.getFloorX() >> 4;
 
@@ -139,6 +139,7 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
                 data.setChunkZ(chunkZ + z);
                 data.setSubChunksLength(0);
                 data.setData(EMPTY_LEVEL_CHUNK_DATA);
+                data.setCachingEnabled(false);
                 session.getBedrockSession().sendPacketImmediately(data);
             }
         }
@@ -151,6 +152,7 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
         session.getEntityCache().getEntities().put((long) packet.getEntityId(), new CachedPlayer(packet.getEntityId()));
 
         session.spawn(packet.getEntityId());
+        session.getCachedEntity().setPosition(new Vector3f(-23, 70, 0));
     }
 
 }

@@ -15,7 +15,8 @@ import io.netty.buffer.ByteBuf;
 import lombok.Synchronized;
 
 public class ChunkSection {
-    private static final int CHUNK_SECTION_VERSION = 8;
+
+    public static final int CHUNK_SECTION_VERSION = 8;
     public static final int SIZE = 4096;
 
     private final BlockStorage[] storage;
@@ -24,7 +25,7 @@ public class ChunkSection {
 
     public ChunkSection() {
         this(new BlockStorage[]{new BlockStorage(), new BlockStorage()}, new NibbleArray(SIZE),
-            new NibbleArray(SIZE));
+                new NibbleArray(SIZE));
     }
 
     public ChunkSection(BlockStorage[] blockStorage) {
@@ -52,37 +53,37 @@ public class ChunkSection {
     public int getFullBlock(int x, int y, int z, int layer) {
         checkBounds(x, y, z);
         Preconditions.checkElementIndex(layer, this.storage.length);
-        return this.storage[layer].getFullBlock(blockPosition(x, y, z));
+        return this.storage[layer].getFullBlock(blockIndex(x, y, z));
     }
 
     public void setFullBlock(int x, int y, int z, int layer, int fullBlock) {
         checkBounds(x, y, z);
         Preconditions.checkElementIndex(layer, this.storage.length);
-        this.storage[layer].setFullBlock(blockPosition(x, y, z), fullBlock);
+        this.storage[layer].setFullBlock(blockIndex(x, y, z), fullBlock);
     }
 
     @Synchronized("skyLight")
     public byte getSkyLight(int x, int y, int z) {
         checkBounds(x, y, z);
-        return this.skyLight.get(blockPosition(x, y, z));
+        return this.skyLight.get(blockIndex(x, y, z));
     }
 
     @Synchronized("skyLight")
     public void setSkyLight(int x, int y, int z, byte val) {
         checkBounds(x, y, z);
-        this.skyLight.set(blockPosition(x, y, z), val);
+        this.skyLight.set(blockIndex(x, y, z), val);
     }
 
     @Synchronized("blockLight")
     public byte getBlockLight(int x, int y, int z) {
         checkBounds(x, y, z);
-        return this.blockLight.get(blockPosition(x, y, z));
+        return this.blockLight.get(blockIndex(x, y, z));
     }
 
     @Synchronized("blockLight")
     public void setBlockLight(int x, int y, int z, byte val) {
         checkBounds(x, y, z);
-        this.blockLight.set(blockPosition(x, y, z), val);
+        this.blockLight.set(blockIndex(x, y, z), val);
     }
 
     public void writeToNetwork(ByteBuf buffer) {
@@ -122,7 +123,7 @@ public class ChunkSection {
         return new ChunkSection(storage, skyLight.copy(), blockLight.copy());
     }
 
-    private static int blockPosition(int x, int y, int z) {
+    public static int blockIndex(int x, int y, int z) {
         return (x << 8) | (z << 4) | y;
     }
 

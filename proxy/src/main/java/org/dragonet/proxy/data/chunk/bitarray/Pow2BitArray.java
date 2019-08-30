@@ -8,14 +8,15 @@
  * Copyright (C) 2019 NukkitX
  * https://github.com/NukkitX/Nukkit
  */
-package org.dragonet.proxy.data.chunk.palette;
+
+package org.dragonet.proxy.data.chunk.bitarray;
 
 import com.google.common.base.Preconditions;
 import org.dragonet.proxy.util.MathUtils;
 
 import java.util.Arrays;
 
-public class PaddedPalette implements Palette {
+public class Pow2BitArray implements BitArray {
 
     /**
      * Array used to store data
@@ -25,60 +26,69 @@ public class PaddedPalette implements Palette {
     /**
      * Palette version information
      */
-    private final PaletteVersion version;
+    private final BitArrayVersion version;
 
     /**
      * Number of entries in this palette (<b>not</b> the length of the words array that internally backs this palette)
      */
     private final int size;
 
-    PaddedPalette(PaletteVersion version, int size, int[] words) {
+    Pow2BitArray(BitArrayVersion version, int size, int[] words) {
         this.size = size;
         this.version = version;
         this.words = words;
         int expectedWordsLength = MathUtils.ceil((float) size / version.entriesPerWord);
         if (words.length != expectedWordsLength) {
             throw new IllegalArgumentException("Invalid length given for storage, got: " + words.length +
-                " but expected: " + expectedWordsLength);
+                    " but expected: " + expectedWordsLength);
         }
     }
 
-    @Override
+    /**
+     * Sets the entry at the given location to the given value
+     */
     public void set(int index, int value) {
         Preconditions.checkElementIndex(index, this.size);
-        Preconditions.checkArgument(value >= 0 && value <= this.version.maxEntryValue, "Invalid value");
-        int arrayIndex = index / this.version.entriesPerWord;
-        int offset = (index % this.version.entriesPerWord) * this.version.bits;
-
+        Preconditions.checkArgument(value >= 0 && value <= this.version.maxEntryValue, "Invalid value %s", value);
+        int bitIndex = index * this.version.bits;
+        int arrayIndex = bitIndex >> 5;
+        int offset = bitIndex & 31;
         this.words[arrayIndex] = this.words[arrayIndex] & ~(this.version.maxEntryValue << offset) | (value & this.version.maxEntryValue) << offset;
     }
 
-    @Override
+    /**
+     * Gets the entry at the given index
+     */
     public int get(int index) {
         Preconditions.checkElementIndex(index, this.size);
-        int arrayIndex = index / this.version.entriesPerWord;
-        int offset = (index % this.version.entriesPerWord) * this.version.bits;
-
-        return (this.words[arrayIndex] >>> offset) & this.version.maxEntryValue;
+        int bitIndex = index * this.version.bits;
+        int arrayIndex = bitIndex >> 5;
+        int wordOffset = bitIndex & 31;
+        return this.words[arrayIndex] >>> wordOffset & this.version.maxEntryValue;
     }
 
-    @Override
+    /**
+     * Gets the long array that is used to store the data in this BitArray. This is useful for sending packet data.
+     */
     public int size() {
         return this.size;
     }
 
+    /**
+     * {@inheritDoc}
+     * @return {@inheritDoc}
+     */
     @Override
     public int[] getWords() {
         return this.words;
     }
 
-    @Override
-    public PaletteVersion getVersion() {
-        return this.version;
+    public BitArrayVersion getVersion() {
+        return version;
     }
 
     @Override
-    public Palette copy() {
-        return new PaddedPalette(this.version, this.size, Arrays.copyOf(this.words, this.words.length));
+    public BitArray copy() {
+        return new Pow2BitArray(this.version, this.size, Arrays.copyOf(this.words, this.words.length));
     }
 }

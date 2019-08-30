@@ -52,7 +52,7 @@ public class PaletteManager {
         loadBlocks();
         loadItems();
     }
-
+private ArrayList<RuntimeEntry> entries = new ArrayList<>();
     private void loadBlocks() {
         InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("data/runtimeid_table.json");
         if (stream == null) {
@@ -62,7 +62,7 @@ public class PaletteManager {
         ObjectMapper mapper = new ObjectMapper();
         CollectionType type = mapper.getTypeFactory().constructCollectionType(ArrayList.class, RuntimeEntry.class);
 
-        ArrayList<RuntimeEntry> entries = new ArrayList<>();
+        //ArrayList<RuntimeEntry> entries = new ArrayList<>();
         try {
             entries = mapper.readValue(stream, type);
         } catch (Exception e) {
@@ -117,12 +117,20 @@ public class PaletteManager {
         return runtimeId;
     }
 
-    public int fromLegacy(int id, byte data) {
+    public static int fromLegacy(int id, byte data) {
         int runtimeId;
         if ((runtimeId = legacyToRuntimeId.get((id << 4) | data)) == -1) {
             throw new IllegalArgumentException("Unknown legacy id");
         }
         return runtimeId;
+    }
+
+    public static int getLegacyId(int runtimeId) {
+        int legacyId;
+        if ((legacyId = runtimeIdToLegacy.get(runtimeId)) == -1) {
+            throw new IllegalArgumentException("Unknown runtime id");
+        }
+        return legacyId;
     }
 
     private static int registerMapping(int legacyId) {
@@ -132,7 +140,8 @@ public class PaletteManager {
         return runtimeId;
     }
 
-    private static class RuntimeEntry {
+    @Getter
+    public static class RuntimeEntry {
         @JsonProperty("name")
         private String name;
         @JsonProperty("id")

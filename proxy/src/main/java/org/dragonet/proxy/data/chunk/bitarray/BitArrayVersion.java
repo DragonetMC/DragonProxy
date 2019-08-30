@@ -8,11 +8,12 @@
  * Copyright (C) 2019 NukkitX
  * https://github.com/NukkitX/Nukkit
  */
-package org.dragonet.proxy.data.chunk.palette;
+
+package org.dragonet.proxy.data.chunk.bitarray;
 
 import org.dragonet.proxy.util.MathUtils;
 
-public enum PaletteVersion {
+public enum BitArrayVersion {
     V16(16, 2, null),
     V8(8, 4, V16),
     V6(6, 5, V8), // 2 bit padding
@@ -25,42 +26,46 @@ public enum PaletteVersion {
     final byte bits;
     final byte entriesPerWord;
     final int maxEntryValue;
-    final PaletteVersion next;
+    final BitArrayVersion next;
 
-    PaletteVersion(int bits, int entriesPerWord, PaletteVersion next) {
+    BitArrayVersion(int bits, int entriesPerWord, BitArrayVersion next) {
         this.bits = (byte) bits;
         this.entriesPerWord = (byte) entriesPerWord;
         this.maxEntryValue = (1 << this.bits) - 1;
         this.next = next;
     }
 
-    public Palette createPalette(int size) {
+    public BitArray createPalette(int size) {
         return this.createPalette(size, new int[MathUtils.ceil((float) size / entriesPerWord)]);
     }
 
-    public byte getVersion() {
+    public byte getId() {
         return bits;
+    }
+
+    public int getWordsForSize(int size) {
+        return MathUtils.ceil((float) size / entriesPerWord);
     }
 
     public int getMaxEntryValue() {
         return maxEntryValue;
     }
 
-    public PaletteVersion next() {
+    public BitArrayVersion next() {
         return next;
     }
 
-    public Palette createPalette(int size, int[] words) {
+    public BitArray createPalette(int size, int[] words) {
         if (this == V3 || this == V5 || this == V6) {
             // Padded palettes aren't able to use bitwise operations due to their padding.
-            return new PaddedPalette(this, size, words);
+            return new PaddedBitArray(this, size, words);
         } else {
-            return new Pow2Palette(this, size, words);
+            return new Pow2BitArray(this, size, words);
         }
     }
 
-    private static PaletteVersion getVersion(int version, boolean read) {
-        for (PaletteVersion ver : values()) {
+    public static BitArrayVersion get(int version, boolean read) {
+        for (BitArrayVersion ver : values()) {
             if ( ( !read && ver.entriesPerWord <= version ) || ( read && ver.bits == version ) ) {
                 return ver;
             }
