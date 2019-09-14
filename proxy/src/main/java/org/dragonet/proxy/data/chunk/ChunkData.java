@@ -337,17 +337,19 @@ public final class ChunkData implements Closeable {
         packet.setChunkX(this.x);
         packet.setChunkZ(this.z);
 
-        int subChunkCount = 16;//this.sections.length - 1;
-//
-//        while (this.sections[subChunkCount] == null) {
-//            subChunkCount--;
-//        }
-        ChunkSection[] sections = Arrays.copyOf(this.sections, subChunkCount + 1);
-        for (int i = 0; i <= subChunkCount; i++) {
-            if (sections[i] == null) {
-                sections[i] = EMPTY;
-            }
+        int subChunkCount = sections.length - 1;
+
+        while (subChunkCount >= 0 && sections[subChunkCount].isEmpty()) {
+            subChunkCount--;
         }
+        subChunkCount++;
+
+//        ChunkSection[] sections = Arrays.copyOf(this.sections, subChunkCount + 1);
+//        for (int i = 0; i <= subChunkCount; i++) {
+//            if (sections[i] == null) {
+//                sections[i] = EMPTY;
+//            }
+//        }
 
         packet.setSubChunksLength(subChunkCount);
 
@@ -361,15 +363,16 @@ public final class ChunkData implements Closeable {
             buffer.writeByte(0); // Border blocks size - Education Edition only
 
             // Extra Data
-            TIntShortMap extraData = this.extraData;
-            VarInts.writeUnsignedInt(buffer, extraData.size());
-            if (!extraData.isEmpty()) {
-                extraData.forEachEntry((position, data) -> {
-                    VarInts.writeInt(buffer, position);
-                    buffer.writeShortLE(data);
-                    return false;
-                });
-            }
+            VarInts.writeUnsignedInt(buffer, 0);
+//            TIntShortMap extraData = this.extraData;
+//            VarInts.writeUnsignedInt(buffer, extraData.size());
+//            if (!extraData.isEmpty()) {
+//                extraData.forEachEntry((position, data) -> {
+//                    VarInts.writeInt(buffer, position);
+//                    buffer.writeShortLE(data);
+//                    return false;
+//                });
+//            }
 
             // Block entities
 //            if (!this.tiles.isEmpty()) {

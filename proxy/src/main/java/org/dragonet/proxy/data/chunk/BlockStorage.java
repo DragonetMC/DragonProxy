@@ -14,17 +14,11 @@ package org.dragonet.proxy.data.chunk;
 import com.nukkitx.network.VarInts;
 import gnu.trove.list.array.TIntArrayList;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.data.chunk.bitarray.BitArray;
 import org.dragonet.proxy.data.chunk.bitarray.BitArrayVersion;
 import org.dragonet.proxy.util.PaletteManager;
-
-import java.io.IOException;
-import java.nio.ByteOrder;
-import java.util.Arrays;
 
 @Log4j2
 public class BlockStorage {
@@ -61,7 +55,10 @@ public class BlockStorage {
     }
 
     public synchronized void setFullBlock(int index, int legacyId) {
-        int idx = this.idFor(legacyId);
+        int runtimeId = PaletteManager.getOrCreateRuntimeId(legacyId);
+        int idx = this.idFor(runtimeId);
+
+//        int idx = this.idFor(legacyId);
         this.bitArray.set(index, idx);
     }
 
@@ -127,8 +124,7 @@ public class BlockStorage {
         this.bitArray = newBitArray;
     }
 
-    private int idFor(int legacyId) {
-        int runtimeId = PaletteManager.getOrCreateRuntimeId(legacyId);
+    private int idFor(int runtimeId) {
         int index = this.palette.indexOf(runtimeId);
         if (index != -1) {
             return index;
