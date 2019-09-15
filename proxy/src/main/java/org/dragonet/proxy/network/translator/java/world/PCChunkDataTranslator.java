@@ -26,6 +26,7 @@ import com.flowpowered.math.vector.Vector2f;
 import com.github.steveice10.mc.protocol.data.game.chunk.Column;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
+import com.nukkitx.protocol.bedrock.packet.NetworkChunkPublisherUpdatePacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -48,18 +49,16 @@ public class PCChunkDataTranslator implements PacketTranslator<ServerChunkDataPa
 
         session.getChunkCache().getChunks().put(new Vector2f(column.getX(), column.getZ()), column);
 
+        NetworkChunkPublisherUpdatePacket chunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
+        chunkPublisherUpdatePacket.setPosition(session.getCachedEntity().getPosition().toInt());
+        chunkPublisherUpdatePacket.setRadius(8 << 4);
+        session.getBedrockSession().sendPacket(chunkPublisherUpdatePacket);
+
         ChunkData chunkData = session.getChunkCache().translateChunk(column.getX(), column.getZ());
         if(chunkData != null) {
             LevelChunkPacket levelChunkPacket = chunkData.createChunkPacket();
             levelChunkPacket.setCachingEnabled(false);
 
-            for (ChunkSection section : chunkData.getSections()) {
-                //log.info("      Chunk section      ");
-                for(BlockStorage storage : section.getBlockStorageArray()) {
-                    int[] blocks = storage.getPalette().toArray();
-                    //log.info(column.getX() + " : " + column.getZ() + "  -  BlockStorage length=" + blocks.length + "[" + Arrays.toString(blocks) + "]");
-                }
-            }
             session.getBedrockSession().sendPacket(levelChunkPacket);
         } else {
             log.warn("ChunkData is null");

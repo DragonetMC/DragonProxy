@@ -28,25 +28,16 @@ import com.github.steveice10.mc.protocol.data.game.chunk.Chunk;
 import com.github.steveice10.mc.protocol.data.game.chunk.Column;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
-import com.github.steveice10.opennbt.NBTIO;
-import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.data.ItemData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.data.chunk.ChunkData;
 import org.dragonet.proxy.data.chunk.ChunkSection;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.types.ItemTranslator;
-import org.dragonet.proxy.network.translator.types.item.ItemEntry;
-import org.dragonet.proxy.util.PaletteManager;
 
-import java.io.IOException;
-import java.nio.ByteOrder;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -83,8 +74,7 @@ public class ChunkCache implements Cache {
                 } catch (Exception ex) {
                     log.warn("Chunk " + columnX + ", " + cy + ", " + columnZ + " not exist !");
                 }
-                if (javaChunk == null || javaChunk.isEmpty())
-                    continue;
+                if (javaChunk == null || javaChunk.isEmpty()) continue;
                 BlockStorage blocks = javaChunk.getBlocks();
                 for (int x = 0; x < 16; x++) {
                     for (int z = 0; z < 16; z++) {
@@ -92,8 +82,7 @@ public class ChunkCache implements Cache {
                         ItemData entry = ItemTranslator.translateToBedrock(new ItemStack(block.getId()));
 
                         ChunkSection section = chunkData.getSection(cy);
-                        int runtimeId = PaletteManager.fromLegacy(entry.getId(), (byte) entry.getDamage());
-                        section.setFullBlock(x, y >> 4, z, 0, runtimeId << 2 | entry.getDamage()); // Im not sure about this
+                        section.setFullBlock(x, y & 0xF, z, 0, entry.getId() << 4 | entry.getDamage());
                     }
                 }
             }
