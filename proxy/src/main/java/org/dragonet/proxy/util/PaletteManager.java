@@ -48,11 +48,13 @@ public class PaletteManager {
     private static final Int2IntArrayMap runtimeIdToLegacy = new Int2IntArrayMap();
     private static final AtomicInteger runtimeIdAllocator = new AtomicInteger(0);
 
+    private static ArrayList<RuntimeEntry> entries = new ArrayList<>();
+
     public PaletteManager() {
         loadBlocks();
         loadItems();
     }
-private ArrayList<RuntimeEntry> entries = new ArrayList<>();
+
     private void loadBlocks() {
         InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("data/runtimeid_table.json");
         if (stream == null) {
@@ -115,6 +117,15 @@ private ArrayList<RuntimeEntry> entries = new ArrayList<>();
             throw new NoSuchElementException("Unmapped block registered id:" + (legacyId >>> 4) + " meta:" + (legacyId & 0xf));
         }
         return runtimeId;
+    }
+
+    public static RuntimeEntry getRuntimeEntry(String identifier) {
+        for (RuntimeEntry entry : entries) {
+            if (entry.name.equals(identifier)) {
+                return entry;
+            }
+        }
+        return null;
     }
 
     public static int fromLegacy(int id, byte data) {

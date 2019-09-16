@@ -35,7 +35,9 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.chunk.ChunkData;
 import org.dragonet.proxy.data.chunk.ChunkSection;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.translator.types.BlockTranslator;
 import org.dragonet.proxy.network.translator.types.ItemTranslator;
+import org.dragonet.proxy.util.PaletteManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -79,10 +81,10 @@ public class ChunkCache implements Cache {
                 for (int x = 0; x < 16; x++) {
                     for (int z = 0; z < 16; z++) {
                         BlockState block = blocks.get(x, y & 0xF, z);
-                        ItemData entry = ItemTranslator.translateToBedrock(new ItemStack(block.getId()));
-
+                        ItemData entry = BlockTranslator.translateToBedrock(new ItemStack(block.getId()));
+                        int idx = PaletteManager.fromLegacy(entry.getId(), (byte) 0);
                         ChunkSection section = chunkData.getSection(cy);
-                        section.setFullBlock(x, y & 0xF, z, 0, entry.getId() << 4 | entry.getDamage());
+                        section.setFullBlock(x, y & 0xF, z, 0, entry.getId() << 4);
                     }
                 }
             }

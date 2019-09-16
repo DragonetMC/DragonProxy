@@ -246,7 +246,7 @@ public class ProxySession implements PlayerSession {
         startGamePacket.setUniqueEntityId(entityCache.nextFakePlayerid());
         startGamePacket.setRuntimeEntityId(entityCache.nextFakePlayerid());
         startGamePacket.setPlayerGamemode(0);
-        startGamePacket.setPlayerPosition(new Vector3f(-23, 70, 0)); // Hypixel bedwars lobby spawn
+        startGamePacket.setPlayerPosition(new Vector3f(-23, 73, 0)); // Hypixel bedwars lobby spawn
         startGamePacket.setRotation(Vector2f.ZERO);
 
         startGamePacket.setSeed(1111);
