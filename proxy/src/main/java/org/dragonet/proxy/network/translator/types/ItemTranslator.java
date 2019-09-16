@@ -35,10 +35,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Log4j2
 public class ItemTranslator {
@@ -105,32 +102,31 @@ public class ItemTranslator {
 
         JsonArray array = new JsonArray();
 
-        for(Map.Entry<String, ItemEntry.JavaItem> javaItem : JAVA_ITEMS.entrySet()) {
-            for(Map.Entry<String, ItemEntry.BedrockItem> bedrockItem : BEDROCK_ITEMS.entrySet()) {
-                if(bedrockItem.getValue().getIdentifier().equalsIgnoreCase(javaItem.getKey())) {
-                    ItemEntry.JavaItem item = javaItem.getValue();
-                    conversions.computeIfAbsent(item, (x) -> new ArrayList<>());
-                    conversions.get(item).add(bedrockItem.getValue());
+        for (ItemEntry.JavaItem javaItem : JAVA_ITEMS.values()) {
+            for (ItemEntry.BedrockItem bedrockItem : BEDROCK_ITEMS.values()) {
+                if (bedrockItem.getIdentifier().equals(javaItem.getIdentifier())) {
+                    conversions.computeIfAbsent(javaItem, (x) -> new ArrayList<>());
+                    conversions.get(javaItem).add(bedrockItem);
                 }
             }
         }
 
-        for(Map.Entry<ItemEntry.JavaItem, List<ItemEntry.BedrockItem>> entry : conversions.entrySet()) {
-            for(ItemEntry.BedrockItem item : entry.getValue()) {
+        for (Map.Entry<ItemEntry.JavaItem, List<ItemEntry.BedrockItem>> entry : conversions.entrySet()) {
+            for (ItemEntry.BedrockItem item : entry.getValue()) {
                 JAVA_TO_BEDROCK_MAP.computeIfAbsent(entry.getKey().getIdentifier(), (x) -> new HashMap<>());
                 BEDROCK_TO_JAVA_MAP.computeIfAbsent(item.getIdentifier(), (x) -> new HashMap<>());
                 Map<String, Object> map = JAVA_TO_BEDROCK_MAP.get(entry.getKey().getIdentifier());
 
                 map.put("name", item.getIdentifier());
-                map.put("id", item.getIdentifier());
+                map.put("id", item.getId());
                 map.put("data", 0);
 
                 // This is what we will use in the future
                 JsonObject object = new JsonObject();
                 object.addProperty("java_identifier", entry.getKey().getIdentifier());
-                object.addProperty("java_protocol_id", entry.getKey().getRuntimeId());
+                object.addProperty("java_protocol_id", entry.getKey().getProtocolId());
                 object.addProperty("bedrock_identifier", item.getIdentifier());
-                object.addProperty("bedrock_runtime_id", item.getRuntimeId());
+                object.addProperty("bedrock_runtime_id", item.getId());
                 object.addProperty("bedrock_data", 0); // TODO
                 array.add(object);
 
@@ -148,30 +144,28 @@ public class ItemTranslator {
     }
 
     public static ItemData translateToBedrock(ItemStack item) {
-        for(Map.Entry<String, ItemEntry.JavaItem> javaItems : JAVA_ITEMS.entrySet()) {
-            if(javaItems.getValue().getRuntimeId() != item.getId()){
-                continue;
-            }
-            ItemEntry.JavaItem javaItem = javaItems.getValue();
+        for (ItemEntry.JavaItem javaItem : JAVA_ITEMS.values()) {
+            if (javaItem.getProtocolId() != item.getId()) continue;
+
             String identifier = getBedrockIdentifier(javaItem.getIdentifier());
-            if(!BEDROCK_ITEMS.containsKey(identifier)) {
-                continue;
-            }
+            if (!BEDROCK_ITEMS.containsKey(identifier)) continue;
+
             ItemEntry.BedrockItem bedrockItem = BEDROCK_ITEMS.get(identifier);
-            if(item.getNBT() == null) {
-                return ItemData.of(bedrockItem.getRuntimeId(), (short) 0, item.getAmount());
+            if (item.getNBT() == null) {
+                return ItemData.of(bedrockItem.getId(), (short) 0, item.getAmount());
             }
 
-            return ItemData.of(bedrockItem.getRuntimeId(), (short) 0, item.getAmount(), translateItemNBT(item.getNBT()));
+            return ItemData.of(bedrockItem.getId(), (short) 0, item.getAmount(), translateItemNBT(item.getNBT()));
         }
         return ItemData.AIR;
     }
 
     private static String getBedrockIdentifier(String javaIdentifier) {
-        if (!JAVA_TO_BEDROCK_MAP.containsKey(javaIdentifier)) {
-            return javaIdentifier;
-        }
-        return (String) JAVA_TO_BEDROCK_MAP.get(javaIdentifier).get("id");
+//        if (!JAVA_TO_BEDROCK_MAP.containsKey(javaIdentifier)) {
+//            return javaIdentifier;
+//        }
+//        return (String) JAVA_TO_BEDROCK_MAP.get(javaIdentifier).get("id");
+        return javaIdentifier;
     }
 
     public static ItemData translateSlotToBedrock(ItemStack item) {

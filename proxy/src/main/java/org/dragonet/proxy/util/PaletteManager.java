@@ -48,11 +48,13 @@ public class PaletteManager {
     private static final Int2IntArrayMap runtimeIdToLegacy = new Int2IntArrayMap();
     private static final AtomicInteger runtimeIdAllocator = new AtomicInteger(0);
 
+    private static ArrayList<RuntimeEntry> bedrockBlocks = new ArrayList<>();
+
     public PaletteManager() {
         loadBlocks();
         loadItems();
     }
-private ArrayList<RuntimeEntry> entries = new ArrayList<>();
+
     private void loadBlocks() {
         InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("data/runtimeid_table.json");
         if (stream == null) {
@@ -62,18 +64,17 @@ private ArrayList<RuntimeEntry> entries = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
         CollectionType type = mapper.getTypeFactory().constructCollectionType(ArrayList.class, RuntimeEntry.class);
 
-        //ArrayList<RuntimeEntry> entries = new ArrayList<>();
         try {
-            entries = mapper.readValue(stream, type);
+            bedrockBlocks = mapper.readValue(stream, type);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         cachedPalette = Unpooled.buffer();
 
-        VarInts.writeUnsignedInt(cachedPalette, entries.size());
+        VarInts.writeUnsignedInt(cachedPalette, bedrockBlocks.size());
 
-        for (RuntimeEntry entry : entries) {
+        for (RuntimeEntry entry : bedrockBlocks) {
             registerMapping((entry.id << 4) | entry.data);
             BedrockUtils.writeString(cachedPalette, entry.name);
             cachedPalette.writeShortLE(entry.data);
@@ -100,7 +101,7 @@ private ArrayList<RuntimeEntry> entries = new ArrayList<>();
 
         itemEntries = new ArrayList<>();
 
-        for(RuntimeEntry entry : entries) {
+        for (RuntimeEntry entry : entries) {
             itemEntries.add(new StartGamePacket.ItemEntry(entry.name, (short) entry.id));
         }
     }
@@ -131,6 +132,15 @@ private ArrayList<RuntimeEntry> entries = new ArrayList<>();
             throw new IllegalArgumentException("Unknown runtime id");
         }
         return legacyId;
+    }
+
+    public static RuntimeEntry getRuntimeEntry(String identifier) {
+        for (RuntimeEntry entry : bedrockBlocks) {
+            if (entry.name.equals(identifier)) {
+                return entry;
+            }
+        }
+        return null;
     }
 
     private static int registerMapping(int legacyId) {

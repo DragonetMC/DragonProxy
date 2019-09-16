@@ -31,13 +31,13 @@ public class ItemEntry {
         @JsonProperty("name")
         private String identifier;
 
-        @JsonProperty("id")
-        private int runtimeId;
+        @JsonProperty
+        private int id;
 
         public BedrockItem() {}
-        public BedrockItem(String identifier, int runtimeId) {
+        public BedrockItem(String identifier, int id) {
             this.identifier = identifier;
-            this.runtimeId = runtimeId;
+            this.id = id;
         }
     }
 
@@ -46,6 +46,6 @@ public class ItemEntry {
         @JsonProperty
         private String identifier;
         @JsonProperty("protocol_id")
-        private int runtimeId;
+        private int protocolId;
     }
 }

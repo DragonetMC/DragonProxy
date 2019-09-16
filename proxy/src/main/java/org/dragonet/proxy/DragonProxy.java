@@ -37,6 +37,7 @@ import org.dragonet.proxy.command.CommandManager;
 import org.dragonet.proxy.configuration.DragonConfiguration;
 import org.dragonet.proxy.console.DragonConsole;
 import org.dragonet.proxy.network.ProxyServerEventListener;
+import org.dragonet.proxy.network.translator.types.BlockTranslator;
 import org.dragonet.proxy.network.translator.types.ItemTranslator;
 import org.dragonet.proxy.util.PaletteManager;
 import org.slf4j.Logger;
@@ -141,6 +142,7 @@ public class DragonProxy {
 
         paletteManager = new PaletteManager();
 
+        new BlockTranslator();
         new ItemTranslator();
 
         commandManager = new CommandManager();

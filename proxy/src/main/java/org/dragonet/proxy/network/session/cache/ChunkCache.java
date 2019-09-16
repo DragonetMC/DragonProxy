@@ -26,16 +26,14 @@ import com.flowpowered.math.vector.Vector2f;
 import com.github.steveice10.mc.protocol.data.game.chunk.BlockStorage;
 import com.github.steveice10.mc.protocol.data.game.chunk.Chunk;
 import com.github.steveice10.mc.protocol.data.game.chunk.Column;
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
-import com.nukkitx.protocol.bedrock.data.ItemData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.chunk.ChunkData;
 import org.dragonet.proxy.data.chunk.ChunkSection;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.types.ItemTranslator;
+import org.dragonet.proxy.network.translator.types.BlockTranslator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -79,10 +77,8 @@ public class ChunkCache implements Cache {
                 for (int x = 0; x < 16; x++) {
                     for (int z = 0; z < 16; z++) {
                         BlockState block = blocks.get(x, y & 0xF, z);
-                        ItemData entry = ItemTranslator.translateToBedrock(new ItemStack(block.getId()));
-
                         ChunkSection section = chunkData.getSection(cy);
-                        section.setFullBlock(x, y & 0xF, z, 0, entry.getId() << 4 | entry.getDamage());
+                        section.setFullBlock(x, y & 0xF, z, 0, BlockTranslator.translateToBedrock(block.getId()));
                     }
                 }
             }

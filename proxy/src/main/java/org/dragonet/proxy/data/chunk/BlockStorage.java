@@ -57,8 +57,6 @@ public class BlockStorage {
     public synchronized void setFullBlock(int index, int legacyId) {
         int runtimeId = PaletteManager.getOrCreateRuntimeId(legacyId);
         int idx = this.idFor(runtimeId);
-
-//        int idx = this.idFor(legacyId);
         this.bitArray.set(index, idx);
     }
 
