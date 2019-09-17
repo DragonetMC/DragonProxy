@@ -23,28 +23,33 @@
 package org.dragonet.proxy.network.session.cache.object;
 
 import com.flowpowered.math.vector.Vector3f;
+import com.github.steveice10.mc.auth.data.GameProfile;
 import com.nukkitx.protocol.bedrock.data.ItemData;
 import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket;
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 
-public class CachedPlayer extends CachedEntity {
+import java.util.UUID;
 
-    public CachedPlayer(long entityId) {
+public class CachedPlayer extends CachedEntity {
+    private GameProfile profile;
+
+    public CachedPlayer(long entityId, GameProfile profile) {
         super(EntityType.PLAYER, entityId);
+        this.profile = profile;
     }
 
     @Override
     public void spawn(ProxySession session) {
         AddPlayerPacket addPlayerPacket = new AddPlayerPacket();
-        addPlayerPacket.setUuid(session.getAuthData().getIdentity());
-        addPlayerPacket.setUsername(session.getAuthData().getDisplayName());
+        addPlayerPacket.setUuid(profile.getId());
+        addPlayerPacket.setUsername(profile.getName());
         addPlayerPacket.setRuntimeEntityId(entityId);
         addPlayerPacket.setUniqueEntityId(entityId);
         addPlayerPacket.setPlatformChatId("");
-        addPlayerPacket.setPosition(new Vector3f(0, 50, 0));
+        addPlayerPacket.setPosition(position);
         addPlayerPacket.setMotion(Vector3f.ZERO);
-        addPlayerPacket.setRotation(Vector3f.ZERO);
+        addPlayerPacket.setRotation(rotation);
         addPlayerPacket.setHand(ItemData.AIR);
         addPlayerPacket.setPlayerFlags(0);
         addPlayerPacket.setCommandPermission(0);
@@ -55,5 +60,7 @@ public class CachedPlayer extends CachedEntity {
 
         session.getBedrockSession().sendPacket(addPlayerPacket);
         spawned = true;
+
+        session.getEntityCache().getEntities().put(entityId, this);
     }
 }

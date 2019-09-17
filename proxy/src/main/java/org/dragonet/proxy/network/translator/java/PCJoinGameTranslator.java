@@ -25,6 +25,7 @@ package org.dragonet.proxy.network.translator.java;
 import com.flowpowered.math.vector.Vector2f;
 import com.flowpowered.math.vector.Vector3f;
 import com.flowpowered.math.vector.Vector3i;
+import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.nbt.NbtUtils;
@@ -149,7 +150,8 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
         session.getBedrockSession().sendPacketImmediately(playStatus);
 
         // Add the player to the cache (still need to remove them, but thats a TODO)
-        session.getEntityCache().getEntities().put((long) packet.getEntityId(), new CachedPlayer(packet.getEntityId()));
+        GameProfile profile = new GameProfile(session.getAuthData().getIdentity(), session.getAuthData().getDisplayName());
+        session.getEntityCache().getEntities().put((long) packet.getEntityId(), new CachedPlayer(packet.getEntityId(), profile));
 
         session.spawn(packet.getEntityId());
         session.getCachedEntity().setPosition(new Vector3f(-23, 70, 0));

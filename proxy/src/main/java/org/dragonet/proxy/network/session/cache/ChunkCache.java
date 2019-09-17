@@ -82,9 +82,9 @@ public class ChunkCache implements Cache {
                     for (int z = 0; z < 16; z++) {
                         BlockState block = blocks.get(x, y & 0xF, z);
                         ItemData entry = BlockTranslator.translateToBedrock(new ItemStack(block.getId()));
-                        int idx = PaletteManager.fromLegacy(entry.getId(), (byte) 0);
+
                         ChunkSection section = chunkData.getSection(cy);
-                        section.setFullBlock(x, y & 0xF, z, 0, entry.getId() << 4);
+                        section.setFullBlock(x, y & 0xF, z, 0, entry.getId() << 4 | entry.getDamage());
                     }
                 }
             }

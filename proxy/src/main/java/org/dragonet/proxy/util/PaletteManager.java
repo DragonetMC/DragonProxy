@@ -48,7 +48,7 @@ public class PaletteManager {
     private static final Int2IntArrayMap runtimeIdToLegacy = new Int2IntArrayMap();
     private static final AtomicInteger runtimeIdAllocator = new AtomicInteger(0);
 
-    private static ArrayList<RuntimeEntry> entries = new ArrayList<>();
+    private ArrayList<RuntimeEntry> entries = new ArrayList<>();
 
     public PaletteManager() {
         loadBlocks();
@@ -117,15 +117,6 @@ public class PaletteManager {
             throw new NoSuchElementException("Unmapped block registered id:" + (legacyId >>> 4) + " meta:" + (legacyId & 0xf));
         }
         return runtimeId;
-    }
-
-    public static RuntimeEntry getRuntimeEntry(String identifier) {
-        for (RuntimeEntry entry : entries) {
-            if (entry.name.equals(identifier)) {
-                return entry;
-            }
-        }
-        return null;
     }
 
     public static int fromLegacy(int id, byte data) {

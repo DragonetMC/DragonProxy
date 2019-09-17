@@ -23,11 +23,13 @@
 package org.dragonet.proxy.network.translator.java.player;
 
 import com.flowpowered.math.vector.Vector3f;
+import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
 import com.nukkitx.protocol.bedrock.data.ItemData;
 import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
 @Log4j2
@@ -36,24 +38,13 @@ public class PCSpawnPlayerTranslator implements PacketTranslator<ServerSpawnPlay
 
     @Override
     public void translate(ProxySession session, ServerSpawnPlayerPacket packet) {
-        AddPlayerPacket addPlayerPacket = new AddPlayerPacket();
-        addPlayerPacket.setUniqueEntityId(packet.getEntityId());
-        addPlayerPacket.setRuntimeEntityId(packet.getEntityId());
-        addPlayerPacket.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
-        addPlayerPacket.setRotation(new Vector3f(packet.getYaw(), packet.getPitch(), 0));
-        addPlayerPacket.setMotion(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
-        addPlayerPacket.setUsername(session.getAuthData().getDisplayName());
-        addPlayerPacket.setUuid(session.getAuthData().getIdentity());
-        addPlayerPacket.setDeviceId("");
-        addPlayerPacket.setHand(ItemData.AIR);
-        addPlayerPacket.setCommandPermission(0);
-        addPlayerPacket.setPlayerFlags(0);
-        addPlayerPacket.setCustomFlags(0);
-        addPlayerPacket.setWorldFlags(0);
-        addPlayerPacket.setPlayerPermission(0);
-        addPlayerPacket.setPlatformChatId("");
+        GameProfile profile = new GameProfile(packet.getUUID(), "unknown");
 
-        //log.warn("Received spawn player packet");
-        //session.getBedrockSession().sendPacket(addPlayerPacket);
+        CachedPlayer cachedPlayer = new CachedPlayer(packet.getEntityId(), profile);
+        cachedPlayer.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
+        cachedPlayer.setRotation(new Vector3f(packet.getYaw(), packet.getPitch(), 0));
+
+        // This still hangs then crashes after a few seconds
+        //cachedPlayer.spawn(session);
     }
 }

@@ -46,7 +46,8 @@ public class CachedEntity {
 
     protected boolean spawned = false;
 
-    protected Vector3f position;
+    protected Vector3f position = Vector3f.ZERO;
+    protected Vector3f rotation = Vector3f.ZERO;
 
     protected Set<EntityEffectTranslator.BedrockEffect> effects = new HashSet<>();
 
@@ -65,15 +66,17 @@ public class CachedEntity {
         AddEntityPacket addEntityPacket = new AddEntityPacket();
         addEntityPacket.setIdentifier("minecraft:" + type.name().toLowerCase()); // TODO: this may need mapping
         addEntityPacket.setEntityType(type.getType());
-        addEntityPacket.setRotation(Vector3f.ZERO);
+        addEntityPacket.setRotation(rotation);
         addEntityPacket.setMotion(Vector3f.ZERO);
-        addEntityPacket.setPosition(Vector3f.ZERO);
+        addEntityPacket.setPosition(position);
         addEntityPacket.setRuntimeEntityId(entityId);
         addEntityPacket.setUniqueEntityId(entityId);
         addEntityPacket.getMetadata().putAll(getMetadata());
 
         session.getBedrockSession().sendPacket(addEntityPacket);
         spawned = true;
+
+        session.getEntityCache().getEntities().put(entityId, this);
     }
 
     public void despawn(ProxySession session) {
