@@ -24,17 +24,18 @@ package org.dragonet.proxy.network.translator.java.world;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerUpdateTimePacket;
 import com.nukkitx.protocol.bedrock.packet.SetTimePacket;
+import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
+@Log4j2
 public class PCUpdateTimeTranslator implements PacketTranslator<ServerUpdateTimePacket> {
     public static final PCUpdateTimeTranslator INSTANCE = new PCUpdateTimeTranslator();
 
     @Override
     public void translate(ProxySession session, ServerUpdateTimePacket packet) {
         SetTimePacket setTime = new SetTimePacket();
-        setTime.setTime((int) packet.getTime());
-
+        setTime.setTime((int) Math.abs(packet.getTime()));
         session.getBedrockSession().sendPacket(setTime);
     }
 }
