@@ -77,7 +77,8 @@ public class PacketTranslatorRegistry<P> {
             .addTranslator(ServerStatisticsPacket.class, PCStatisticsTranslator.INSTANCE)
             .addTranslator(ServerSpawnParticlePacket.class, PCSpawnParticleTranslator.INSTANCE)
             .addTranslator(ServerExplosionPacket.class, PCExplosionTranslator.INSTANCE)
-            .addTranslator(ServerPlayerListEntryPacket.class, PCPlayerListEntryTranslator.INSTANCE);
+            .addTranslator(ServerPlayerListEntryPacket.class, PCPlayerListEntryTranslator.INSTANCE)
+            .addTranslator(ServerSpawnPositionPacket.class, PCSpawnPositionTranslator.INSTANCE);
 
         BEDROCK_TO_JAVA.addTranslator(TextPacket.class, PETextTranslator.INSTANCE)
             .addTranslator(AnimatePacket.class, PEAnimateTranslator.INSTANCE)

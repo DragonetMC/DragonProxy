@@ -38,7 +38,7 @@ public class PCEntityRemoveEffectTranslator implements PacketTranslator<ServerEn
     public void translate(ProxySession session, ServerEntityRemoveEffectPacket packet) {
         CachedEntity cachedEntity = session.getEntityCache().getById(packet.getEntityId());
         if(cachedEntity == null) {
-            log.warn("Cached entity is null");
+            //log.warn("Cached entity is null");
             return;
         }
 

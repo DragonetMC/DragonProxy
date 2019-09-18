@@ -39,7 +39,7 @@ public class PCEntityAnimationTranslator implements PacketTranslator<ServerEntit
     public void translate(ProxySession session, ServerEntityAnimationPacket packet) {
         CachedEntity cachedEntity = session.getEntityCache().getById(packet.getEntityId());
         if(cachedEntity == null) {
-            log.info("(debug) Cached entity is null");
+            //log.info("(debug) Cached entity is null");
             return;
         }
 

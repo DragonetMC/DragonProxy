@@ -248,7 +248,7 @@ public class ProxySession implements PlayerSession {
         startGamePacket.setPlayerGamemode(0);
         startGamePacket.setPlayerPosition(new Vector3f(-23, 73, 0)); // Hypixel bedwars lobby spawn
         startGamePacket.setRotation(Vector2f.ZERO);
-
+        
         startGamePacket.setSeed(1111);
         startGamePacket.setDimensionId(0);
         startGamePacket.setGeneratorId(0);
