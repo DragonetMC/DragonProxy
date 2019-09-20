@@ -32,9 +32,6 @@ import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.translator.types.item.ItemEntry;
 import org.dragonet.proxy.util.TextFormat;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;

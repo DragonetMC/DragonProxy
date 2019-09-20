@@ -27,6 +27,7 @@ import com.github.steveice10.mc.protocol.data.game.entity.player.PlayerState;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientRequestPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerStatePacket;
 import com.nukkitx.protocol.bedrock.packet.PlayerActionPacket;
+import com.nukkitx.protocol.bedrock.packet.RespawnPacket;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
@@ -38,6 +39,10 @@ public class PEPlayerActionTranslator implements PacketTranslator<PlayerActionPa
         switch(packet.getAction()) {
             case RESPAWN:
                 session.getDownstream().getSession().send(new ClientRequestPacket(ClientRequest.RESPAWN));
+
+                RespawnPacket respawnPacket = new RespawnPacket();
+                respawnPacket.setPosition(session.getCachedEntity().getPosition());
+                session.getBedrockSession().sendPacket(respawnPacket);
                 break;
             case START_SNEAK:
                 ClientPlayerStatePacket startSneakPacket = new ClientPlayerStatePacket((int) packet.getRuntimeEntityId(), PlayerState.START_SNEAKING);

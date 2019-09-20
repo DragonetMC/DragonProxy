@@ -50,6 +50,7 @@ public class PCChatTranslator implements PacketTranslator<ServerChatPacket> {
                 break;
             case NOTIFICATION:
                 textPacket.setType(TextPacket.Type.TIP);
+                break;
             case SYSTEM:
                 textPacket.setType(TextPacket.Type.SYSTEM);
                 break;
