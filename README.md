@@ -1,6 +1,6 @@
 # DragonProxy
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
+[![Financial Contributors on Open Collective](https://opencollective.com/dragonetmc/all/badge.svg?label=financial+contributors)](https://opencollective.com/dragonetmc) [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://discord.gg/CmkxTz2)
 [![Build Status](https://ci.codemc.org/buildStatus/icon?job=DragonetMC/DragonProxy)](https://ci.codemc.org/job/DragonetMC/job/DragonProxy/)
 [![HitCount](http://hits.dwyl.io/DragonetMC/DragonProxy.svg)](http://hits.dwyl.io/DragonetMC/DragonProxy)
@@ -54,3 +54,33 @@ Clone the repo recursively and then run `mvn clean install`. The output jar will
 * [MCProtocolLib by Steveice10](https://github.com/Steveice10/MCProtocolLib)
 
 CircleCI: [![CircleCI](https://circleci.com/gh/DragonetMC/DragonProxy.svg?style=svg)](https://circleci.com/gh/DragonetMC/DragonProxy)
+
+## Contributors
+
+### Code Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/DragonetMC/DragonProxy/graphs/contributors"><img src="https://opencollective.com/dragonetmc/contributors.svg?width=890&button=false" /></a>
+
+### Financial Contributors
+
+Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/dragonetmc/contribute)]
+
+#### Individuals
+
+<a href="https://opencollective.com/dragonetmc"><img src="https://opencollective.com/dragonetmc/individuals.svg?width=890"></a>
+
+#### Organizations
+
+Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/dragonetmc/contribute)]
+
+<a href="https://opencollective.com/dragonetmc/organization/0/website"><img src="https://opencollective.com/dragonetmc/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/dragonetmc/organization/1/website"><img src="https://opencollective.com/dragonetmc/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/dragonetmc/organization/2/website"><img src="https://opencollective.com/dragonetmc/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/dragonetmc/organization/3/website"><img src="https://opencollective.com/dragonetmc/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/dragonetmc/organization/4/website"><img src="https://opencollective.com/dragonetmc/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/dragonetmc/organization/5/website"><img src="https://opencollective.com/dragonetmc/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/dragonetmc/organization/6/website"><img src="https://opencollective.com/dragonetmc/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/dragonetmc/organization/7/website"><img src="https://opencollective.com/dragonetmc/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/dragonetmc/organization/8/website"><img src="https://opencollective.com/dragonetmc/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/dragonetmc/organization/9/website"><img src="https://opencollective.com/dragonetmc/organization/9/avatar.svg"></a>
