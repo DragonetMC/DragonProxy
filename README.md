@@ -49,8 +49,16 @@ No updated releases are currently available.
 ### Compiling
 Clone the repo recursively and then run `mvn clean install`. The output jar will can be found at `bootstrap/target/DragonProxy.jar`.
 
+
+### Donating
+Donating helps support the project and its developers.  
+  
+You can donate at [OpenCollective](https://opencollective.com/DragonetMC) or [Patreon](https://patreon.com/DragonetMC). The latter is easier for us, however, and will give you automatic Discord perks.
+
 ### Libraries used
 * [NukkitX Protocol Library](https://github.com/NukkitX/Protocol)
 * [MCProtocolLib by Steveice10](https://github.com/Steveice10/MCProtocolLib)
 
 CircleCI: [![CircleCI](https://circleci.com/gh/DragonetMC/DragonProxy.svg?style=svg)](https://circleci.com/gh/DragonetMC/DragonProxy)
+
+###### *The REAL Better Together*
