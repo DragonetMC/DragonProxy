@@ -50,7 +50,7 @@ public class PCBossBarTranslator implements PacketTranslator<ServerBossBarPacket
         bossEventPacket.setColor(1);
         bossEventPacket.setOverlay(1);
         bossEventPacket.setDarkenSky(1);
-        bossEventPacket.setPlayerUniqueEntityId(session.getCachedEntity().getEntityId());
+        bossEventPacket.setPlayerUniqueEntityId(1); // player eid
         bossEventPacket.setBossUniqueEntityId(2); // TODO
 
         switch(packet.getAction()) {

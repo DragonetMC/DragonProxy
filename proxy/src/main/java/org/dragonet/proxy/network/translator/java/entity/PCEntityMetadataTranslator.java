@@ -23,47 +23,39 @@
 package org.dragonet.proxy.network.translator.java.entity;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityAnimationPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityMetadataPacket;
+import com.nukkitx.protocol.bedrock.data.EntityDataDictionary;
+import com.nukkitx.protocol.bedrock.data.EntityFlag;
+import com.nukkitx.protocol.bedrock.data.EntityFlags;
 import com.nukkitx.protocol.bedrock.packet.AnimatePacket;
 import com.nukkitx.protocol.bedrock.packet.PlayerActionPacket;
+import com.nukkitx.protocol.bedrock.packet.SetEntityDataPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.types.EntityMetaTranslator;
 import org.dragonet.proxy.util.TextFormat;
 
 @Log4j2
-public class PCEntityAnimationTranslator implements PacketTranslator<ServerEntityAnimationPacket> {
-    public static final PCEntityAnimationTranslator INSTANCE = new PCEntityAnimationTranslator();
+public class PCEntityMetadataTranslator implements PacketTranslator<ServerEntityMetadataPacket> {
+    public static final PCEntityMetadataTranslator INSTANCE = new PCEntityMetadataTranslator();
 
     @Override
-    public void translate(ProxySession session, ServerEntityAnimationPacket packet) {
+    public void translate(ProxySession session, ServerEntityMetadataPacket packet) {
         CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(packet.getEntityId());
         if(cachedEntity == null) {
             //log.info("(debug) Cached entity is null");
             return;
         }
 
-        AnimatePacket animatePacket = new AnimatePacket();
-        animatePacket.setRuntimeEntityId(packet.getEntityId());
+        EntityDataDictionary metadata = EntityMetaTranslator.translateToBedrock(packet.getMetadata());
+        cachedEntity.getMetadata().putAll(metadata);
 
-        switch(packet.getAnimation()) {
-            case SWING_ARM:
-                animatePacket.setAction(AnimatePacket.Action.SWING_ARM);
-                break;
-            case CRITICAL_HIT:
-                animatePacket.setAction(AnimatePacket.Action.CRITICAL_HIT);
-                break;
-            case ENCHANTMENT_CRITICAL_HIT:
-                animatePacket.setAction(AnimatePacket.Action.MAGIC_CRITICAL_HIT);
-                break;
-            case LEAVE_BED:
-                animatePacket.setAction(AnimatePacket.Action.WAKE_UP);
-                break;
-            default:
-                log.info("(debug) Unhandled animation " + packet.getAnimation().name());
-                break;
-        }
+        SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
+        setEntityDataPacket.setRuntimeEntityId(packet.getEntityId());
+        setEntityDataPacket.getMetadata().putAll(cachedEntity.getMetadata());
 
-        session.getBedrockSession().sendPacket(animatePacket);
+        session.getBedrockSession().sendPacket(setEntityDataPacket);
     }
 }

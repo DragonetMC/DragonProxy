@@ -23,10 +23,9 @@
 package org.dragonet.proxy.network.session.cache.object;
 
 import com.flowpowered.math.vector.Vector3f;
+import com.github.steveice10.mc.protocol.data.game.entity.attribute.AttributeType;
 import com.nukkitx.protocol.PlayerSession;
-import com.nukkitx.protocol.bedrock.data.EntityData;
-import com.nukkitx.protocol.bedrock.data.EntityDataDictionary;
-import com.nukkitx.protocol.bedrock.data.EntityFlag;
+import com.nukkitx.protocol.bedrock.data.*;
 import com.nukkitx.protocol.bedrock.packet.AddEntityPacket;
 import com.nukkitx.protocol.bedrock.packet.RemoveEntityPacket;
 import lombok.Data;
@@ -36,24 +35,31 @@ import org.dragonet.proxy.network.translator.types.EntityEffectTranslator;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 public class CachedEntity {
     protected EntityType type;
-    protected long entityId;
+    protected long proxyEid;
+    protected long remoteEid;
+    protected UUID javaUuid;
 
     protected EntityDataDictionary metadata = new EntityDataDictionary();
+    protected EntityFlags flags = new EntityFlags();
 
     protected boolean spawned = false;
+    protected boolean shouldMove = false;
 
     protected Vector3f position = Vector3f.ZERO;
     protected Vector3f rotation = Vector3f.ZERO;
+    protected Vector3f motion = Vector3f.ZERO;
 
     protected Set<EntityEffectTranslator.BedrockEffect> effects = new HashSet<>();
 
-    public CachedEntity(EntityType type, long entityId) {
+    public CachedEntity(EntityType type, long proxyEid, int remoteEid) {
         this.type = type;
-        this.entityId = entityId;
+        this.proxyEid = proxyEid;
+        this.remoteEid = remoteEid;
 
         addDefaultMetadata();
     }
@@ -69,33 +75,66 @@ public class CachedEntity {
         addEntityPacket.setRotation(rotation);
         addEntityPacket.setMotion(Vector3f.ZERO);
         addEntityPacket.setPosition(position);
-        addEntityPacket.setRuntimeEntityId(entityId);
-        addEntityPacket.setUniqueEntityId(entityId);
+        addEntityPacket.setRuntimeEntityId(proxyEid);
+        addEntityPacket.setUniqueEntityId(proxyEid);
         addEntityPacket.getMetadata().putAll(getMetadata());
 
         session.getBedrockSession().sendPacket(addEntityPacket);
         spawned = true;
 
-        session.getEntityCache().getEntities().put(entityId, this);
+        session.getEntityCache().getEntities().put(proxyEid, this);
     }
 
     public void despawn(ProxySession session) {
         if(spawned) {
             RemoveEntityPacket removeEntityPacket = new RemoveEntityPacket();
-            removeEntityPacket.setUniqueEntityId(entityId);
+            removeEntityPacket.setUniqueEntityId(proxyEid);
 
             session.getBedrockSession().sendPacket(removeEntityPacket);
             spawned = false;
         }
     }
 
+    public void moveRelative(double relX, double relY, double relZ, float pitch, float yaw) {
+        moveRelative(relX, relY, relZ, new Vector3f(pitch, yaw, 0));
+    }
+
+    public void moveRelative(double relX, double relY, double relZ, Vector3f rotation) {
+        if (relX == 0 && relY == 0 && relZ == 0 && position.getX() == 0 && position.getY() == 0)
+            return;
+
+        this.rotation = rotation;
+        this.position = new Vector3f(position.getX() + relX, position.getY() + relY, position.getZ() + relZ);
+        this.shouldMove = true;
+    }
+
+    public void moveAbsolute(Vector3f position, float pitch, float yaw) {
+        moveAbsolute(position, new Vector3f(pitch, yaw, yaw));
+    }
+
+    public void moveAbsolute(Vector3f position, Vector3f rotation) {
+        if (position.getX() == 0 && position.getY() == 0 && position.getZ() == 0 && rotation.getX() == 0 && rotation.getY() == 0)
+            return;
+
+        this.position = position;
+        this.rotation = rotation;
+        this.shouldMove = true;
+    }
+
     private void addDefaultMetadata() {
-        metadata.put(EntityData.NAMETAG, "");
+        flags.setFlag(EntityFlag.HAS_GRAVITY, true);
+        flags.setFlag(EntityFlag.HAS_COLLISION, true);
+        flags.setFlag(EntityFlag.CAN_SHOW_NAME, true);
+        flags.setFlag(EntityFlag.CAN_CLIMB, true);
+        flags.setFlag(EntityFlag.NO_AI, false);
+
+        //metadata.put(EntityData.NAMETAG, "test - " + proxyEid);
         metadata.put(EntityData.SCALE, 1f);
-        metadata.put(EntityData.AIR, 400);
+        metadata.put(EntityData.AIR, 0);
         metadata.put(EntityData.MAX_AIR, 400);
         metadata.put(EntityData.ENTITY_AGE, 0);
         metadata.put(EntityData.BOUNDING_BOX_HEIGHT, (float) type.getHeight());
         metadata.put(EntityData.BOUNDING_BOX_WIDTH, (float) type.getWidth());
+        metadata.putFlags(flags);
     }
 }

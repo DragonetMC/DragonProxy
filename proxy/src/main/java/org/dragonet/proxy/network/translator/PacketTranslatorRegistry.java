@@ -24,6 +24,7 @@ package org.dragonet.proxy.network.translator;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.*;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
@@ -78,7 +79,10 @@ public class PacketTranslatorRegistry<P> {
             .addTranslator(ServerSpawnParticlePacket.class, PCSpawnParticleTranslator.INSTANCE)
             .addTranslator(ServerExplosionPacket.class, PCExplosionTranslator.INSTANCE)
             .addTranslator(ServerPlayerListEntryPacket.class, PCPlayerListEntryTranslator.INSTANCE)
-            .addTranslator(ServerSpawnPositionPacket.class, PCSpawnPositionTranslator.INSTANCE);
+            .addTranslator(ServerSpawnPositionPacket.class, PCSpawnPositionTranslator.INSTANCE)
+            .addTranslator(ServerEntityMetadataPacket.class, PCEntityMetadataTranslator.INSTANCE)
+            .addTranslator(ServerPlayerPositionRotationPacket.class, PCPlayerPositionRotationTranslator.INSTANCE)
+            .addTranslator(ServerEntityPropertiesPacket.class, PCEntityPropertiesTranslator.INSTANCE);
 
         BEDROCK_TO_JAVA.addTranslator(TextPacket.class, PETextTranslator.INSTANCE)
             .addTranslator(AnimatePacket.class, PEAnimateTranslator.INSTANCE)
@@ -94,12 +98,13 @@ public class PacketTranslatorRegistry<P> {
         Class<?> packetClass = packet.getClass();
         PacketTranslator<P> target = translators.get(packetClass);
         if (target == null) {
-           // log.info("Unhandled packet received from remote: {}", packetClass.getSimpleName());
+            //log.info("Unhandled packet received from remote: {}", packetClass.getSimpleName());
             return;
         }
         if (session.getDownstream() == null) {
             return;
         }
+        log.trace("Translating packet: " + packetClass.getSimpleName());
         target.translate(session, packet);
     }
 

@@ -26,6 +26,7 @@ import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntryAction;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPlayerListEntryPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayerListPacket;
+import com.nukkitx.protocol.bedrock.packet.SetLocalPlayerAsInitializedPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.data.ClientData;
@@ -55,11 +56,17 @@ public class PCPlayerListEntryTranslator implements PacketTranslator<ServerPlaye
 
         for(PlayerListEntry entry : packet.getEntries()) {
             PlayerListPacket.Entry bedrockEntry = new PlayerListPacket.Entry(entry.getProfile().getId());
+            session.getPlayerInfoCache().put(entry.getProfile().getId(), entry);
 
             if(packet.getAction() == PlayerListEntryAction.ADD_PLAYER) {
                 ClientData clientData = session.getClientData();
+                long proxyEid = session.getEntityCache().getNextClientEntityId().getAndIncrement();
 
-                bedrockEntry.setEntityId(session.getEntityCache().nextFakePlayerid());
+                SetLocalPlayerAsInitializedPacket initializePacket = new SetLocalPlayerAsInitializedPacket();
+                initializePacket.setRuntimeEntityId(proxyEid);
+                session.getBedrockSession().sendPacket(initializePacket);
+
+                bedrockEntry.setEntityId(proxyEid);
                 bedrockEntry.setName(entry.getProfile().getName());
                 bedrockEntry.setSkinId(clientData.getSkinId());
                 bedrockEntry.setSkinData(clientData.getSkinData());

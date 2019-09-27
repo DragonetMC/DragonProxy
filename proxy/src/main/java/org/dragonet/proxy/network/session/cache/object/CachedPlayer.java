@@ -34,8 +34,8 @@ import java.util.UUID;
 public class CachedPlayer extends CachedEntity {
     private GameProfile profile;
 
-    public CachedPlayer(long entityId, GameProfile profile) {
-        super(EntityType.PLAYER, entityId);
+    public CachedPlayer(long proxyEid, int remoteEid, GameProfile profile) {
+        super(EntityType.PLAYER, proxyEid, remoteEid);
         this.profile = profile;
     }
 
@@ -44,8 +44,8 @@ public class CachedPlayer extends CachedEntity {
         AddPlayerPacket addPlayerPacket = new AddPlayerPacket();
         addPlayerPacket.setUuid(profile.getId());
         addPlayerPacket.setUsername(profile.getName());
-        addPlayerPacket.setRuntimeEntityId(entityId);
-        addPlayerPacket.setUniqueEntityId(entityId);
+        addPlayerPacket.setRuntimeEntityId(proxyEid);
+        addPlayerPacket.setUniqueEntityId(proxyEid);
         addPlayerPacket.setPlatformChatId("");
         addPlayerPacket.setPosition(position);
         addPlayerPacket.setMotion(Vector3f.ZERO);
@@ -61,6 +61,6 @@ public class CachedPlayer extends CachedEntity {
         session.getBedrockSession().sendPacket(addPlayerPacket);
         spawned = true;
 
-        session.getEntityCache().getEntities().put(entityId, this);
+        session.getEntityCache().getEntities().put(proxyEid, this);
     }
 }

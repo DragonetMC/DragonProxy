@@ -344,13 +344,6 @@ public final class ChunkData implements Closeable {
         }
         subChunkCount++;
 
-//        ChunkSection[] sections = Arrays.copyOf(this.sections, subChunkCount + 1);
-//        for (int i = 0; i <= subChunkCount; i++) {
-//            if (sections[i] == null) {
-//                sections[i] = EMPTY;
-//            }
-//        }
-
         packet.setSubChunksLength(subChunkCount);
 
         ByteBuf buffer = ByteBufAllocator.DEFAULT.directBuffer();

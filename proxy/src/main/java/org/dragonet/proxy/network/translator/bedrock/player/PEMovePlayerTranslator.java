@@ -22,9 +22,13 @@
  */
 package org.dragonet.proxy.network.translator.bedrock.player;
 
+import com.flowpowered.math.vector.Vector3f;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPositionPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
 import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
+import com.nukkitx.protocol.bedrock.packet.SetEntityDataPacket;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
@@ -35,20 +39,24 @@ public class PEMovePlayerTranslator implements PacketTranslator<MovePlayerPacket
 
     @Override
     public void translate(ProxySession session, MovePlayerPacket packet) {
-        CachedEntity cachedEntity = session.getEntityCache().getById(packet.getRuntimeEntityId());
+        CachedEntity cachedEntity = session.getEntityCache().getByProxyId(packet.getRuntimeEntityId());
         if(cachedEntity == null) {
-            log.warn("Cached entity is null in MovePlayerTranslator");
+            //log.info("(debug) Cached entity is null in MovePlayerTranslator");
             return;
         }
-        log.warn("Cached entity is NOT null");
 
-        ClientPlayerPositionPacket playerPositionPacket = new ClientPlayerPositionPacket(
+        ClientPlayerPositionRotationPacket playerPositionRotationPacket = new ClientPlayerPositionRotationPacket(
             packet.isOnGround(),
             packet.getPosition().getX(),
-            packet.getPosition().getY(),
-            packet.getPosition().getZ()
-        );
+            Math.ceil(packet.getPosition().getY() - EntityType.PLAYER.getOffset() * 2) / 2,
+            packet.getPosition().getZ(),
+            packet.getRotation().getX(),
+            packet.getRotation().getY());
 
-        session.getDownstream().getSession().send(playerPositionPacket);
+        cachedEntity.moveAbsolute(packet.getPosition(), packet.getRotation());
+
+        boolean colliding = false;
+
+        session.getDownstream().getSession().send(playerPositionRotationPacket);
     }
 }

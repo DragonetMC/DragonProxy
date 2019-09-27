@@ -17,7 +17,7 @@ The project has been undergoing a rewrite for some time, and development has rec
 - [x] Joining the remote server
 - [x] Chat and commands support
   - [ ] Proper translation support
-- [ ] Chunk loading
+- [x] Chunk loading
 - [ ] Player movement
 - [ ] Inventory support
   - [x] Item NBT translation (name and lore, more to come soon)

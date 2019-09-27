@@ -22,12 +22,17 @@
  */
 package org.dragonet.proxy.network.session.cache;
 
+import com.github.steveice10.mc.auth.data.GameProfile;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
+import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 @RequiredArgsConstructor
 @Getter
@@ -35,15 +40,38 @@ public class EntityCache implements Cache {
     @Getter
     private Map<Long, CachedEntity> entities = new HashMap<>();
 
-    private int fakePlayersIds;
+    private final AtomicLong nextClientEntityId = new AtomicLong(2L); // 1 is for client
+    private final Map<Long, Long> remoteToClientMap = Collections.synchronizedMap(new HashMap<>());
+    private final Map<Long, Long> clientToRemoteMap = Collections.synchronizedMap(new HashMap<>());
 
-    public CachedEntity getById(long entityId) {
-        // TODO: convert to proxy entity id first?
+    public CachedEntity getByProxyId(long entityId) {
+        if(!clientToRemoteMap.containsKey(entityId)) {
+            return null;
+        }
         return entities.get(entityId);
     }
 
-    public int nextFakePlayerid() {
-        return fakePlayersIds++;
+    public CachedEntity getByRemoteId(long entityId) {
+        if(remoteToClientMap.containsKey(entityId)) {
+            return entities.get(remoteToClientMap.get(entityId));
+        }
+        return null;
+    }
+
+    public CachedEntity newEntity(EntityType type, int entityId) {
+        CachedEntity entity = new CachedEntity(type, nextClientEntityId.getAndIncrement(), entityId);
+
+        clientToRemoteMap.put(entity.getProxyEid(), entity.getRemoteEid());
+        remoteToClientMap.put(entity.getRemoteEid(), entity.getProxyEid());
+        return entity;
+    }
+
+    public CachedPlayer newPlayer(int entityId, GameProfile profile) {
+        CachedPlayer entity = new CachedPlayer(nextClientEntityId.getAndIncrement(), entityId, profile);
+
+        clientToRemoteMap.put(entity.getProxyEid(), entity.getRemoteEid());
+        remoteToClientMap.put(entity.getRemoteEid(), entity.getProxyEid());
+        return entity;
     }
 
     @Override

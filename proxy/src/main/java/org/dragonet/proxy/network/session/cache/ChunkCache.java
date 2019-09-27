@@ -23,6 +23,7 @@
 package org.dragonet.proxy.network.session.cache;
 
 import com.flowpowered.math.vector.Vector2f;
+import com.flowpowered.math.vector.Vector3f;
 import com.github.steveice10.mc.protocol.data.game.chunk.BlockStorage;
 import com.github.steveice10.mc.protocol.data.game.chunk.Chunk;
 import com.github.steveice10.mc.protocol.data.game.chunk.Column;
@@ -37,6 +38,7 @@ import org.dragonet.proxy.data.chunk.ChunkSection;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.types.BlockTranslator;
 import org.dragonet.proxy.network.translator.types.ItemTranslator;
+import org.dragonet.proxy.network.translator.types.item.ItemEntry;
 import org.dragonet.proxy.util.PaletteManager;
 
 import java.util.HashMap;
@@ -53,6 +55,37 @@ public class ChunkCache implements Cache {
     @Override
     public void purge() {
         chunks.clear();
+    }
+
+    public ItemData getBlockAt(Vector3f position) {
+        Vector2f chunkPosition = new Vector2f((int) position.getX() >> 4, (int) position.getZ() >> 4);
+        if (!chunks.containsKey(chunkPosition))
+            return ItemData.AIR;
+
+        Column column = chunks.get(chunkPosition);
+        Chunk chunk = column.getChunks()[(int) position.getY() >> 4];
+        Vector3f blockPosition = getChunkBlock((int) position.getX(), (int) position.getY(), (int) position.getZ());
+        if (chunk != null) {
+            BlockState blockState = chunk.getBlocks().get((int) blockPosition.getX(), (int) blockPosition.getY(), (int) blockPosition.getZ());
+            return BlockTranslator.translateToBedrock(new ItemStack(blockState.getId()));
+        }
+
+        return ItemData.AIR;
+    }
+
+    public Vector3f getChunkBlock(int x, int y, int z) {
+        int chunkX = x % 16;
+        int chunkY = y % 16;
+        int chunkZ = z % 16;
+
+        if (chunkX < 0)
+            chunkX = -chunkX;
+        if (chunkY < 0)
+            chunkY = -chunkY;
+        if (chunkZ < 0)
+            chunkZ = -chunkZ;
+
+        return new Vector3f(chunkX, chunkY, chunkZ);
     }
 
     public ChunkData translateChunk(int columnX, int columnZ) {

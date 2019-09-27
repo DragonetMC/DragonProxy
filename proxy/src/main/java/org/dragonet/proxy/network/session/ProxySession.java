@@ -25,9 +25,11 @@ package org.dragonet.proxy.network.session;
 import com.flowpowered.math.vector.Vector2f;
 import com.flowpowered.math.vector.Vector3f;
 import com.flowpowered.math.vector.Vector3i;
+import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.auth.exception.request.RequestException;
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
 import com.github.steveice10.mc.protocol.data.game.ClientRequest;
+import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.data.game.statistic.Statistic;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientRequestPacket;
 import com.github.steveice10.packetlib.Client;
@@ -64,6 +66,7 @@ import javax.annotation.Nonnull;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -80,6 +83,7 @@ public class ProxySession implements PlayerSession {
     private String username;
 
     private Map<String, Object> dataCache = new HashMap<>();
+    private Map<UUID, PlayerListEntry> playerInfoCache = new HashMap<>();
     private Map<Integer, CompletableFuture> formCache = new HashMap<>();
     private Map<String, CompletableFuture> futureMap = new HashMap<>(); // TODO
 
@@ -104,9 +108,15 @@ public class ProxySession implements PlayerSession {
         chunkCache = new ChunkCache();
         worldCache = new WorldCache();
 
+        //this.bedrockSession.setLogging(true);
+
         dataCache.put("auth_state", AuthState.NONE);
 
-        bedrockSession.addDisconnectHandler((reason) -> downstream.getSession().disconnect(reason.name()));
+        bedrockSession.addDisconnectHandler((reason) -> {
+            if(downstream != null && downstream.getSession() != null) {
+                downstream.getSession().disconnect(reason.name());
+            }
+        });
     }
 
     public void connect(RemoteServer server) {
@@ -235,20 +245,24 @@ public class ProxySession implements PlayerSession {
 
         bedrockSession.sendPacket(playerListPacket);
 
-        cachedEntity = (CachedPlayer) entityCache.getById(entityId); // TODO
         //cachedEntity.spawn(this); // Crashes
+
+        SetEntityDataPacket entityDataPacket = new SetEntityDataPacket();
+        entityDataPacket.setRuntimeEntityId(entityId);
+        entityDataPacket.getMetadata().putAll(cachedEntity.getMetadata());
+        bedrockSession.sendPacket(entityDataPacket);
 
         log.warn("SPAWN PLAYER");
     }
 
     public void sendFakeStartGame() {
         StartGamePacket startGamePacket = new StartGamePacket();
-        startGamePacket.setUniqueEntityId(entityCache.nextFakePlayerid());
-        startGamePacket.setRuntimeEntityId(entityCache.nextFakePlayerid());
+        startGamePacket.setUniqueEntityId(1);
+        startGamePacket.setRuntimeEntityId(1);
         startGamePacket.setPlayerGamemode(0);
         startGamePacket.setPlayerPosition(new Vector3f(-23, 73, 0)); // Hypixel bedwars lobby spawn
         startGamePacket.setRotation(Vector2f.ZERO);
-        
+
         startGamePacket.setSeed(1111);
         startGamePacket.setDimensionId(0);
         startGamePacket.setGeneratorId(0);
@@ -263,7 +277,7 @@ public class ProxySession implements PlayerSession {
         startGamePacket.setLightningLevel(0);
         startGamePacket.setMultiplayerGame(true);
         startGamePacket.setBroadcastingToLan(true);
-        //startGamePacket.getGamerules().add((new GameRule<>("showcoordinates", true)));
+        startGamePacket.getGamerules().add((new GameRule<>("showcoordinates", true)));
         startGamePacket.setPlatformBroadcastMode(GamePublishSetting.PUBLIC);
         startGamePacket.setXblBroadcastMode(GamePublishSetting.PUBLIC);
         startGamePacket.setCommandsEnabled(true);
@@ -295,7 +309,12 @@ public class ProxySession implements PlayerSession {
         playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
         bedrockSession.sendPacketImmediately(playStatusPacket);
 
-        spawn(1);
+        CachedPlayer player = new CachedPlayer(1, -1, new GameProfile(getAuthData().getIdentity(), getAuthData().getDisplayName()));
+
+        cachedEntity = player;
+        entityCache.getEntities().put((long) 1, player);
+
+        spawn(1); // TODO: only do this after authentication?
     }
 
     public void sendMessage(String text) {

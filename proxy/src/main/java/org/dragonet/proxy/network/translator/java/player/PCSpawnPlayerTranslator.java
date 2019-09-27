@@ -24,6 +24,7 @@ package org.dragonet.proxy.network.translator.java.player;
 
 import com.flowpowered.math.vector.Vector3f;
 import com.github.steveice10.mc.auth.data.GameProfile;
+import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
 import com.nukkitx.protocol.bedrock.data.ItemData;
 import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket;
@@ -31,6 +32,7 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.types.EntityMetaTranslator;
 
 @Log4j2
 public class PCSpawnPlayerTranslator implements PacketTranslator<ServerSpawnPlayerPacket> {
@@ -38,13 +40,14 @@ public class PCSpawnPlayerTranslator implements PacketTranslator<ServerSpawnPlay
 
     @Override
     public void translate(ProxySession session, ServerSpawnPlayerPacket packet) {
-        GameProfile profile = new GameProfile(packet.getUUID(), "unknown");
+        PlayerListEntry playerListEntry = session.getPlayerInfoCache().get(packet.getUUID());
 
-        CachedPlayer cachedPlayer = new CachedPlayer(packet.getEntityId(), profile);
+        CachedPlayer cachedPlayer = session.getEntityCache().newPlayer(packet.getEntityId(), playerListEntry.getProfile());
         cachedPlayer.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
         cachedPlayer.setRotation(new Vector3f(packet.getYaw(), packet.getPitch(), 0));
+        cachedPlayer.getMetadata().putAll(EntityMetaTranslator.translateToBedrock(packet.getMetadata()));
 
         // This still hangs then crashes after a few seconds
-        //cachedPlayer.spawn(session);
+        cachedPlayer.spawn(session);
     }
 }

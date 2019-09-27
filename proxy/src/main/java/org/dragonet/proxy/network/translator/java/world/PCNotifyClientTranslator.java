@@ -78,7 +78,7 @@ public class PCNotifyClientTranslator implements PacketTranslator<ServerNotifyCl
                 break;
             case ENTER_CREDITS:
                 ShowCreditsPacket showCreditsPacket = new ShowCreditsPacket();
-                showCreditsPacket.setRuntimeEntityId(session.getCachedEntity().getEntityId());
+                showCreditsPacket.setRuntimeEntityId(session.getCachedEntity().getProxyEid());
                 showCreditsPacket.setStatus(ShowCreditsPacket.Status.START_CREDITS);
 
                 session.getBedrockSession().sendPacket(showCreditsPacket);

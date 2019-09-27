@@ -25,15 +25,19 @@ package org.dragonet.proxy.network.translator.java.entity;
 import com.flowpowered.math.vector.Vector3f;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityPositionPacket;
 import com.nukkitx.protocol.bedrock.packet.MoveEntityAbsolutePacket;
+import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
+@Log4j2
 public class PCEntityPositionPacketTranslator implements PacketTranslator<ServerEntityPositionPacket> {
     public static final PCEntityPositionPacketTranslator INSTANCE = new PCEntityPositionPacketTranslator();
 
     @Override
     public void translate(ProxySession session, ServerEntityPositionPacket packet) {
         MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
+
+        log.trace("GOT entity position x=" + packet.getMovementX() + ", y=" + packet.getMovementY() + ", z=" + packet.getMovementZ());
 
         moveEntityPacket.setRuntimeEntityId(packet.getEntityId());
         moveEntityPacket.setPosition(new Vector3f(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ()));

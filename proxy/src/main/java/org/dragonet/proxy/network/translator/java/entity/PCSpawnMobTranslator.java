@@ -23,13 +23,18 @@
 package org.dragonet.proxy.network.translator.java.entity;
 
 import com.flowpowered.math.vector.Vector3f;
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.MetadataType;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
 import com.nukkitx.protocol.bedrock.data.EntityData;
 import com.nukkitx.protocol.bedrock.data.EntityDataDictionary;
 import com.nukkitx.protocol.bedrock.packet.AddEntityPacket;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.types.EntityTypeTranslator;
 
 @Log4j2
 public class PCSpawnMobTranslator implements PacketTranslator<ServerSpawnMobPacket> {
@@ -37,26 +42,25 @@ public class PCSpawnMobTranslator implements PacketTranslator<ServerSpawnMobPack
 
     @Override
     public void translate(ProxySession session, ServerSpawnMobPacket packet) {
-        AddEntityPacket addEntityPacket = new AddEntityPacket();
-        addEntityPacket.setUniqueEntityId(packet.getEntityId());
-        addEntityPacket.setRuntimeEntityId(packet.getEntityId());
-        addEntityPacket.setIdentifier("minecraft:test");
-        addEntityPacket.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
-        addEntityPacket.setMotion(new Vector3f(packet.getMotionX(), packet.getMotionY(), packet.getMotionZ()));
-        addEntityPacket.setRotation(Vector3f.ZERO);
-        addEntityPacket.setEntityType(37);
+        CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(packet.getEntityId());
+        if(cachedEntity != null) {
+            log.warn("Cached entity already exists, cant spawn a new one");
+            return;
+        }
 
-        EntityDataDictionary metadata = addEntityPacket.getMetadata();
-        metadata.put(EntityData.NAMETAG, "testing");
-        metadata.put(EntityData.ENTITY_AGE, 0);
-        metadata.put(EntityData.SCALE, 1f);
-        metadata.put(EntityData.MAX_AIR, (short) 400);
-        metadata.put(EntityData.AIR, (short) 400);
+        EntityType entityType = EntityTypeTranslator.translateToBedrock(packet.getType());
+        if(entityType == null) {
+            log.warn("Cannot translate mob type: " + packet.getType().name());
+            return;
+        }
 
-        //log.warn("SPAWN MOB");
+        cachedEntity = session.getEntityCache().newEntity(entityType, packet.getEntityId());
 
-        addEntityPacket.getMetadata().putAll(metadata);
+        cachedEntity.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
+        cachedEntity.setMotion(new Vector3f(packet.getMotionX(), packet.getMotionY(), packet.getMotionZ()));
+        cachedEntity.setRotation(new Vector3f(packet.getPitch(), packet.getYaw(), packet.getHeadYaw())); // No idea about this
+        cachedEntity.setJavaUuid(packet.getUUID());
 
-        //session.getBedrockSession().sendPacket(addEntityPacket);
+        cachedEntity.spawn(session);
     }
 }

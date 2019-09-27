@@ -27,29 +27,16 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum EntityType {
-    PLAYER(63,1.8, 1.6, 1.6200000047683716f),
-    SHEEP(13, 1.3f, 0.9f),
-    BAT(19, 0.9f, 0.5f),
-    ZOMBIE(32, 1.8f, 0.6f, 1.6200000047683716f),
-    ENDERMITE(55, 0.3f, 0.4f),
-    CREEPER(33, 1.7f, 0.6f, 1.6200000047683716f),
-    VILLAGER(15, 1.8f, 0.6f, 1.6200000047683716f),
+public enum BedrockAttribute {
+    MOVEMENT_SPEED("minecraft:movement", 0f, 1024f, 0.10f),
+    KNOCKBACK_RESISTANCE("minecraft:knockback_resistance", 0f, 1f, 0f),
+    ATTACK_DAMAGE("minecraft:attack_damage", 0f, 2048f, 1f),
+    HUNGER("minecraft:player.hunger", 0f, 20f, 20f),
+    SATURATION("minecraft:player.saturation", 0f, 20f, 20f),
+    HEALTH("minecraft:health", 0f, 1024f, 20f);
 
-    ARMOR_STAND(61, 0f);
-
-    private int type;
-    private double height;
-    private double width;
-    private float offset;
-
-    EntityType(int type, double height) {
-        this(type, height, 0);
-    }
-
-    EntityType(int type, double height, double width) {
-        this.type = type;
-        this.height = height;
-        this.width = width;
-    }
+    private String identifier;
+    private float minimumValue;
+    private float maximumValue;
+    private float defaultValue;
 }
