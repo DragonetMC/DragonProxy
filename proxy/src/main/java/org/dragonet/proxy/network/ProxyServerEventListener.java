@@ -32,7 +32,6 @@ import lombok.RequiredArgsConstructor;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.DragonConfiguration;
 import org.dragonet.proxy.network.session.ProxySession;
-import sun.misc.MessageUtils;
 
 import java.net.InetSocketAddress;
 

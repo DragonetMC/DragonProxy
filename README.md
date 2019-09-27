@@ -5,6 +5,10 @@
 [![Build Status](https://ci.codemc.org/buildStatus/icon?job=DragonetMC/DragonProxy)](https://ci.codemc.org/job/DragonetMC/job/DragonProxy/)
 [![HitCount](http://hits.dwyl.io/DragonetMC/DragonProxy.svg)](http://hits.dwyl.io/DragonetMC/DragonProxy)
 
+
+[![Generic badge](https://img.shields.io/badge/Bedrock-1.12-green.svg)](https://minecraft.gamepedia.com/Bedrock_Edition)
+[![Generic badge](https://img.shields.io/badge/Java-1.14.4-green.svg)](https://minecraft.gamepedia.com/Java_Edition_1.14.4)
+
 A proxy made to allow **Minecraft: Bedrock Edition** clients to connect to **Minecraft: Java Edition** servers.
 
 ### What is DragonProxy
