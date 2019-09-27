@@ -90,3 +90,4 @@ nb-configuration.xml
 
 # DragonProxy
 logs/
+/config.yml
