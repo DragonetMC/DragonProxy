@@ -189,7 +189,7 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
             session.sendLoginForm(); // TODO: remove
             return true;
         }
-        //PacketTranslatorRegistry.BEDROCK_TO_JAVA.translate(session, packet);
+        PacketTranslatorRegistry.BEDROCK_TO_JAVA.translate(session, packet);
         return true;
     }
 

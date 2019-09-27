@@ -22,6 +22,9 @@
  */
 package org.dragonet.proxy.network.translator.java.player;
 
+import com.github.steveice10.mc.auth.data.GameProfile;
+import com.github.steveice10.mc.auth.exception.property.PropertyException;
+import com.github.steveice10.mc.auth.service.SessionService;
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntryAction;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPlayerListEntryPacket;
@@ -31,12 +34,16 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.data.ClientData;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.util.SkinUtils;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Log4j2
 public class PCPlayerListEntryTranslator implements PacketTranslator<ServerPlayerListEntryPacket> {
     public static final PCPlayerListEntryTranslator INSTANCE = new PCPlayerListEntryTranslator();
+    private static final AtomicInteger threadId = new AtomicInteger(0);
 
     @Override
     public void translate(ProxySession session, ServerPlayerListEntryPacket packet) {
@@ -58,7 +65,7 @@ public class PCPlayerListEntryTranslator implements PacketTranslator<ServerPlaye
             PlayerListPacket.Entry bedrockEntry = new PlayerListPacket.Entry(entry.getProfile().getId());
             session.getPlayerInfoCache().put(entry.getProfile().getId(), entry);
 
-            if(packet.getAction() == PlayerListEntryAction.ADD_PLAYER) {
+            if (packet.getAction() == PlayerListEntryAction.ADD_PLAYER) {
                 ClientData clientData = session.getClientData();
                 long proxyEid = session.getEntityCache().getNextClientEntityId().getAndIncrement();
 
@@ -66,21 +73,55 @@ public class PCPlayerListEntryTranslator implements PacketTranslator<ServerPlaye
                 initializePacket.setRuntimeEntityId(proxyEid);
                 session.getBedrockSession().sendPacket(initializePacket);
 
-                bedrockEntry.setEntityId(proxyEid);
-                bedrockEntry.setName(entry.getProfile().getName());
-                bedrockEntry.setSkinId(clientData.getSkinId());
-                bedrockEntry.setSkinData(clientData.getSkinData());
-                bedrockEntry.setCapeData(clientData.getCapeData());
-                bedrockEntry.setGeometryName(clientData.getSkinGeometryName());
-                bedrockEntry.setGeometryData(new String(clientData.getSkinGeometry(), StandardCharsets.UTF_8));
-                bedrockEntry.setXuid("");
-                bedrockEntry.setPlatformChatId("");
+                // TODO: reduce duplicated code?
+                if(session.getProxy().getConfiguration().isFetchPlayerSkins()) {
+                    // Fetch skin data from Mojang
+                    Thread skinFetchThread = new Thread("Texture Downloader #" + threadId.incrementAndGet()) {
+                        @Override
+                        public void run() {
+                            byte[] skinData = SkinUtils.fetchSkin(entry.getProfile());
+                            if (skinData == null) {
+                                skinData = clientData.getSkinData();
+                            }
+
+                            // Doesnt work currently
+                            byte[] capeData = clientData.getCapeData(); //SkinUtils.fetchOptifineCape(entry.getProfile());
+                            //if(capeData == null) {
+                            //    capeData = clientData.getCapeData();
+                            //}
+
+                            bedrockEntry.setEntityId(proxyEid);
+                            bedrockEntry.setName(entry.getProfile().getName());
+                            bedrockEntry.setSkinId(clientData.getSkinId());
+                            bedrockEntry.setSkinData(skinData);
+                            bedrockEntry.setCapeData(capeData);
+                            bedrockEntry.setGeometryName(clientData.getSkinGeometryName());
+                            bedrockEntry.setGeometryData(new String(clientData.getSkinGeometry(), StandardCharsets.UTF_8));
+                            bedrockEntry.setXuid("");
+                            bedrockEntry.setPlatformChatId("");
+
+                            playerListPacket.getEntries().add(bedrockEntry);
+
+                            session.getBedrockSession().sendPacket(playerListPacket);
+                        }
+                    };
+                    skinFetchThread.start();
+                } else {
+                    bedrockEntry.setEntityId(proxyEid);
+                    bedrockEntry.setName(entry.getProfile().getName());
+                    bedrockEntry.setSkinId(clientData.getSkinId());
+                    bedrockEntry.setSkinData(clientData.getSkinData());
+                    bedrockEntry.setCapeData(clientData.getCapeData());
+                    bedrockEntry.setGeometryName(clientData.getSkinGeometryName());
+                    bedrockEntry.setGeometryData(new String(clientData.getSkinGeometry(), StandardCharsets.UTF_8));
+                    bedrockEntry.setXuid("");
+                    bedrockEntry.setPlatformChatId("");
+
+                    playerListPacket.getEntries().add(bedrockEntry);
+
+                    session.getBedrockSession().sendPacket(playerListPacket);
+                }
             }
-
-            playerListPacket.getEntries().add(bedrockEntry);
         }
-
-        session.getBedrockSession().sendPacket(playerListPacket);
-        //log.info("SENT PLAYER LIST");
     }
 }

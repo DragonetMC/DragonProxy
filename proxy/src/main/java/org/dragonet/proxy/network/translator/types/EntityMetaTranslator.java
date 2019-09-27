@@ -68,7 +68,7 @@ public class EntityMetaTranslator {
                     flags.setFlag(EntityFlag.SILENT, (boolean) meta.getValue());
                     break;
                 case 5: // No gravity
-                    flags.setFlag(EntityFlag.HAS_GRAVITY, (boolean) meta.getValue());
+                    flags.setFlag(EntityFlag.HAS_GRAVITY, !(boolean) meta.getValue()); // flipped intentionally
                     break;
             }
         }

@@ -53,7 +53,7 @@ public class PCEntityMetadataTranslator implements PacketTranslator<ServerEntity
         cachedEntity.getMetadata().putAll(metadata);
 
         SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
-        setEntityDataPacket.setRuntimeEntityId(packet.getEntityId());
+        setEntityDataPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
         setEntityDataPacket.getMetadata().putAll(cachedEntity.getMetadata());
 
         session.getBedrockSession().sendPacket(setEntityDataPacket);

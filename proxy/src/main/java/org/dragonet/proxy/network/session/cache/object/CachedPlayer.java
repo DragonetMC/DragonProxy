@@ -26,11 +26,13 @@ import com.flowpowered.math.vector.Vector3f;
 import com.github.steveice10.mc.auth.data.GameProfile;
 import com.nukkitx.protocol.bedrock.data.ItemData;
 import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket;
+import lombok.Getter;
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 
 import java.util.UUID;
 
+@Getter
 public class CachedPlayer extends CachedEntity {
     private GameProfile profile;
 

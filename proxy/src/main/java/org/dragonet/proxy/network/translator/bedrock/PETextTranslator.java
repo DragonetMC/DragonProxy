@@ -22,6 +22,8 @@
  */
 package org.dragonet.proxy.network.translator.bedrock;
 
+import com.github.steveice10.mc.auth.data.GameProfile;
+import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
 import com.nukkitx.protocol.bedrock.packet.TextPacket;
 import org.dragonet.proxy.network.session.ProxySession;

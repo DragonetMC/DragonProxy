@@ -46,8 +46,6 @@ public class PCSpawnPlayerTranslator implements PacketTranslator<ServerSpawnPlay
         cachedPlayer.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
         cachedPlayer.setRotation(new Vector3f(packet.getYaw(), packet.getPitch(), 0));
         cachedPlayer.getMetadata().putAll(EntityMetaTranslator.translateToBedrock(packet.getMetadata()));
-
-        // This still hangs then crashes after a few seconds
         cachedPlayer.spawn(session);
     }
 }
