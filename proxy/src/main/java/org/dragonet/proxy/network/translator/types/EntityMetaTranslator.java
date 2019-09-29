@@ -62,7 +62,8 @@ public class EntityMetaTranslator {
                     }
                     break;
                 case 3: // Is custom name visible
-                    flags.setFlag(EntityFlag.CAN_SHOW_NAME, (boolean) meta.getValue()); // ALWAYS_SHOW_NAMETAG?
+                    dictionary.put(EntityData.ALWAYS_SHOW_NAMETAG, (boolean) meta.getValue() ? 1 : 0);
+                    //flags.setFlag(EntityFlag.ALWAYS_SHOW_NAME, (boolean) meta.getValue()); // ALWAYS_SHOW_NAMETAG?
                     break;
                 case 4: // Is silent
                     flags.setFlag(EntityFlag.SILENT, (boolean) meta.getValue());

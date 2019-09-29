@@ -61,6 +61,7 @@ public class EntityCache implements Cache {
     public CachedEntity newEntity(EntityType type, int entityId) {
         CachedEntity entity = new CachedEntity(type, nextClientEntityId.getAndIncrement(), entityId);
 
+        entities.put(entity.getProxyEid(), entity);
         clientToRemoteMap.put(entity.getProxyEid(), entity.getRemoteEid());
         remoteToClientMap.put(entity.getRemoteEid(), entity.getProxyEid());
         return entity;
@@ -69,9 +70,16 @@ public class EntityCache implements Cache {
     public CachedPlayer newPlayer(int entityId, GameProfile profile) {
         CachedPlayer entity = new CachedPlayer(nextClientEntityId.getAndIncrement(), entityId, profile);
 
+        entities.put(entity.getProxyEid(), entity);
         clientToRemoteMap.put(entity.getProxyEid(), entity.getRemoteEid());
         remoteToClientMap.put(entity.getRemoteEid(), entity.getProxyEid());
         return entity;
+    }
+
+    public void destroyEntity(long proxyEid) {
+        entities.remove(proxyEid);
+        remoteToClientMap.remove(clientToRemoteMap.get(proxyEid));
+        clientToRemoteMap.remove(proxyEid);
     }
 
     @Override

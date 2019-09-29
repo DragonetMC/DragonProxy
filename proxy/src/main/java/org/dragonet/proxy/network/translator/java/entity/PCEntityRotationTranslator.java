@@ -22,15 +22,27 @@
  */
 package org.dragonet.proxy.network.translator.java.entity;
 
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityHeadLookPacket;
+import com.flowpowered.math.vector.Vector3f;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityPositionPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityRotationPacket;
+import com.nukkitx.protocol.bedrock.packet.MoveEntityAbsolutePacket;
+import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
-public class PCEntityHeadlookPacketTranslator implements PacketTranslator<ServerEntityHeadLookPacket> {
-    public static final PCEntityHeadlookPacketTranslator INSTANCE = new PCEntityHeadlookPacketTranslator();
+@Log4j2
+public class PCEntityRotationTranslator implements PacketTranslator<ServerEntityRotationPacket> {
+    public static final PCEntityRotationTranslator INSTANCE = new PCEntityRotationTranslator();
 
     @Override
-    public void translate(ProxySession session, ServerEntityHeadLookPacket packet) {
+    public void translate(ProxySession session, ServerEntityRotationPacket packet) {
+        CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(packet.getEntityId());
+        if(cachedEntity == null) {
+            //log.info("(debug) EntityRotation: Cached entity is null");
+            return;
+        }
 
+        // TODO
     }
 }

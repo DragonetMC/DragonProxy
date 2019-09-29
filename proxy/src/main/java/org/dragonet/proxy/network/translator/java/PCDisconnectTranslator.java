@@ -26,6 +26,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDisconnectPa
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.types.MessageTranslator;
 
@@ -35,7 +36,11 @@ public class PCDisconnectTranslator implements PacketTranslator<ServerDisconnect
 
     @Override
     public void translate(ProxySession session, ServerDisconnectPacket packet) {
-        session.disconnect(MessageTranslator.translate(packet.getReason().getText()));
+        CachedPlayer cachedPlayer = session.getCachedEntity();
+        if(cachedPlayer != null) {
+            cachedPlayer.destroy(session);
+        }
+        session.disconnect(MessageTranslator.translate(packet.getReason()));
     }
 }
 

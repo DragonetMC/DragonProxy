@@ -27,24 +27,34 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntit
 import com.nukkitx.protocol.bedrock.packet.MoveEntityAbsolutePacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
 @Log4j2
-public class PCEntityPositionPacketTranslator implements PacketTranslator<ServerEntityPositionPacket> {
-    public static final PCEntityPositionPacketTranslator INSTANCE = new PCEntityPositionPacketTranslator();
+public class PCEntityPositionTranslator implements PacketTranslator<ServerEntityPositionPacket> {
+    public static final PCEntityPositionTranslator INSTANCE = new PCEntityPositionTranslator();
 
     @Override
     public void translate(ProxySession session, ServerEntityPositionPacket packet) {
-        MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
+        CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(packet.getEntityId());
+        if(cachedEntity == null) {
+            //log.info("(debug) EntityPosition: Cached entity is null");
+            return;
+        }
 
-        log.trace("GOT entity position x=" + packet.getMovementX() + ", y=" + packet.getMovementY() + ", z=" + packet.getMovementZ());
+        cachedEntity.moveRelative(new Vector3f(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ()), packet.getPitch(), packet.getYaw());
 
-        moveEntityPacket.setRuntimeEntityId(packet.getEntityId());
-        moveEntityPacket.setPosition(new Vector3f(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ()));
-        moveEntityPacket.setRotation(new Vector3f(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ()));
-        moveEntityPacket.setOnGround(packet.isOnGround());
-        moveEntityPacket.setTeleported(false);
+        if(cachedEntity.isShouldMove()) {
+            MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
+            moveEntityPacket.setRuntimeEntityId(packet.getEntityId());
+            moveEntityPacket.setPosition(cachedEntity.getPosition());
+            moveEntityPacket.setRotation(cachedEntity.getRotation());
+            moveEntityPacket.setOnGround(packet.isOnGround());
+            moveEntityPacket.setTeleported(false);
 
-        session.getBedrockSession().sendPacket(moveEntityPacket);
+            session.getBedrockSession().sendPacket(moveEntityPacket);
+
+            cachedEntity.setShouldMove(false);
+        }
     }
 }

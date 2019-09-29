@@ -43,7 +43,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Log4j2
 public class PCPlayerListEntryTranslator implements PacketTranslator<ServerPlayerListEntryPacket> {
     public static final PCPlayerListEntryTranslator INSTANCE = new PCPlayerListEntryTranslator();
-    private static final AtomicInteger threadId = new AtomicInteger(0);
 
     @Override
     public void translate(ProxySession session, ServerPlayerListEntryPacket packet) {
@@ -71,41 +70,37 @@ public class PCPlayerListEntryTranslator implements PacketTranslator<ServerPlaye
 
                 SetLocalPlayerAsInitializedPacket initializePacket = new SetLocalPlayerAsInitializedPacket();
                 initializePacket.setRuntimeEntityId(proxyEid);
-                session.getBedrockSession().sendPacket(initializePacket);
+                //session.getBedrockSession().sendPacket(initializePacket);
 
                 // TODO: reduce duplicated code?
                 if(session.getProxy().getConfiguration().isFetchPlayerSkins()) {
                     // Fetch skin data from Mojang
-                    Thread skinFetchThread = new Thread("Texture Downloader #" + threadId.incrementAndGet()) {
-                        @Override
-                        public void run() {
-                            byte[] skinData = SkinUtils.fetchSkin(entry.getProfile());
-                            if (skinData == null) {
-                                skinData = clientData.getSkinData();
-                            }
-
-                            // Doesnt work currently
-                            byte[] capeData = clientData.getCapeData(); //SkinUtils.fetchOptifineCape(entry.getProfile());
-                            //if(capeData == null) {
-                            //    capeData = clientData.getCapeData();
-                            //}
-
-                            bedrockEntry.setEntityId(proxyEid);
-                            bedrockEntry.setName(entry.getProfile().getName());
-                            bedrockEntry.setSkinId(clientData.getSkinId());
-                            bedrockEntry.setSkinData(skinData);
-                            bedrockEntry.setCapeData(capeData);
-                            bedrockEntry.setGeometryName(clientData.getSkinGeometryName());
-                            bedrockEntry.setGeometryData(new String(clientData.getSkinGeometry(), StandardCharsets.UTF_8));
-                            bedrockEntry.setXuid("");
-                            bedrockEntry.setPlatformChatId("");
-
-                            playerListPacket.getEntries().add(bedrockEntry);
-
-                            session.getBedrockSession().sendPacket(playerListPacket);
+                    session.getProxy().getGeneralThreadPool().execute(() -> {
+                        byte[] skinData = SkinUtils.fetchSkin(entry.getProfile());
+                        if (skinData == null) {
+                            skinData = clientData.getSkinData();
                         }
-                    };
-                    skinFetchThread.start();
+
+                        // Doesnt work currently
+                        byte[] capeData = clientData.getCapeData(); //SkinUtils.fetchOptifineCape(entry.getProfile());
+                        //if(capeData == null) {
+                        //    capeData = clientData.getCapeData();
+                        //}
+
+                        bedrockEntry.setEntityId(proxyEid);
+                        bedrockEntry.setName(entry.getProfile().getName());
+                        bedrockEntry.setSkinId(clientData.getSkinId());
+                        bedrockEntry.setSkinData(skinData);
+                        bedrockEntry.setCapeData(capeData);
+                        bedrockEntry.setGeometryName(clientData.getSkinGeometryName());
+                        bedrockEntry.setGeometryData(new String(clientData.getSkinGeometry(), StandardCharsets.UTF_8));
+                        bedrockEntry.setXuid("");
+                        bedrockEntry.setPlatformChatId("");
+
+                        playerListPacket.getEntries().add(bedrockEntry);
+
+                        session.getBedrockSession().sendPacket(playerListPacket);
+                    });
                 } else {
                     bedrockEntry.setEntityId(proxyEid);
                     bedrockEntry.setName(entry.getProfile().getName());

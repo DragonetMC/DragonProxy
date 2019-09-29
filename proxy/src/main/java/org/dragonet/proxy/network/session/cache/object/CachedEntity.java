@@ -53,6 +53,7 @@ public class CachedEntity {
     protected Vector3f position = Vector3f.ZERO;
     protected Vector3f rotation = Vector3f.ZERO;
     protected Vector3f motion = Vector3f.ZERO;
+    protected Vector3f spawnPosition = Vector3f.ZERO;
 
     protected Set<EntityEffectTranslator.BedrockEffect> effects = new HashSet<>();
 
@@ -95,16 +96,21 @@ public class CachedEntity {
         }
     }
 
-    public void moveRelative(double relX, double relY, double relZ, float pitch, float yaw) {
-        moveRelative(relX, relY, relZ, new Vector3f(pitch, yaw, 0));
+    public void destroy(ProxySession session) {
+        despawn(session);
+        session.getEntityCache().destroyEntity(proxyEid);
     }
 
-    public void moveRelative(double relX, double relY, double relZ, Vector3f rotation) {
-        if (relX == 0 && relY == 0 && relZ == 0 && position.getX() == 0 && position.getY() == 0)
+    public void moveRelative(Vector3f relPos, float pitch, float yaw) {
+        moveRelative(relPos, new Vector3f(pitch, yaw, 0));
+    }
+
+    public void moveRelative(Vector3f relPos, Vector3f rotation) {
+        if (relPos.getX() == 0 && relPos.getY() == 0 && relPos.getZ() == 0 && position.getX() == 0 && position.getY() == 0)
             return;
 
         this.rotation = rotation;
-        this.position = new Vector3f(position.getX() + relX, position.getY() + relY, position.getZ() + relZ);
+        this.position = new Vector3f(position.getX() + relPos.getX(), position.getY() + relPos.getY(), position.getZ() + relPos.getZ());
         this.shouldMove = true;
     }
 

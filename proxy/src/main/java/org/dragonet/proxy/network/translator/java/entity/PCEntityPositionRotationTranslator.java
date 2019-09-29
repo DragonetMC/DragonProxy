@@ -31,21 +31,30 @@ import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
 @Log4j2
-public class PCEntityPositionRotationPacketTranslator implements PacketTranslator<ServerEntityPositionRotationPacket> {
-    public static final PCEntityPositionRotationPacketTranslator INSTANCE = new PCEntityPositionRotationPacketTranslator();
+public class PCEntityPositionRotationTranslator implements PacketTranslator<ServerEntityPositionRotationPacket> {
+    public static final PCEntityPositionRotationTranslator INSTANCE = new PCEntityPositionRotationTranslator();
 
     @Override
     public void translate(ProxySession session, ServerEntityPositionRotationPacket packet) {
-        MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
+        CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(packet.getEntityId());
+        if(cachedEntity == null) {
+            //log.info("(debug) EntityPositionRotation: Cached entity is null");
+            return;
+        }
 
-        log.trace("GOT entity position rotation x=" + packet.getMovementX() + ", y=" + packet.getMovementY() + ", z=" + packet.getMovementZ());
+        cachedEntity.moveRelative(new Vector3f(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ()), packet.getPitch(), packet.getYaw());
 
-        moveEntityPacket.setRuntimeEntityId(packet.getEntityId());
-        moveEntityPacket.setPosition(new Vector3f(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ()));
-        moveEntityPacket.setTeleported(false);
-        moveEntityPacket.setOnGround(true);
-        moveEntityPacket.setRotation(new Vector3f(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ()));
+        if(cachedEntity.isShouldMove()) {
+            MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
+            moveEntityPacket.setRuntimeEntityId(packet.getEntityId());
+            moveEntityPacket.setPosition(cachedEntity.getPosition());
+            moveEntityPacket.setRotation(cachedEntity.getRotation());
+            moveEntityPacket.setOnGround(packet.isOnGround());
+            moveEntityPacket.setTeleported(false);
 
-        session.getBedrockSession().sendPacket(moveEntityPacket);
+            session.getBedrockSession().sendPacket(moveEntityPacket);
+
+            cachedEntity.setShouldMove(false);
+        }
     }
 }

@@ -22,24 +22,35 @@
  */
 package org.dragonet.proxy.network.translator.java.entity;
 
+import com.flowpowered.math.vector.Vector3f;
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.MetadataType;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityDestroyPacket;
-import com.nukkitx.protocol.bedrock.packet.RemoveEntityPacket;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
+import com.nukkitx.protocol.bedrock.data.EntityData;
+import com.nukkitx.protocol.bedrock.data.EntityDataDictionary;
+import com.nukkitx.protocol.bedrock.packet.AddEntityPacket;
+import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.types.EntityTypeTranslator;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PCServerEntityDestroyPacketTranslator implements PacketTranslator<ServerEntityDestroyPacket> {
-    public static final PCServerEntityDestroyPacketTranslator INSTANCE = new PCServerEntityDestroyPacketTranslator();
+@Log4j2
+public class PCEntityDestroyTranslator implements PacketTranslator<ServerEntityDestroyPacket> {
+    public static final PCEntityDestroyTranslator INSTANCE = new PCEntityDestroyTranslator();
 
     @Override
     public void translate(ProxySession session, ServerEntityDestroyPacket packet) {
         for(int entityId : packet.getEntityIds()) {
-            RemoveEntityPacket removeEntityPacket = new RemoveEntityPacket();
-            removeEntityPacket.setUniqueEntityId(entityId);
-
-            session.getBedrockSession().sendPacket(removeEntityPacket);
+            CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(entityId);
+            if(cachedEntity == null) {
+                //log.warn("EntityDestroy: Cached entity doesn't exist");
+                return;
+            }
+            log.trace("Destroying entity with proxy eid: " + cachedEntity.getProxyEid());
+            cachedEntity.despawn(session);
         }
     }
 }
