@@ -23,21 +23,20 @@
 package org.dragonet.proxy.network.session.cache.object;
 
 import com.flowpowered.math.vector.Vector3f;
-import com.github.steveice10.mc.protocol.data.game.entity.attribute.AttributeType;
-import com.nukkitx.protocol.PlayerSession;
 import com.nukkitx.protocol.bedrock.data.*;
 import com.nukkitx.protocol.bedrock.packet.AddEntityPacket;
 import com.nukkitx.protocol.bedrock.packet.RemoveEntityPacket;
 import lombok.Data;
+import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.data.entity.BedrockAttributeType;
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.types.EntityEffectTranslator;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Data
+@Log4j2
 public class CachedEntity {
     protected EntityType type;
     protected long proxyEid;
@@ -55,6 +54,7 @@ public class CachedEntity {
     protected Vector3f motion = Vector3f.ZERO;
     protected Vector3f spawnPosition = Vector3f.ZERO;
 
+    protected Map<BedrockAttributeType, Attribute> attributes = new HashMap<>();
     protected Set<EntityEffectTranslator.BedrockEffect> effects = new HashSet<>();
 
     public CachedEntity(EntityType type, long proxyEid, int remoteEid) {
@@ -79,6 +79,8 @@ public class CachedEntity {
         addEntityPacket.setRuntimeEntityId(proxyEid);
         addEntityPacket.setUniqueEntityId(proxyEid);
         addEntityPacket.getMetadata().putAll(getMetadata());
+
+        //log.info(getMetadata());
 
         session.getBedrockSession().sendPacket(addEntityPacket);
         spawned = true;

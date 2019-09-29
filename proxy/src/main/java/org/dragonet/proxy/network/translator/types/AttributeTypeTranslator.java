@@ -22,12 +22,9 @@
  */
 package org.dragonet.proxy.network.translator.types;
 
-import com.github.steveice10.mc.protocol.data.game.entity.attribute.Attribute;
 import com.github.steveice10.mc.protocol.data.game.entity.attribute.AttributeType;
-import com.github.steveice10.mc.protocol.data.game.entity.type.MobType;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.data.entity.BedrockAttribute;
-import org.dragonet.proxy.data.entity.EntityType;
+import org.dragonet.proxy.data.entity.BedrockAttributeType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,17 +32,17 @@ import java.util.Map;
 @Log4j2
 public class AttributeTypeTranslator {
     // Java to Bedrock attribute map
-    private static Map<AttributeType, BedrockAttribute> attributeMap = new HashMap<>();
+    private static Map<AttributeType, BedrockAttributeType> attributeMap = new HashMap<>();
 
     static {
         // TODO: finish these
-        attributeMap.put(AttributeType.GENERIC_MOVEMENT_SPEED, BedrockAttribute.MOVEMENT_SPEED);
+        attributeMap.put(AttributeType.GENERIC_MOVEMENT_SPEED, BedrockAttributeType.MOVEMENT_SPEED);
     }
 
     /**
      * This method translates a Java attribute to a Bedrock attribute.
      */
-    public static BedrockAttribute translateToBedrock(AttributeType attribute) {
+    public static BedrockAttributeType translateToBedrock(AttributeType attribute) {
         if(attributeMap.containsKey(attribute)) {
             return attributeMap.get(attribute);
         }

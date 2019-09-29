@@ -37,6 +37,7 @@ import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.types.EntityMetaTranslator;
 import org.dragonet.proxy.network.translator.types.EntityTypeTranslator;
 import org.dragonet.proxy.util.SkinUtils;
 
@@ -62,6 +63,9 @@ public class PCSpawnMobTranslator implements PacketTranslator<ServerSpawnMobPack
         }
 
         cachedEntity = session.getEntityCache().newEntity(entityType, packet.getEntityId());
+
+        EntityDataDictionary metadata = EntityMetaTranslator.translateToBedrock(packet.getMetadata());
+        cachedEntity.getMetadata().putAll(metadata);
 
         cachedEntity.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
         cachedEntity.setMotion(new Vector3f(packet.getMotionX(), packet.getMotionY(), packet.getMotionZ()));
@@ -89,7 +93,7 @@ public class PCSpawnMobTranslator implements PacketTranslator<ServerSpawnMobPack
             playerSkinPacket.setUuid(packet.getUUID());
             playerSkinPacket.setSkinData(skinData);
 
-            session.getBedrockSession().sendPacket(playerSkinPacket);
+            //session.getBedrockSession().sendPacket(playerSkinPacket);
         });
     }
 }

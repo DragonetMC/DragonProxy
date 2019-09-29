@@ -68,10 +68,6 @@ public class PCPlayerListEntryTranslator implements PacketTranslator<ServerPlaye
                 ClientData clientData = session.getClientData();
                 long proxyEid = session.getEntityCache().getNextClientEntityId().getAndIncrement();
 
-                SetLocalPlayerAsInitializedPacket initializePacket = new SetLocalPlayerAsInitializedPacket();
-                initializePacket.setRuntimeEntityId(proxyEid);
-                //session.getBedrockSession().sendPacket(initializePacket);
-
                 // TODO: reduce duplicated code?
                 if(session.getProxy().getConfiguration().isFetchPlayerSkins()) {
                     // Fetch skin data from Mojang

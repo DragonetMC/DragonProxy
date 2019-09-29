@@ -210,6 +210,12 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
         return true;
     }
 
+    @Override
+    public boolean handle(SetLocalPlayerAsInitializedPacket packet) {
+        session.spawn(packet.getRuntimeEntityId());
+        return true;
+    }
+
     // TODO: a better method
     @Override
     public boolean handle(TextPacket packet) {

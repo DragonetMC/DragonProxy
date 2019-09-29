@@ -22,12 +22,13 @@
  */
 package org.dragonet.proxy.data.entity;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum BedrockAttribute {
+public enum BedrockAttributeType {
     MOVEMENT_SPEED("minecraft:movement", 0f, 1024f, 0.10f),
     KNOCKBACK_RESISTANCE("minecraft:knockback_resistance", 0f, 1f, 0f),
     ATTACK_DAMAGE("minecraft:attack_damage", 0f, 2048f, 1f),

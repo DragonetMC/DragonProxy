@@ -314,7 +314,7 @@ public class ProxySession implements PlayerSession {
         cachedEntity = player;
         entityCache.getEntities().put((long) 1, player);
 
-        spawn(1); // TODO: only do this after authentication?
+        //spawn(1); // TODO: only do this after authentication?
     }
 
     public void sendMessage(String text) {

@@ -50,8 +50,13 @@ public class EntityMetaTranslator {
                     flags.setFlag(EntityFlag.SNEAKING, (javaFlags & 0x02) > 0);
                     flags.setFlag(EntityFlag.SPRINTING, (javaFlags & 0x08) > 0);
                     flags.setFlag(EntityFlag.SWIMMING, (javaFlags & 0x10) > 0);
-                    flags.setFlag(EntityFlag.INVISIBLE, (javaFlags & 0x20) > 0);
                     flags.setFlag(EntityFlag.GLIDING, (javaFlags & 0x80) > 0);
+
+                    if((javaFlags & 0x20) > 0) { // Invisible
+                        // HACK! Setting the invisible flag will also hide the nametag on bedrock,
+                        // so this hack is needed to simulate invisibility.
+                        dictionary.put(EntityData.SCALE, 0.01f);
+                    }
                     break;
                 case 1: // Air
                     dictionary.put(EntityData.AIR, meta.getValue());
@@ -62,8 +67,7 @@ public class EntityMetaTranslator {
                     }
                     break;
                 case 3: // Is custom name visible
-                    dictionary.put(EntityData.ALWAYS_SHOW_NAMETAG, (boolean) meta.getValue() ? 1 : 0);
-                    //flags.setFlag(EntityFlag.ALWAYS_SHOW_NAME, (boolean) meta.getValue()); // ALWAYS_SHOW_NAMETAG?
+                    dictionary.put(EntityData.ALWAYS_SHOW_NAMETAG, (boolean) meta.getValue() ? (byte) 1 : (byte) 0);
                     break;
                 case 4: // Is silent
                     flags.setFlag(EntityFlag.SILENT, (boolean) meta.getValue());

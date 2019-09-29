@@ -22,25 +22,17 @@
  */
 package org.dragonet.proxy.network.translator.java.entity;
 
-import com.github.steveice10.mc.protocol.data.game.entity.attribute.AttributeType;
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityAnimationPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityMetadataPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityPropertiesPacket;
 import com.nukkitx.protocol.bedrock.data.Attribute;
-import com.nukkitx.protocol.bedrock.packet.AnimatePacket;
-import com.nukkitx.protocol.bedrock.packet.PlayerActionPacket;
-import com.nukkitx.protocol.bedrock.packet.SetEntityDataPacket;
 import com.nukkitx.protocol.bedrock.packet.UpdateAttributesPacket;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.data.entity.BedrockAttribute;
+import org.dragonet.proxy.data.entity.BedrockAttributeType;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.types.AttributeTypeTranslator;
-import org.dragonet.proxy.util.TextFormat;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Log4j2
 public class PCEntityPropertiesTranslator implements PacketTranslator<ServerEntityPropertiesPacket> {
@@ -54,22 +46,24 @@ public class PCEntityPropertiesTranslator implements PacketTranslator<ServerEnti
             return;
         }
 
-        List<Attribute> attributes = new ArrayList<>();
-
         for(com.github.steveice10.mc.protocol.data.game.entity.attribute.Attribute attribute : packet.getAttributes()) {
-            BedrockAttribute bedrockAttribute = AttributeTypeTranslator.translateToBedrock(attribute.getType());
+            BedrockAttributeType bedrockAttribute = AttributeTypeTranslator.translateToBedrock(attribute.getType());
             if(bedrockAttribute == null) {
                 log.trace("Cannot translate attribute: " + attribute.getType().name());
                 return;
             }
 
             log.trace("Translating attribute: " + bedrockAttribute.getIdentifier() + " with value " + attribute.getValue());
-            attributes.add(new Attribute(bedrockAttribute.getIdentifier(), bedrockAttribute.getMinimumValue(), bedrockAttribute.getMaximumValue(), (float) attribute.getValue(), bedrockAttribute.getDefaultValue()));
+            if(cachedEntity.getAttributes().containsKey(bedrockAttribute)) {
+                cachedEntity.getAttributes().replace(bedrockAttribute, new Attribute(bedrockAttribute.getIdentifier(), bedrockAttribute.getMinimumValue(), bedrockAttribute.getMaximumValue(), (float) attribute.getValue(), bedrockAttribute.getDefaultValue()));
+            } else {
+                cachedEntity.getAttributes().remove(bedrockAttribute); // TODO: is this correct?
+            }
         }
 
         UpdateAttributesPacket updateAttributesPacket = new UpdateAttributesPacket();
         updateAttributesPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
-        updateAttributesPacket.setAttributes(attributes);
+        updateAttributesPacket.setAttributes(new ArrayList<>(cachedEntity.getAttributes().values()));
 
         session.getBedrockSession().sendPacket(updateAttributesPacket);
     }

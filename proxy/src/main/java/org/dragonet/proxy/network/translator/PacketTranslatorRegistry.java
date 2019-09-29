@@ -30,6 +30,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.Serve
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.*;
+import com.github.steveice10.mc.protocol.packet.login.server.LoginDisconnectPacket;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.google.common.base.Preconditions;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
@@ -53,7 +54,8 @@ public class PacketTranslatorRegistry<P> {
     public static final PacketTranslatorRegistry<Packet> JAVA_TO_BEDROCK = new PacketTranslatorRegistry<>();
 
     static {
-        JAVA_TO_BEDROCK.addTranslator(ServerJoinGamePacket.class, PCJoinGameTranslator.INSTANCE)
+        JAVA_TO_BEDROCK.addTranslator(LoginDisconnectPacket.class, PCLoginDisconnectTranslator.INSTANCE)
+            .addTranslator(ServerJoinGamePacket.class, PCJoinGameTranslator.INSTANCE)
             .addTranslator(ServerMultiBlockChangePacket.class, PCMultiBlockChangeTranslator.INSTANCE)
             .addTranslator(ServerDifficultyPacket.class, PCDifficultyTranslator.INSTANCE)
             .addTranslator(ServerTitlePacket.class, PCTitleTranslator.INSTANCE)
