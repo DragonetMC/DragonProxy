@@ -54,7 +54,7 @@ public class PCPlayerPositionRotationTranslator implements PacketTranslator<Serv
             SetEntityDataPacket entityDataPacket = new SetEntityDataPacket();
             entityDataPacket.setRuntimeEntityId(1);
             entityDataPacket.getMetadata().putAll(cachedEntity.getMetadata());
-            session.getBedrockSession().sendPacket(entityDataPacket);
+            session.sendPacket(entityDataPacket);
 
             MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
             movePlayerPacket.setRuntimeEntityId(1);
@@ -64,7 +64,7 @@ public class PCPlayerPositionRotationTranslator implements PacketTranslator<Serv
             movePlayerPacket.setOnGround(true);
             cachedEntity.setShouldMove(false);
 
-            session.getBedrockSession().sendPacket(movePlayerPacket);
+            session.sendPacket(movePlayerPacket);
             cachedEntity.setSpawned(true);
 
             log.info("Spawned player " + session.getUsername() + " at " + packet.getX() + " " + packet.getY() + " " + packet.getZ());
@@ -82,10 +82,10 @@ public class PCPlayerPositionRotationTranslator implements PacketTranslator<Serv
 
         cachedEntity.setShouldMove(false);
 
-        session.getBedrockSession().sendPacket(movePlayerPacket);
+        session.sendPacket(movePlayerPacket);
         cachedEntity.setSpawned(true);
 
         ClientTeleportConfirmPacket teleportConfirmPacket = new ClientTeleportConfirmPacket(packet.getTeleportId());
-        session.getDownstream().getSession().send(teleportConfirmPacket);
+        session.sendRemotePacket(teleportConfirmPacket);
     }
 }

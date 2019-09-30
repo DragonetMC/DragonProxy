@@ -56,7 +56,7 @@ public class PCEntityRemoveEffectTranslator implements PacketTranslator<ServerEn
         mobEffectPacket.setDuration(0);
         mobEffectPacket.setAmplifier(0);
 
-        session.getBedrockSession().sendPacket(mobEffectPacket);
+        session.sendPacket(mobEffectPacket);
 
         // Remove the effect from the cached entity
         cachedEntity.getEffects().remove(effect);

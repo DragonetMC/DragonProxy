@@ -129,7 +129,7 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
 
             // TODO: 01/04/2019 Add support for deserializing the chunk in the protocol library
 
-            session.getBedrockSession().sendPacketImmediately(startGamePacket);
+            session.sendPacketImmediately(startGamePacket);
 
             Vector3f pos = new Vector3f(-23, 70, 0);
             int chunkX = pos.getFloorX() >> 4;
@@ -143,14 +143,14 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
                     data.setSubChunksLength(0);
                     data.setData(EMPTY_LEVEL_CHUNK_DATA);
                     data.setCachingEnabled(false);
-                    session.getBedrockSession().sendPacketImmediately(data);
+                    session.sendPacketImmediately(data);
                 }
             }
         //}
 
         PlayStatusPacket playStatus = new PlayStatusPacket();
         playStatus.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
-        session.getBedrockSession().sendPacketImmediately(playStatus);
+        session.sendPacketImmediately(playStatus);
 
         // Add the player to the cache (still need to remove them, but thats a TODO)
         if(session.getDataCache().get("auth_state") != AuthState.AUTHENTICATED) {

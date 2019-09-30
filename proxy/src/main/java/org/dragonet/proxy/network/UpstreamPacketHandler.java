@@ -144,11 +144,11 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
         // Tell the Bedrock client login was successful
         PlayStatusPacket playStatus = new PlayStatusPacket();
         playStatus.setStatus(PlayStatusPacket.Status.LOGIN_SUCCESS);
-        session.getBedrockSession().sendPacketImmediately(playStatus);
+        session.sendPacketImmediately(playStatus);
 
         // Start Resource pack handshake
         ResourcePacksInfoPacket resourcePacksInfo = new ResourcePacksInfoPacket();
-        session.getBedrockSession().sendPacketImmediately(resourcePacksInfo);
+        session.sendPacketImmediately(resourcePacksInfo);
         return true;
     }
 
@@ -171,7 +171,7 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
                 ResourcePackStackPacket stack = new ResourcePackStackPacket();
                 stack.setExperimental(false);
                 stack.setForcedToAccept(false);
-                session.getBedrockSession().sendPacketImmediately(stack);
+                session.sendPacketImmediately(stack);
                 break;
             default:
                 // Anything else shouldn't happen so disconnect

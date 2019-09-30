@@ -61,7 +61,7 @@ public class PCEntityEffectTranslator implements PacketTranslator<ServerEntityEf
             mobEffectPacket.setEvent(MobEffectPacket.Event.ADD);
         }
 
-        session.getBedrockSession().sendPacket(mobEffectPacket);
+        session.sendPacket(mobEffectPacket);
 
         // Add the effect to the cached entity so we can check it later
         cachedEntity.getEffects().add(effect);

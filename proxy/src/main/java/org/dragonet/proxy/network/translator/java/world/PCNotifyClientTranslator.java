@@ -51,19 +51,19 @@ public class PCNotifyClientTranslator implements PacketTranslator<ServerNotifyCl
                 SetPlayerGameTypePacket setGameTypePacket = new SetPlayerGameTypePacket();
                 setGameTypePacket.setGamemode(MagicValues.value(Integer.class, packet.getValue()));
 
-                session.getBedrockSession().sendPacket(setGameTypePacket);
+                session.sendPacket(setGameTypePacket);
                 break;
             case START_RAIN:
-                session.getBedrockSession().sendPacket(createLevelEvent(START_RAIN, ThreadLocalRandom.current().nextInt(50000) + 10000));
+                session.sendPacket(createLevelEvent(START_RAIN, ThreadLocalRandom.current().nextInt(50000) + 10000));
                 break;
             case RAIN_STRENGTH:
                 double rainStrength = ((RainStrengthValue) packet.getValue()).getStrength();
                 if(rainStrength > 0.0) {
-                    session.getBedrockSession().sendPacket(createLevelEvent(START_RAIN, (int) rainStrength * 65535));
+                    session.sendPacket(createLevelEvent(START_RAIN, (int) rainStrength * 65535));
                     break;
                 }
             case STOP_RAIN:
-                session.getBedrockSession().sendPacket(createLevelEvent(STOP_RAIN, 0));
+                session.sendPacket(createLevelEvent(STOP_RAIN, 0));
                 break;
             case THUNDER_STRENGTH:
                 double thunderStrength = ((ThunderStrengthValue) packet.getValue()).getStrength();
@@ -71,9 +71,9 @@ public class PCNotifyClientTranslator implements PacketTranslator<ServerNotifyCl
                 log.info(TextFormat.DARK_AQUA + "Thunder strength: " + thunderStrength);
                 if(thunderStrength > 0.0) {
                     // TODO: this doesnt work?
-                    session.getBedrockSession().sendPacket(createLevelEvent(START_THUNDER, (int) thunderStrength * 65535));
+                    session.sendPacket(createLevelEvent(START_THUNDER, (int) thunderStrength * 65535));
                 } else {
-                    session.getBedrockSession().sendPacket(createLevelEvent(STOP_THUNDER, 0));
+                    session.sendPacket(createLevelEvent(STOP_THUNDER, 0));
                 }
                 break;
             case ENTER_CREDITS:
@@ -81,7 +81,7 @@ public class PCNotifyClientTranslator implements PacketTranslator<ServerNotifyCl
                 showCreditsPacket.setRuntimeEntityId(session.getCachedEntity().getProxyEid());
                 showCreditsPacket.setStatus(ShowCreditsPacket.Status.START_CREDITS);
 
-                session.getBedrockSession().sendPacket(showCreditsPacket);
+                session.sendPacket(showCreditsPacket);
                 break;
             case DEMO_MESSAGE:
                 log.info(TextFormat.AQUA + "Demo message received");

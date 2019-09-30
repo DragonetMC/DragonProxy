@@ -36,6 +36,7 @@ import com.nukkitx.protocol.bedrock.data.InventorySource;
 import com.nukkitx.protocol.bedrock.packet.InventoryTransactionPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
 @Log4j2
@@ -44,6 +45,11 @@ public class PEInventoryTransactionTranslator implements PacketTranslator<Invent
 
     @Override
     public void translate(ProxySession session, InventoryTransactionPacket packet) {
+        CachedEntity cachedEntity = session.getEntityCache().getByProxyId(packet.getRuntimeEntityId());
+        if(cachedEntity == null) {
+            //log.warn("InteractPacket: Cached entity is null");
+            return;
+        }
         //log.warn(packet.getTransactionType().name() + " - " + packet.getActionType());
 
         switch(packet.getTransactionType()) {
@@ -52,7 +58,7 @@ public class PEInventoryTransactionTranslator implements PacketTranslator<Invent
                 break;
             case ITEM_USE:
                 // TODO: different action types
-                session.getDownstream().getSession().send(new ClientPlayerUseItemPacket(Hand.MAIN_HAND));
+                session.sendRemotePacket(new ClientPlayerUseItemPacket(Hand.MAIN_HAND));
                 break;
             case ITEM_USE_ON_ENTITY:
                 InteractAction interactAction = InteractAction.INTERACT;
@@ -61,14 +67,13 @@ public class PEInventoryTransactionTranslator implements PacketTranslator<Invent
                     interactAction = InteractAction.ATTACK;
                 }
 
-                // TODO: does this use the players entity id or target entity id?
-                //ClientPlayerInteractEntityPacket((int) entityId, interactAction);
+                session.sendRemotePacket(new ClientPlayerInteractEntityPacket(cachedEntity.getRemoteEid(), interactAction));
                 break;
             case ITEM_RELEASE:
                 switch(packet.getActionType()) {
                     case 0: // Release
                         Position position = new Position((int) packet.getPlayerPosition().getX(), (int) packet.getPlayerPosition().getY(), (int) packet.getPlayerPosition().getZ());
-                        session.getDownstream().getSession().send(new ClientPlayerActionPacket(PlayerAction.RELEASE_USE_ITEM, position, BlockFace.DOWN));
+                        session.sendRemotePacket(new ClientPlayerActionPacket(PlayerAction.RELEASE_USE_ITEM, position, BlockFace.DOWN));
                         break;
                     case 1: // Consume
 

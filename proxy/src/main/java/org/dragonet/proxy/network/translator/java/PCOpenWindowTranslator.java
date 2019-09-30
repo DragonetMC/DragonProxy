@@ -22,22 +22,22 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
-import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDifficultyPacket;
-import com.nukkitx.protocol.bedrock.packet.SetDifficultyPacket;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
+import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PCDifficultyTranslator implements PacketTranslator<ServerDifficultyPacket> {
-    public static final PCDifficultyTranslator INSTANCE = new PCDifficultyTranslator();
+@Log4j2
+public class PCOpenWindowTranslator implements PacketTranslator<ServerOpenWindowPacket> {
+    public static final PCOpenWindowTranslator INSTANCE = new PCOpenWindowTranslator();
 
     @Override
-    public void translate(ProxySession session, ServerDifficultyPacket packet) {
-        SetDifficultyPacket bedrockPacket = new SetDifficultyPacket();
-        bedrockPacket.setDifficulty(packet.getDifficulty().ordinal());
+    public void translate(ProxySession session, ServerOpenWindowPacket packet) {
+        CachedWindow cachedWindow = session.getWindowCache().newWindow(packet.getType(), packet.getWindowId());
+        cachedWindow.setName(packet.getName());
+        cachedWindow.open(session);
 
-        session.sendPacket(bedrockPacket);
+        log.warn("OPENING WINDOW id: " + packet.getWindowId());
     }
 }

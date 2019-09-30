@@ -27,6 +27,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.*;
@@ -85,7 +86,8 @@ public class PacketTranslatorRegistry<P> {
             .addTranslator(ServerPlayerPositionRotationPacket.class, PCPlayerPositionRotationTranslator.INSTANCE)
             .addTranslator(ServerEntityPropertiesPacket.class, PCEntityPropertiesTranslator.INSTANCE)
             .addTranslator(ServerEntityDestroyPacket.class, PCEntityDestroyTranslator.INSTANCE)
-            .addTranslator(ServerRespawnPacket.class, PCRespawnTranslator.INSTANCE);
+            .addTranslator(ServerRespawnPacket.class, PCRespawnTranslator.INSTANCE)
+            .addTranslator(ServerOpenWindowPacket.class, PCOpenWindowTranslator.INSTANCE);
 
         BEDROCK_TO_JAVA.addTranslator(TextPacket.class, PETextTranslator.INSTANCE)
             .addTranslator(AnimatePacket.class, PEAnimateTranslator.INSTANCE)
@@ -104,7 +106,7 @@ public class PacketTranslatorRegistry<P> {
             //log.info("Unhandled packet received from remote: {}", packetClass.getSimpleName());
             return;
         }
-        if (session.getDownstream() == null) {
+        if (session.getDownstream() == null || session.getBedrockSession().isClosed()) {
             return;
         }
         log.trace("Translating packet: " + packetClass.getSimpleName());

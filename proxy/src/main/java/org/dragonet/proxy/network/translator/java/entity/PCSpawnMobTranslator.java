@@ -93,7 +93,7 @@ public class PCSpawnMobTranslator implements PacketTranslator<ServerSpawnMobPack
             playerSkinPacket.setUuid(packet.getUUID());
             playerSkinPacket.setSkinData(skinData);
 
-            //session.getBedrockSession().sendPacket(playerSkinPacket);
+            //session.sendPacket(playerSkinPacket);
         });
     }
 }

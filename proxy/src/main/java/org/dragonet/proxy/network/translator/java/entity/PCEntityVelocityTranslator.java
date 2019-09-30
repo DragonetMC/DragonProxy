@@ -46,7 +46,7 @@ public class PCEntityVelocityTranslator implements PacketTranslator<ServerEntity
         setEntityMotionPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
         setEntityMotionPacket.setMotion(cachedEntity.getMotion());
 
-        session.getBedrockSession().sendPacket(setEntityMotionPacket);
+        session.sendPacket(setEntityMotionPacket);
 
     }
 }

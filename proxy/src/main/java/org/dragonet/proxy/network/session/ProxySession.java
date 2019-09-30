@@ -28,6 +28,7 @@ import com.flowpowered.math.vector.Vector3i;
 import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.auth.exception.request.RequestException;
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
+import com.github.steveice10.mc.protocol.data.SubProtocol;
 import com.github.steveice10.mc.protocol.data.game.ClientRequest;
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.data.game.statistic.Statistic;
@@ -37,9 +38,12 @@ import com.github.steveice10.packetlib.event.session.ConnectedEvent;
 import com.github.steveice10.packetlib.event.session.DisconnectedEvent;
 import com.github.steveice10.packetlib.event.session.PacketReceivedEvent;
 import com.github.steveice10.packetlib.event.session.SessionAdapter;
+import com.github.steveice10.packetlib.packet.Packet;
+import com.github.steveice10.packetlib.packet.PacketProtocol;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.PlayerSession;
+import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.BedrockServerSession;
 
 import com.nukkitx.protocol.bedrock.data.*;
@@ -114,6 +118,9 @@ public class ProxySession implements PlayerSession {
 
         bedrockSession.addDisconnectHandler((reason) -> {
             if(downstream != null && downstream.getSession() != null) {
+                if(cachedEntity != null) {
+                    cachedEntity.destroy(this);
+                }
                 downstream.getSession().disconnect(reason.name());
             }
         });
@@ -193,7 +200,7 @@ public class ProxySession implements PlayerSession {
         futureMap.put("stats", future);
 
         ClientRequestPacket packet = new ClientRequestPacket(ClientRequest.STATS);
-        downstream.getSession().send(packet);
+        sendRemotePacket(packet);
         return future;
     }
 
@@ -309,12 +316,8 @@ public class ProxySession implements PlayerSession {
         playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
         bedrockSession.sendPacketImmediately(playStatusPacket);
 
-        CachedPlayer player = new CachedPlayer(1, -1, new GameProfile(getAuthData().getIdentity(), getAuthData().getDisplayName()));
-
+        CachedPlayer player = entityCache.newPlayer(-1, new GameProfile(getAuthData().getIdentity(), getAuthData().getDisplayName()));
         cachedEntity = player;
-        entityCache.getEntities().put((long) 1, player);
-
-        //spawn(1); // TODO: only do this after authentication?
     }
 
     public void sendMessage(String text) {
@@ -360,5 +363,23 @@ public class ProxySession implements PlayerSession {
     @Override
     public void onDisconnect(@Nonnull String s) {
         disconnect("Disconnect");
+    }
+
+    public void sendPacket(BedrockPacket packet) {
+        if(bedrockSession != null && !bedrockSession.isClosed()) {
+            bedrockSession.sendPacket(packet);
+        }
+    }
+
+    public void sendPacketImmediately(BedrockPacket packet) {
+        if(bedrockSession != null && !bedrockSession.isClosed()) {
+            bedrockSession.sendPacketImmediately(packet);
+        }
+    }
+
+    public void sendRemotePacket(Packet packet) {
+        if(downstream != null && downstream.getSession() != null && protocol.getSubProtocol().equals(SubProtocol.GAME)) {
+            downstream.getSession().send(packet);
+        }
     }
 }

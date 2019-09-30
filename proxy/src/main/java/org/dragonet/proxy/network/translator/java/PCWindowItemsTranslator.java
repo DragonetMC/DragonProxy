@@ -45,7 +45,7 @@ public class PCWindowItemsTranslator implements PacketTranslator<ServerWindowIte
             return;
         }
         CachedWindow window = windowCache.getWindows().get(packet.getWindowId());
-        if(packet.getWindowId() != 0 && window.getWindowType() == null) {
+        if(packet.getWindowId() != 0 && window.getType() == null) {
             return;
         }
 

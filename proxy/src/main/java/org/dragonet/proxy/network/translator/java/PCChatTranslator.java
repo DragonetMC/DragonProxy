@@ -69,6 +69,6 @@ public class PCChatTranslator implements PacketTranslator<ServerChatPacket> {
             textPacket.setMessage(MessageTranslator.translate(packet.getMessage()));
         }
 
-        session.getBedrockSession().sendPacket(textPacket);
+        session.sendPacket(textPacket);
     }
 }

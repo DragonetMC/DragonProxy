@@ -95,7 +95,7 @@ public class PCPlayerListEntryTranslator implements PacketTranslator<ServerPlaye
 
                         playerListPacket.getEntries().add(bedrockEntry);
 
-                        session.getBedrockSession().sendPacket(playerListPacket);
+                        session.sendPacket(playerListPacket);
                     });
                 } else {
                     bedrockEntry.setEntityId(proxyEid);
@@ -110,7 +110,7 @@ public class PCPlayerListEntryTranslator implements PacketTranslator<ServerPlaye
 
                     playerListPacket.getEntries().add(bedrockEntry);
 
-                    session.getBedrockSession().sendPacket(playerListPacket);
+                    session.sendPacket(playerListPacket);
                 }
             }
         }

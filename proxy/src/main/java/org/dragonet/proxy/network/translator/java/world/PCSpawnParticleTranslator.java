@@ -44,6 +44,6 @@ public class PCSpawnParticleTranslator implements PacketTranslator<ServerSpawnPa
         spawnParticlePacket.setIdentifier("minecraft:heart");
         spawnParticlePacket.setPosition(new Vector3f(0, 48, 2));
 
-        //session.getBedrockSession().sendPacket(spawnParticlePacket);
+        //session.sendPacket(spawnParticlePacket);
     }
 }

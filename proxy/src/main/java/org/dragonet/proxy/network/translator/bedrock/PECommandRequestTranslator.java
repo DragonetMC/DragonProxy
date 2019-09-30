@@ -45,6 +45,6 @@ public class PECommandRequestTranslator implements PacketTranslator<CommandReque
         }
 
         ClientChatPacket chatPacket = new ClientChatPacket(packet.getCommand());
-        session.getDownstream().getSession().send(chatPacket);
+        session.sendRemotePacket(chatPacket);
     }
 }

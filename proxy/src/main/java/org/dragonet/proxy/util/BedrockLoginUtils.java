@@ -81,6 +81,6 @@ public class BedrockLoginUtils {
         // Now send the packet to enable encryption on the client
         ServerToClientHandshakePacket packet = new ServerToClientHandshakePacket();
         packet.setJwt(EncryptionUtils.createHandshakeJwt(serverKeyPair, token).serialize());
-        session.getBedrockSession().sendPacketImmediately(packet);
+        session.sendPacketImmediately(packet);
     }
 }

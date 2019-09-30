@@ -52,7 +52,7 @@ public class PCEntityTeleportTranslator implements PacketTranslator<ServerEntity
             moveEntityPacket.setOnGround(packet.isOnGround());
             moveEntityPacket.setTeleported(true);
 
-            session.getBedrockSession().sendPacket(moveEntityPacket);
+            session.sendPacket(moveEntityPacket);
 
             cachedEntity.setShouldMove(false);
         }

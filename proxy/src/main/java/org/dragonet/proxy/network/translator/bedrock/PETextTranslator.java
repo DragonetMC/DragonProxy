@@ -36,11 +36,11 @@ public class PETextTranslator implements PacketTranslator<TextPacket> {
     public void translate(ProxySession session, TextPacket packet) {
         if(packet.getMessage().charAt(0) == '.' && packet.getMessage().charAt(1) == '/') {
             ClientChatPacket chatPacket = new ClientChatPacket(packet.getMessage().replace("./", "/"));
-            session.getDownstream().getSession().send(chatPacket);
+            session.sendRemotePacket(chatPacket);
             return;
         }
 
         ClientChatPacket chatPacket = new ClientChatPacket(packet.getMessage());
-        session.getDownstream().getSession().send(chatPacket);
+        session.sendRemotePacket(chatPacket);
     }
 }

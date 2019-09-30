@@ -46,6 +46,6 @@ public class PCSpawnPositionTranslator implements PacketTranslator<ServerSpawnPo
 
         session.getCachedEntity().setSpawnPosition(new Vector3f(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ()));
 
-        session.getBedrockSession().sendPacket(spawnPositionPacket);
+        session.sendPacket(spawnPositionPacket);
     }
 }

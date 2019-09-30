@@ -60,7 +60,7 @@ public class CachedPlayer extends CachedEntity {
         addPlayerPacket.setCustomFlags(0);
         addPlayerPacket.setDeviceId("");
 
-        session.getBedrockSession().sendPacket(addPlayerPacket);
+        session.sendPacket(addPlayerPacket);
         spawned = true;
 
         session.getEntityCache().getEntities().put(proxyEid, this);

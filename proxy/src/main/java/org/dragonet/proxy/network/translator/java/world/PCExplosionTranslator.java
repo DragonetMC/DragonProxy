@@ -45,6 +45,6 @@ public class PCExplosionTranslator implements PacketTranslator<ServerExplosionPa
             explodePacket.getRecords().add(new Vector3i(record.getX(), record.getY(), record.getZ()));
         });
 
-        session.getBedrockSession().sendPacket(explodePacket);
+        session.sendPacket(explodePacket);
     }
 }

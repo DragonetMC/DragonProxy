@@ -65,6 +65,6 @@ public class PCEntityPropertiesTranslator implements PacketTranslator<ServerEnti
         updateAttributesPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
         updateAttributesPacket.setAttributes(new ArrayList<>(cachedEntity.getAttributes().values()));
 
-        session.getBedrockSession().sendPacket(updateAttributesPacket);
+        session.sendPacket(updateAttributesPacket);
     }
 }

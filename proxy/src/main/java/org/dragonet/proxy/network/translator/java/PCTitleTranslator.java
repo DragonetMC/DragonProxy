@@ -64,6 +64,6 @@ public class PCTitleTranslator implements PacketTranslator<ServerTitlePacket> {
                 break;
         }
 
-        session.getBedrockSession().sendPacketImmediately(bedrockPacket);
+        session.sendPacketImmediately(bedrockPacket);
     }
 }

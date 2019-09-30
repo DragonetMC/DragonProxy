@@ -64,6 +64,6 @@ public class PCEntityAnimationTranslator implements PacketTranslator<ServerEntit
                 break;
         }
 
-        session.getBedrockSession().sendPacket(animatePacket);
+        session.sendPacket(animatePacket);
     }
 }

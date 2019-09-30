@@ -43,10 +43,10 @@ public class PCRespawnTranslator implements PacketTranslator<ServerRespawnPacket
     public void translate(ProxySession session, ServerRespawnPacket packet) {
         RespawnPacket respawnPacket = new RespawnPacket();
         respawnPacket.setPosition(session.getCachedEntity().getSpawnPosition());
-        session.getBedrockSession().sendPacket(respawnPacket);
+        session.sendPacket(respawnPacket);
 
         SetPlayerGameTypePacket setPlayerGameTypePacket = new SetPlayerGameTypePacket();
         setPlayerGameTypePacket.setGamemode(packet.getGameMode().ordinal());
-        session.getBedrockSession().sendPacket(setPlayerGameTypePacket);
+        session.sendPacket(setPlayerGameTypePacket);
     }
 }

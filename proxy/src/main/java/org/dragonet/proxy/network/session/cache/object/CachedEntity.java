@@ -40,7 +40,7 @@ import java.util.*;
 public class CachedEntity {
     protected EntityType type;
     protected long proxyEid;
-    protected long remoteEid;
+    protected int remoteEid;
     protected UUID javaUuid;
 
     protected EntityDataDictionary metadata = new EntityDataDictionary();
@@ -82,7 +82,7 @@ public class CachedEntity {
 
         //log.info(getMetadata());
 
-        session.getBedrockSession().sendPacket(addEntityPacket);
+        session.sendPacket(addEntityPacket);
         spawned = true;
 
         session.getEntityCache().getEntities().put(proxyEid, this);
@@ -93,7 +93,7 @@ public class CachedEntity {
             RemoveEntityPacket removeEntityPacket = new RemoveEntityPacket();
             removeEntityPacket.setUniqueEntityId(proxyEid);
 
-            session.getBedrockSession().sendPacket(removeEntityPacket);
+            session.sendPacket(removeEntityPacket);
             spawned = false;
         }
     }

@@ -48,7 +48,7 @@ public abstract class Form {
         packet.setFormId(id);
         packet.setFormData(serialize().toString());
 
-        session.getBedrockSession().sendPacket(packet);
+        session.sendPacket(packet);
         return future;
     }
 

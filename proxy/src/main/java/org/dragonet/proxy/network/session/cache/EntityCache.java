@@ -40,9 +40,9 @@ public class EntityCache implements Cache {
     @Getter
     private Map<Long, CachedEntity> entities = new HashMap<>();
 
-    private final AtomicLong nextClientEntityId = new AtomicLong(2L); // 1 is for client
-    private final Map<Long, Long> remoteToClientMap = Collections.synchronizedMap(new HashMap<>());
-    private final Map<Long, Long> clientToRemoteMap = Collections.synchronizedMap(new HashMap<>());
+    private final AtomicLong nextClientEntityId = new AtomicLong(1L); // 1 is for client
+    private final Map<Integer, Long> remoteToClientMap = Collections.synchronizedMap(new HashMap<>());
+    private final Map<Long, Integer> clientToRemoteMap = Collections.synchronizedMap(new HashMap<>());
 
     public CachedEntity getByProxyId(long entityId) {
         if(!clientToRemoteMap.containsKey(entityId)) {
@@ -85,5 +85,7 @@ public class EntityCache implements Cache {
     @Override
     public void purge() {
         entities.clear();
+        clientToRemoteMap.clear();
+        remoteToClientMap.clear();
     }
 }

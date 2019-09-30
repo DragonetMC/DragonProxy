@@ -34,6 +34,6 @@ public class PCPlayerAbilitiesPacketTranslator implements PacketTranslator<Serve
         AdventureSettingsPacket bedrockPacket = new AdventureSettingsPacket();
         // TODO
 
-        session.getBedrockSession().sendPacketImmediately(bedrockPacket);
+        session.sendPacketImmediately(bedrockPacket);
     }
 }

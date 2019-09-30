@@ -40,8 +40,9 @@ public class PEMovePlayerTranslator implements PacketTranslator<MovePlayerPacket
     @Override
     public void translate(ProxySession session, MovePlayerPacket packet) {
         CachedEntity cachedEntity = session.getEntityCache().getByProxyId(packet.getRuntimeEntityId());
+        //log.info(packet.getRuntimeEntityId() + " : " + session.getCachedEntity().getProxyEid() + " - " + session.getCachedEntity().getRemoteEid());
         if(cachedEntity == null) {
-            //log.info("(debug) Cached entity is null in MovePlayerTranslator");
+            log.info("(debug) Cached entity is null in MovePlayerTranslator");
             return;
         }
 
@@ -57,6 +58,6 @@ public class PEMovePlayerTranslator implements PacketTranslator<MovePlayerPacket
 
         boolean colliding = false;
 
-        session.getDownstream().getSession().send(playerPositionRotationPacket);
+        session.sendRemotePacket(playerPositionRotationPacket);
     }
 }

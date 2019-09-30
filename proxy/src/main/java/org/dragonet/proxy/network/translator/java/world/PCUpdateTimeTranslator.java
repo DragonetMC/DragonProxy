@@ -36,6 +36,6 @@ public class PCUpdateTimeTranslator implements PacketTranslator<ServerUpdateTime
     public void translate(ProxySession session, ServerUpdateTimePacket packet) {
         SetTimePacket setTime = new SetTimePacket();
         setTime.setTime((int) Math.abs(packet.getTime()));
-        session.getBedrockSession().sendPacket(setTime);
+        session.sendPacket(setTime);
     }
 }

@@ -36,7 +36,7 @@ public class PEAnimateTranslator implements PacketTranslator<AnimatePacket> {
         switch(packet.getAction()) {
             case SWING_ARM:
                 //ClientPlayerSwingArmPacket swingArmPacket = new ClientPlayerSwingArmPacket(Hand.MAIN_HAND);
-                //session.getDownstream().getSession().send(swingArmPacket);
+                //session.sendRemotePacket(swingArmPacket);
         }
     }
 }

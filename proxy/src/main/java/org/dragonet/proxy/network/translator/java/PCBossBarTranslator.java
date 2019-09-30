@@ -81,7 +81,7 @@ public class PCBossBarTranslator implements PacketTranslator<ServerBossBarPacket
                 log.info(TextFormat.GRAY + "(debug) Unhandled boss bar action: " + packet.getAction().name());
         }
 
-        session.getBedrockSession().sendPacket(bossEventPacket);
+        session.sendPacket(bossEventPacket);
     }
 
     /**
@@ -105,6 +105,6 @@ public class PCBossBarTranslator implements PacketTranslator<ServerBossBarPacket
         metadata.put(EntityData.SCALE, 0);
         addEntityPacket.getMetadata().putAll(metadata);
 
-        session.getBedrockSession().sendPacket(addEntityPacket);
+        session.sendPacket(addEntityPacket);
     }
 }

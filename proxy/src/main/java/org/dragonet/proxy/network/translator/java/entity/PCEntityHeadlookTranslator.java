@@ -49,6 +49,6 @@ public class PCEntityHeadlookTranslator implements PacketTranslator<ServerEntity
         moveEntityPacket.setOnGround(true);
         moveEntityPacket.setTeleported(false);
 
-        session.getBedrockSession().sendPacket(moveEntityPacket);
+        session.sendPacket(moveEntityPacket);
     }
 }

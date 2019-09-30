@@ -52,14 +52,14 @@ public class PCChunkDataTranslator implements PacketTranslator<ServerChunkDataPa
         NetworkChunkPublisherUpdatePacket chunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
         chunkPublisherUpdatePacket.setPosition(session.getCachedEntity().getPosition().toInt());
         chunkPublisherUpdatePacket.setRadius(8 << 4);
-        session.getBedrockSession().sendPacket(chunkPublisherUpdatePacket);
+        session.sendPacket(chunkPublisherUpdatePacket);
 
         ChunkData chunkData = session.getChunkCache().translateChunk(column.getX(), column.getZ());
         if(chunkData != null) {
             LevelChunkPacket levelChunkPacket = chunkData.createChunkPacket();
             levelChunkPacket.setCachingEnabled(false);
 
-            session.getBedrockSession().sendPacket(levelChunkPacket);
+            session.sendPacket(levelChunkPacket);
         } else {
             log.warn("ChunkData is null");
         }
