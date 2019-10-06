@@ -16,17 +16,12 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.java.entity;
+package org.dragonet.proxy.network.translator.java.entity.spawn;
 
 import com.flowpowered.math.vector.Vector3f;
 import com.github.steveice10.mc.auth.data.GameProfile;
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.MetadataType;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
-import com.nukkitx.protocol.bedrock.data.EntityData;
 import com.nukkitx.protocol.bedrock.data.EntityDataDictionary;
-import com.nukkitx.protocol.bedrock.packet.AddEntityPacket;
-import com.nukkitx.protocol.bedrock.packet.PlayerListPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayerSkinPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.EntityType;
@@ -38,7 +33,6 @@ import org.dragonet.proxy.network.translator.types.EntityTypeTranslator;
 import org.dragonet.proxy.util.SkinUtils;
 
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ForkJoinPool;
 
 @Log4j2
 public class PCSpawnMobTranslator implements PacketTranslator<ServerSpawnMobPacket> {
@@ -68,28 +62,5 @@ public class PCSpawnMobTranslator implements PacketTranslator<ServerSpawnMobPack
         cachedEntity.setRotation(new Vector3f(packet.getPitch(), packet.getYaw(), packet.getHeadYaw())); // No idea about this
 
         cachedEntity.spawn(session);
-
-        GameProfile profile = new GameProfile(packet.getUUID(), "test");
-
-        session.getProxy().getGeneralThreadPool().execute(() -> {
-            byte[] skinData = SkinUtils.fetchSkin(profile);
-            if (skinData == null) {
-                return;
-            }
-
-            log.warn("sending skin " + packet.getUUID().toString());
-            PlayerSkinPacket playerSkinPacket = new PlayerSkinPacket();
-            playerSkinPacket.setCapeData(session.getClientData().getCapeData());
-            playerSkinPacket.setGeometryData(new String(session.getClientData().getSkinGeometry(), StandardCharsets.UTF_8));
-            playerSkinPacket.setGeometryName(session.getClientData().getSkinGeometryName());
-            playerSkinPacket.setNewSkinName("lol");
-            playerSkinPacket.setOldSkinName(session.getClientData().getSkinId());
-            playerSkinPacket.setPremiumSkin(false);
-            playerSkinPacket.setSkinId(session.getClientData().getSkinId());
-            playerSkinPacket.setUuid(packet.getUUID());
-            playerSkinPacket.setSkinData(skinData);
-
-            //session.sendPacket(playerSkinPacket);
-        });
     }
 }

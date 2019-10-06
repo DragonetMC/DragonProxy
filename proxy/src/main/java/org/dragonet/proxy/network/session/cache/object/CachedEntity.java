@@ -22,7 +22,9 @@ import com.flowpowered.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.*;
 import com.nukkitx.protocol.bedrock.packet.AddEntityPacket;
 import com.nukkitx.protocol.bedrock.packet.RemoveEntityPacket;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockAttributeType;
 import org.dragonet.proxy.data.entity.EntityType;
@@ -36,7 +38,7 @@ import java.util.*;
 public class CachedEntity {
     protected EntityType type;
     protected long proxyEid;
-    protected int remoteEid;
+    protected int remoteEid; // will be -1 if its a local entity
     protected UUID javaUuid;
 
     protected EntityDataDictionary metadata = new EntityDataDictionary();
@@ -53,10 +55,21 @@ public class CachedEntity {
     protected Map<BedrockAttributeType, Attribute> attributes = new HashMap<>();
     protected Set<EntityEffectTranslator.BedrockEffect> effects = new HashSet<>();
 
+    @Setter(AccessLevel.PRIVATE)
+    private boolean local = false;
+
     public CachedEntity(EntityType type, long proxyEid, int remoteEid) {
         this.type = type;
         this.proxyEid = proxyEid;
         this.remoteEid = remoteEid;
+
+        addDefaultMetadata();
+    }
+
+    public CachedEntity(EntityType type, long proxyEid) {
+        this.type = type;
+        this.proxyEid = proxyEid;
+        this.local = true;
 
         addDefaultMetadata();
     }

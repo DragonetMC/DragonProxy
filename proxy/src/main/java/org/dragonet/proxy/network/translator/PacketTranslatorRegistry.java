@@ -21,7 +21,9 @@ package org.dragonet.proxy.network.translator;
 import com.github.steveice10.mc.protocol.packet.ingame.server.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnGlobalEntityPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnObjectPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
@@ -39,6 +41,9 @@ import org.dragonet.proxy.network.translator.bedrock.player.PEMovePlayerTranslat
 import org.dragonet.proxy.network.translator.bedrock.player.PEPlayerActionTranslator;
 import org.dragonet.proxy.network.translator.java.*;
 import org.dragonet.proxy.network.translator.java.entity.*;
+import org.dragonet.proxy.network.translator.java.entity.spawn.PCSpawnGlobalEntityTranslator;
+import org.dragonet.proxy.network.translator.java.entity.spawn.PCSpawnMobTranslator;
+import org.dragonet.proxy.network.translator.java.entity.spawn.PCSpawnObjectTranslator;
 import org.dragonet.proxy.network.translator.java.player.*;
 import org.dragonet.proxy.network.translator.java.world.*;
 
@@ -83,7 +88,9 @@ public class PacketTranslatorRegistry<P> {
             .addTranslator(ServerEntityPropertiesPacket.class, PCEntityPropertiesTranslator.INSTANCE)
             .addTranslator(ServerEntityDestroyPacket.class, PCEntityDestroyTranslator.INSTANCE)
             .addTranslator(ServerRespawnPacket.class, PCRespawnTranslator.INSTANCE)
-            .addTranslator(ServerOpenWindowPacket.class, PCOpenWindowTranslator.INSTANCE);
+            .addTranslator(ServerOpenWindowPacket.class, PCOpenWindowTranslator.INSTANCE)
+            .addTranslator(ServerSpawnGlobalEntityPacket.class, PCSpawnGlobalEntityTranslator.INSTANCE)
+            .addTranslator(ServerSpawnObjectPacket.class, PCSpawnObjectTranslator.INSTANCE);
 
         BEDROCK_TO_JAVA.addTranslator(TextPacket.class, PETextTranslator.INSTANCE)
             .addTranslator(AnimatePacket.class, PEAnimateTranslator.INSTANCE)

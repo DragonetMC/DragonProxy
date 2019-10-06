@@ -113,8 +113,8 @@ public class ProxySession implements PlayerSession {
         dataCache.put("auth_state", AuthState.NONE);
 
         bedrockSession.addDisconnectHandler((reason) -> {
-            if(downstream != null && downstream.getSession() != null) {
-                if(cachedEntity != null) {
+            if (downstream != null && downstream.getSession() != null) {
+                if (cachedEntity != null) {
                     cachedEntity.destroy(this);
                 }
                 downstream.getSession().disconnect(reason.name());
@@ -123,7 +123,7 @@ public class ProxySession implements PlayerSession {
     }
 
     public void connect(RemoteServer server) {
-        if(protocol == null) {
+        if (protocol == null) {
             protocol = new MinecraftProtocol(authData.getDisplayName());
         }
         downstream = new Client(server.getAddress(), server.getPort(), protocol, new TcpSessionFactory());
@@ -161,7 +161,7 @@ public class ProxySession implements PlayerSession {
 
                 sendMessage(TextFormat.GREEN + "Login successful! Joining server...");
 
-                if(!username.equals(protocol.getProfile().getName())) {
+                if (!username.equals(protocol.getProfile().getName())) {
                     username = protocol.getProfile().getName();
                     sendMessage(TextFormat.AQUA + "You username was changed to " + TextFormat.DARK_AQUA + username + TextFormat.AQUA + " like your Mojang account username");
                 }
@@ -208,10 +208,10 @@ public class ProxySession implements PlayerSession {
             .addComponent(new InputComponent(TextFormat.AQUA + "Password", "123456"));
 
         form.send(this).whenComplete((data, throwable) -> {
-            if(dataCache.get("auth_state") == AuthState.AUTHENTICATED) {
+            if (dataCache.get("auth_state") == AuthState.AUTHENTICATED) {
                 return; // If multiple forms have been sent to the client, allow the player to actually close them
             }
-            if(data == null) {
+            if (data == null) {
                 sendLoginForm();
                 return;
             }
@@ -219,7 +219,7 @@ public class ProxySession implements PlayerSession {
             String email = data.get(2).getAsString();
             String password = data.get(3).getAsString();
 
-            if(email == null || password == null) {
+            if (email == null || password == null) {
                 // This never seems to be fired? Im guessing if one field is null the entire response is null?
                 // Anyway, its here just in case
                 sendMessage(TextFormat.RED + "Please fill in all the required fields. Move to show the form again.");
@@ -295,7 +295,7 @@ public class ProxySession implements PlayerSession {
         startGamePacket.setFromWorldTemplate(false);
         startGamePacket.setWorldTemplateOptionLocked(false);
 
-        startGamePacket.setLevelId("oerjhii");
+        startGamePacket.setLevelId("DragonProxy " + proxy.getVersion());
         startGamePacket.setWorldName("world");
         startGamePacket.setPremiumWorldTemplateId("00000000-0000-0000-0000-000000000000");
         startGamePacket.setCurrentTick(0);
@@ -357,7 +357,7 @@ public class ProxySession implements PlayerSession {
 
     public void disconnect(String reason) {
         if (!isClosed()) {
-            if(downstream != null) {
+            if (downstream != null) {
                 downstream.getSession().disconnect(reason);
             }
             bedrockSession.disconnect(reason, false);
@@ -366,7 +366,7 @@ public class ProxySession implements PlayerSession {
 
     @Override
     public void onDisconnect(@Nonnull DisconnectReason disconnectReason) {
-       disconnect("Disconnect");
+        disconnect("Disconnect");
     }
 
     @Override
@@ -375,19 +375,19 @@ public class ProxySession implements PlayerSession {
     }
 
     public void sendPacket(BedrockPacket packet) {
-        if(bedrockSession != null && !bedrockSession.isClosed()) {
+        if (bedrockSession != null && !bedrockSession.isClosed()) {
             bedrockSession.sendPacket(packet);
         }
     }
 
     public void sendPacketImmediately(BedrockPacket packet) {
-        if(bedrockSession != null && !bedrockSession.isClosed()) {
+        if (bedrockSession != null && !bedrockSession.isClosed()) {
             bedrockSession.sendPacketImmediately(packet);
         }
     }
 
     public void sendRemotePacket(Packet packet) {
-        if(downstream != null && downstream.getSession() != null && protocol.getSubProtocol().equals(SubProtocol.GAME)) {
+        if (downstream != null && downstream.getSession() != null && protocol.getSubProtocol().equals(SubProtocol.GAME)) {
             downstream.getSession().send(packet);
         }
     }

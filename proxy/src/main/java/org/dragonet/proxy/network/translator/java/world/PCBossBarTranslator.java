@@ -16,16 +16,14 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.java;
+package org.dragonet.proxy.network.translator.java.world;
 
 import com.flowpowered.math.vector.Vector3f;
-import com.github.steveice10.mc.protocol.data.game.BossBarAction;
-import com.github.steveice10.mc.protocol.data.game.BossBarColor;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerBossBarPacket;
 import com.nukkitx.protocol.bedrock.data.EntityData;
-import com.nukkitx.protocol.bedrock.data.EntityDataDictionary;
 import com.nukkitx.protocol.bedrock.packet.AddEntityPacket;
 import com.nukkitx.protocol.bedrock.packet.BossEventPacket;
+import com.nukkitx.protocol.bedrock.packet.RemoveEntityPacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -33,6 +31,8 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.types.MessageTranslator;
 import org.dragonet.proxy.util.TextFormat;
+
+import java.util.UUID;
 
 @Log4j2
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -47,18 +47,19 @@ public class PCBossBarTranslator implements PacketTranslator<ServerBossBarPacket
         bossEventPacket.setOverlay(1);
         bossEventPacket.setDarkenSky(1);
         bossEventPacket.setPlayerUniqueEntityId(1); // player eid
-        bossEventPacket.setBossUniqueEntityId(2); // TODO
 
         switch(packet.getAction()) {
             case ADD:
                 // See the documentation for addFakeEntity() below
-                addFakeEntity(session);
+                addFakeEntity(session, packet.getUUID());
 
                 bossEventPacket.setTitle(MessageTranslator.translate(packet.getTitle().getFullText()));
                 bossEventPacket.setType(BossEventPacket.Type.SHOW);
                 bossEventPacket.setHealthPercentage(packet.getHealth());
                 break;
             case REMOVE:
+                removeFakeEntity(session, packet.getUUID());
+
                 bossEventPacket.setType(BossEventPacket.Type.HIDE);
                 break;
             case UPDATE_HEALTH:
@@ -77,30 +78,36 @@ public class PCBossBarTranslator implements PacketTranslator<ServerBossBarPacket
                 log.info(TextFormat.GRAY + "(debug) Unhandled boss bar action: " + packet.getAction().name());
         }
 
+        Long bossEid = session.getEntityCache().getBossbars().get(packet.getUUID());
+        bossEventPacket.setBossUniqueEntityId(bossEid == null ? -1 : bossEid);
+
         session.sendPacket(bossEventPacket);
     }
 
     /**
      * This method sends a fake entity to the bedrock client as an entity is needed
      * for the bossbar to be displayed.
-     *
-     * In the future maybe this could be tied to a real entity, once the spawn mob translator
-     * is finished.
      */
-    private void addFakeEntity(ProxySession session) {
+    private void addFakeEntity(ProxySession session, UUID uuid) {
+        long entityId = session.getEntityCache().newBossBar(uuid);
+
         AddEntityPacket addEntityPacket = new AddEntityPacket();
-        addEntityPacket.setUniqueEntityId(2);
-        addEntityPacket.setRuntimeEntityId(2);
+        addEntityPacket.setUniqueEntityId(entityId);
+        addEntityPacket.setRuntimeEntityId(entityId);
         addEntityPacket.setIdentifier("minecraft:slime");
-        addEntityPacket.setPosition(new Vector3f(0, 60, 0));
-        addEntityPacket.setMotion(new Vector3f(0, 0, 0));
+        addEntityPacket.setPosition(session.getCachedEntity().getPosition().add(0, 10, 0));
+        addEntityPacket.setMotion(Vector3f.ZERO);
         addEntityPacket.setRotation(Vector3f.ZERO);
         addEntityPacket.setEntityType(37);
-
-        EntityDataDictionary metadata = new EntityDataDictionary();
-        metadata.put(EntityData.SCALE, 0);
-        addEntityPacket.getMetadata().putAll(metadata);
+        addEntityPacket.getMetadata().put(EntityData.SCALE, 0.01f);
 
         session.sendPacket(addEntityPacket);
+    }
+
+    private void removeFakeEntity(ProxySession session, UUID uuid) {
+        RemoveEntityPacket removeEntityPacket = new RemoveEntityPacket();
+        removeEntityPacket.setUniqueEntityId(session.getEntityCache().removeBossBar(uuid));
+
+        session.sendPacket(removeEntityPacket);
     }
 }

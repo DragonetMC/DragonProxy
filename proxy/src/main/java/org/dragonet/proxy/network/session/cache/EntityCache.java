@@ -28,13 +28,14 @@ import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 @RequiredArgsConstructor
 @Getter
 public class EntityCache implements Cache {
-    @Getter
     private Map<Long, CachedEntity> entities = new HashMap<>();
+    private Map<UUID, Long> bossbars = new HashMap<>();
 
     private final AtomicLong nextClientEntityId = new AtomicLong(1L); // 1 is for client
     private final Map<Integer, Long> remoteToClientMap = Collections.synchronizedMap(new HashMap<>());
@@ -47,7 +48,7 @@ public class EntityCache implements Cache {
         return entities.get(entityId);
     }
 
-    public CachedEntity getByRemoteId(long entityId) {
+    public CachedEntity getByRemoteId(int entityId) {
         if(remoteToClientMap.containsKey(entityId)) {
             return entities.get(remoteToClientMap.get(entityId));
         }
@@ -61,6 +62,24 @@ public class EntityCache implements Cache {
         clientToRemoteMap.put(entity.getProxyEid(), entity.getRemoteEid());
         remoteToClientMap.put(entity.getRemoteEid(), entity.getProxyEid());
         return entity;
+    }
+
+    public CachedEntity newLocalEntity(EntityType type) {
+        CachedEntity entity = new CachedEntity(type, nextClientEntityId.getAndIncrement());
+        entities.put(entity.getProxyEid(), entity);
+        return entity;
+    }
+
+    public long newBossBar(UUID uuid) {
+        long proxyEid = nextClientEntityId.getAndIncrement();
+        bossbars.put(uuid, proxyEid);
+        return proxyEid;
+    }
+
+    public long removeBossBar(UUID uuid) {
+        long proxyEid = bossbars.get(uuid);
+        bossbars.remove(uuid);
+        return proxyEid;
     }
 
     public CachedPlayer newPlayer(int entityId, GameProfile profile) {

@@ -40,7 +40,7 @@ public class PCEntityAnimationTranslator implements PacketTranslator<ServerEntit
         }
 
         AnimatePacket animatePacket = new AnimatePacket();
-        animatePacket.setRuntimeEntityId(packet.getEntityId());
+        animatePacket.setRuntimeEntityId(cachedEntity.getProxyEid());
 
         switch(packet.getAnimation()) {
             case SWING_ARM:

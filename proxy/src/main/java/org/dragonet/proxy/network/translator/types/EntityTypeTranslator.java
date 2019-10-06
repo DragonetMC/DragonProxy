@@ -18,7 +18,9 @@
  */
 package org.dragonet.proxy.network.translator.types;
 
+import com.github.steveice10.mc.protocol.data.game.entity.type.GlobalEntityType;
 import com.github.steveice10.mc.protocol.data.game.entity.type.MobType;
+import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.EntityType;
 
@@ -29,8 +31,11 @@ import java.util.Map;
 public class EntityTypeTranslator {
     // Java to Bedrock entity type map
     private static Map<MobType, EntityType> entityMap = new HashMap<>();
+    private static Map<GlobalEntityType, EntityType> globalEntityMap = new HashMap<>();
+    private static Map<ObjectType, EntityType> objectMap = new HashMap<>();
 
     static {
+        // Normal entities
         entityMap.put(MobType.CHICKEN, EntityType.CHICKEN);
         entityMap.put(MobType.COW, EntityType.COW);
         entityMap.put(MobType.PIG, EntityType.PIG);
@@ -114,7 +119,6 @@ public class EntityTypeTranslator {
         entityMap.put(MobType.WITHER_SKULL, EntityType.WITHER_SKULL);
         entityMap.put(MobType.BOAT, EntityType.BOAT);
         //entityMap.put(MobType.WITHER_SKULL_DANGEROUS, EntityType.WITHER_SKULL_DANGEROUS);
-        //entityMap.put(MobType.LIGHTNING_BOLT, EntityType.LIGHTNING_BOLT);
         entityMap.put(MobType.SMALL_FIREBALL, EntityType.SMALL_FIREBALL);
         entityMap.put(MobType.AREA_EFFECT_CLOUD, EntityType.AREA_EFFECT_CLOUD);
         entityMap.put(MobType.MINECART_HOPPER, EntityType.HOPPER_MINECART);
@@ -133,6 +137,49 @@ public class EntityTypeTranslator {
         entityMap.put(MobType.SALMON, EntityType.SALMON);
         entityMap.put(MobType.TROPICAL_FISH, EntityType.TROPICAL_FISH);
         entityMap.put(MobType.COD, EntityType.COD);
+
+
+        // Global entities
+        globalEntityMap.put(GlobalEntityType.LIGHTNING_BOLT, EntityType.LIGHTNING_BOLT);
+
+
+        // Objects
+        objectMap.put(ObjectType.EVOKER_FANGS, EntityType.EVOKER_FANGS);
+        objectMap.put(ObjectType.AREA_EFFECT_CLOUD, EntityType.AREA_EFFECT_CLOUD);
+        objectMap.put(ObjectType.ARROW, EntityType.ARROW);
+        objectMap.put(ObjectType.ARMOR_STAND, EntityType.ARMOR_STAND);
+        objectMap.put(ObjectType.BOAT, EntityType.BOAT);
+        objectMap.put(ObjectType.DRAGON_FIREBALL, EntityType.DRAGON_FIREBALL);
+        objectMap.put(ObjectType.END_CRYSTAL, EntityType.ENDER_CRYSTAL);
+        objectMap.put(ObjectType.EXPERIENCE_ORB, EntityType.EXPERIENCE_ORB);
+        objectMap.put(ObjectType.EYE_OF_ENDER, EntityType.EYE_OF_ENDER);
+        objectMap.put(ObjectType.FALLING_BLOCK, EntityType.FALLING_BLOCK);
+        objectMap.put(ObjectType.FIREWORK_ROCKET, EntityType.FIREWORK_ROCKET);
+        objectMap.put(ObjectType.ITEM, EntityType.ITEM);
+        //objectMap.put(ObjectType.ITEM_FRAME, EntityType.ITEM_FRAME);
+        //objectMap.put(ObjectType.FIREBALL, EntityType.FIREBALL);
+        objectMap.put(ObjectType.LEASH_KNOT, EntityType.LEASH_KNOT);
+        objectMap.put(ObjectType.LLAMA_SPIT, EntityType.LLAMA_SPIT);
+        objectMap.put(ObjectType.MINECART, EntityType.MINECART);
+        objectMap.put(ObjectType.CHEST_MINECART, EntityType.CHEST_MINECART);
+        objectMap.put(ObjectType.COMMAND_BLOCK_MINECART, EntityType.COMMAND_BLOCK_MINECART);
+        //objectMap.put(ObjectType.FURNACE_MINECART, EntityType.FURNACE_MINECART);
+        objectMap.put(ObjectType.HOPPER_MINECART, EntityType.HOPPER_MINECART);
+        //objectMap.put(ObjectType.SPAWNER_MINECART, EntityType.SPAWNER_MINECART);
+        objectMap.put(ObjectType.TNT_MINECART, EntityType.TNT_MINECART);
+        objectMap.put(ObjectType.TNT, EntityType.PRIMED_TNT);
+        objectMap.put(ObjectType.SMALL_FIREBALL, EntityType.SMALL_FIREBALL);
+        objectMap.put(ObjectType.SNOWBALL, EntityType.SNOWBALL);
+        //objectMap.put(ObjectType.SPECTRAL_ARROW, EntityType.SPECTRAL_ARROW);
+        objectMap.put(ObjectType.SHULKER_BULLET, EntityType.SHULKER_BULLET);
+        objectMap.put(ObjectType.EGG, EntityType.EGG);
+        objectMap.put(ObjectType.ENDER_PEARL, EntityType.ENDER_PEARL);
+        objectMap.put(ObjectType.EXPERIENCE_BOTTLE, EntityType.EXPERIENCE_BOTTLE);
+        objectMap.put(ObjectType.POTION, EntityType.SPLASH_POTION);
+        objectMap.put(ObjectType.TRIDENT, EntityType.TRIDENT);
+        objectMap.put(ObjectType.WITHER_SKULL, EntityType.WITHER_SKULL);
+        objectMap.put(ObjectType.FISHING_BOBBER, EntityType.FISHING_HOOK);
+
     }
 
     /**
@@ -141,6 +188,24 @@ public class EntityTypeTranslator {
     public static EntityType translateToBedrock(MobType mobType) {
         if(entityMap.containsKey(mobType)) {
             return entityMap.get(mobType);
+        }
+        return null;
+    }
+
+    /**
+     * This method translates a Java global entity type to a Bedrock entity type.
+     * The only current global entity is lightning.
+     */
+    public static EntityType translateToBedrock(GlobalEntityType globalEntityType) {
+        if(globalEntityMap.containsKey(globalEntityType)) {
+            return globalEntityMap.get(globalEntityType);
+        }
+        return null;
+    }
+
+    public static EntityType translateToBedrock(ObjectType objectType) {
+        if(objectMap.containsKey(objectType)) {
+            return objectMap.get(objectType);
         }
         return null;
     }
