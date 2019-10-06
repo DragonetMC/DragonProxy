@@ -12,13 +12,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  * You can view the LICENSE file for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy.network.session;
 
@@ -252,8 +248,6 @@ public class ProxySession implements PlayerSession {
 
         bedrockSession.sendPacket(playerListPacket);
 
-        //cachedEntity.spawn(this); // Crashes
-
         SetEntityDataPacket entityDataPacket = new SetEntityDataPacket();
         entityDataPacket.setRuntimeEntityId(entityId);
         entityDataPacket.getMetadata().putAll(cachedEntity.getMetadata());
@@ -318,6 +312,21 @@ public class ProxySession implements PlayerSession {
 
         CachedPlayer player = entityCache.newPlayer(-1, new GameProfile(getAuthData().getIdentity(), getAuthData().getDisplayName()));
         cachedEntity = player;
+    }
+
+    public void setPlayerSkin(UUID playerId, byte[] skinData) {
+        PlayerSkinPacket playerSkinPacket = new PlayerSkinPacket();
+        playerSkinPacket.setUuid(playerId);
+        playerSkinPacket.setSkinId(playerId.toString());
+        playerSkinPacket.setSkinData(skinData);
+        playerSkinPacket.setPremiumSkin(false);
+        playerSkinPacket.setOldSkinName("Standard_Steve");
+        playerSkinPacket.setNewSkinName("Standard_Custom");
+        playerSkinPacket.setGeometryName("geometry.humanoid");
+        playerSkinPacket.setGeometryData("");
+        playerSkinPacket.setCapeData(new byte[0]);
+
+        sendPacket(playerSkinPacket);
     }
 
     public void sendMessage(String text) {

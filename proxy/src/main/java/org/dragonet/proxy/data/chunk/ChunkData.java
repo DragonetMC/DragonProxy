@@ -2,7 +2,7 @@
  * DragonProxy
  * Copyright (C) 2016-2019 Dragonet Foundation
  *
- * Parts of the code in this file is from the NukkitX project, and it has been
+ * The code in this file is from the NukkitX project, and it has been
  * used with permission.
  *
  * Copyright (C) 2019 NukkitX

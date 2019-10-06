@@ -8,7 +8,6 @@
  * Copyright (C) 2019 NukkitX
  * https://github.com/NukkitX/Nukkit
  */
-
 package org.dragonet.proxy.data.chunk.bitarray;
 
 import org.dragonet.proxy.util.MathUtils;

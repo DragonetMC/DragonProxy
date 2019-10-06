@@ -12,13 +12,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  * You can view the LICENSE file for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy.network.translator.java.player;
 
@@ -33,6 +29,7 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.types.EntityMetaTranslator;
+import org.dragonet.proxy.util.SkinUtils;
 
 @Log4j2
 public class PCSpawnPlayerTranslator implements PacketTranslator<ServerSpawnPlayerPacket> {
@@ -47,5 +44,23 @@ public class PCSpawnPlayerTranslator implements PacketTranslator<ServerSpawnPlay
         cachedPlayer.setRotation(new Vector3f(packet.getYaw(), packet.getPitch(), 0));
         cachedPlayer.getMetadata().putAll(EntityMetaTranslator.translateToBedrock(packet.getMetadata()));
         cachedPlayer.spawn(session);
+
+        if(session.getProxy().getConfiguration().isFetchPlayerSkins()) {
+            session.getProxy().getGeneralThreadPool().execute(() -> {
+                GameProfile profile = session.getPlayerInfoCache().get(packet.getUUID()).getProfile();
+
+                byte[] skinData = SkinUtils.fetchSkin(profile);
+                if (skinData == null) {
+                    return;
+                }
+
+//                byte[] capeData = SkinUtils.fetchOptifineCape(profile);
+//                if(capeData == null) {
+//                    capeData = clientData.getCapeData();
+//                }
+
+                session.setPlayerSkin(profile.getId(), skinData);
+            });
+        }
     }
 }

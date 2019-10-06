@@ -12,13 +12,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  * You can view the LICENSE file for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy.network.translator.java.player;
 
@@ -35,6 +31,7 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.data.ClientData;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.util.SkinUtils;
+import org.dragonet.proxy.util.TextFormat;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -48,70 +45,50 @@ public class PCPlayerListEntryTranslator implements PacketTranslator<ServerPlaye
     public void translate(ProxySession session, ServerPlayerListEntryPacket packet) {
         PlayerListPacket playerListPacket = new PlayerListPacket();
 
-        switch(packet.getAction()) {
-            case ADD_PLAYER:
-                playerListPacket.setType(PlayerListPacket.Type.ADD);
-                break;
-            case REMOVE_PLAYER:
-                playerListPacket.setType(PlayerListPacket.Type.REMOVE);
-                break;
-            default:
-                //log.warn("Unknown type: " + packet.getAction().name());
-                return;
-        }
-
         for(PlayerListEntry entry : packet.getEntries()) {
             PlayerListPacket.Entry bedrockEntry = new PlayerListPacket.Entry(entry.getProfile().getId());
             session.getPlayerInfoCache().put(entry.getProfile().getId(), entry);
 
-            if (packet.getAction() == PlayerListEntryAction.ADD_PLAYER) {
-                ClientData clientData = session.getClientData();
-                long proxyEid = session.getEntityCache().getNextClientEntityId().getAndIncrement();
+            switch(packet.getAction()) {
+                case ADD_PLAYER:
+                    long proxyEid = session.getEntityCache().getNextClientEntityId().getAndIncrement();
 
-                // TODO: reduce duplicated code?
-                if(session.getProxy().getConfiguration().isFetchPlayerSkins()) {
-                    // Fetch skin data from Mojang
-                    session.getProxy().getGeneralThreadPool().execute(() -> {
-                        byte[] skinData = SkinUtils.fetchSkin(entry.getProfile());
-                        if (skinData == null) {
-                            skinData = clientData.getSkinData();
-                        }
+                    playerListPacket.setType(PlayerListPacket.Type.ADD);
 
-                        // Doesnt work currently
-                        byte[] capeData = clientData.getCapeData(); //SkinUtils.fetchOptifineCape(entry.getProfile());
-                        //if(capeData == null) {
-                        //    capeData = clientData.getCapeData();
-                        //}
-
-                        bedrockEntry.setEntityId(proxyEid);
-                        bedrockEntry.setName(entry.getProfile().getName());
-                        bedrockEntry.setSkinId(clientData.getSkinId());
-                        bedrockEntry.setSkinData(skinData);
-                        bedrockEntry.setCapeData(capeData);
-                        bedrockEntry.setGeometryName(clientData.getSkinGeometryName());
-                        bedrockEntry.setGeometryData(new String(clientData.getSkinGeometry(), StandardCharsets.UTF_8));
-                        bedrockEntry.setXuid("");
-                        bedrockEntry.setPlatformChatId("");
-
-                        playerListPacket.getEntries().add(bedrockEntry);
-
-                        session.sendPacket(playerListPacket);
-                    });
-                } else {
                     bedrockEntry.setEntityId(proxyEid);
                     bedrockEntry.setName(entry.getProfile().getName());
-                    bedrockEntry.setSkinId(clientData.getSkinId());
-                    bedrockEntry.setSkinData(clientData.getSkinData());
-                    bedrockEntry.setCapeData(clientData.getCapeData());
-                    bedrockEntry.setGeometryName(clientData.getSkinGeometryName());
-                    bedrockEntry.setGeometryData(new String(clientData.getSkinGeometry(), StandardCharsets.UTF_8));
+                    bedrockEntry.setSkinId(entry.getProfile().getIdAsString());
+                    bedrockEntry.setSkinData(SkinUtils.STEVE_SKIN);
+                    bedrockEntry.setCapeData(new byte[0]);
+                    bedrockEntry.setGeometryName("geometry.humanoid");
+                    bedrockEntry.setGeometryData("");
                     bedrockEntry.setXuid("");
                     bedrockEntry.setPlatformChatId("");
+
+                    // Fetch our own skin
+                    if(entry.getProfile().getName().equals(session.getUsername()) && session.getProxy().getConfiguration().isFetchPlayerSkins()) {
+                        session.getProxy().getGeneralThreadPool().execute(() -> {
+                            byte[] skinData = SkinUtils.fetchSkin(entry.getProfile());
+                            if (skinData == null) {
+                                return;
+                            }
+                            session.setPlayerSkin(session.getAuthData().getIdentity(), skinData);
+                        });
+                    }
 
                     playerListPacket.getEntries().add(bedrockEntry);
 
                     session.sendPacket(playerListPacket);
-                }
+                    break;
+
+                case REMOVE_PLAYER:
+                    playerListPacket.setType(PlayerListPacket.Type.REMOVE);
+                    playerListPacket.getEntries().add(bedrockEntry);
+
+                    session.sendPacket(playerListPacket);
+
+                    session.getPlayerInfoCache().remove(entry.getProfile().getId());
+                    break;
             }
         }
     }

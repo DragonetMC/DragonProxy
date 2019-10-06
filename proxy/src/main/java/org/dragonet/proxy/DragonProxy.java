@@ -12,13 +12,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  * You can view the LICENSE file for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy;
 
@@ -40,6 +36,7 @@ import org.dragonet.proxy.network.ProxyServerEventListener;
 import org.dragonet.proxy.network.translator.types.BlockTranslator;
 import org.dragonet.proxy.network.translator.types.ItemTranslator;
 import org.dragonet.proxy.util.PaletteManager;
+import org.dragonet.proxy.util.SkinUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -144,6 +141,7 @@ public class DragonProxy {
 
         new ItemTranslator();
         new BlockTranslator();
+        new SkinUtils();
 
         commandManager = new CommandManager();
 
