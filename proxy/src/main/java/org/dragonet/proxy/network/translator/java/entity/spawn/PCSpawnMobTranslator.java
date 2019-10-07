@@ -20,6 +20,7 @@ package org.dragonet.proxy.network.translator.java.entity.spawn;
 
 import com.flowpowered.math.vector.Vector3f;
 import com.github.steveice10.mc.auth.data.GameProfile;
+import com.github.steveice10.mc.protocol.data.game.entity.type.MobType;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
 import com.nukkitx.protocol.bedrock.data.EntityDataDictionary;
 import com.nukkitx.protocol.bedrock.packet.PlayerSkinPacket;
@@ -59,7 +60,7 @@ public class PCSpawnMobTranslator implements PacketTranslator<ServerSpawnMobPack
 
         cachedEntity.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
         cachedEntity.setMotion(new Vector3f(packet.getMotionX(), packet.getMotionY(), packet.getMotionZ()));
-        cachedEntity.setRotation(new Vector3f(packet.getPitch(), packet.getYaw(), packet.getHeadYaw())); // No idea about this
+        cachedEntity.setRotation(new Vector3f(packet.getPitch(), packet.getHeadYaw(), packet.getYaw()));
 
         cachedEntity.spawn(session);
     }

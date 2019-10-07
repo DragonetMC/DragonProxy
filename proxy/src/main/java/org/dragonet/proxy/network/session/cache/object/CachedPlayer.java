@@ -45,7 +45,7 @@ public class CachedPlayer extends CachedEntity {
         addPlayerPacket.setRuntimeEntityId(proxyEid);
         addPlayerPacket.setUniqueEntityId(proxyEid);
         addPlayerPacket.setPlatformChatId("");
-        addPlayerPacket.setPosition(position);
+        addPlayerPacket.setPosition(getOffsetPosition());
         addPlayerPacket.setMotion(Vector3f.ZERO);
         addPlayerPacket.setRotation(rotation);
         addPlayerPacket.setHand(ItemData.AIR);

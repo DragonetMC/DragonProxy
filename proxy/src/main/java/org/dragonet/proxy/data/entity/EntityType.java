@@ -75,7 +75,7 @@ public enum EntityType {
     PHANTOM(58, 0.5f, 0.9f, 0.6f),
     RAVAGER(59, 1.9f, 1.2f),
 
-    ARMOR_STAND(61, 0f),
+    ARMOR_STAND(61, 1.975f, 0.5f),
     TRIPOD_CAMERA(62, 0f),
     PLAYER(63, 1.8f, 0.6f, 1.62f),
     ITEM(64, 0.25f, 0.25f),

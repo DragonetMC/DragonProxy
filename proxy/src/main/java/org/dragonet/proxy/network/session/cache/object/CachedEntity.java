@@ -52,6 +52,8 @@ public class CachedEntity {
     protected Vector3f motion = Vector3f.ZERO;
     protected Vector3f spawnPosition = Vector3f.ZERO;
 
+    protected int dimension = 0; // -1 = nether, 0 = overworld, 1 = end
+
     protected Map<BedrockAttributeType, Attribute> attributes = new HashMap<>();
     protected Set<EntityEffectTranslator.BedrockEffect> effects = new HashSet<>();
 
@@ -80,13 +82,13 @@ public class CachedEntity {
         }
 
         AddEntityPacket addEntityPacket = new AddEntityPacket();
+        addEntityPacket.setRuntimeEntityId(proxyEid);
+        addEntityPacket.setUniqueEntityId(proxyEid);
         addEntityPacket.setIdentifier("minecraft:" + type.name().toLowerCase()); // TODO: this may need mapping
         addEntityPacket.setEntityType(type.getType());
         addEntityPacket.setRotation(rotation);
         addEntityPacket.setMotion(Vector3f.ZERO);
-        addEntityPacket.setPosition(position);
-        addEntityPacket.setRuntimeEntityId(proxyEid);
-        addEntityPacket.setUniqueEntityId(proxyEid);
+        addEntityPacket.setPosition(getOffsetPosition());
         addEntityPacket.getMetadata().putAll(getMetadata());
 
         //log.info(getMetadata());
@@ -113,7 +115,7 @@ public class CachedEntity {
     }
 
     public void moveRelative(Vector3f relPos, float pitch, float yaw) {
-        moveRelative(relPos, new Vector3f(pitch, yaw, 0));
+        moveRelative(relPos, new Vector3f(pitch, yaw, yaw));
     }
 
     public void moveRelative(Vector3f relPos, Vector3f rotation) {
@@ -153,5 +155,9 @@ public class CachedEntity {
         metadata.put(EntityData.BOUNDING_BOX_HEIGHT, (float) type.getHeight());
         metadata.put(EntityData.BOUNDING_BOX_WIDTH, (float) type.getWidth());
         metadata.putFlags(flags);
+    }
+
+    public Vector3f getOffsetPosition() {
+        return new Vector3f(position.getX(), position.getY() + type.getOffset(), position.getZ());
     }
 }

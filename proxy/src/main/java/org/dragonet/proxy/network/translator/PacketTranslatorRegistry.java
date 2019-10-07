@@ -90,7 +90,8 @@ public class PacketTranslatorRegistry<P> {
             .addTranslator(ServerRespawnPacket.class, PCRespawnTranslator.INSTANCE)
             .addTranslator(ServerOpenWindowPacket.class, PCOpenWindowTranslator.INSTANCE)
             .addTranslator(ServerSpawnGlobalEntityPacket.class, PCSpawnGlobalEntityTranslator.INSTANCE)
-            .addTranslator(ServerSpawnObjectPacket.class, PCSpawnObjectTranslator.INSTANCE);
+            .addTranslator(ServerSpawnObjectPacket.class, PCSpawnObjectTranslator.INSTANCE)
+            .addTranslator(ServerEntityRotationPacket.class, PCEntityRotationTranslator.INSTANCE);
 
         BEDROCK_TO_JAVA.addTranslator(TextPacket.class, PETextTranslator.INSTANCE)
             .addTranslator(AnimatePacket.class, PEAnimateTranslator.INSTANCE)

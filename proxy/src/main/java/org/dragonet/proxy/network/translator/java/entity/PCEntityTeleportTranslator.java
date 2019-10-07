@@ -40,11 +40,14 @@ public class PCEntityTeleportTranslator implements PacketTranslator<ServerEntity
 
         cachedEntity.moveAbsolute(new Vector3f(packet.getX(), packet.getY(), packet.getZ()), packet.getPitch(), packet.getYaw());
 
+        Vector3f rotation = new Vector3f(cachedEntity.getRotation().getX() / (360d / 256d),
+            cachedEntity.getRotation().getY() / (360d / 256d), cachedEntity.getRotation().getZ() / (360d / 256d));
+
         if(cachedEntity.isShouldMove()) {
             MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
-            moveEntityPacket.setRuntimeEntityId(packet.getEntityId());
-            moveEntityPacket.setPosition(cachedEntity.getPosition());
-            moveEntityPacket.setRotation(cachedEntity.getRotation());
+            moveEntityPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
+            moveEntityPacket.setPosition(cachedEntity.getOffsetPosition());
+            moveEntityPacket.setRotation(rotation);
             moveEntityPacket.setOnGround(packet.isOnGround());
             moveEntityPacket.setTeleported(true);
 

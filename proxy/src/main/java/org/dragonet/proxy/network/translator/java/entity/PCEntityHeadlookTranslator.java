@@ -38,10 +38,13 @@ public class PCEntityHeadlookTranslator implements PacketTranslator<ServerEntity
 
         cachedEntity.setRotation(new Vector3f(cachedEntity.getRotation().getX(), cachedEntity.getRotation().getY(), packet.getHeadYaw()));
 
+        Vector3f rotation = new Vector3f(cachedEntity.getRotation().getX() / (360d / 256d),
+            cachedEntity.getRotation().getY() / (360d / 256d), cachedEntity.getRotation().getZ() / (360d / 256d));
+
         MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
         moveEntityPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
-        moveEntityPacket.setPosition(cachedEntity.getPosition());
-        moveEntityPacket.setRotation(cachedEntity.getRotation());
+        moveEntityPacket.setPosition(cachedEntity.getOffsetPosition());
+        moveEntityPacket.setRotation(rotation);
         moveEntityPacket.setOnGround(true);
         moveEntityPacket.setTeleported(false);
 
