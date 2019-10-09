@@ -18,9 +18,8 @@
  */
 package org.dragonet.proxy.network.translator.java.entity;
 
-import com.flowpowered.math.vector.Vector3f;
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityPositionPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityRotationPacket;
+import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.packet.MoveEntityAbsolutePacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
@@ -39,9 +38,9 @@ public class PCEntityRotationTranslator implements PacketTranslator<ServerEntity
             return;
         }
 
-        cachedEntity.moveRelative(new Vector3f(packet.getMovementX(), packet.getMovementY(), packet.getMovementZ()), packet.getPitch(), packet.getYaw());
+        cachedEntity.moveRelative(Vector3f.ZERO, packet.getPitch(), packet.getYaw());
 
-        Vector3f rotation = new Vector3f(cachedEntity.getRotation().getX() / (360d / 256d),
+        Vector3f rotation = Vector3f.from(cachedEntity.getRotation().getX() / (360d / 256d),
             cachedEntity.getRotation().getY() / (360d / 256d), cachedEntity.getRotation().getZ() / (360d / 256d));
 
         if(cachedEntity.isShouldMove()) {

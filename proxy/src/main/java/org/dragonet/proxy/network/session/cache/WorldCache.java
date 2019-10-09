@@ -28,7 +28,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 public class WorldCache implements Cache {
-    private Map<StatInfo, Integer> statistics = new HashMap();
+    private Map<StatInfo, Integer> statistics = new HashMap<>();
     private double rainLevel = 0.0;
 
     @Override

@@ -99,7 +99,7 @@ public class EntityTypeTranslator {
         entityMap.put(MobType.THROWN_EXP_BOTTLE, EntityType.EXPERIENCE_BOTTLE);
         entityMap.put(MobType.EXPERIENCE_ORB, EntityType.EXPERIENCE_ORB);
         entityMap.put(MobType.EYE_OF_ENDER, EntityType.EYE_OF_ENDER);
-        entityMap.put(MobType.ENDER_CRYSTAL, EntityType.ENDER_CRYSTAL);
+        entityMap.put(MobType.END_CRYSTAL, EntityType.ENDER_CRYSTAL);
         entityMap.put(MobType.FIREWORK_ROCKET, EntityType.FIREWORK_ROCKET);
         entityMap.put(MobType.TRIDENT, EntityType.TRIDENT);
 

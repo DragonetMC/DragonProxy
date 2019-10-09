@@ -18,13 +18,11 @@
  */
 package org.dragonet.proxy.network.translator.java.world;
 
-import com.flowpowered.math.vector.Vector3f;
 import com.github.steveice10.mc.protocol.data.MagicValues;
-import com.github.steveice10.mc.protocol.data.game.world.notify.DemoMessageValue;
-import com.github.steveice10.mc.protocol.data.game.world.notify.EnterCreditsValue;
 import com.github.steveice10.mc.protocol.data.game.world.notify.RainStrengthValue;
 import com.github.steveice10.mc.protocol.data.game.world.notify.ThunderStrengthValue;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
+import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
 import static com.nukkitx.protocol.bedrock.packet.LevelEventPacket.Event.*;
 import com.nukkitx.protocol.bedrock.packet.SetPlayerGameTypePacket;

@@ -18,8 +18,8 @@
  */
 package org.dragonet.proxy.network.translator.java.entity;
 
-import com.flowpowered.math.vector.Vector3f;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityHeadLookPacket;
+import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.packet.MoveEntityAbsolutePacket;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
@@ -36,9 +36,9 @@ public class PCEntityHeadlookTranslator implements PacketTranslator<ServerEntity
             return;
         }
 
-        cachedEntity.setRotation(new Vector3f(cachedEntity.getRotation().getX(), cachedEntity.getRotation().getY(), packet.getHeadYaw()));
+        cachedEntity.setRotation(Vector3f.from(cachedEntity.getRotation().getX(), cachedEntity.getRotation().getY(), packet.getHeadYaw()));
 
-        Vector3f rotation = new Vector3f(cachedEntity.getRotation().getX() / (360d / 256d),
+        Vector3f rotation = Vector3f.from(cachedEntity.getRotation().getX() / (360d / 256d),
             cachedEntity.getRotation().getY() / (360d / 256d), cachedEntity.getRotation().getZ() / (360d / 256d));
 
         MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();

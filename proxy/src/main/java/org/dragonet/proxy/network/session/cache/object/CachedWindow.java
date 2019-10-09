@@ -18,10 +18,9 @@
  */
 package org.dragonet.proxy.network.session.cache.object;
 
-import com.flowpowered.math.vector.Vector3f;
-import com.flowpowered.math.vector.Vector3i;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.window.WindowType;
+import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
@@ -52,8 +51,8 @@ public class CachedWindow {
     }
 
     public void open(ProxySession session) {
-        Vector3i pos = new Vector3i(31, 35, 0);
-log.info(TextFormat.AQUA + "pos: " + pos);
+        Vector3i pos = Vector3i.from(31, 35, 0);
+        log.info(TextFormat.AQUA + "pos: " + pos);
         log.info(TextFormat.AQUA + "session pos: " + session.getCachedEntity().getPosition());
         // fake block data
         UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();

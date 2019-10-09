@@ -18,12 +18,9 @@
  */
 package org.dragonet.proxy.network.translator.java.entity.spawn;
 
-import com.flowpowered.math.vector.Vector3f;
-import com.github.steveice10.mc.auth.data.GameProfile;
-import com.github.steveice10.mc.protocol.data.game.entity.type.MobType;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
+import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.EntityDataDictionary;
-import com.nukkitx.protocol.bedrock.packet.PlayerSkinPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.session.ProxySession;
@@ -31,9 +28,6 @@ import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.types.EntityMetaTranslator;
 import org.dragonet.proxy.network.translator.types.EntityTypeTranslator;
-import org.dragonet.proxy.util.SkinUtils;
-
-import java.nio.charset.StandardCharsets;
 
 @Log4j2
 public class PCSpawnMobTranslator implements PacketTranslator<ServerSpawnMobPacket> {
@@ -58,9 +52,9 @@ public class PCSpawnMobTranslator implements PacketTranslator<ServerSpawnMobPack
         EntityDataDictionary metadata = EntityMetaTranslator.translateToBedrock(packet.getMetadata());
         cachedEntity.getMetadata().putAll(metadata);
 
-        cachedEntity.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
-        cachedEntity.setMotion(new Vector3f(packet.getMotionX(), packet.getMotionY(), packet.getMotionZ()));
-        cachedEntity.setRotation(new Vector3f(packet.getPitch(), packet.getHeadYaw(), packet.getYaw()));
+        cachedEntity.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
+        cachedEntity.setMotion(Vector3f.from(packet.getMotionX(), packet.getMotionY(), packet.getMotionZ()));
+        cachedEntity.setRotation(Vector3f.from(packet.getPitch(), packet.getHeadYaw(), packet.getYaw()));
 
         cachedEntity.spawn(session);
     }

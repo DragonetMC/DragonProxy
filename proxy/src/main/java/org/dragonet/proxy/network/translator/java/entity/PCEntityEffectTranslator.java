@@ -49,7 +49,7 @@ public class PCEntityEffectTranslator implements PacketTranslator<ServerEntityEf
         mobEffectPacket.setEffectId(effect.ordinal() + 1); // We add 1 as enums begin at 0
         mobEffectPacket.setAmplifier(packet.getAmplifier());
         mobEffectPacket.setDuration(packet.getDuration());
-        mobEffectPacket.setParticles(packet.getShowParticles());
+        mobEffectPacket.setParticles(packet.isShowParticles());
 
         if(cachedEntity.getEffects().contains(effect)) {
             mobEffectPacket.setEvent(MobEffectPacket.Event.MODIFY);

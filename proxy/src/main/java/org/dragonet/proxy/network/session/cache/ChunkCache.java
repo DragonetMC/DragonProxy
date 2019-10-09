@@ -18,13 +18,12 @@
  */
 package org.dragonet.proxy.network.session.cache;
 
-import com.flowpowered.math.vector.Vector2f;
-import com.flowpowered.math.vector.Vector3f;
-import com.github.steveice10.mc.protocol.data.game.chunk.BlockStorage;
 import com.github.steveice10.mc.protocol.data.game.chunk.Chunk;
 import com.github.steveice10.mc.protocol.data.game.chunk.Column;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
+import com.nukkitx.math.vector.Vector2f;
+import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.ItemData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,9 +32,6 @@ import org.dragonet.proxy.data.chunk.ChunkData;
 import org.dragonet.proxy.data.chunk.ChunkSection;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.types.BlockTranslator;
-import org.dragonet.proxy.network.translator.types.ItemTranslator;
-import org.dragonet.proxy.network.translator.types.item.ItemEntry;
-import org.dragonet.proxy.util.PaletteManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +50,7 @@ public class ChunkCache implements Cache {
     }
 
     public ItemData getBlockAt(Vector3f position) {
-        Vector2f chunkPosition = new Vector2f((int) position.getX() >> 4, (int) position.getZ() >> 4);
+        Vector2f chunkPosition = Vector2f.from((int) position.getX() >> 4, (int) position.getZ() >> 4);
         if (!chunks.containsKey(chunkPosition))
             return ItemData.AIR;
 
@@ -62,7 +58,7 @@ public class ChunkCache implements Cache {
         Chunk chunk = column.getChunks()[(int) position.getY() >> 4];
         Vector3f blockPosition = getChunkBlock((int) position.getX(), (int) position.getY(), (int) position.getZ());
         if (chunk != null) {
-            BlockState blockState = chunk.getBlocks().get((int) blockPosition.getX(), (int) blockPosition.getY(), (int) blockPosition.getZ());
+            BlockState blockState = chunk.get((int) blockPosition.getX(), (int) blockPosition.getY(), (int) blockPosition.getZ());
             return BlockTranslator.translateToBedrock(new ItemStack(blockState.getId()));
         }
 
@@ -81,11 +77,11 @@ public class ChunkCache implements Cache {
         if (chunkZ < 0)
             chunkZ = -chunkZ;
 
-        return new Vector3f(chunkX, chunkY, chunkZ);
+        return Vector3f.from(chunkX, chunkY, chunkZ);
     }
 
     public ChunkData translateChunk(int columnX, int columnZ) {
-        Vector2f columnPos = new Vector2f(columnX, columnZ);
+        Vector2f columnPos = Vector2f.from(columnX, columnZ);
 
         if (chunks.containsKey(columnPos)) {
             Column column = chunks.get(columnPos);
@@ -106,10 +102,9 @@ public class ChunkCache implements Cache {
                     log.warn("Chunk " + columnX + ", " + cy + ", " + columnZ + " not exist !");
                 }
                 if (javaChunk == null || javaChunk.isEmpty()) continue;
-                BlockStorage blocks = javaChunk.getBlocks();
                 for (int x = 0; x < 16; x++) {
                     for (int z = 0; z < 16; z++) {
-                        BlockState block = blocks.get(x, y & 0xF, z);
+                        BlockState block = javaChunk.get(x, y & 0xF, z);
                         ItemData entry = BlockTranslator.translateToBedrock(new ItemStack(block.getId()));
 
                         ChunkSection section = chunkData.getSection(cy);

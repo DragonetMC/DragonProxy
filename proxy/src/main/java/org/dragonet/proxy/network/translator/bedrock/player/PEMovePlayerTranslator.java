@@ -18,11 +18,8 @@
  */
 package org.dragonet.proxy.network.translator.bedrock.player;
 
-import com.flowpowered.math.vector.Vector3f;
-import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPositionPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
 import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
-import com.nukkitx.protocol.bedrock.packet.SetEntityDataPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
@@ -51,8 +48,6 @@ public class PEMovePlayerTranslator implements PacketTranslator<MovePlayerPacket
             packet.getRotation().getY());
 
         cachedEntity.moveAbsolute(packet.getPosition(), packet.getRotation());
-
-        boolean colliding = false;
 
         session.sendRemotePacket(playerPositionRotationPacket);
     }

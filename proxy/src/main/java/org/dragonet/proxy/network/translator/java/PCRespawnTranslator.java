@@ -18,12 +18,7 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
-import com.flowpowered.math.vector.Vector3f;
-import com.flowpowered.math.vector.Vector3i;
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
-import com.github.steveice10.mc.protocol.data.game.world.block.BlockChangeRecord;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerRespawnPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMultiBlockChangePacket;
 import com.nukkitx.protocol.bedrock.packet.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -58,7 +53,7 @@ public class PCRespawnTranslator implements PacketTranslator<ServerRespawnPacket
         }
 
         SetPlayerGameTypePacket setPlayerGameTypePacket = new SetPlayerGameTypePacket();
-        setPlayerGameTypePacket.setGamemode(packet.getGameMode().ordinal());
+        setPlayerGameTypePacket.setGamemode(packet.getGamemode().ordinal());
         session.sendPacket(setPlayerGameTypePacket);
     }
 }

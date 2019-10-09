@@ -18,9 +18,6 @@
  */
 package org.dragonet.proxy.network.session;
 
-import com.flowpowered.math.vector.Vector2f;
-import com.flowpowered.math.vector.Vector3f;
-import com.flowpowered.math.vector.Vector3i;
 import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.auth.exception.request.RequestException;
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
@@ -37,6 +34,9 @@ import com.github.steveice10.packetlib.event.session.SessionAdapter;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.github.steveice10.packetlib.packet.PacketProtocol;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
+import com.nukkitx.math.vector.Vector2f;
+import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.PlayerSession;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
@@ -261,7 +261,7 @@ public class ProxySession implements PlayerSession {
         startGamePacket.setUniqueEntityId(1);
         startGamePacket.setRuntimeEntityId(1);
         startGamePacket.setPlayerGamemode(0);
-        startGamePacket.setPlayerPosition(new Vector3f(-23, 73, 0)); // Hypixel bedwars lobby spawn
+        startGamePacket.setPlayerPosition(Vector3f.from(-23, 73, 0)); // Hypixel bedwars lobby spawn
         startGamePacket.setRotation(Vector2f.ZERO);
 
         startGamePacket.setSeed(1111);

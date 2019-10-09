@@ -18,8 +18,8 @@
  */
 package org.dragonet.proxy.network.translator.java.entity;
 
-import com.flowpowered.math.vector.Vector3f;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityVelocityPacket;
+import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.packet.SetEntityMotionPacket;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
@@ -36,7 +36,7 @@ public class PCEntityVelocityTranslator implements PacketTranslator<ServerEntity
             return;
         }
 
-        cachedEntity.setMotion(new Vector3f(packet.getMotionX(), packet.getMotionY(), packet.getMotionZ()));
+        cachedEntity.setMotion(Vector3f.from(packet.getMotionX(), packet.getMotionY(), packet.getMotionZ()));
 
         SetEntityMotionPacket setEntityMotionPacket = new SetEntityMotionPacket();
         setEntityMotionPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
