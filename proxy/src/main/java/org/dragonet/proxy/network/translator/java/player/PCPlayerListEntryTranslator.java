@@ -51,6 +51,18 @@ public class PCPlayerListEntryTranslator implements PacketTranslator<ServerPlaye
 
             switch(packet.getAction()) {
                 case ADD_PLAYER:
+                    // Fetch our own skin
+                    if(entry.getProfile().getName().equals(session.getUsername()) && session.getProxy().getConfiguration().isFetchPlayerSkins()) {
+                        session.getProxy().getGeneralThreadPool().execute(() -> {
+                            byte[] skinData = SkinUtils.fetchSkin(entry.getProfile());
+                            if (skinData == null) {
+                                return;
+                            }
+                            session.setPlayerSkin2(session.getAuthData().getIdentity(), skinData);
+                        });
+                        return;
+                    }
+
                     long proxyEid = session.getEntityCache().getNextClientEntityId().getAndIncrement();
 
                     playerListPacket.setType(PlayerListPacket.Type.ADD);
@@ -64,17 +76,6 @@ public class PCPlayerListEntryTranslator implements PacketTranslator<ServerPlaye
                     bedrockEntry.setGeometryData("");
                     bedrockEntry.setXuid("");
                     bedrockEntry.setPlatformChatId("");
-
-                    // Fetch our own skin
-                    if(entry.getProfile().getName().equals(session.getUsername()) && session.getProxy().getConfiguration().isFetchPlayerSkins()) {
-                        session.getProxy().getGeneralThreadPool().execute(() -> {
-                            byte[] skinData = SkinUtils.fetchSkin(entry.getProfile());
-                            if (skinData == null) {
-                                return;
-                            }
-                            session.setPlayerSkin(session.getAuthData().getIdentity(), skinData);
-                        });
-                    }
 
                     playerListPacket.getEntries().add(bedrockEntry);
 

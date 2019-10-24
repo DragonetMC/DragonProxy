@@ -42,8 +42,7 @@ xbox-auth: false
 ping-passthrough: true
 
 # Whether or not to fetch skins from Mojang's servers
-# WARNING: can cause client crashes
-fetch-player-skins: false
+fetch-player-skins: true
 
 # The amount of threads that will be used.
 # Only change if you know what you are doing

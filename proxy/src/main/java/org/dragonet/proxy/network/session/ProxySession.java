@@ -60,6 +60,7 @@ import org.dragonet.proxy.network.session.data.AuthState;
 import org.dragonet.proxy.network.session.data.ClientData;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.dragonet.proxy.remote.RemoteServer;
+import org.dragonet.proxy.util.SkinUtils;
 import org.dragonet.proxy.util.TextFormat;
 
 import javax.annotation.Nonnull;
@@ -315,6 +316,39 @@ public class ProxySession implements PlayerSession {
     }
 
     public void setPlayerSkin(UUID playerId, byte[] skinData) {
+        GameProfile profile = playerInfoCache.get(playerId).getProfile();
+
+        // Remove the player from the player list
+        PlayerListPacket removePacket = new PlayerListPacket();
+        removePacket.setType(PlayerListPacket.Type.REMOVE);
+        removePacket.getEntries().add(new PlayerListPacket.Entry(playerId));
+        sendPacket(removePacket);
+
+        // Add them back to the player list with a new skin
+        PlayerListPacket addPacket = new PlayerListPacket();
+        addPacket.setType(PlayerListPacket.Type.ADD);
+
+        PlayerListPacket.Entry entry = new PlayerListPacket.Entry(playerId);
+        entry.setEntityId(1); // TODO
+        entry.setName(profile.getName());
+        entry.setSkinId(profile.getIdAsString());
+        entry.setSkinData(skinData);
+        entry.setCapeData(new byte[0]);
+        entry.setGeometryName("geometry.humanoid");
+        entry.setGeometryData("");
+        entry.setXuid("");
+        entry.setPlatformChatId("");
+
+        addPacket.getEntries().add(entry);
+        sendPacket(addPacket);
+
+        // TODO: ideally we would use PlayerSkinPacket, but that crashes...
+        // See below
+    }
+
+    // Currently used for setting our own skin, however hopefully it can be used to
+    // set other players' skins in the future instead of using the player list hack
+    public void setPlayerSkin2(UUID playerId, byte[] skinData) {
         PlayerSkinPacket playerSkinPacket = new PlayerSkinPacket();
         playerSkinPacket.setUuid(playerId);
         playerSkinPacket.setSkinId(playerId.toString());
