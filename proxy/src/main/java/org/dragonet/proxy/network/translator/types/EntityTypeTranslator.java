@@ -88,6 +88,8 @@ public class EntityTypeTranslator {
         entityMap.put(MobType.WANDERING_TRADER, EntityType.WANDERING_TRADER);
         entityMap.put(MobType.PHANTOM, EntityType.PHANTOM);
         entityMap.put(MobType.RAVAGER, EntityType.RAVAGER);
+        entityMap.put(MobType.PANDA, EntityType.PANDA);
+        entityMap.put(MobType.PAINTING, EntityType.PAINTING);
 
         entityMap.put(MobType.ARMOR_STAND, EntityType.ARMOR_STAND);
         //entityMap.put(MobType.TRIPOD_CAMERA, EntityType.TRIPOD_CAMERA);
