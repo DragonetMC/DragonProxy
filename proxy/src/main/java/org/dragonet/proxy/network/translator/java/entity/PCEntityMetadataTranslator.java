@@ -48,7 +48,7 @@ public class PCEntityMetadataTranslator implements PacketTranslator<ServerEntity
             return;
         }
 
-        EntityDataDictionary metadata = EntityMetaTranslator.translateToBedrock(packet.getMetadata());
+        EntityDataDictionary metadata = EntityMetaTranslator.translateToBedrock(cachedEntity, packet.getMetadata());
         cachedEntity.getMetadata().putAll(metadata);
 
         SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();

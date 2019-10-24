@@ -55,7 +55,7 @@ public class PCSpawnMobTranslator implements PacketTranslator<ServerSpawnMobPack
 
         cachedEntity = session.getEntityCache().newEntity(entityType, packet.getEntityId());
 
-        EntityDataDictionary metadata = EntityMetaTranslator.translateToBedrock(packet.getMetadata());
+        EntityDataDictionary metadata = EntityMetaTranslator.translateToBedrock(cachedEntity, packet.getMetadata());
         cachedEntity.getMetadata().putAll(metadata);
 
         cachedEntity.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));

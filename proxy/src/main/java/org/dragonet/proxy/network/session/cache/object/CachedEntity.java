@@ -52,6 +52,9 @@ public class CachedEntity {
     protected Vector3f motion = Vector3f.ZERO;
     protected Vector3f spawnPosition = Vector3f.ZERO;
 
+    // HACK for invisiblity, as we need to access the original scale
+    private float scale = 0;
+
     protected int dimension = 0; // -1 = nether, 0 = overworld, 1 = end
 
     protected Map<BedrockAttributeType, Attribute> attributes = new HashMap<>();
@@ -148,6 +151,7 @@ public class CachedEntity {
         flags.setFlag(EntityFlag.NO_AI, false);
 
         //metadata.put(EntityData.NAMETAG, "test - " + proxyEid);
+        scale = 1f;
         metadata.put(EntityData.SCALE, 1f);
         metadata.put(EntityData.AIR, 0);
         metadata.put(EntityData.MAX_AIR, 400);

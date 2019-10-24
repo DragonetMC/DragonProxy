@@ -27,6 +27,7 @@ import com.nukkitx.protocol.bedrock.data.EntityDataDictionary;
 import com.nukkitx.protocol.bedrock.data.EntityFlag;
 import com.nukkitx.protocol.bedrock.data.EntityFlags;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 
 @Log4j2
 public class EntityMetaTranslator {
@@ -34,7 +35,7 @@ public class EntityMetaTranslator {
     /**
      * This method translates a Java mob type to a Bedrock entity type.
      */
-    public static EntityDataDictionary translateToBedrock(EntityMetadata[] metadata) {
+    public static EntityDataDictionary translateToBedrock(CachedEntity entity, EntityMetadata[] metadata) {
         EntityDataDictionary dictionary = new EntityDataDictionary();
         EntityFlags flags = new EntityFlags();
 
@@ -52,6 +53,8 @@ public class EntityMetaTranslator {
                         // HACK! Setting the invisible flag will also hide the nametag on bedrock,
                         // so this hack is needed to simulate invisibility.
                         dictionary.put(EntityData.SCALE, 0.01f);
+                    } else {
+                        dictionary.put(EntityData.SCALE, entity.getScale());
                     }
                     break;
                 case 1: // Air
