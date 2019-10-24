@@ -1,25 +1,27 @@
 /*
- * GNU LESSER GENERAL PUBLIC LICENSE
- * Version 3, 29 June 2007
+ * DragonProxy
+ * Copyright (C) 2016-2019 Dragonet Foundation
  *
- * Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
- * Everyone is permitted to copy and distribute verbatim copies
- * of this license document, but changing it is not allowed.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You can view the LICENCE file for details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * You can view the LICENSE file for more details.
+ *
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-
-import java.text.DecimalFormat;
 
 @Log4j2
 public class Bootstrap {

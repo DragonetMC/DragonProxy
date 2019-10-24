@@ -12,13 +12,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  * You can view the LICENSE file for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy;
 
@@ -26,25 +22,21 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import com.nukkitx.protocol.bedrock.BedrockServer;
 import com.nukkitx.protocol.bedrock.v361.Bedrock_v361;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.LogManager;
 import org.dragonet.proxy.command.CommandManager;
 import org.dragonet.proxy.configuration.DragonConfiguration;
 import org.dragonet.proxy.console.DragonConsole;
 import org.dragonet.proxy.network.ProxyServerEventListener;
+import org.dragonet.proxy.network.translator.types.BlockTranslator;
 import org.dragonet.proxy.network.translator.types.ItemTranslator;
 import org.dragonet.proxy.util.PaletteManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.dragonet.proxy.util.SkinUtils;
 
-import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
@@ -56,7 +48,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Stream;
 
 @Log4j2
 public class DragonProxy {
@@ -142,6 +133,8 @@ public class DragonProxy {
         paletteManager = new PaletteManager();
 
         new ItemTranslator();
+        new BlockTranslator();
+        new SkinUtils();
 
         commandManager = new CommandManager();
 

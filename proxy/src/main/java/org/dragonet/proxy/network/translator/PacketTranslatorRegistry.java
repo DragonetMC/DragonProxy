@@ -12,23 +12,24 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  * You can view the LICENSE file for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy.network.translator;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.*;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.*;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnGlobalEntityPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnObjectPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.*;
+import com.github.steveice10.mc.protocol.packet.login.server.LoginDisconnectPacket;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.google.common.base.Preconditions;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
@@ -40,6 +41,9 @@ import org.dragonet.proxy.network.translator.bedrock.player.PEMovePlayerTranslat
 import org.dragonet.proxy.network.translator.bedrock.player.PEPlayerActionTranslator;
 import org.dragonet.proxy.network.translator.java.*;
 import org.dragonet.proxy.network.translator.java.entity.*;
+import org.dragonet.proxy.network.translator.java.entity.spawn.PCSpawnGlobalEntityTranslator;
+import org.dragonet.proxy.network.translator.java.entity.spawn.PCSpawnMobTranslator;
+import org.dragonet.proxy.network.translator.java.entity.spawn.PCSpawnObjectTranslator;
 import org.dragonet.proxy.network.translator.java.player.*;
 import org.dragonet.proxy.network.translator.java.world.*;
 
@@ -52,18 +56,18 @@ public class PacketTranslatorRegistry<P> {
     public static final PacketTranslatorRegistry<Packet> JAVA_TO_BEDROCK = new PacketTranslatorRegistry<>();
 
     static {
-        JAVA_TO_BEDROCK.addTranslator(ServerJoinGamePacket.class, PCJoinGameTranslator.INSTANCE)
+        JAVA_TO_BEDROCK.addTranslator(LoginDisconnectPacket.class, PCLoginDisconnectTranslator.INSTANCE)
+            .addTranslator(ServerJoinGamePacket.class, PCJoinGameTranslator.INSTANCE)
             .addTranslator(ServerMultiBlockChangePacket.class, PCMultiBlockChangeTranslator.INSTANCE)
             .addTranslator(ServerDifficultyPacket.class, PCDifficultyTranslator.INSTANCE)
             .addTranslator(ServerTitlePacket.class, PCTitleTranslator.INSTANCE)
-            .addTranslator(ServerEntityHeadLookPacket.class, PCEntityHeadlookPacketTranslator.INSTANCE)
-            .addTranslator(ServerEntityPositionPacket.class, PCEntityPositionPacketTranslator.INSTANCE)
-            .addTranslator(ServerEntityPositionRotationPacket.class, PCEntityPositionRotationPacketTranslator.INSTANCE)
-            .addTranslator(ServerEntityTeleportPacket.class, PCEntityTeleportPacketTranslator.INSTANCE)
-            .addTranslator(ServerEntityVelocityPacket.class, PCEntityVelocityPacketTranslator.INSTANCE)
+            .addTranslator(ServerEntityHeadLookPacket.class, PCEntityHeadlookTranslator.INSTANCE)
+            .addTranslator(ServerEntityPositionPacket.class, PCEntityPositionTranslator.INSTANCE)
+            .addTranslator(ServerEntityPositionRotationPacket.class, PCEntityPositionRotationTranslator.INSTANCE)
+            .addTranslator(ServerEntityTeleportPacket.class, PCEntityTeleportTranslator.INSTANCE)
+            .addTranslator(ServerEntityVelocityPacket.class, PCEntityVelocityTranslator.INSTANCE)
             .addTranslator(ServerUpdateTimePacket.class, PCUpdateTimeTranslator.INSTANCE)
             .addTranslator(ServerChatPacket.class, PCChatTranslator.INSTANCE)
-            .addTranslator(ServerEntityDestroyPacket.class, PCServerEntityDestroyPacketTranslator.INSTANCE)
             .addTranslator(ServerChunkDataPacket.class, PCChunkDataTranslator.INSTANCE)
             .addTranslator(ServerDisconnectPacket.class, PCDisconnectTranslator.INSTANCE)
             .addTranslator(ServerNotifyClientPacket.class, PCNotifyClientTranslator.INSTANCE)
@@ -76,7 +80,18 @@ public class PacketTranslatorRegistry<P> {
             .addTranslator(ServerWindowItemsPacket.class, PCWindowItemsTranslator.INSTANCE)
             .addTranslator(ServerStatisticsPacket.class, PCStatisticsTranslator.INSTANCE)
             .addTranslator(ServerSpawnParticlePacket.class, PCSpawnParticleTranslator.INSTANCE)
-            .addTranslator(ServerExplosionPacket.class, PCExplosionTranslator.INSTANCE);
+            .addTranslator(ServerExplosionPacket.class, PCExplosionTranslator.INSTANCE)
+            .addTranslator(ServerPlayerListEntryPacket.class, PCPlayerListEntryTranslator.INSTANCE)
+            .addTranslator(ServerSpawnPositionPacket.class, PCSpawnPositionTranslator.INSTANCE)
+            .addTranslator(ServerEntityMetadataPacket.class, PCEntityMetadataTranslator.INSTANCE)
+            .addTranslator(ServerPlayerPositionRotationPacket.class, PCPlayerPositionRotationTranslator.INSTANCE)
+            .addTranslator(ServerEntityPropertiesPacket.class, PCEntityPropertiesTranslator.INSTANCE)
+            .addTranslator(ServerEntityDestroyPacket.class, PCEntityDestroyTranslator.INSTANCE)
+            .addTranslator(ServerRespawnPacket.class, PCRespawnTranslator.INSTANCE)
+            .addTranslator(ServerOpenWindowPacket.class, PCOpenWindowTranslator.INSTANCE)
+            .addTranslator(ServerSpawnGlobalEntityPacket.class, PCSpawnGlobalEntityTranslator.INSTANCE)
+            .addTranslator(ServerSpawnObjectPacket.class, PCSpawnObjectTranslator.INSTANCE)
+            .addTranslator(ServerEntityRotationPacket.class, PCEntityRotationTranslator.INSTANCE);
 
         BEDROCK_TO_JAVA.addTranslator(TextPacket.class, PETextTranslator.INSTANCE)
             .addTranslator(AnimatePacket.class, PEAnimateTranslator.INSTANCE)
@@ -92,12 +107,13 @@ public class PacketTranslatorRegistry<P> {
         Class<?> packetClass = packet.getClass();
         PacketTranslator<P> target = translators.get(packetClass);
         if (target == null) {
-           // log.info("Unhandled packet received from remote: {}", packetClass.getSimpleName());
+            //log.info("Unhandled packet received from remote: {}", packetClass.getSimpleName());
             return;
         }
-        if (session.getDownstream() == null) {
+        if (session.getDownstream() == null || session.getBedrockSession().isClosed()) {
             return;
         }
+        log.trace("Translating packet: " + packetClass.getSimpleName());
         target.translate(session, packet);
     }
 

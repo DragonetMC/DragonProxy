@@ -12,13 +12,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  * You can view the LICENSE file for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy.util;
 
@@ -81,6 +77,6 @@ public class BedrockLoginUtils {
         // Now send the packet to enable encryption on the client
         ServerToClientHandshakePacket packet = new ServerToClientHandshakePacket();
         packet.setJwt(EncryptionUtils.createHandshakeJwt(serverKeyPair, token).serialize());
-        session.getBedrockSession().sendPacketImmediately(packet);
+        session.sendPacketImmediately(packet);
     }
 }

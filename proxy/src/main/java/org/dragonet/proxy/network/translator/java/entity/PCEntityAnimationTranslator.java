@@ -12,13 +12,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  * You can view the LICENSE file for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy.network.translator.java.entity;
 
@@ -37,14 +33,14 @@ public class PCEntityAnimationTranslator implements PacketTranslator<ServerEntit
 
     @Override
     public void translate(ProxySession session, ServerEntityAnimationPacket packet) {
-        CachedEntity cachedEntity = session.getEntityCache().getById(packet.getEntityId());
+        CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(packet.getEntityId());
         if(cachedEntity == null) {
-            log.info("(debug) Cached entity is null");
+            //log.info("(debug) Cached entity is null");
             return;
         }
 
         AnimatePacket animatePacket = new AnimatePacket();
-        animatePacket.setRuntimeEntityId(packet.getEntityId());
+        animatePacket.setRuntimeEntityId(cachedEntity.getProxyEid());
 
         switch(packet.getAnimation()) {
             case SWING_ARM:
@@ -64,6 +60,6 @@ public class PCEntityAnimationTranslator implements PacketTranslator<ServerEntit
                 break;
         }
 
-        session.getBedrockSession().sendPacket(animatePacket);
+        session.sendPacket(animatePacket);
     }
 }

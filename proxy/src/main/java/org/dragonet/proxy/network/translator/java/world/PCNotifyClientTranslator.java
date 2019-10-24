@@ -12,23 +12,17 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  * You can view the LICENSE file for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy.network.translator.java.world;
 
-import com.flowpowered.math.vector.Vector3f;
 import com.github.steveice10.mc.protocol.data.MagicValues;
-import com.github.steveice10.mc.protocol.data.game.world.notify.DemoMessageValue;
-import com.github.steveice10.mc.protocol.data.game.world.notify.EnterCreditsValue;
 import com.github.steveice10.mc.protocol.data.game.world.notify.RainStrengthValue;
 import com.github.steveice10.mc.protocol.data.game.world.notify.ThunderStrengthValue;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
+import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
 import static com.nukkitx.protocol.bedrock.packet.LevelEventPacket.Event.*;
 import com.nukkitx.protocol.bedrock.packet.SetPlayerGameTypePacket;
@@ -51,19 +45,19 @@ public class PCNotifyClientTranslator implements PacketTranslator<ServerNotifyCl
                 SetPlayerGameTypePacket setGameTypePacket = new SetPlayerGameTypePacket();
                 setGameTypePacket.setGamemode(MagicValues.value(Integer.class, packet.getValue()));
 
-                session.getBedrockSession().sendPacket(setGameTypePacket);
+                session.sendPacket(setGameTypePacket);
                 break;
             case START_RAIN:
-                session.getBedrockSession().sendPacket(createLevelEvent(START_RAIN, ThreadLocalRandom.current().nextInt(50000) + 10000));
+                session.sendPacket(createLevelEvent(START_RAIN, ThreadLocalRandom.current().nextInt(50000) + 10000));
                 break;
             case RAIN_STRENGTH:
                 double rainStrength = ((RainStrengthValue) packet.getValue()).getStrength();
                 if(rainStrength > 0.0) {
-                    session.getBedrockSession().sendPacket(createLevelEvent(START_RAIN, (int) rainStrength * 65535));
+                    session.sendPacket(createLevelEvent(START_RAIN, (int) rainStrength * 65535));
                     break;
                 }
             case STOP_RAIN:
-                session.getBedrockSession().sendPacket(createLevelEvent(STOP_RAIN, 0));
+                session.sendPacket(createLevelEvent(STOP_RAIN, 0));
                 break;
             case THUNDER_STRENGTH:
                 double thunderStrength = ((ThunderStrengthValue) packet.getValue()).getStrength();
@@ -71,17 +65,17 @@ public class PCNotifyClientTranslator implements PacketTranslator<ServerNotifyCl
                 log.info(TextFormat.DARK_AQUA + "Thunder strength: " + thunderStrength);
                 if(thunderStrength > 0.0) {
                     // TODO: this doesnt work?
-                    session.getBedrockSession().sendPacket(createLevelEvent(START_THUNDER, (int) thunderStrength * 65535));
+                    session.sendPacket(createLevelEvent(START_THUNDER, (int) thunderStrength * 65535));
                 } else {
-                    session.getBedrockSession().sendPacket(createLevelEvent(STOP_THUNDER, 0));
+                    session.sendPacket(createLevelEvent(STOP_THUNDER, 0));
                 }
                 break;
             case ENTER_CREDITS:
                 ShowCreditsPacket showCreditsPacket = new ShowCreditsPacket();
-                showCreditsPacket.setRuntimeEntityId(session.getCachedEntity().getEntityId());
+                showCreditsPacket.setRuntimeEntityId(session.getCachedEntity().getProxyEid());
                 showCreditsPacket.setStatus(ShowCreditsPacket.Status.START_CREDITS);
 
-                session.getBedrockSession().sendPacket(showCreditsPacket);
+                session.sendPacket(showCreditsPacket);
                 break;
             case DEMO_MESSAGE:
                 log.info(TextFormat.AQUA + "Demo message received");

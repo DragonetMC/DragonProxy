@@ -12,38 +12,50 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  * You can view the LICENSE file for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy.network.translator.java.world;
 
 import com.github.steveice10.mc.protocol.data.game.chunk.Column;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
+import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
+import com.nukkitx.protocol.bedrock.packet.NetworkChunkPublisherUpdatePacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.data.chunk.ChunkData;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
+import java.util.Arrays;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Log4j2
 public class PCChunkDataTranslator implements PacketTranslator<ServerChunkDataPacket> {
     public static final PCChunkDataTranslator INSTANCE = new PCChunkDataTranslator();
 
     @Override
     public void translate(ProxySession session, ServerChunkDataPacket packet) {
         Column column = packet.getColumn();
-        LevelChunkPacket fullChunkData = new LevelChunkPacket();
-        fullChunkData.setChunkX(column.getX());
-        fullChunkData.setChunkZ(column.getZ());
-        fullChunkData.setData(new byte[0]);
 
-        // TODO: 01/04/2019 Finish off chunk data
+        session.getChunkCache().getChunks().put(Vector2f.from(column.getX(), column.getZ()), column);
 
-        //session.getBedrockSession().sendPacket(fullChunkData);
+        NetworkChunkPublisherUpdatePacket chunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
+        chunkPublisherUpdatePacket.setPosition(session.getCachedEntity().getPosition().toInt());
+        chunkPublisherUpdatePacket.setRadius(8 << 4);
+        session.sendPacket(chunkPublisherUpdatePacket);
+
+        ChunkData chunkData = session.getChunkCache().translateChunk(column.getX(), column.getZ());
+        if(chunkData != null) {
+            LevelChunkPacket levelChunkPacket = chunkData.createChunkPacket();
+            levelChunkPacket.setCachingEnabled(false);
+
+            session.sendPacket(levelChunkPacket);
+        } else {
+            log.warn("ChunkData is null");
+        }
     }
 }

@@ -12,13 +12,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  * You can view the LICENSE file for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy.network.translator.java.entity;
 
@@ -36,9 +32,9 @@ public class PCEntityRemoveEffectTranslator implements PacketTranslator<ServerEn
 
     @Override
     public void translate(ProxySession session, ServerEntityRemoveEffectPacket packet) {
-        CachedEntity cachedEntity = session.getEntityCache().getById(packet.getEntityId());
+        CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(packet.getEntityId());
         if(cachedEntity == null) {
-            log.warn("Cached entity is null");
+            //log.warn("Cached entity is null");
             return;
         }
 
@@ -56,7 +52,7 @@ public class PCEntityRemoveEffectTranslator implements PacketTranslator<ServerEn
         mobEffectPacket.setDuration(0);
         mobEffectPacket.setAmplifier(0);
 
-        session.getBedrockSession().sendPacket(mobEffectPacket);
+        session.sendPacket(mobEffectPacket);
 
         // Remove the effect from the cached entity
         cachedEntity.getEffects().remove(effect);

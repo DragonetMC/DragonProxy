@@ -12,19 +12,15 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  * You can view the LICENSE file for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy.network.translator.java.world;
 
-import com.flowpowered.math.vector.Vector3f;
-import com.flowpowered.math.vector.Vector3i;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerExplosionPacket;
+import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.packet.ExplodePacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -38,13 +34,13 @@ public class PCExplosionTranslator implements PacketTranslator<ServerExplosionPa
     @Override
     public void translate(ProxySession session, ServerExplosionPacket packet) {
         ExplodePacket explodePacket = new ExplodePacket();
-        explodePacket.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
+        explodePacket.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
         explodePacket.setRadius(packet.getRadius());
 
         packet.getExploded().forEach((record) -> {
-            explodePacket.getRecords().add(new Vector3i(record.getX(), record.getY(), record.getZ()));
+            explodePacket.getRecords().add(Vector3i.from(record.getX(), record.getY(), record.getZ()));
         });
 
-        session.getBedrockSession().sendPacket(explodePacket);
+        session.sendPacket(explodePacket);
     }
 }

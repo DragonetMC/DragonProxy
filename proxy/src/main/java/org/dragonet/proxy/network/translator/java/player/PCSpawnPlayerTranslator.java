@@ -12,23 +12,22 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  * You can view the LICENSE file for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy.network.translator.java.player;
 
-import com.flowpowered.math.vector.Vector3f;
+import com.github.steveice10.mc.auth.data.GameProfile;
+import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
-import com.nukkitx.protocol.bedrock.data.ItemData;
-import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket;
+import com.nukkitx.math.vector.Vector3f;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.types.EntityMetaTranslator;
+import org.dragonet.proxy.util.SkinUtils;
 
 @Log4j2
 public class PCSpawnPlayerTranslator implements PacketTranslator<ServerSpawnPlayerPacket> {
@@ -36,24 +35,30 @@ public class PCSpawnPlayerTranslator implements PacketTranslator<ServerSpawnPlay
 
     @Override
     public void translate(ProxySession session, ServerSpawnPlayerPacket packet) {
-        AddPlayerPacket addPlayerPacket = new AddPlayerPacket();
-        addPlayerPacket.setUniqueEntityId(packet.getEntityId());
-        addPlayerPacket.setRuntimeEntityId(packet.getEntityId());
-        addPlayerPacket.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
-        addPlayerPacket.setRotation(new Vector3f(packet.getYaw(), packet.getPitch(), 0));
-        addPlayerPacket.setMotion(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
-        addPlayerPacket.setUsername(session.getAuthData().getDisplayName());
-        addPlayerPacket.setUuid(session.getAuthData().getIdentity());
-        addPlayerPacket.setDeviceId("");
-        addPlayerPacket.setHand(ItemData.AIR);
-        addPlayerPacket.setCommandPermission(0);
-        addPlayerPacket.setPlayerFlags(0);
-        addPlayerPacket.setCustomFlags(0);
-        addPlayerPacket.setWorldFlags(0);
-        addPlayerPacket.setPlayerPermission(0);
-        addPlayerPacket.setPlatformChatId("");
+        PlayerListEntry playerListEntry = session.getPlayerInfoCache().get(packet.getUuid());
 
-        //log.warn("Received spawn player packet");
-        //session.getBedrockSession().sendPacket(addPlayerPacket);
+        CachedPlayer cachedPlayer = session.getEntityCache().newPlayer(packet.getEntityId(), playerListEntry.getProfile());
+        cachedPlayer.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
+        cachedPlayer.setRotation(Vector3f.from(packet.getYaw(), packet.getPitch(), 0));
+        cachedPlayer.getMetadata().putAll(EntityMetaTranslator.translateToBedrock(cachedPlayer, packet.getMetadata()));
+        cachedPlayer.spawn(session);
+
+        if(session.getProxy().getConfiguration().isFetchPlayerSkins()) {
+            session.getProxy().getGeneralThreadPool().execute(() -> {
+                GameProfile profile = session.getPlayerInfoCache().get(packet.getUuid()).getProfile();
+
+                byte[] skinData = SkinUtils.fetchSkin(profile);
+                if (skinData == null) {
+                    return;
+                }
+
+//                byte[] capeData = SkinUtils.fetchOptifineCape(profile);
+//                if(capeData == null) {
+//                    capeData = clientData.getCapeData();
+//                }
+
+                session.setPlayerSkin(profile.getId(), skinData);
+            });
+        }
     }
 }

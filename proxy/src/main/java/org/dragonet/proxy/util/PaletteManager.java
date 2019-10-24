@@ -12,13 +12,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  * You can view the LICENSE file for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy.util;
 
@@ -30,17 +26,25 @@ import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import com.nukkitx.protocol.bedrock.v361.BedrockUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import lombok.Getter;
 import org.dragonet.proxy.DragonProxy;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
 public class PaletteManager {
     private ByteBuf cachedPalette;
     private List<StartGamePacket.ItemEntry> itemEntries;
+    private static final Int2IntArrayMap legacyToRuntimeId = new Int2IntArrayMap();
+    private static final Int2IntArrayMap runtimeIdToLegacy = new Int2IntArrayMap();
+    private static final AtomicInteger runtimeIdAllocator = new AtomicInteger(0);
+
+    private ArrayList<RuntimeEntry> entries = new ArrayList<>();
 
     public PaletteManager() {
         loadBlocks();
@@ -56,7 +60,7 @@ public class PaletteManager {
         ObjectMapper mapper = new ObjectMapper();
         CollectionType type = mapper.getTypeFactory().constructCollectionType(ArrayList.class, RuntimeEntry.class);
 
-        ArrayList<RuntimeEntry> entries = new ArrayList<>();
+        //ArrayList<RuntimeEntry> entries = new ArrayList<>();
         try {
             entries = mapper.readValue(stream, type);
         } catch (Exception e) {
@@ -68,6 +72,7 @@ public class PaletteManager {
         VarInts.writeUnsignedInt(cachedPalette, entries.size());
 
         for (RuntimeEntry entry : entries) {
+            registerMapping((entry.id << 4) | entry.data);
             BedrockUtils.writeString(cachedPalette, entry.name);
             cachedPalette.writeShortLE(entry.data);
             cachedPalette.writeShortLE(entry.id);
@@ -98,7 +103,43 @@ public class PaletteManager {
         }
     }
 
-    private static class RuntimeEntry {
+    public static int getOrCreateRuntimeId(int id, int meta) {
+        return getOrCreateRuntimeId((id << 4) | meta);
+    }
+
+    public static int getOrCreateRuntimeId(int legacyId) throws NoSuchElementException {
+        int runtimeId = legacyToRuntimeId.get(legacyId);
+        if (runtimeId == -1) {
+            throw new NoSuchElementException("Unmapped block registered id:" + (legacyId >>> 4) + " meta:" + (legacyId & 0xf));
+        }
+        return runtimeId;
+    }
+
+    public static int fromLegacy(int id, byte data) {
+        int runtimeId;
+        if ((runtimeId = legacyToRuntimeId.get((id << 4) | data)) == -1) {
+            throw new IllegalArgumentException("Unknown legacy id");
+        }
+        return runtimeId;
+    }
+
+    public static int getLegacyId(int runtimeId) {
+        int legacyId;
+        if ((legacyId = runtimeIdToLegacy.get(runtimeId)) == -1) {
+            throw new IllegalArgumentException("Unknown runtime id");
+        }
+        return legacyId;
+    }
+
+    private static int registerMapping(int legacyId) {
+        int runtimeId = runtimeIdAllocator.getAndIncrement();
+        runtimeIdToLegacy.put(runtimeId, legacyId);
+        legacyToRuntimeId.put(legacyId, runtimeId);
+        return runtimeId;
+    }
+
+    @Getter
+    public static class RuntimeEntry {
         @JsonProperty("name")
         private String name;
         @JsonProperty("id")

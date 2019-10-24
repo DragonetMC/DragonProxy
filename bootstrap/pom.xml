@@ -61,7 +61,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
                 <dependencies>
                     <dependency>
                         <groupId>com.github.edwgiz</groupId>
@@ -70,18 +69,6 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <filters>
-                        <!-- Ignore manifest signatures for shading the project into an uber-jar to fix -->
-                        <!-- "Invalid signature file digest for Manifest main attributes" -->
-                        <filter>
-                            <artifact>*:*</artifact>
-                            <excludes>
-                                <exclude>META-INF/*.SF</exclude>
-                                <exclude>META-INF/*.DSA</exclude>
-                                <exclude>META-INF/*.RSA</exclude>
-                            </excludes>
-                        </filter>
-                    </filters>
                     <transformers>
                         <transformer
                                 implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer"/>
@@ -95,6 +82,21 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <!-- License header plugin -->
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+            </plugin>
+            <!-- Generate a jar containing the source javadoc -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <!-- Generate a jar containing the java sources -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

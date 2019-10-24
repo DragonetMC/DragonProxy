@@ -12,13 +12,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  * You can view the LICENSE file for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy.network.translator.bedrock.player;
 
@@ -38,31 +34,31 @@ public class PEPlayerActionTranslator implements PacketTranslator<PlayerActionPa
     public void translate(ProxySession session, PlayerActionPacket packet) {
         switch(packet.getAction()) {
             case RESPAWN:
-                session.getDownstream().getSession().send(new ClientRequestPacket(ClientRequest.RESPAWN));
+                session.sendRemotePacket(new ClientRequestPacket(ClientRequest.RESPAWN));
 
                 RespawnPacket respawnPacket = new RespawnPacket();
                 respawnPacket.setPosition(session.getCachedEntity().getPosition());
-                session.getBedrockSession().sendPacket(respawnPacket);
+                session.sendPacket(respawnPacket);
                 break;
             case START_SNEAK:
                 ClientPlayerStatePacket startSneakPacket = new ClientPlayerStatePacket((int) packet.getRuntimeEntityId(), PlayerState.START_SNEAKING);
-                session.getDownstream().getSession().send(startSneakPacket);
+                session.sendRemotePacket(startSneakPacket);
                 break;
             case STOP_SNEAK:
                 ClientPlayerStatePacket stopSneakPacket = new ClientPlayerStatePacket((int) packet.getRuntimeEntityId(), PlayerState.STOP_SNEAKING);
-                session.getDownstream().getSession().send(stopSneakPacket);
+                session.sendRemotePacket(stopSneakPacket);
                 break;
             case START_SPRINT:
                 ClientPlayerStatePacket startSprintPacket = new ClientPlayerStatePacket((int) packet.getRuntimeEntityId(), PlayerState.START_SPRINTING);
-                session.getDownstream().getSession().send(startSprintPacket);
+                session.sendRemotePacket(startSprintPacket);
                 break;
             case STOP_SPRINT:
                 ClientPlayerStatePacket stopSprintPacket = new ClientPlayerStatePacket((int) packet.getRuntimeEntityId(), PlayerState.STOP_SPRINTING);
-                session.getDownstream().getSession().send(stopSprintPacket);
+                session.sendRemotePacket(stopSprintPacket);
                 break;
             case STOP_SLEEP:
                 ClientPlayerStatePacket leaveBedPacket = new ClientPlayerStatePacket((int) packet.getRuntimeEntityId(), PlayerState.LEAVE_BED);
-                session.getDownstream().getSession().send(leaveBedPacket);
+                session.sendRemotePacket(leaveBedPacket);
                 break;
         }
     }

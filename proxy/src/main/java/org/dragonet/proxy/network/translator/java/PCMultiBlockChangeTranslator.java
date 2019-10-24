@@ -12,20 +12,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  * You can view the LICENSE file for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy.network.translator.java;
 
-import com.flowpowered.math.vector.Vector3i;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockChangeRecord;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMultiBlockChangePacket;
+import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -43,9 +39,9 @@ public class PCMultiBlockChangeTranslator implements PacketTranslator<ServerMult
 
             Position pos = record.getPosition();
 
-            updateBlock.setBlockPosition(new Vector3i(pos.getX(), pos.getY(), pos.getY()));
+            updateBlock.setBlockPosition(Vector3i.from(pos.getX(), pos.getY(), pos.getY()));
 
-            session.getBedrockSession().sendPacket(updateBlock);
+            session.sendPacket(updateBlock);
         }
     }
 }

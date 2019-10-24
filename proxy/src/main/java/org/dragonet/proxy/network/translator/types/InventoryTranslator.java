@@ -12,25 +12,35 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  * You can view the LICENSE file for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy.network.translator.types;
 
+import com.github.steveice10.mc.protocol.data.game.window.WindowType;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
 import com.nukkitx.protocol.bedrock.data.ContainerId;
 import com.nukkitx.protocol.bedrock.data.ItemData;
 import com.nukkitx.protocol.bedrock.packet.InventoryContentPacket;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.util.TextFormat;
+import org.dragonet.proxy.network.translator.types.inventory.GenericInventoryTranslator;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class InventoryTranslator {
+    public static final Map<WindowType, GenericInventoryTranslator> TRANSLATORS = new HashMap<>();
+
+    static {
+        TRANSLATORS.put(WindowType.GENERIC_9X1, new GenericInventoryTranslator());
+        TRANSLATORS.put(WindowType.GENERIC_9X2, new GenericInventoryTranslator());
+        TRANSLATORS.put(WindowType.GENERIC_9X3, new GenericInventoryTranslator());
+        TRANSLATORS.put(WindowType.GENERIC_9X4, new GenericInventoryTranslator());
+        TRANSLATORS.put(WindowType.GENERIC_9X5, new GenericInventoryTranslator());
+        TRANSLATORS.put(WindowType.GENERIC_9X6, new GenericInventoryTranslator());
+    }
 
     /**
      * Sends the items from the players cached inventory to the client
@@ -59,7 +69,7 @@ public class InventoryTranslator {
         }
 
         inventoryContentPacket.setContents(contents);
-        session.getBedrockSession().sendPacket(inventoryContentPacket);
+        session.sendPacket(inventoryContentPacket);
     }
 
     public static void updateSlot(ProxySession session, ServerSetSlotPacket packet) {

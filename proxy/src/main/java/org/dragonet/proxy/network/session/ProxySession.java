@@ -12,22 +12,18 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  * You can view the LICENSE file for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy.network.session;
 
-import com.flowpowered.math.vector.Vector2f;
-import com.flowpowered.math.vector.Vector3f;
-import com.flowpowered.math.vector.Vector3i;
+import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.auth.exception.request.RequestException;
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
+import com.github.steveice10.mc.protocol.data.SubProtocol;
 import com.github.steveice10.mc.protocol.data.game.ClientRequest;
+import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.data.game.statistic.Statistic;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientRequestPacket;
 import com.github.steveice10.packetlib.Client;
@@ -35,9 +31,15 @@ import com.github.steveice10.packetlib.event.session.ConnectedEvent;
 import com.github.steveice10.packetlib.event.session.DisconnectedEvent;
 import com.github.steveice10.packetlib.event.session.PacketReceivedEvent;
 import com.github.steveice10.packetlib.event.session.SessionAdapter;
+import com.github.steveice10.packetlib.packet.Packet;
+import com.github.steveice10.packetlib.packet.PacketProtocol;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
+import com.nukkitx.math.vector.Vector2f;
+import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.PlayerSession;
+import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.BedrockServerSession;
 
 import com.nukkitx.protocol.bedrock.data.*;
@@ -58,12 +60,14 @@ import org.dragonet.proxy.network.session.data.AuthState;
 import org.dragonet.proxy.network.session.data.ClientData;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.dragonet.proxy.remote.RemoteServer;
+import org.dragonet.proxy.util.SkinUtils;
 import org.dragonet.proxy.util.TextFormat;
 
 import javax.annotation.Nonnull;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -80,6 +84,7 @@ public class ProxySession implements PlayerSession {
     private String username;
 
     private Map<String, Object> dataCache = new HashMap<>();
+    private Map<UUID, PlayerListEntry> playerInfoCache = new HashMap<>();
     private Map<Integer, CompletableFuture> formCache = new HashMap<>();
     private Map<String, CompletableFuture> futureMap = new HashMap<>(); // TODO
 
@@ -104,13 +109,22 @@ public class ProxySession implements PlayerSession {
         chunkCache = new ChunkCache();
         worldCache = new WorldCache();
 
+        //this.bedrockSession.setLogging(true);
+
         dataCache.put("auth_state", AuthState.NONE);
 
-        bedrockSession.addDisconnectHandler((reason) -> downstream.getSession().disconnect(reason.name()));
+        bedrockSession.addDisconnectHandler((reason) -> {
+            if (downstream != null && downstream.getSession() != null) {
+                if (cachedEntity != null) {
+                    cachedEntity.destroy(this);
+                }
+                downstream.getSession().disconnect(reason.name());
+            }
+        });
     }
 
     public void connect(RemoteServer server) {
-        if(protocol == null) {
+        if (protocol == null) {
             protocol = new MinecraftProtocol(authData.getDisplayName());
         }
         downstream = new Client(server.getAddress(), server.getPort(), protocol, new TcpSessionFactory());
@@ -148,7 +162,7 @@ public class ProxySession implements PlayerSession {
 
                 sendMessage(TextFormat.GREEN + "Login successful! Joining server...");
 
-                if(!username.equals(protocol.getProfile().getName())) {
+                if (!username.equals(protocol.getProfile().getName())) {
                     username = protocol.getProfile().getName();
                     sendMessage(TextFormat.AQUA + "You username was changed to " + TextFormat.DARK_AQUA + username + TextFormat.AQUA + " like your Mojang account username");
                 }
@@ -183,7 +197,7 @@ public class ProxySession implements PlayerSession {
         futureMap.put("stats", future);
 
         ClientRequestPacket packet = new ClientRequestPacket(ClientRequest.STATS);
-        downstream.getSession().send(packet);
+        sendRemotePacket(packet);
         return future;
     }
 
@@ -195,10 +209,10 @@ public class ProxySession implements PlayerSession {
             .addComponent(new InputComponent(TextFormat.AQUA + "Password", "123456"));
 
         form.send(this).whenComplete((data, throwable) -> {
-            if(dataCache.get("auth_state") == AuthState.AUTHENTICATED) {
+            if (dataCache.get("auth_state") == AuthState.AUTHENTICATED) {
                 return; // If multiple forms have been sent to the client, allow the player to actually close them
             }
-            if(data == null) {
+            if (data == null) {
                 sendLoginForm();
                 return;
             }
@@ -206,7 +220,7 @@ public class ProxySession implements PlayerSession {
             String email = data.get(2).getAsString();
             String password = data.get(3).getAsString();
 
-            if(email == null || password == null) {
+            if (email == null || password == null) {
                 // This never seems to be fired? Im guessing if one field is null the entire response is null?
                 // Anyway, its here just in case
                 sendMessage(TextFormat.RED + "Please fill in all the required fields. Move to show the form again.");
@@ -235,18 +249,20 @@ public class ProxySession implements PlayerSession {
 
         bedrockSession.sendPacket(playerListPacket);
 
-        cachedEntity = (CachedPlayer) entityCache.getById(entityId); // TODO
-        //cachedEntity.spawn(this); // Crashes
+        SetEntityDataPacket entityDataPacket = new SetEntityDataPacket();
+        entityDataPacket.setRuntimeEntityId(entityId);
+        entityDataPacket.getMetadata().putAll(cachedEntity.getMetadata());
+        bedrockSession.sendPacket(entityDataPacket);
 
         log.warn("SPAWN PLAYER");
     }
 
     public void sendFakeStartGame() {
         StartGamePacket startGamePacket = new StartGamePacket();
-        startGamePacket.setUniqueEntityId(entityCache.nextFakePlayerid());
-        startGamePacket.setRuntimeEntityId(entityCache.nextFakePlayerid());
+        startGamePacket.setUniqueEntityId(1);
+        startGamePacket.setRuntimeEntityId(1);
         startGamePacket.setPlayerGamemode(0);
-        startGamePacket.setPlayerPosition(new Vector3f(0, 50, 0));
+        startGamePacket.setPlayerPosition(Vector3f.from(-23, 73, 0)); // Hypixel bedwars lobby spawn
         startGamePacket.setRotation(Vector2f.ZERO);
 
         startGamePacket.setSeed(1111);
@@ -263,7 +279,7 @@ public class ProxySession implements PlayerSession {
         startGamePacket.setLightningLevel(0);
         startGamePacket.setMultiplayerGame(true);
         startGamePacket.setBroadcastingToLan(true);
-        //startGamePacket.getGamerules().add((new GameRule<>("showcoordinates", true)));
+        startGamePacket.getGamerules().add((new GameRule<>("showcoordinates", true)));
         startGamePacket.setPlatformBroadcastMode(GamePublishSetting.PUBLIC);
         startGamePacket.setXblBroadcastMode(GamePublishSetting.PUBLIC);
         startGamePacket.setCommandsEnabled(true);
@@ -280,7 +296,7 @@ public class ProxySession implements PlayerSession {
         startGamePacket.setFromWorldTemplate(false);
         startGamePacket.setWorldTemplateOptionLocked(false);
 
-        startGamePacket.setLevelId("oerjhii");
+        startGamePacket.setLevelId("DragonProxy " + proxy.getVersion());
         startGamePacket.setWorldName("world");
         startGamePacket.setPremiumWorldTemplateId("00000000-0000-0000-0000-000000000000");
         startGamePacket.setCurrentTick(0);
@@ -295,7 +311,56 @@ public class ProxySession implements PlayerSession {
         playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
         bedrockSession.sendPacketImmediately(playStatusPacket);
 
-        spawn(1);
+        CachedPlayer player = entityCache.newPlayer(-1, new GameProfile(getAuthData().getIdentity(), getAuthData().getDisplayName()));
+        cachedEntity = player;
+    }
+
+    public void setPlayerSkin(UUID playerId, byte[] skinData) {
+        GameProfile profile = playerInfoCache.get(playerId).getProfile();
+
+        // Remove the player from the player list
+        PlayerListPacket removePacket = new PlayerListPacket();
+        removePacket.setType(PlayerListPacket.Type.REMOVE);
+        removePacket.getEntries().add(new PlayerListPacket.Entry(playerId));
+        sendPacket(removePacket);
+
+        // Add them back to the player list with a new skin
+        PlayerListPacket addPacket = new PlayerListPacket();
+        addPacket.setType(PlayerListPacket.Type.ADD);
+
+        PlayerListPacket.Entry entry = new PlayerListPacket.Entry(playerId);
+        entry.setEntityId(1); // TODO
+        entry.setName(profile.getName());
+        entry.setSkinId(profile.getIdAsString());
+        entry.setSkinData(skinData);
+        entry.setCapeData(new byte[0]);
+        entry.setGeometryName("geometry.humanoid");
+        entry.setGeometryData("");
+        entry.setXuid("");
+        entry.setPlatformChatId("");
+
+        addPacket.getEntries().add(entry);
+        sendPacket(addPacket);
+
+        // TODO: ideally we would use PlayerSkinPacket, but that crashes...
+        // See below
+    }
+
+    // Currently used for setting our own skin, however hopefully it can be used to
+    // set other players' skins in the future instead of using the player list hack
+    public void setPlayerSkin2(UUID playerId, byte[] skinData) {
+        PlayerSkinPacket playerSkinPacket = new PlayerSkinPacket();
+        playerSkinPacket.setUuid(playerId);
+        playerSkinPacket.setSkinId(playerId.toString());
+        playerSkinPacket.setSkinData(skinData);
+        playerSkinPacket.setPremiumSkin(false);
+        playerSkinPacket.setOldSkinName("Standard_Steve");
+        playerSkinPacket.setNewSkinName("Standard_Custom");
+        playerSkinPacket.setGeometryName("geometry.humanoid");
+        playerSkinPacket.setGeometryData("");
+        playerSkinPacket.setCapeData(new byte[0]);
+
+        sendPacket(playerSkinPacket);
     }
 
     public void sendMessage(String text) {
@@ -326,7 +391,7 @@ public class ProxySession implements PlayerSession {
 
     public void disconnect(String reason) {
         if (!isClosed()) {
-            if(downstream != null) {
+            if (downstream != null) {
                 downstream.getSession().disconnect(reason);
             }
             bedrockSession.disconnect(reason, false);
@@ -335,11 +400,29 @@ public class ProxySession implements PlayerSession {
 
     @Override
     public void onDisconnect(@Nonnull DisconnectReason disconnectReason) {
-       disconnect("Disconnect");
+        disconnect("Disconnect");
     }
 
     @Override
     public void onDisconnect(@Nonnull String s) {
         disconnect("Disconnect");
+    }
+
+    public void sendPacket(BedrockPacket packet) {
+        if (bedrockSession != null && !bedrockSession.isClosed()) {
+            bedrockSession.sendPacket(packet);
+        }
+    }
+
+    public void sendPacketImmediately(BedrockPacket packet) {
+        if (bedrockSession != null && !bedrockSession.isClosed()) {
+            bedrockSession.sendPacketImmediately(packet);
+        }
+    }
+
+    public void sendRemotePacket(Packet packet) {
+        if (downstream != null && downstream.getSession() != null && protocol.getSubProtocol().equals(SubProtocol.GAME)) {
+            downstream.getSession().send(packet);
+        }
     }
 }

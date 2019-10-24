@@ -39,7 +39,10 @@ remote-auth: offline
 xbox-auth: false
 
 # Whether or not to use the motd and player count of the primary remote server
-ping-passthrough: false
+ping-passthrough: true
+
+# Whether or not to fetch skins from Mojang's servers
+fetch-player-skins: true
 
 # The amount of threads that will be used.
 # Only change if you know what you are doing

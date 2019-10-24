@@ -12,19 +12,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  * You can view the LICENSE file for more details.
  *
- * @author Dragonet Foundation
- * @link https://github.com/DragonetMC/DragonProxy
+ * https://github.com/DragonetMC/DragonProxy
  */
 package org.dragonet.proxy.network.translator.bedrock.player;
 
-import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPositionPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
 import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
@@ -35,20 +32,23 @@ public class PEMovePlayerTranslator implements PacketTranslator<MovePlayerPacket
 
     @Override
     public void translate(ProxySession session, MovePlayerPacket packet) {
-        CachedEntity cachedEntity = session.getEntityCache().getById(packet.getRuntimeEntityId());
+        CachedEntity cachedEntity = session.getEntityCache().getByProxyId(packet.getRuntimeEntityId());
+        //log.info(packet.getRuntimeEntityId() + " : " + session.getCachedEntity().getProxyEid() + " - " + session.getCachedEntity().getRemoteEid());
         if(cachedEntity == null) {
-            log.warn("Cached entity is null in MovePlayerTranslator");
+            log.info("(debug) Cached entity is null in MovePlayerTranslator");
             return;
         }
-        log.warn("Cached entity is NOT null");
 
-        ClientPlayerPositionPacket playerPositionPacket = new ClientPlayerPositionPacket(
+        ClientPlayerPositionRotationPacket playerPositionRotationPacket = new ClientPlayerPositionRotationPacket(
             packet.isOnGround(),
             packet.getPosition().getX(),
-            packet.getPosition().getY(),
-            packet.getPosition().getZ()
-        );
+            Math.ceil(packet.getPosition().getY() - EntityType.PLAYER.getOffset() * 2) / 2,
+            packet.getPosition().getZ(),
+            packet.getRotation().getX(),
+            packet.getRotation().getY());
 
-        session.getDownstream().getSession().send(playerPositionPacket);
+        cachedEntity.moveAbsolute(packet.getPosition(), packet.getRotation());
+
+        session.sendRemotePacket(playerPositionRotationPacket);
     }
 }
