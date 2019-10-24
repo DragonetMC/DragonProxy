@@ -18,22 +18,14 @@
  */
 package org.dragonet.proxy.network.translator.java.entity.spawn;
 
-import com.flowpowered.math.vector.Vector3f;
-import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnGlobalEntityPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
-import com.nukkitx.protocol.bedrock.data.EntityDataDictionary;
-import com.nukkitx.protocol.bedrock.packet.PlayerSkinPacket;
+import com.nukkitx.math.vector.Vector3f;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.types.EntityMetaTranslator;
 import org.dragonet.proxy.network.translator.types.EntityTypeTranslator;
-import org.dragonet.proxy.util.SkinUtils;
-
-import java.nio.charset.StandardCharsets;
 
 @Log4j2
 public class PCSpawnGlobalEntityTranslator implements PacketTranslator<ServerSpawnGlobalEntityPacket> {
@@ -54,7 +46,7 @@ public class PCSpawnGlobalEntityTranslator implements PacketTranslator<ServerSpa
         }
 
         cachedEntity = session.getEntityCache().newEntity(entityType, packet.getEntityId());
-        cachedEntity.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
+        cachedEntity.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
         cachedEntity.spawn(session);
     }
 }

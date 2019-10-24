@@ -18,12 +18,10 @@
  */
 package org.dragonet.proxy.network.translator.java.player;
 
-import com.flowpowered.math.vector.Vector3f;
 import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
-import com.nukkitx.protocol.bedrock.data.ItemData;
-import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket;
+import com.nukkitx.math.vector.Vector3f;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
@@ -37,17 +35,17 @@ public class PCSpawnPlayerTranslator implements PacketTranslator<ServerSpawnPlay
 
     @Override
     public void translate(ProxySession session, ServerSpawnPlayerPacket packet) {
-        PlayerListEntry playerListEntry = session.getPlayerInfoCache().get(packet.getUUID());
+        PlayerListEntry playerListEntry = session.getPlayerInfoCache().get(packet.getUuid());
 
         CachedPlayer cachedPlayer = session.getEntityCache().newPlayer(packet.getEntityId(), playerListEntry.getProfile());
-        cachedPlayer.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
-        cachedPlayer.setRotation(new Vector3f(packet.getYaw(), packet.getPitch(), 0));
+        cachedPlayer.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
+        cachedPlayer.setRotation(Vector3f.from(packet.getYaw(), packet.getPitch(), 0));
         cachedPlayer.getMetadata().putAll(EntityMetaTranslator.translateToBedrock(cachedPlayer, packet.getMetadata()));
         cachedPlayer.spawn(session);
 
         if(session.getProxy().getConfiguration().isFetchPlayerSkins()) {
             session.getProxy().getGeneralThreadPool().execute(() -> {
-                GameProfile profile = session.getPlayerInfoCache().get(packet.getUUID()).getProfile();
+                GameProfile profile = session.getPlayerInfoCache().get(packet.getUuid()).getProfile();
 
                 byte[] skinData = SkinUtils.fetchSkin(profile);
                 if (skinData == null) {

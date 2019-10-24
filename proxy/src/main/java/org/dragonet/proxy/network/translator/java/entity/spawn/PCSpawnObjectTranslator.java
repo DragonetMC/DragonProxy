@@ -18,25 +18,14 @@
  */
 package org.dragonet.proxy.network.translator.java.entity.spawn;
 
-import com.flowpowered.math.vector.Vector3f;
-import com.github.steveice10.mc.auth.data.GameProfile;
-import com.github.steveice10.mc.protocol.data.game.entity.type.object.GenericObjectData;
-import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnGlobalEntityPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnObjectPacket;
-import com.nukkitx.protocol.bedrock.data.EntityDataDictionary;
-import com.nukkitx.protocol.bedrock.packet.PlayerSkinPacket;
+import com.nukkitx.math.vector.Vector3f;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.types.EntityMetaTranslator;
 import org.dragonet.proxy.network.translator.types.EntityTypeTranslator;
-import org.dragonet.proxy.util.SkinUtils;
-
-import java.nio.charset.StandardCharsets;
 
 @Log4j2
 public class PCSpawnObjectTranslator implements PacketTranslator<ServerSpawnObjectPacket> {
@@ -57,9 +46,9 @@ public class PCSpawnObjectTranslator implements PacketTranslator<ServerSpawnObje
         }
 
         cachedEntity = session.getEntityCache().newEntity(entityType, packet.getEntityId());
-        cachedEntity.setJavaUuid(packet.getUUID());
-        cachedEntity.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
-        cachedEntity.setMotion(new Vector3f(packet.getMotionX(), packet.getMotionY(), packet.getMotionZ()));
+        cachedEntity.setJavaUuid(packet.getUuid());
+        cachedEntity.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
+        cachedEntity.setMotion(Vector3f.from(packet.getMotionX(), packet.getMotionY(), packet.getMotionZ()));
 
         cachedEntity.spawn(session);
     }

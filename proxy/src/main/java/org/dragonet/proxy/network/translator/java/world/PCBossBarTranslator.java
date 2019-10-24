@@ -18,8 +18,8 @@
  */
 package org.dragonet.proxy.network.translator.java.world;
 
-import com.flowpowered.math.vector.Vector3f;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerBossBarPacket;
+import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.EntityData;
 import com.nukkitx.protocol.bedrock.packet.AddEntityPacket;
 import com.nukkitx.protocol.bedrock.packet.BossEventPacket;
@@ -51,14 +51,14 @@ public class PCBossBarTranslator implements PacketTranslator<ServerBossBarPacket
         switch(packet.getAction()) {
             case ADD:
                 // See the documentation for addFakeEntity() below
-                addFakeEntity(session, packet.getUUID());
+                addFakeEntity(session, packet.getUuid());
 
                 bossEventPacket.setTitle(MessageTranslator.translate(packet.getTitle().getFullText()));
                 bossEventPacket.setType(BossEventPacket.Type.SHOW);
                 bossEventPacket.setHealthPercentage(packet.getHealth());
                 break;
             case REMOVE:
-                removeFakeEntity(session, packet.getUUID());
+                removeFakeEntity(session, packet.getUuid());
 
                 bossEventPacket.setType(BossEventPacket.Type.HIDE);
                 break;
@@ -78,7 +78,7 @@ public class PCBossBarTranslator implements PacketTranslator<ServerBossBarPacket
                 log.info(TextFormat.GRAY + "(debug) Unhandled boss bar action: " + packet.getAction().name());
         }
 
-        Long bossEid = session.getEntityCache().getBossbars().get(packet.getUUID());
+        Long bossEid = session.getEntityCache().getBossbars().get(packet.getUuid());
         bossEventPacket.setBossUniqueEntityId(bossEid == null ? -1 : bossEid);
 
         session.sendPacket(bossEventPacket);

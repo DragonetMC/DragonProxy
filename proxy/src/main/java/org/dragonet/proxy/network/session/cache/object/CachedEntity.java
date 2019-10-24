@@ -18,7 +18,7 @@
  */
 package org.dragonet.proxy.network.session.cache.object;
 
-import com.flowpowered.math.vector.Vector3f;
+import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.*;
 import com.nukkitx.protocol.bedrock.packet.AddEntityPacket;
 import com.nukkitx.protocol.bedrock.packet.RemoveEntityPacket;
@@ -118,20 +118,24 @@ public class CachedEntity {
     }
 
     public void moveRelative(Vector3f relPos, float pitch, float yaw) {
-        moveRelative(relPos, new Vector3f(pitch, yaw, yaw));
+        moveRelative(relPos, Vector3f.from(pitch, yaw, yaw));
     }
 
     public void moveRelative(Vector3f relPos, Vector3f rotation) {
+        this.rotation = rotation;
+        moveRelative(relPos);
+    }
+
+    public void moveRelative(Vector3f relPos) {
         if (relPos.getX() == 0 && relPos.getY() == 0 && relPos.getZ() == 0 && position.getX() == 0 && position.getY() == 0)
             return;
 
-        this.rotation = rotation;
-        this.position = new Vector3f(position.getX() + relPos.getX(), position.getY() + relPos.getY(), position.getZ() + relPos.getZ());
+        this.position = Vector3f.from(position.getX() + relPos.getX(), position.getY() + relPos.getY(), position.getZ() + relPos.getZ());
         this.shouldMove = true;
     }
 
     public void moveAbsolute(Vector3f position, float pitch, float yaw) {
-        moveAbsolute(position, new Vector3f(pitch, yaw, yaw));
+        moveAbsolute(position, Vector3f.from(pitch, yaw, yaw));
     }
 
     public void moveAbsolute(Vector3f position, Vector3f rotation) {
@@ -162,6 +166,6 @@ public class CachedEntity {
     }
 
     public Vector3f getOffsetPosition() {
-        return new Vector3f(position.getX(), position.getY() + type.getOffset(), position.getZ());
+        return Vector3f.from(position.getX(), position.getY() + type.getOffset(), position.getZ());
     }
 }

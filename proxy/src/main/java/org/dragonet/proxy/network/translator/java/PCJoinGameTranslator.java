@@ -18,11 +18,11 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
-import com.flowpowered.math.vector.Vector2f;
-import com.flowpowered.math.vector.Vector3f;
-import com.flowpowered.math.vector.Vector3i;
 import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
+import com.nukkitx.math.vector.Vector2f;
+import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.nbt.NbtUtils;
 import com.nukkitx.nbt.stream.NBTOutputStream;
@@ -37,8 +37,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.data.entity.EntityType;
-import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.session.data.AuthState;
@@ -79,15 +77,15 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
             startGamePacket.setUniqueEntityId(packet.getEntityId());
             startGamePacket.setRuntimeEntityId(packet.getEntityId());
             startGamePacket.setPlayerGamemode(packet.getGameMode().ordinal());
-            startGamePacket.setPlayerPosition(new Vector3f(-23, 70, 0)); // Hypixel bedwars lobby spawn
-            startGamePacket.setRotation(new Vector2f(1, 1));
+            startGamePacket.setPlayerPosition(Vector3f.from(-23, 70, 0)); // Hypixel bedwars lobby spawn
+            startGamePacket.setRotation(Vector2f.from(1, 1));
 
             startGamePacket.setSeed(1111);
             startGamePacket.setDimensionId(0);
             startGamePacket.setGeneratorId(0);
             startGamePacket.setLevelGamemode(packet.getGameMode().ordinal());
             startGamePacket.setDifficulty(0);
-            startGamePacket.setDefaultSpawn(new Vector3i(-23, 70, 0));
+            startGamePacket.setDefaultSpawn(Vector3i.from(-23, 70, 0));
             startGamePacket.setAcheivementsDisabled(true);
             startGamePacket.setTime(0);
             startGamePacket.setEduLevel(false);
@@ -127,7 +125,7 @@ public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePack
 
             session.sendPacketImmediately(startGamePacket);
 
-            Vector3f pos = new Vector3f(-23, 70, 0);
+            Vector3f pos = Vector3f.from(-23, 70, 0);
             int chunkX = pos.getFloorX() >> 4;
             int chunkZ = pos.getFloorX() >> 4;
 
