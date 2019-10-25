@@ -22,7 +22,6 @@ import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.dragonet.proxy.data.stats.StatInfo;
 
 import java.util.HashMap;
 import java.util.Map;

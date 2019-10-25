@@ -30,8 +30,6 @@ import org.dragonet.proxy.data.chunk.ChunkData;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
-import java.util.Arrays;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Log4j2
 public class PCChunkDataTranslator implements PacketTranslator<ServerChunkDataPacket> {

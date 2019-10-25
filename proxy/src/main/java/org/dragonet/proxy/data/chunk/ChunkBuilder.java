@@ -14,9 +14,6 @@ import com.google.common.base.Preconditions;
 import gnu.trove.map.TIntShortMap;
 import gnu.trove.map.hash.TIntShortHashMap;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ChunkBuilder {
 
     private final int x;

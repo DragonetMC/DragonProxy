@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.google.common.base.Preconditions;
 import com.nimbusds.jose.JWSObject;
 import com.nukkitx.protocol.bedrock.packet.ServerToClientHandshakePacket;
-import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import com.nukkitx.protocol.bedrock.util.EncryptionUtils;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.session.ProxySession;

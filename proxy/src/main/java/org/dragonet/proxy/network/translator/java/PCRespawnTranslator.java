@@ -19,7 +19,10 @@
 package org.dragonet.proxy.network.translator.java;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerRespawnPacket;
-import com.nukkitx.protocol.bedrock.packet.*;
+import com.nukkitx.protocol.bedrock.packet.ChangeDimensionPacket;
+import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
+import com.nukkitx.protocol.bedrock.packet.RespawnPacket;
+import com.nukkitx.protocol.bedrock.packet.SetPlayerGameTypePacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;

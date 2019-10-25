@@ -18,8 +18,6 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
-import com.github.steveice10.mc.protocol.data.game.statistic.GenericStatistic;
-import com.github.steveice10.mc.protocol.data.game.statistic.Statistic;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerStatisticsPacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

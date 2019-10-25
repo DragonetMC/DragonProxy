@@ -21,24 +21,14 @@ package org.dragonet.proxy.network.translator.types;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
-import com.github.steveice10.mc.protocol.data.message.Message;
-import com.github.steveice10.opennbt.tag.builtin.*;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.protocol.bedrock.data.ItemData;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.translator.types.item.ItemEntry;
-import org.dragonet.proxy.util.TextFormat;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Log4j2

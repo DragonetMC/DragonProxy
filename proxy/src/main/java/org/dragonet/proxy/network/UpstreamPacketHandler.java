@@ -24,21 +24,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.nimbusds.jose.JWSObject;
-import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.BedrockServerSession;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
-
 import com.nukkitx.protocol.bedrock.util.EncryptionUtils;
 import lombok.extern.log4j.Log4j2;
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.minidev.json.JSONValue;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.form.CustomForm;
-import org.dragonet.proxy.form.Form;
-import org.dragonet.proxy.form.components.InputComponent;
-import org.dragonet.proxy.form.components.LabelComponent;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.data.AuthData;
 import org.dragonet.proxy.network.session.data.AuthState;
@@ -47,11 +39,9 @@ import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.dragonet.proxy.remote.RemoteAuthType;
 import org.dragonet.proxy.remote.RemoteServer;
 import org.dragonet.proxy.util.BedrockLoginUtils;
-import org.dragonet.proxy.util.TextFormat;
 
 import java.io.IOException;
 import java.security.interfaces.ECPublicKey;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 

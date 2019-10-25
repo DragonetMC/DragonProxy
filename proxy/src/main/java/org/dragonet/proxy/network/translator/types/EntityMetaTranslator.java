@@ -19,9 +19,7 @@
 package org.dragonet.proxy.network.translator.types;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.MetadataType;
 import com.github.steveice10.mc.protocol.data.message.Message;
-import com.github.steveice10.mc.protocol.data.message.TextMessage;
 import com.nukkitx.protocol.bedrock.data.EntityData;
 import com.nukkitx.protocol.bedrock.data.EntityDataDictionary;
 import com.nukkitx.protocol.bedrock.data.EntityFlag;

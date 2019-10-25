@@ -21,13 +21,10 @@ package org.dragonet.proxy.network;
 import com.github.steveice10.mc.protocol.data.status.ServerStatusInfo;
 import com.nukkitx.protocol.bedrock.BedrockPong;
 import com.nukkitx.protocol.bedrock.BedrockServerEventHandler;
-
 import com.nukkitx.protocol.bedrock.BedrockServerSession;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.DragonConfiguration;
-import org.dragonet.proxy.network.session.ProxySession;
 
 import java.net.InetSocketAddress;
 

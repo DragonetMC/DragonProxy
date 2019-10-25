@@ -18,27 +18,11 @@
  */
 package org.dragonet.proxy.network.translator.java.player;
 
-import com.github.steveice10.mc.auth.data.GameProfile;
-import com.github.steveice10.mc.auth.exception.property.PropertyException;
-import com.github.steveice10.mc.auth.service.SessionService;
-import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
-import com.github.steveice10.mc.protocol.data.game.PlayerListEntryAction;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPlayerListDataPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPlayerListEntryPacket;
-import com.nukkitx.protocol.bedrock.packet.PlayerListPacket;
-import com.nukkitx.protocol.bedrock.packet.SetLocalPlayerAsInitializedPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
-import org.dragonet.proxy.network.session.data.ClientData;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.types.MessageTranslator;
-import org.dragonet.proxy.util.SkinUtils;
-import org.dragonet.proxy.util.TextFormat;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Log4j2
 public class PCPlayerListDataTranslator implements PacketTranslator<ServerPlayerListDataPacket> {

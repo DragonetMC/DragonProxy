@@ -21,7 +21,8 @@ package org.dragonet.proxy.form;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.nukkitx.protocol.bedrock.packet.ModalFormRequestPacket;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 

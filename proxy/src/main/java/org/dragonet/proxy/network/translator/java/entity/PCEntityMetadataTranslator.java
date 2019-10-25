@@ -18,23 +18,14 @@
  */
 package org.dragonet.proxy.network.translator.java.entity;
 
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityAnimationPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityMetadataPacket;
-import com.nukkitx.protocol.bedrock.data.EntityData;
 import com.nukkitx.protocol.bedrock.data.EntityDataDictionary;
-import com.nukkitx.protocol.bedrock.data.EntityFlag;
-import com.nukkitx.protocol.bedrock.data.EntityFlags;
-import com.nukkitx.protocol.bedrock.packet.AnimatePacket;
-import com.nukkitx.protocol.bedrock.packet.PlayerActionPacket;
 import com.nukkitx.protocol.bedrock.packet.SetEntityDataPacket;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.data.entity.EntityType;
-import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.types.EntityMetaTranslator;
-import org.dragonet.proxy.util.TextFormat;
 
 @Log4j2
 public class PCEntityMetadataTranslator implements PacketTranslator<ServerEntityMetadataPacket> {

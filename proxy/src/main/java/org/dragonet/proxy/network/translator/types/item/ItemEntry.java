@@ -19,7 +19,6 @@
 package org.dragonet.proxy.network.translator.types.item;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 public class ItemEntry {

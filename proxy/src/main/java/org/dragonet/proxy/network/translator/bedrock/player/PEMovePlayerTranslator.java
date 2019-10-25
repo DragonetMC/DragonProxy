@@ -22,8 +22,8 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlaye
 import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.EntityType;
-import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 
 @Log4j2

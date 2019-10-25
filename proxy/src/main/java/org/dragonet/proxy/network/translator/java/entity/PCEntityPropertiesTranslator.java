@@ -23,8 +23,8 @@ import com.nukkitx.protocol.bedrock.data.Attribute;
 import com.nukkitx.protocol.bedrock.packet.UpdateAttributesPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockAttributeType;
-import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.types.AttributeTypeTranslator;
 

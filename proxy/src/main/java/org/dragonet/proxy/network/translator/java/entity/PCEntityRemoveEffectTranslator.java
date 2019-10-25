@@ -21,8 +21,8 @@ package org.dragonet.proxy.network.translator.java.entity;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityRemoveEffectPacket;
 import com.nukkitx.protocol.bedrock.packet.MobEffectPacket;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.types.EntityEffectTranslator;
 

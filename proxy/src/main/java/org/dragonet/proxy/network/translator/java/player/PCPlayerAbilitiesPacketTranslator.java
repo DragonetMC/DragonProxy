@@ -18,10 +18,10 @@
  */
 package org.dragonet.proxy.network.translator.java.player;
 
-    import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerAbilitiesPacket;
-    import com.nukkitx.protocol.bedrock.packet.AdventureSettingsPacket;
-    import org.dragonet.proxy.network.session.ProxySession;
-    import org.dragonet.proxy.network.translator.PacketTranslator;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerAbilitiesPacket;
+import com.nukkitx.protocol.bedrock.packet.AdventureSettingsPacket;
+import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.translator.PacketTranslator;
 
 public class PCPlayerAbilitiesPacketTranslator implements PacketTranslator<ServerPlayerAbilitiesPacket> {
 

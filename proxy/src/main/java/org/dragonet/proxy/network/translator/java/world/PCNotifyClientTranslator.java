@@ -24,7 +24,6 @@ import com.github.steveice10.mc.protocol.data.game.world.notify.ThunderStrengthV
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
-import static com.nukkitx.protocol.bedrock.packet.LevelEventPacket.Event.*;
 import com.nukkitx.protocol.bedrock.packet.SetPlayerGameTypePacket;
 import com.nukkitx.protocol.bedrock.packet.ShowCreditsPacket;
 import lombok.extern.log4j.Log4j2;
@@ -33,6 +32,8 @@ import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.util.TextFormat;
 
 import java.util.concurrent.ThreadLocalRandom;
+
+import static com.nukkitx.protocol.bedrock.packet.LevelEventPacket.Event.*;
 
 @Log4j2
 public class PCNotifyClientTranslator implements PacketTranslator<ServerNotifyClientPacket> {

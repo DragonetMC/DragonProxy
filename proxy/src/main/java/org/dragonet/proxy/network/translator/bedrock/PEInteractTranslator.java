@@ -18,11 +18,6 @@
  */
 package org.dragonet.proxy.network.translator.bedrock;
 
-import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
-import com.github.steveice10.mc.protocol.data.game.entity.player.InteractAction;
-import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerInteractEntityPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerSwingArmPacket;
-import com.nukkitx.protocol.bedrock.packet.AnimatePacket;
 import com.nukkitx.protocol.bedrock.packet.InteractPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;

@@ -25,8 +25,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.types.MessageTranslator;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.types.MessageTranslator;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Log4j2

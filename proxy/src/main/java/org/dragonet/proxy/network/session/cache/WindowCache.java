@@ -18,19 +18,12 @@
  */
 package org.dragonet.proxy.network.session.cache;
 
-import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.protocol.data.game.window.WindowType;
 import lombok.Getter;
-import org.dragonet.proxy.data.entity.EntityType;
-import org.dragonet.proxy.network.session.cache.object.CachedEntity;
-import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Getter
 public class WindowCache implements Cache {

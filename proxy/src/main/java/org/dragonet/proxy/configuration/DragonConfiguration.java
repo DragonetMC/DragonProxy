@@ -19,7 +19,6 @@
 package org.dragonet.proxy.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.Getter;
 import org.dragonet.proxy.remote.RemoteAuthType;
 
