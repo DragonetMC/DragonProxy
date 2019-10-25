@@ -306,7 +306,7 @@ public class ProxySession implements PlayerSession {
         playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
         bedrockSession.sendPacketImmediately(playStatusPacket);
 
-        CachedPlayer player = entityCache.newPlayer(-1, new GameProfile(getAuthData().getIdentity(), getAuthData().getDisplayName()));
+        CachedPlayer player = entityCache.newPlayer(1, new GameProfile(getAuthData().getIdentity(), getAuthData().getDisplayName()));
         cachedEntity = player;
     }
 

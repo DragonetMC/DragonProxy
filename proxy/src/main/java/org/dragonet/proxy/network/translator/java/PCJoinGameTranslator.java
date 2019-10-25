@@ -153,9 +153,6 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
             CachedPlayer player = session.getEntityCache().newPlayer(1, profile);
 
             session.setCachedEntity(player);
-            session.getEntityCache().getEntities().put((long) 1, player);
-            //session.spawn(1);
-            //session.getCachedEntity().setPosition(new Vector3f(-23, 70, 0));
         }
     }
 

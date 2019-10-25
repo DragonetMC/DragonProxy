@@ -19,21 +19,27 @@
 package org.dragonet.proxy.network.translator.java;
 
 import com.github.steveice10.mc.protocol.packet.login.server.LoginDisconnectPacket;
+import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.data.AuthState;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.types.MessageTranslator;
 
 
 @PCPacketTranslator(packetClass = LoginDisconnectPacket.class)
+@Log4j2
 public class PCLoginDisconnectTranslator extends PacketTranslator<LoginDisconnectPacket> {
     public static final PCLoginDisconnectTranslator INSTANCE = new PCLoginDisconnectTranslator();
 
     @Override
     public void translate(ProxySession session, LoginDisconnectPacket packet) {
-        // Not sure if this will actually work for offline servers
+        if(session.getCachedEntity() == null) {
+            session.sendFakeStartGame();
+        }
         session.disconnect(MessageTranslator.translate(packet.getReason()));
     }
 }
