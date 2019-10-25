@@ -25,5 +25,8 @@
             <AppenderRef ref="TerminalConsole"/>
             <AppenderRef ref="File"/>
         </Root>
+        <Logger name="org.reflections" level="debug" additivity="false">
+            <AppenderRef ref="File"/>
+        </Logger>
     </Loggers>
 </Configuration>

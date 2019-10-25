@@ -26,11 +26,13 @@ import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.types.MessageTranslator;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+
 @Log4j2
-public class PCChatTranslator implements PacketTranslator<ServerChatPacket> {
+@PCPacketTranslator(packetClass = ServerChatPacket.class)
+public class PCChatTranslator extends PacketTranslator<ServerChatPacket> {
     public static final PCChatTranslator INSTANCE = new PCChatTranslator();
 
     @Override

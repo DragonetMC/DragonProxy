@@ -25,9 +25,11 @@ import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.command.CommandManager;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
 
 @Log4j2
-public class PECommandRequestTranslator implements PacketTranslator<CommandRequestPacket> {
+@PEPacketTranslator(packetClass = CommandRequestPacket.class)
+public class PECommandRequestTranslator extends PacketTranslator<CommandRequestPacket> {
     public static final PECommandRequestTranslator INSTANCE = new PECommandRequestTranslator();
 
     @Override

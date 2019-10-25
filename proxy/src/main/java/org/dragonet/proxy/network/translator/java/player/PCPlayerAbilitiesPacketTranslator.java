@@ -22,8 +22,10 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.Serv
 import com.nukkitx.protocol.bedrock.packet.AdventureSettingsPacket;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
-public class PCPlayerAbilitiesPacketTranslator implements PacketTranslator<ServerPlayerAbilitiesPacket> {
+
+public class PCPlayerAbilitiesPacketTranslator extends PacketTranslator<ServerPlayerAbilitiesPacket> {
 
     @Override
     public void translate(ProxySession session, ServerPlayerAbilitiesPacket packet) {

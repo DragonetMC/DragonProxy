@@ -24,10 +24,12 @@ import com.nukkitx.protocol.bedrock.packet.PlayerListPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.util.SkinUtils;
 
 @Log4j2
-public class PCPlayerListEntryTranslator implements PacketTranslator<ServerPlayerListEntryPacket> {
+@PCPacketTranslator(packetClass = ServerPlayerListEntryPacket.class)
+public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerListEntryPacket> {
     public static final PCPlayerListEntryTranslator INSTANCE = new PCPlayerListEntryTranslator();
 
     @Override

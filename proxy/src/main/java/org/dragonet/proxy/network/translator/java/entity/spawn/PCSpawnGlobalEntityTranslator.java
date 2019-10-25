@@ -25,10 +25,12 @@ import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.types.EntityTypeTranslator;
 
 @Log4j2
-public class PCSpawnGlobalEntityTranslator implements PacketTranslator<ServerSpawnGlobalEntityPacket> {
+@PCPacketTranslator(packetClass = ServerSpawnGlobalEntityPacket.class)
+public class PCSpawnGlobalEntityTranslator extends PacketTranslator<ServerSpawnGlobalEntityPacket> {
     public static final PCSpawnGlobalEntityTranslator INSTANCE = new PCSpawnGlobalEntityTranslator();
 
     @Override

@@ -25,9 +25,11 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
 @Log4j2
-public class PCEntityRotationTranslator implements PacketTranslator<ServerEntityRotationPacket> {
+@PCPacketTranslator(packetClass = ServerEntityRotationPacket.class)
+public class PCEntityRotationTranslator extends PacketTranslator<ServerEntityRotationPacket> {
     public static final PCEntityRotationTranslator INSTANCE = new PCEntityRotationTranslator();
 
     @Override

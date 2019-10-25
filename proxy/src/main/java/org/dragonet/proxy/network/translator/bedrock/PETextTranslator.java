@@ -22,8 +22,10 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
 import com.nukkitx.protocol.bedrock.packet.TextPacket;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
 
-public class PETextTranslator implements PacketTranslator<TextPacket> {
+@PEPacketTranslator(packetClass = TextPacket.class)
+public class PETextTranslator extends PacketTranslator<TextPacket> {
     public static final PETextTranslator INSTANCE = new PETextTranslator();
 
     @Override

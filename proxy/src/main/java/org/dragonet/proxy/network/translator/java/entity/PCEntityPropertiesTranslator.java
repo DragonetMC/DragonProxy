@@ -26,12 +26,14 @@ import org.dragonet.proxy.data.entity.BedrockAttributeType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.types.AttributeTypeTranslator;
 
 import java.util.ArrayList;
 
 @Log4j2
-public class PCEntityPropertiesTranslator implements PacketTranslator<ServerEntityPropertiesPacket> {
+@PCPacketTranslator(packetClass = ServerEntityPropertiesPacket.class)
+public class PCEntityPropertiesTranslator extends PacketTranslator<ServerEntityPropertiesPacket> {
     public static final PCEntityPropertiesTranslator INSTANCE = new PCEntityPropertiesTranslator();
 
     @Override

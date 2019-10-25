@@ -25,11 +25,13 @@ import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.types.MessageTranslator;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+
 @Log4j2
-public class PCTitleTranslator implements PacketTranslator<ServerTitlePacket> {
+@PCPacketTranslator(packetClass = ServerTitlePacket.class)
+public class PCTitleTranslator extends PacketTranslator<ServerTitlePacket> {
     public static PCTitleTranslator INSTANCE = new PCTitleTranslator();
 
     @Override

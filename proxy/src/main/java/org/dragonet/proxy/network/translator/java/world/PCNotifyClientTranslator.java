@@ -29,6 +29,7 @@ import com.nukkitx.protocol.bedrock.packet.ShowCreditsPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.util.TextFormat;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -36,7 +37,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import static com.nukkitx.protocol.bedrock.packet.LevelEventPacket.Event.*;
 
 @Log4j2
-public class PCNotifyClientTranslator implements PacketTranslator<ServerNotifyClientPacket> {
+@PCPacketTranslator(packetClass = ServerNotifyClientPacket.class)
+public class PCNotifyClientTranslator extends PacketTranslator<ServerNotifyClientPacket> {
     public static final PCNotifyClientTranslator INSTANCE = new PCNotifyClientTranslator();
 
     @Override

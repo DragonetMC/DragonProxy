@@ -23,10 +23,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.types.MessageTranslator;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PCLoginDisconnectTranslator implements PacketTranslator<LoginDisconnectPacket> {
+
+@PCPacketTranslator(packetClass = LoginDisconnectPacket.class)
+public class PCLoginDisconnectTranslator extends PacketTranslator<LoginDisconnectPacket> {
     public static final PCLoginDisconnectTranslator INSTANCE = new PCLoginDisconnectTranslator();
 
     @Override

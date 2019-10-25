@@ -23,9 +23,11 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
 
 @Log4j2
-public class PEInteractTranslator implements PacketTranslator<InteractPacket> {
+@PEPacketTranslator(packetClass = InteractPacket.class)
+public class PEInteractTranslator extends PacketTranslator<InteractPacket> {
     public static final PEInteractTranslator INSTANCE = new PEInteractTranslator();
 
     @Override

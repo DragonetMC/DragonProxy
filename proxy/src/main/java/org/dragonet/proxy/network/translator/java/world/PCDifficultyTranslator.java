@@ -24,16 +24,16 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PCDifficultyTranslator implements PacketTranslator<ServerDifficultyPacket> {
+@PCPacketTranslator(packetClass = ServerDifficultyPacket.class)
+public class PCDifficultyTranslator extends PacketTranslator<ServerDifficultyPacket> {
     public static final PCDifficultyTranslator INSTANCE = new PCDifficultyTranslator();
 
     @Override
     public void translate(ProxySession session, ServerDifficultyPacket packet) {
         SetDifficultyPacket bedrockPacket = new SetDifficultyPacket();
         bedrockPacket.setDifficulty(packet.getDifficulty().ordinal());
-
         session.sendPacket(bedrockPacket);
     }
 }

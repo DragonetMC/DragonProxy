@@ -23,9 +23,11 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
 @Log4j2
-public class PCOpenWindowTranslator implements PacketTranslator<ServerOpenWindowPacket> {
+@PCPacketTranslator(packetClass = ServerOpenWindowPacket.class)
+public class PCOpenWindowTranslator extends PacketTranslator<ServerOpenWindowPacket> {
     public static final PCOpenWindowTranslator INSTANCE = new PCOpenWindowTranslator();
 
     @Override

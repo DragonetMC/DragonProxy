@@ -21,8 +21,10 @@ package org.dragonet.proxy.network.translator.bedrock;
 import com.nukkitx.protocol.bedrock.packet.AnimatePacket;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
 
-public class PEAnimateTranslator implements PacketTranslator<AnimatePacket> {
+@PEPacketTranslator(packetClass = AnimatePacket.class)
+public class PEAnimateTranslator extends PacketTranslator<AnimatePacket> {
     public static final PEAnimateTranslator INSTANCE = new PEAnimateTranslator();
 
     @Override

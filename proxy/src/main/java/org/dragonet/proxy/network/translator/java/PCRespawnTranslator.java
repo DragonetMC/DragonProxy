@@ -28,10 +28,12 @@ import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+
 @Log4j2
-public class PCRespawnTranslator implements PacketTranslator<ServerRespawnPacket> {
+@PCPacketTranslator(packetClass = ServerRespawnPacket.class)
+public class PCRespawnTranslator extends PacketTranslator<ServerRespawnPacket> {
     public static final PCRespawnTranslator INSTANCE = new PCRespawnTranslator();
 
     @Override

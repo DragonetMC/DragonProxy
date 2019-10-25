@@ -26,9 +26,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PCExplosionTranslator implements PacketTranslator<ServerExplosionPacket> {
+
+@PCPacketTranslator(packetClass = ServerExplosionPacket.class)
+public class PCExplosionTranslator extends PacketTranslator<ServerExplosionPacket> {
     public static final PCExplosionTranslator INSTANCE = new PCExplosionTranslator();
 
     @Override

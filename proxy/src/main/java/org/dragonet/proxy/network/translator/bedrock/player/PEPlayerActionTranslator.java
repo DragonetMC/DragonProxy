@@ -26,8 +26,10 @@ import com.nukkitx.protocol.bedrock.packet.PlayerActionPacket;
 import com.nukkitx.protocol.bedrock.packet.RespawnPacket;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
 
-public class PEPlayerActionTranslator implements PacketTranslator<PlayerActionPacket> {
+@PEPacketTranslator(packetClass = PlayerActionPacket.class)
+public class PEPlayerActionTranslator extends PacketTranslator<PlayerActionPacket> {
     public static final PEPlayerActionTranslator INSTANCE = new PEPlayerActionTranslator();
 
     @Override

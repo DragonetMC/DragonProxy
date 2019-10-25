@@ -40,13 +40,15 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.session.data.AuthState;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+
 @Log4j2
-public class PCJoinGameTranslator implements PacketTranslator<ServerJoinGamePacket> {
+@PCPacketTranslator(packetClass = ServerJoinGamePacket.class)
+public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket> {
     public static final PCJoinGameTranslator INSTANCE = new PCJoinGameTranslator();
 
     private static final CompoundTag EMPTY_TAG = CompoundTagBuilder.builder().buildRootTag();

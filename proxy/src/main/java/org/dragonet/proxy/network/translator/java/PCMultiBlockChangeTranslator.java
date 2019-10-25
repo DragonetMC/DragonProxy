@@ -27,9 +27,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PCMultiBlockChangeTranslator implements PacketTranslator<ServerMultiBlockChangePacket> {
+
+@PCPacketTranslator(packetClass = ServerMultiBlockChangePacket.class)
+public class PCMultiBlockChangeTranslator extends PacketTranslator<ServerMultiBlockChangePacket> {
     public static final PCMultiBlockChangeTranslator INSTANCE = new PCMultiBlockChangeTranslator();
 
     @Override

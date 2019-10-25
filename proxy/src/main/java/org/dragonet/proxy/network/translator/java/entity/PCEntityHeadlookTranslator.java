@@ -24,8 +24,10 @@ import com.nukkitx.protocol.bedrock.packet.MoveEntityAbsolutePacket;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
-public class PCEntityHeadlookTranslator implements PacketTranslator<ServerEntityHeadLookPacket> {
+@PCPacketTranslator(packetClass = ServerEntityHeadLookPacket.class)
+public class PCEntityHeadlookTranslator extends PacketTranslator<ServerEntityHeadLookPacket> {
     public static final PCEntityHeadlookTranslator INSTANCE = new PCEntityHeadlookTranslator();
 
     @Override

@@ -29,14 +29,16 @@ import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.types.MessageTranslator;
 import org.dragonet.proxy.util.TextFormat;
 
 import java.util.UUID;
 
 @Log4j2
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PCBossBarTranslator implements PacketTranslator<ServerBossBarPacket> {
+
+@PCPacketTranslator(packetClass = ServerBossBarPacket.class)
+public class PCBossBarTranslator extends PacketTranslator<ServerBossBarPacket> {
     public static final PCBossBarTranslator INSTANCE = new PCBossBarTranslator();
 
     @Override

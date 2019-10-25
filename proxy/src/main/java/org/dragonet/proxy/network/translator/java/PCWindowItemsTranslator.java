@@ -26,11 +26,13 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.WindowCache;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.types.InventoryTranslator;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+
 @Log4j2
-public class PCWindowItemsTranslator implements PacketTranslator<ServerWindowItemsPacket> {
+@PCPacketTranslator(packetClass = ServerWindowItemsPacket.class)
+public class PCWindowItemsTranslator extends PacketTranslator<ServerWindowItemsPacket> {
     public static final PCWindowItemsTranslator INSTANCE = new PCWindowItemsTranslator();
 
     @Override

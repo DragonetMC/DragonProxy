@@ -18,9 +18,11 @@
  */
 package org.dragonet.proxy.network.translator;
 
+import lombok.Getter;
 import org.dragonet.proxy.network.session.ProxySession;
 
-public interface PacketTranslator<P> {
+@Getter
+public abstract class PacketTranslator<P> {
 
-    void translate(ProxySession session, P packet);
+    public abstract void translate(ProxySession session, P packet);
 }

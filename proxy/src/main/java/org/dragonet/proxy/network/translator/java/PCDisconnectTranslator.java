@@ -19,15 +19,18 @@
 package org.dragonet.proxy.network.translator.java;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDisconnectPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.scoreboard.ServerDisplayScoreboardPacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.types.MessageTranslator;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PCDisconnectTranslator implements PacketTranslator<ServerDisconnectPacket> {
+
+@PCPacketTranslator(packetClass = ServerDisconnectPacket.class)
+public class PCDisconnectTranslator extends PacketTranslator<ServerDisconnectPacket> {
     public static final PCDisconnectTranslator INSTANCE = new PCDisconnectTranslator();
 
     @Override

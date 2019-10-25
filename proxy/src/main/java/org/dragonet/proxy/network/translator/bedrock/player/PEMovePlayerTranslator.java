@@ -25,9 +25,11 @@ import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
 
 @Log4j2
-public class PEMovePlayerTranslator implements PacketTranslator<MovePlayerPacket> {
+@PEPacketTranslator(packetClass = MovePlayerPacket.class)
+public class PEMovePlayerTranslator extends PacketTranslator<MovePlayerPacket> {
     public static final PEMovePlayerTranslator INSTANCE = new PEMovePlayerTranslator();
 
     @Override

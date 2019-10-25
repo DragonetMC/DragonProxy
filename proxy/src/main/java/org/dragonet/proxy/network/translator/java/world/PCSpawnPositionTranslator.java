@@ -27,10 +27,12 @@ import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
 @Log4j2
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PCSpawnPositionTranslator implements PacketTranslator<ServerSpawnPositionPacket> {
+
+@PCPacketTranslator(packetClass = ServerSpawnPositionPacket.class)
+public class PCSpawnPositionTranslator extends PacketTranslator<ServerSpawnPositionPacket> {
     public static final PCSpawnPositionTranslator INSTANCE = new PCSpawnPositionTranslator();
 
     @Override

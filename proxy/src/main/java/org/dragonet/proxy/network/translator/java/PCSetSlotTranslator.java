@@ -27,12 +27,14 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.WindowCache;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.translator.PacketTranslator;
+import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.types.InventoryTranslator;
 import org.dragonet.proxy.util.TextFormat;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+
 @Log4j2
-public class PCSetSlotTranslator implements PacketTranslator<ServerSetSlotPacket> {
+@PCPacketTranslator(packetClass = ServerSetSlotPacket.class)
+public class PCSetSlotTranslator extends PacketTranslator<ServerSetSlotPacket> {
     public static final PCSetSlotTranslator INSTANCE = new PCSetSlotTranslator();
 
     @Override
