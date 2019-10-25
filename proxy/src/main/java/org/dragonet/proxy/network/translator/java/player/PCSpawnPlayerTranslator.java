@@ -35,7 +35,7 @@ public class PCSpawnPlayerTranslator implements PacketTranslator<ServerSpawnPlay
 
     @Override
     public void translate(ProxySession session, ServerSpawnPlayerPacket packet) {
-        PlayerListEntry playerListEntry = session.getPlayerInfoCache().get(packet.getUuid());
+        PlayerListEntry playerListEntry = session.getPlayerListCache().getPlayerInfo().get(packet.getUuid());
 
         CachedPlayer cachedPlayer = session.getEntityCache().newPlayer(packet.getEntityId(), playerListEntry.getProfile());
         cachedPlayer.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
@@ -45,7 +45,7 @@ public class PCSpawnPlayerTranslator implements PacketTranslator<ServerSpawnPlay
 
         if(session.getProxy().getConfiguration().isFetchPlayerSkins()) {
             session.getProxy().getGeneralThreadPool().execute(() -> {
-                GameProfile profile = session.getPlayerInfoCache().get(packet.getUuid()).getProfile();
+                GameProfile profile = session.getPlayerListCache().getPlayerInfo().get(packet.getUuid()).getProfile();
 
                 byte[] skinData = SkinUtils.fetchSkin(profile);
                 if (skinData == null) {

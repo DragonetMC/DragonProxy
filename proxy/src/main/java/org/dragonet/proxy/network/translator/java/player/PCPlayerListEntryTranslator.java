@@ -28,6 +28,7 @@ import com.nukkitx.protocol.bedrock.packet.PlayerListPacket;
 import com.nukkitx.protocol.bedrock.packet.SetLocalPlayerAsInitializedPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.session.data.ClientData;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.util.SkinUtils;
@@ -47,7 +48,7 @@ public class PCPlayerListEntryTranslator implements PacketTranslator<ServerPlaye
 
         for(PlayerListEntry entry : packet.getEntries()) {
             PlayerListPacket.Entry bedrockEntry = new PlayerListPacket.Entry(entry.getProfile().getId());
-            session.getPlayerInfoCache().put(entry.getProfile().getId(), entry);
+            session.getPlayerListCache().getPlayerInfo().put(entry.getProfile().getId(), entry);
 
             switch(packet.getAction()) {
                 case ADD_PLAYER:
@@ -82,13 +83,17 @@ public class PCPlayerListEntryTranslator implements PacketTranslator<ServerPlaye
                     session.sendPacket(playerListPacket);
                     break;
 
+                case UPDATE_LATENCY:
+
+                    break;
+
                 case REMOVE_PLAYER:
                     playerListPacket.setType(PlayerListPacket.Type.REMOVE);
                     playerListPacket.getEntries().add(bedrockEntry);
 
                     session.sendPacket(playerListPacket);
 
-                    session.getPlayerInfoCache().remove(entry.getProfile().getId());
+                    session.getPlayerListCache().getPlayerInfo().remove(entry.getProfile().getId());
                     break;
             }
         }

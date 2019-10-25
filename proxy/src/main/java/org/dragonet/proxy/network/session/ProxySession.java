@@ -50,10 +50,7 @@ import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.form.CustomForm;
 import org.dragonet.proxy.form.components.InputComponent;
 import org.dragonet.proxy.form.components.LabelComponent;
-import org.dragonet.proxy.network.session.cache.ChunkCache;
-import org.dragonet.proxy.network.session.cache.EntityCache;
-import org.dragonet.proxy.network.session.cache.WindowCache;
-import org.dragonet.proxy.network.session.cache.WorldCache;
+import org.dragonet.proxy.network.session.cache.*;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.session.data.AuthData;
 import org.dragonet.proxy.network.session.data.AuthState;
@@ -84,7 +81,6 @@ public class ProxySession implements PlayerSession {
     private String username;
 
     private Map<String, Object> dataCache = new HashMap<>();
-    private Map<UUID, PlayerListEntry> playerInfoCache = new HashMap<>();
     private Map<Integer, CompletableFuture> formCache = new HashMap<>();
     private Map<String, CompletableFuture> futureMap = new HashMap<>(); // TODO
 
@@ -94,6 +90,7 @@ public class ProxySession implements PlayerSession {
     private WindowCache windowCache;
     private ChunkCache chunkCache;
     private WorldCache worldCache;
+    private PlayerListCache playerListCache;
 
     private CachedPlayer cachedEntity;
 
@@ -108,6 +105,7 @@ public class ProxySession implements PlayerSession {
         windowCache = new WindowCache();
         chunkCache = new ChunkCache();
         worldCache = new WorldCache();
+        playerListCache = new PlayerListCache();
 
         //this.bedrockSession.setLogging(true);
 
@@ -316,7 +314,7 @@ public class ProxySession implements PlayerSession {
     }
 
     public void setPlayerSkin(UUID playerId, byte[] skinData) {
-        GameProfile profile = playerInfoCache.get(playerId).getProfile();
+        GameProfile profile = playerListCache.getPlayerInfo().get(playerId).getProfile();
 
         // Remove the player from the player list
         PlayerListPacket removePacket = new PlayerListPacket();
