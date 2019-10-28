@@ -50,7 +50,7 @@ public class Bootstrap {
         }
 
         int bedrockPort = options.has(bedrockPortOption) ? Integer.parseInt(options.valueOf(bedrockPortOption)) : -1;
-        int javaPort = options.has(javaPortOption) ? Integer.parseInt(options.valueOf(bedrockPortOption)) : -1;
+        int javaPort = options.has(javaPortOption) ? Integer.parseInt(options.valueOf(javaPortOption)) : -1;
 
         DragonProxy proxy = new DragonProxy(bedrockPort, javaPort);
 
