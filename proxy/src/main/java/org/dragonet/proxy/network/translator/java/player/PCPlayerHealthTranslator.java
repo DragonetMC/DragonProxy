@@ -18,9 +18,12 @@
  */
 package org.dragonet.proxy.network.translator.java.player;
 
+import com.github.steveice10.mc.protocol.data.game.ClientRequest;
+import com.github.steveice10.mc.protocol.packet.ingame.client.ClientRequestPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerAbilitiesPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
 import com.nukkitx.protocol.bedrock.packet.AdventureSettingsPacket;
+import com.nukkitx.protocol.bedrock.packet.RespawnPacket;
 import com.nukkitx.protocol.bedrock.packet.SetHealthPacket;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
@@ -36,6 +39,15 @@ public class PCPlayerHealthTranslator extends PacketTranslator<ServerPlayerHealt
         SetHealthPacket setHealthPacket = new SetHealthPacket();
         setHealthPacket.setHealth((int) Math.ceil(packet.getHealth()));
         session.sendPacket(setHealthPacket);
+
+        if(packet.getHealth() <= 0) {
+            RespawnPacket respawnPacket = new RespawnPacket();
+            respawnPacket.setPosition(session.getCachedEntity().getSpawnPosition());
+            session.sendPacket(respawnPacket);
+
+            // Tell the server we are ready to respawn
+            session.sendRemotePacket(new ClientRequestPacket(ClientRequest.RESPAWN));
+        }
 
         // TODO: update attributes
     }
