@@ -16,7 +16,7 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.java.entity;
+package org.dragonet.proxy.network.translator.java.entity.movement;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityRotationPacket;
 import com.nukkitx.math.vector.Vector3f;

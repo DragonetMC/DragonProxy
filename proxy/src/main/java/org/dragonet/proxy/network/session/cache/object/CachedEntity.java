@@ -21,6 +21,7 @@ package org.dragonet.proxy.network.session.cache.object;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.*;
 import com.nukkitx.protocol.bedrock.packet.AddEntityPacket;
+import com.nukkitx.protocol.bedrock.packet.MobArmorEquipmentPacket;
 import com.nukkitx.protocol.bedrock.packet.RemoveEntityPacket;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -51,6 +52,14 @@ public class CachedEntity {
     protected Vector3f rotation = Vector3f.ZERO;
     protected Vector3f motion = Vector3f.ZERO;
     protected Vector3f spawnPosition = Vector3f.ZERO;
+
+    protected ItemData helmet = ItemData.AIR;
+    protected ItemData chestplate = ItemData.AIR;
+    protected ItemData leggings = ItemData.AIR;
+    protected ItemData boots = ItemData.AIR;
+
+    protected ItemData mainHand = ItemData.AIR;
+    protected ItemData offHand = ItemData.AIR;
 
     // HACK for invisiblity, as we need to access the original scale
     private float scale = 0;
@@ -147,6 +156,17 @@ public class CachedEntity {
         this.shouldMove = true;
     }
 
+    public void sendArmor(ProxySession session) {
+        MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
+        mobArmorEquipmentPacket.setRuntimeEntityId(proxyEid);
+        mobArmorEquipmentPacket.setHelmet(helmet);
+        mobArmorEquipmentPacket.setChestplate(chestplate);
+        mobArmorEquipmentPacket.setLeggings(leggings);
+        mobArmorEquipmentPacket.setBoots(boots);
+
+        session.sendPacket(mobArmorEquipmentPacket);
+    }
+
     private void addDefaultMetadata() {
         flags.setFlag(EntityFlag.HAS_GRAVITY, true);
         flags.setFlag(EntityFlag.HAS_COLLISION, true);
@@ -160,8 +180,8 @@ public class CachedEntity {
         metadata.put(EntityData.AIR, 0);
         metadata.put(EntityData.MAX_AIR, 400);
         metadata.put(EntityData.ENTITY_AGE, 0);
-        metadata.put(EntityData.BOUNDING_BOX_HEIGHT, (float) type.getHeight());
-        metadata.put(EntityData.BOUNDING_BOX_WIDTH, (float) type.getWidth());
+        metadata.put(EntityData.BOUNDING_BOX_HEIGHT, type.getHeight());
+        metadata.put(EntityData.BOUNDING_BOX_WIDTH, type.getWidth());
         metadata.putFlags(flags);
     }
 

@@ -16,9 +16,9 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.java.entity;
+package org.dragonet.proxy.network.translator.java.entity.movement;
 
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityPositionPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityTeleportPacket;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.packet.MoveEntityAbsolutePacket;
 import lombok.extern.log4j.Log4j2;
@@ -28,19 +28,19 @@ import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerEntityPositionPacket.class)
-public class PCEntityPositionTranslator extends PacketTranslator<ServerEntityPositionPacket> {
-    public static final PCEntityPositionTranslator INSTANCE = new PCEntityPositionTranslator();
+@PCPacketTranslator(packetClass = ServerEntityTeleportPacket.class)
+public class PCEntityTeleportTranslator extends PacketTranslator<ServerEntityTeleportPacket> {
+    public static final PCEntityTeleportTranslator INSTANCE = new PCEntityTeleportTranslator();
 
     @Override
-    public void translate(ProxySession session, ServerEntityPositionPacket packet) {
+    public void translate(ProxySession session, ServerEntityTeleportPacket packet) {
         CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(packet.getEntityId());
         if(cachedEntity == null) {
-            //log.info("(debug) EntityPosition: Cached entity is null");
+            //log.info("(debug) EntityTeleport: Cached entity is null");
             return;
         }
 
-        cachedEntity.moveRelative(Vector3f.from(packet.getMoveX(), packet.getMoveY(), packet.getMoveZ()));
+        cachedEntity.moveAbsolute(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()), packet.getPitch(), packet.getYaw());
 
         Vector3f rotation = Vector3f.from(cachedEntity.getRotation().getX() / (360d / 256d),
             cachedEntity.getRotation().getY() / (360d / 256d), cachedEntity.getRotation().getZ() / (360d / 256d));
@@ -51,7 +51,7 @@ public class PCEntityPositionTranslator extends PacketTranslator<ServerEntityPos
             moveEntityPacket.setPosition(cachedEntity.getOffsetPosition());
             moveEntityPacket.setRotation(rotation);
             moveEntityPacket.setOnGround(packet.isOnGround());
-            moveEntityPacket.setTeleported(false);
+            moveEntityPacket.setTeleported(true);
 
             session.sendPacket(moveEntityPacket);
 

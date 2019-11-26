@@ -16,46 +16,40 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.java.entity;
+package org.dragonet.proxy.network.translator.java.entity.movement;
 
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityTeleportPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityHeadLookPacket;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.packet.MoveEntityAbsolutePacket;
-import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
-@Log4j2
-@PCPacketTranslator(packetClass = ServerEntityTeleportPacket.class)
-public class PCEntityTeleportTranslator extends PacketTranslator<ServerEntityTeleportPacket> {
-    public static final PCEntityTeleportTranslator INSTANCE = new PCEntityTeleportTranslator();
+@PCPacketTranslator(packetClass = ServerEntityHeadLookPacket.class)
+public class PCEntityHeadlookTranslator extends PacketTranslator<ServerEntityHeadLookPacket> {
+    public static final PCEntityHeadlookTranslator INSTANCE = new PCEntityHeadlookTranslator();
 
     @Override
-    public void translate(ProxySession session, ServerEntityTeleportPacket packet) {
+    public void translate(ProxySession session, ServerEntityHeadLookPacket packet) {
         CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(packet.getEntityId());
         if(cachedEntity == null) {
-            //log.info("(debug) EntityTeleport: Cached entity is null");
+            //log.info("(debug) EntityHeadLook: Cached entity is null");
             return;
         }
 
-        cachedEntity.moveAbsolute(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()), packet.getPitch(), packet.getYaw());
+        cachedEntity.setRotation(Vector3f.from(cachedEntity.getRotation().getX(), cachedEntity.getRotation().getY(), packet.getHeadYaw()));
 
         Vector3f rotation = Vector3f.from(cachedEntity.getRotation().getX() / (360d / 256d),
             cachedEntity.getRotation().getY() / (360d / 256d), cachedEntity.getRotation().getZ() / (360d / 256d));
 
-        if(cachedEntity.isShouldMove()) {
-            MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
-            moveEntityPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
-            moveEntityPacket.setPosition(cachedEntity.getOffsetPosition());
-            moveEntityPacket.setRotation(rotation);
-            moveEntityPacket.setOnGround(packet.isOnGround());
-            moveEntityPacket.setTeleported(true);
+        MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
+        moveEntityPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
+        moveEntityPacket.setPosition(cachedEntity.getOffsetPosition());
+        moveEntityPacket.setRotation(rotation);
+        moveEntityPacket.setOnGround(true);
+        moveEntityPacket.setTeleported(false);
 
-            session.sendPacket(moveEntityPacket);
-
-            cachedEntity.setShouldMove(false);
-        }
+        session.sendPacket(moveEntityPacket);
     }
 }
