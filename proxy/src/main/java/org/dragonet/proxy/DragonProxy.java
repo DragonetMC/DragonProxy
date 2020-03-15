@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import com.nukkitx.protocol.bedrock.BedrockServer;
-import com.nukkitx.protocol.bedrock.v361.Bedrock_v361;
+import com.nukkitx.protocol.bedrock.v389.Bedrock_v389;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.command.CommandManager;
@@ -52,7 +52,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Log4j2
 public class DragonProxy {
-    public static final BedrockPacketCodec BEDROCK_CODEC = Bedrock_v361.V361_CODEC;
+    public static final BedrockPacketCodec BEDROCK_CODEC = Bedrock_v389.V389_CODEC;
     public static final BedrockPacketCodec[] BEDROCK_SUPPORTED_CODECS = {BEDROCK_CODEC};
     public static final int[] BEDROCK_SUPPORTED_PROTOCOLS;
 

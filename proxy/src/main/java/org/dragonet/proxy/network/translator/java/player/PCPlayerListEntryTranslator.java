@@ -20,12 +20,16 @@ package org.dragonet.proxy.network.translator.java.player;
 
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPlayerListEntryPacket;
+import com.nukkitx.protocol.bedrock.data.ImageData;
+import com.nukkitx.protocol.bedrock.data.SerializedSkin;
 import com.nukkitx.protocol.bedrock.packet.PlayerListPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.util.SkinUtils;
+
+import java.nio.charset.StandardCharsets;
 
 @Log4j2
 @PCPacketTranslator(packetClass = ServerPlayerListEntryPacket.class)
@@ -58,13 +62,17 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
 
                     playerListPacket.setType(PlayerListPacket.Type.ADD);
 
+                    SerializedSkin skin = SerializedSkin.of(
+                        entry.getProfile().getIdAsString(),
+                        ImageData.of(SkinUtils.STEVE_SKIN_DATA),
+                        ImageData.of(session.getClientData().getCapeData()),
+                        SkinUtils.getLegacyGeometryName("geometry.humanoid"),
+                        new String(session.getClientData().getSkinGeometry(), StandardCharsets.UTF_8),
+                        false);
+
                     bedrockEntry.setEntityId(proxyEid);
                     bedrockEntry.setName(entry.getProfile().getName());
-                    bedrockEntry.setSkinId(entry.getProfile().getIdAsString());
-                    bedrockEntry.setSkinData(SkinUtils.STEVE_SKIN);
-                    bedrockEntry.setCapeData(new byte[0]);
-                    bedrockEntry.setGeometryName("geometry.humanoid");
-                    bedrockEntry.setGeometryData("");
+                    bedrockEntry.setSkin(skin);
                     bedrockEntry.setXuid("");
                     bedrockEntry.setPlatformChatId("");
 

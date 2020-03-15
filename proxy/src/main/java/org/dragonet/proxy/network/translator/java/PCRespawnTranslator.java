@@ -53,7 +53,9 @@ public class PCRespawnTranslator extends PacketTranslator<ServerRespawnPacket> {
             session.getCachedEntity().setDimension(packet.getDimension());
         } else {
             RespawnPacket respawnPacket = new RespawnPacket();
+            respawnPacket.setRuntimeEntityId(session.getCachedEntity().getProxyEid());
             respawnPacket.setPosition(session.getCachedEntity().getSpawnPosition());
+            respawnPacket.setSpawnState(RespawnPacket.State.CLIENT_READY);
             session.sendPacket(respawnPacket);
         }
 

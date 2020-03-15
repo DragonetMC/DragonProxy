@@ -32,6 +32,7 @@ import com.github.steveice10.packetlib.event.session.PacketReceivedEvent;
 import com.github.steveice10.packetlib.event.session.SessionAdapter;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
+import com.google.gson.JsonObject;
 import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
@@ -41,6 +42,8 @@ import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.BedrockServerSession;
 import com.nukkitx.protocol.bedrock.data.GamePublishSetting;
 import com.nukkitx.protocol.bedrock.data.GameRule;
+import com.nukkitx.protocol.bedrock.data.ImageData;
+import com.nukkitx.protocol.bedrock.data.SerializedSkin;
 import com.nukkitx.protocol.bedrock.packet.*;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
@@ -55,6 +58,7 @@ import org.dragonet.proxy.network.session.data.AuthState;
 import org.dragonet.proxy.network.session.data.ClientData;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.dragonet.proxy.remote.RemoteServer;
+import org.dragonet.proxy.util.SkinUtils;
 import org.dragonet.proxy.util.TextFormat;
 
 import javax.annotation.Nonnull;
@@ -230,13 +234,18 @@ public class ProxySession implements PlayerSession {
         PlayerListPacket.Entry entry = new PlayerListPacket.Entry(authData.getIdentity());
         entry.setEntityId(entityId);
         entry.setName(authData.getDisplayName());
-        entry.setSkinId(clientData.getSkinId());
-        entry.setSkinData(clientData.getSkinData());
-        entry.setCapeData(clientData.getCapeData());
-        entry.setGeometryName(clientData.getSkinGeometryName());
-        entry.setGeometryData(new String(clientData.getSkinGeometry(), StandardCharsets.UTF_8));
+
+        SerializedSkin skin = SerializedSkin.of(
+            clientData.getSkinId(),
+            ImageData.of(clientData.getSkinData()),
+            ImageData.of(clientData.getCapeData()),
+            clientData.getSkinGeometryName(),
+            new String(clientData.getSkinGeometry(), StandardCharsets.UTF_8),
+            false);
+
         entry.setXuid(authData.getXuid() == null ? "" : authData.getXuid());
         entry.setPlatformChatId("");
+        entry.setSkin(skin);
 
         PlayerListPacket playerListPacket = new PlayerListPacket();
         playerListPacket.setType(PlayerListPacket.Type.ADD);
@@ -266,9 +275,9 @@ public class ProxySession implements PlayerSession {
         startGamePacket.setLevelGamemode(0);
         startGamePacket.setDifficulty(0);
         startGamePacket.setDefaultSpawn(Vector3i.ZERO);
-        startGamePacket.setAcheivementsDisabled(true);
+        startGamePacket.setAchievementsDisabled(true);
         startGamePacket.setTime(0);
-        startGamePacket.setEduLevel(false);
+        startGamePacket.setEduEditionOffers(0);
         startGamePacket.setEduFeaturesEnabled(false);
         startGamePacket.setRainLevel(0);
         startGamePacket.setLightningLevel(0);
@@ -298,7 +307,10 @@ public class ProxySession implements PlayerSession {
         startGamePacket.setEnchantmentSeed(0);
         startGamePacket.setMultiplayerCorrelationId("");
 
-        startGamePacket.setCachedPalette(DragonProxy.INSTANCE.getPaletteManager().getCachedPalette());
+        startGamePacket.setMovementServerAuthoritative(false);
+        startGamePacket.setVanillaVersion(DragonProxy.BEDROCK_CODEC.getMinecraftVersion());
+
+        startGamePacket.setBlockPalette(DragonProxy.INSTANCE.getPaletteManager().getCachedPalette());
         bedrockSession.sendPacketImmediately(startGamePacket);
 
         // Spawn
@@ -323,19 +335,23 @@ public class ProxySession implements PlayerSession {
         PlayerListPacket addPacket = new PlayerListPacket();
         addPacket.setType(PlayerListPacket.Type.ADD);
 
+        SerializedSkin skin = SerializedSkin.of(
+            profile.getIdAsString(),
+            ImageData.of(SkinUtils.STEVE_SKIN_DATA),
+            ImageData.EMPTY,
+            SkinUtils.getLegacyGeometryName("geometry.humanoid"),
+            "",
+            false);
+
         PlayerListPacket.Entry entry = new PlayerListPacket.Entry(playerId);
         entry.setEntityId(1); // TODO
         entry.setName(profile.getName());
-        entry.setSkinId(profile.getIdAsString());
-        entry.setSkinData(skinData);
-        entry.setCapeData(new byte[0]);
-        entry.setGeometryName("geometry.humanoid");
-        entry.setGeometryData("");
+        entry.setSkin(skin);
         entry.setXuid("");
         entry.setPlatformChatId("");
 
         addPacket.getEntries().add(entry);
-        sendPacket(addPacket);
+        sendPacket(addPacket); // TODO
 
         // TODO: ideally we would use PlayerSkinPacket, but that crashes...
         // See below
@@ -346,15 +362,16 @@ public class ProxySession implements PlayerSession {
     public void setPlayerSkin2(UUID playerId, byte[] skinData) {
         PlayerSkinPacket playerSkinPacket = new PlayerSkinPacket();
         playerSkinPacket.setUuid(playerId);
-        playerSkinPacket.setSkinId(playerId.toString());
-        playerSkinPacket.setSkinData(skinData);
-        playerSkinPacket.setPremiumSkin(false);
-        playerSkinPacket.setOldSkinName("Standard_Steve");
-        playerSkinPacket.setNewSkinName("Standard_Custom");
-        playerSkinPacket.setGeometryName("geometry.humanoid");
-        playerSkinPacket.setGeometryData("");
-        playerSkinPacket.setCapeData(new byte[0]);
 
+        SerializedSkin skin = SerializedSkin.of(
+            playerId.toString(),
+            ImageData.of(skinData),
+            ImageData.of(clientData.getCapeData()),
+            SkinUtils.getLegacyGeometryName("geometry.humanoid"),
+            new String(clientData.getSkinGeometry(), StandardCharsets.UTF_8),
+            false);
+
+        playerSkinPacket.setSkin(skin);
         sendPacket(playerSkinPacket);
     }
 

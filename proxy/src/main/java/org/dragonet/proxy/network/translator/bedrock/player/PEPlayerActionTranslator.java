@@ -39,7 +39,9 @@ public class PEPlayerActionTranslator extends PacketTranslator<PlayerActionPacke
                 session.sendRemotePacket(new ClientRequestPacket(ClientRequest.RESPAWN));
 
                 RespawnPacket respawnPacket = new RespawnPacket();
+                respawnPacket.setRuntimeEntityId(packet.getRuntimeEntityId());
                 respawnPacket.setPosition(session.getCachedEntity().getPosition());
+                respawnPacket.setSpawnState(RespawnPacket.State.CLIENT_READY);
                 session.sendPacket(respawnPacket);
                 break;
             case START_SNEAK:

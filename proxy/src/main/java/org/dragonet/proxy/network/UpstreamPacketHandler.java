@@ -157,6 +157,7 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
                 ResourcePackStackPacket stack = new ResourcePackStackPacket();
                 stack.setExperimental(false);
                 stack.setForcedToAccept(false);
+                stack.setGameVersion(DragonProxy.BEDROCK_CODEC.getMinecraftVersion());
                 session.sendPacketImmediately(stack);
                 break;
             default:

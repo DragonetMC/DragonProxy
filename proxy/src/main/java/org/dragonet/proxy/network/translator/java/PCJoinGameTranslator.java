@@ -87,9 +87,9 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
             startGamePacket.setLevelGamemode(packet.getGameMode().ordinal());
             startGamePacket.setDifficulty(0);
             startGamePacket.setDefaultSpawn(Vector3i.from(-23, 70, 0));
-            startGamePacket.setAcheivementsDisabled(true);
+            startGamePacket.setAchievementsDisabled(true);
             startGamePacket.setTime(0);
-            startGamePacket.setEduLevel(false);
+            startGamePacket.setEduFeaturesEnabled(false);
             startGamePacket.setEduFeaturesEnabled(false);
             startGamePacket.setRainLevel(0);
             startGamePacket.setLightningLevel(0);
@@ -118,6 +118,9 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
             startGamePacket.setCurrentTick(0);
             startGamePacket.setEnchantmentSeed(0);
             startGamePacket.setMultiplayerCorrelationId("");
+
+            startGamePacket.setMovementServerAuthoritative(false);
+            startGamePacket.setVanillaVersion(DragonProxy.BEDROCK_CODEC.getMinecraftVersion());
 
             startGamePacket.setCachedPalette(DragonProxy.INSTANCE.getPaletteManager().getCachedPalette());
             startGamePacket.setItemEntries(DragonProxy.INSTANCE.getPaletteManager().getItemEntries());
