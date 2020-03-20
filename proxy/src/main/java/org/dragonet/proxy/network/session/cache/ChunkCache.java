@@ -59,7 +59,7 @@ public class ChunkCache implements Cache {
         Vector3f blockPosition = getChunkBlock((int) position.getX(), (int) position.getY(), (int) position.getZ());
         if (chunk != null) {
             BlockState blockState = chunk.get((int) blockPosition.getX(), (int) blockPosition.getY(), (int) blockPosition.getZ());
-            return BlockTranslator.translateToBedrock(new ItemStack(blockState.getId()));
+            return null;//BlockTranslator.translateToBedrock(new ItemStack(blockState.getId()));
         }
 
         return ItemData.AIR;
@@ -105,10 +105,10 @@ public class ChunkCache implements Cache {
                 for (int x = 0; x < 16; x++) {
                     for (int z = 0; z < 16; z++) {
                         BlockState block = javaChunk.get(x, y & 0xF, z);
-                        ItemData entry = BlockTranslator.translateToBedrock(new ItemStack(block.getId()));
+                        int bedrockId = BlockTranslator.translateToBedrock(block);
 
                         ChunkSection section = chunkData.getSection(cy);
-                        section.setFullBlock(x, y & 0xF, z, 0, entry.getId() << 4 | entry.getDamage());
+                        section.setFullBlock(x, y & 0xF, z, 0, bedrockId);
                     }
                 }
             }

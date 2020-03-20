@@ -19,55 +19,22 @@
 package org.dragonet.proxy.network.translator.types.item;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@Getter
+@AllArgsConstructor
 public class ItemEntry {
-    @Getter
-    public static class BedrockItem {
-        @JsonProperty("name")
-        private String identifier;
+    @JsonProperty
+    private String javaIdentifier;
+    @JsonProperty("javaId")
+    private int javaProtocolId;
 
-        @JsonProperty("id")
-        private int runtimeId;
-
-        private int data;
-
-        public BedrockItem() {}
-        public BedrockItem(String identifier, int runtimeId) {
-            this(identifier, runtimeId, 0);
-        }
-        public BedrockItem(String identifier, int runtimeId, int data) {
-            this.identifier = identifier;
-            this.runtimeId = runtimeId;
-            this.data = data;
-        }
-    }
-
-    @Getter
-    public static class JavaItem {
-        @JsonProperty
-        private String identifier;
-        @JsonProperty("protocol_id")
-        private int runtimeId;
-
-        public JavaItem(String identifier, int runtimeId) {
-            this.identifier = identifier;
-            this.runtimeId = runtimeId;
-        }
-    }
-
-    @Getter
-    public static class ItemMap {
-        @JsonProperty("java_identifier")
-        private String javaIdentifier;
-        @JsonProperty("java_protocol_id")
-        private int javaProtocolId;
-
-        @JsonProperty("bedrock_identifier")
-        private String bedrockIdentifier;
-        @JsonProperty("bedrock_runtime_id")
-        private int bedrockRuntimeId;
-        @JsonProperty("bedrock_data")
-        private int bedrockData;
-    }
+    // TODO: add back support for bedrock identifier, as the geyser mappings dont include it
+    //private String bedrockIdentifier;
+    @JsonProperty("bedrockId")
+    private int bedrockRuntimeId;
+    @JsonProperty
+    private int bedrockData;
 }

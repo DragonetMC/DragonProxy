@@ -56,10 +56,10 @@ public class CachedWindow {
         log.info(TextFormat.AQUA + "session pos: " + session.getCachedEntity().getPosition());
         // fake block data
         UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-        updateBlockPacket.setRuntimeId(BlockTranslator.BEDROCK_BLOCKS.get("minecraft:chest").getRuntimeId());
+        //updateBlockPacket.setRuntimeId(BlockTranslator.BEDROCK_BLOCKS.get("minecraft:chest").getRuntimeId());
         updateBlockPacket.setDataLayer(0);
         updateBlockPacket.setBlockPosition(pos);
-        log.info("chest:" + BlockTranslator.BEDROCK_BLOCKS.get("minecraft:chest").getRuntimeId());
+        //log.info("chest:" + BlockTranslator.BEDROCK_BLOCKS.get("minecraft:chest").getRuntimeId());
 
         session.sendPacket(updateBlockPacket);
 

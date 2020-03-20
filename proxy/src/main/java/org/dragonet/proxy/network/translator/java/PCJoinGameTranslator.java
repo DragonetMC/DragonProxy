@@ -41,6 +41,8 @@ import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.session.data.AuthState;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.types.BlockTranslator;
+import org.dragonet.proxy.network.translator.types.ItemTranslator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -87,9 +89,9 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
             startGamePacket.setLevelGamemode(packet.getGameMode().ordinal());
             startGamePacket.setDifficulty(0);
             startGamePacket.setDefaultSpawn(Vector3i.from(-23, 70, 0));
-            startGamePacket.setAcheivementsDisabled(true);
+            startGamePacket.setAchievementsDisabled(true);
             startGamePacket.setTime(0);
-            startGamePacket.setEduLevel(false);
+            startGamePacket.setEduFeaturesEnabled(false);
             startGamePacket.setEduFeaturesEnabled(false);
             startGamePacket.setRainLevel(0);
             startGamePacket.setLightningLevel(0);
@@ -119,8 +121,11 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
             startGamePacket.setEnchantmentSeed(0);
             startGamePacket.setMultiplayerCorrelationId("");
 
-            startGamePacket.setCachedPalette(DragonProxy.INSTANCE.getPaletteManager().getCachedPalette());
-            startGamePacket.setItemEntries(DragonProxy.INSTANCE.getPaletteManager().getItemEntries());
+            startGamePacket.setMovementServerAuthoritative(false);
+            startGamePacket.setVanillaVersion(DragonProxy.BEDROCK_CODEC.getMinecraftVersion());
+
+            startGamePacket.setBlockPalette(BlockTranslator.BLOCK_PALETTE);
+            startGamePacket.setItemEntries(ItemTranslator.ITEM_PALETTE);
 
             // TODO: 01/04/2019 Add support for deserializing the chunk in the protocol library
 

@@ -36,11 +36,12 @@ import java.net.URL;
 public class SkinUtils {
     private static final SessionService service = new SessionService();
 
-    public static byte[] STEVE_SKIN = new byte[0];
+    public static byte[] STEVE_SKIN_DATA = new byte[0];
 
     static {
         try {
-            STEVE_SKIN = convertToByteArray(ImageIO.read(DragonProxy.class.getClassLoader().getResource("skin_steve.png")));
+            STEVE_SKIN_DATA = convertToByteArray(ImageIO.read(DragonProxy.class.getClassLoader().getResource("skin_steve.png")));
+            log.warn(STEVE_SKIN_DATA.length);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -89,6 +90,10 @@ public class SkinUtils {
             log.warn("Failed to fetch optifine cape for player " + profile.getName() + ": " + e.getMessage());
         }
         return null;
+    }
+
+    public static String getLegacyGeometryName(String geometryName) {
+        return "{\"geometry\" :{\"default\" :\"" + geometryName + "\"}}";
     }
 
     private static byte[] convertToByteArray(BufferedImage image) {

@@ -59,9 +59,9 @@ public final class ClientData {
     private String serverAddress;
     @JsonProperty("SkinData")
     private byte[] skinData; // deserialized
-    @JsonProperty("SkinGeometry")
+    @JsonProperty("SkinGeometryData")
     private byte[] skinGeometry; // deserialized
-    @JsonProperty("SkinGeometryName")
+    @JsonProperty("SkinResourcePatch")
     private String skinGeometryName;
     @JsonProperty("SkinId")
     private String skinId;
