@@ -41,6 +41,8 @@ import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.session.data.AuthState;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.types.BlockTranslator;
+import org.dragonet.proxy.network.translator.types.ItemTranslator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -122,8 +124,8 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
             startGamePacket.setMovementServerAuthoritative(false);
             startGamePacket.setVanillaVersion(DragonProxy.BEDROCK_CODEC.getMinecraftVersion());
 
-            startGamePacket.setCachedPalette(DragonProxy.INSTANCE.getPaletteManager().getCachedPalette());
-            startGamePacket.setItemEntries(DragonProxy.INSTANCE.getPaletteManager().getItemEntries());
+            startGamePacket.setBlockPalette(BlockTranslator.BLOCK_PALETTE);
+            startGamePacket.setItemEntries(ItemTranslator.ITEM_PALETTE);
 
             // TODO: 01/04/2019 Add support for deserializing the chunk in the protocol library
 

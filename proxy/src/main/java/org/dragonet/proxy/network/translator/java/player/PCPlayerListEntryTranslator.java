@@ -65,7 +65,7 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
                     SerializedSkin skin = SerializedSkin.of(
                         entry.getProfile().getIdAsString(),
                         ImageData.of(SkinUtils.STEVE_SKIN_DATA),
-                        ImageData.of(session.getClientData().getCapeData()),
+                        ImageData.EMPTY,
                         SkinUtils.getLegacyGeometryName("geometry.humanoid"),
                         new String(session.getClientData().getSkinGeometry(), StandardCharsets.UTF_8),
                         false);

@@ -31061,7 +31061,7 @@
     "bedrock_identifier": "minecraft:cauldron",
     "bedrock_states": {
       "fill_level": 0,
-      "cauldron_liquid": "water"
+        "cauldron_liquid": "water"
     }
   },
   "minecraft:cauldron[level=1]": {

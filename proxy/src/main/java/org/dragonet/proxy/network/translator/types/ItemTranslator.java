@@ -18,96 +18,90 @@
  */
 package org.dragonet.proxy.network.translator.types;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.message.Message;
 import com.github.steveice10.opennbt.tag.builtin.*;
 import com.nukkitx.nbt.CompoundTagBuilder;
+import com.nukkitx.nbt.NbtUtils;
+import com.nukkitx.nbt.stream.NBTInputStream;
 import com.nukkitx.protocol.bedrock.data.ItemData;
+import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.translator.types.item.ItemEntry;
+import org.dragonet.proxy.util.PaletteManager;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Log4j2
 public class ItemTranslator {
-    public static final Map<String, ItemEntry.BedrockItem> BEDROCK_ITEMS = new HashMap<>();
-    public static final Map<String, ItemEntry.JavaItem> JAVA_ITEMS = new HashMap<>();
+    public static final Collection<StartGamePacket.ItemEntry> ITEM_PALETTE = new ArrayList<>();
+    public static final Int2ObjectMap<ItemEntry> ITEM_ENTRIES = new Int2ObjectOpenHashMap<>();
 
-    public static Map<String, Map<Integer, String>> BEDROCK_TO_JAVA_MAP = new HashMap<>();
-    public static Map<String, Map<String, Object>> JAVA_TO_BEDROCK_MAP = new HashMap<>();
+    private static final AtomicInteger javaIdAllocator = new AtomicInteger(0);
 
-    public ItemTranslator() {
-        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("item_mappings.json");
+    static {
+        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("data/runtime_item_states.json");
+        if (stream == null) {
+            throw new AssertionError("Static item state table not found");
+        }
+
+        ArrayList<PaletteManager.RuntimeEntry> entries;
+        CollectionType type = DragonProxy.JSON_MAPPER.getTypeFactory().constructCollectionType(ArrayList.class, PaletteManager.RuntimeEntry.class);
+        try {
+            entries = DragonProxy.JSON_MAPPER.readValue(stream, type);
+        } catch (Exception e) {
+            throw new AssertionError(e);
+        }
+
+        for (PaletteManager.RuntimeEntry entry : entries) {
+            ITEM_PALETTE.add(new StartGamePacket.ItemEntry(entry.getName(), (short) entry.getId()));
+        }
+
+        stream = DragonProxy.class.getClassLoader().getResourceAsStream("item_mappings.json");
         if (stream == null) {
             throw new AssertionError("Item mapping table not found");
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        CollectionType type = mapper.getTypeFactory().constructCollectionType(ArrayList.class, ItemEntry.ItemMap.class);
-
-        ArrayList<ItemEntry.ItemMap> entries = new ArrayList<>();
+        // TODO: This is currently using code devrived from Geyser, as i am not entirely sure how to
+        //       use jackson to auto fill the class properties while also including the json keys
+        //       .
+        //       I also need to somehow retrieve the java item id auto increment the `javaIdAllocator`, then
+        //       assign that to `ItemEntry.javaProtocolId`. fuck knows.
+        JsonNode items;
         try {
-            entries = mapper.readValue(stream,  type);
+            items = DragonProxy.JSON_MAPPER.readTree(stream);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new AssertionError(e);
         }
 
-        for(ItemEntry.ItemMap entry : entries) {
-            JAVA_ITEMS.put(entry.getJavaIdentifier(), new ItemEntry.JavaItem(entry.getJavaIdentifier(), entry.getJavaProtocolId()));
-            BEDROCK_ITEMS.put(entry.getBedrockIdentifier(), new ItemEntry.BedrockItem(entry.getBedrockIdentifier(), entry.getBedrockRuntimeId(), entry.getBedrockData()));
+        Iterator<Map.Entry<String, JsonNode>> iterator = items.fields();
+        while (iterator.hasNext()) {
+            int javaId = javaIdAllocator.getAndIncrement();
+            Map.Entry<String, JsonNode> entry = iterator.next();
 
-            JAVA_TO_BEDROCK_MAP.computeIfAbsent(entry.getJavaIdentifier(), (x) -> new HashMap<>());
-            BEDROCK_TO_JAVA_MAP.computeIfAbsent(entry.getBedrockIdentifier(), (x) -> new HashMap<>());
-
-            // Better solution for these maps
-            Map<String, Object> map = JAVA_TO_BEDROCK_MAP.get(entry.getJavaIdentifier());
-
-            map.put("name", entry.getBedrockIdentifier());
-            map.put("id", entry.getBedrockRuntimeId());
-            map.put("data", entry.getBedrockData());
-
-            BEDROCK_TO_JAVA_MAP.get(entry.getBedrockIdentifier()).put(0, entry.getJavaIdentifier());
+            ITEM_ENTRIES.put(javaId, new ItemEntry(entry.getKey(), javaId, entry.getValue().get("bedrock_id").intValue(), entry.getValue().get("bedrock_data").intValue()));
         }
     }
 
     public static ItemData translateToBedrock(ItemStack item) {
-        for(Map.Entry<String, ItemEntry.JavaItem> javaItems : JAVA_ITEMS.entrySet()) {
-            if(javaItems.getValue().getRuntimeId() != item.getId()){
-                continue;
-            }
-            ItemEntry.JavaItem javaItem = javaItems.getValue();
-            String identifier = getBedrockIdentifier(javaItem.getIdentifier());
-
-            if(!BEDROCK_ITEMS.containsKey(identifier)) {
-                continue;
-            }
-            ItemEntry.BedrockItem bedrockItem = BEDROCK_ITEMS.get(identifier);
-
-            if(item.getNbt() == null) {
-                return ItemData.of(bedrockItem.getRuntimeId(), (short) getBedrockData(javaItem.getIdentifier()), item.getAmount());
-            }
-
-            return ItemData.of(bedrockItem.getRuntimeId(), (short) getBedrockData(javaItem.getIdentifier()), item.getAmount(), translateItemNBT(item.getNbt()));
+        if(item == null) {
+            return ItemData.AIR;
         }
-        return ItemData.AIR;
-    }
+        ItemEntry bedrockItem = ITEM_ENTRIES.get(item.getId());
 
-    private static String getBedrockIdentifier(String javaIdentifier) {
-        if (!JAVA_TO_BEDROCK_MAP.containsKey(javaIdentifier)) {
-            return javaIdentifier;
+        if (item.getNbt() == null) {
+            return ItemData.of(bedrockItem.getBedrockRuntimeId(), (short) bedrockItem.getBedrockData(), item.getAmount());
         }
-        return (String) JAVA_TO_BEDROCK_MAP.get(javaIdentifier).get("name");
-    }
-
-    private static int getBedrockData(String javaIdentifier) {
-        return (int) JAVA_TO_BEDROCK_MAP.get(javaIdentifier).get("data");
+        return ItemData.of(bedrockItem.getBedrockRuntimeId(), (short) bedrockItem.getBedrockData(), item.getAmount(), translateItemNBT(item.getNbt()));
     }
 
     public static ItemData translateSlotToBedrock(ItemStack item) {
@@ -170,7 +164,6 @@ public class ItemTranslator {
                     tags.add(bedrockTag);
                 }
             }
-            // TODO: unchecked?
             // TODO: map element type from Java NBT tag to NukkitX tag
             return new com.nukkitx.nbt.tag.ListTag(listTag.getName(), com.nukkitx.nbt.tag.StringTag.class, tags);
         }
@@ -192,4 +185,17 @@ public class ItemTranslator {
 
         return null;
     }
+
+//
+//    private static String getBedrockIdentifier(String javaIdentifier) {
+//        if (!JAVA_TO_BEDROCK_MAP.containsKey(javaIdentifier)) {
+//            return javaIdentifier;
+//        }
+//        return (String) JAVA_TO_BEDROCK_MAP.get(javaIdentifier).get("name");
+//    }
+//
+//    private static int getBedrockData(String javaIdentifier) {
+//        return (int) JAVA_TO_BEDROCK_MAP.get(javaIdentifier).get("data");
+//    }
+//
 }

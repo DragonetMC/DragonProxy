@@ -36,6 +36,7 @@ import com.google.gson.JsonObject;
 import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
+import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.PlayerSession;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
@@ -57,7 +58,10 @@ import org.dragonet.proxy.network.session.data.AuthData;
 import org.dragonet.proxy.network.session.data.AuthState;
 import org.dragonet.proxy.network.session.data.ClientData;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
+import org.dragonet.proxy.network.translator.types.BlockTranslator;
+import org.dragonet.proxy.network.translator.types.ItemTranslator;
 import org.dragonet.proxy.remote.RemoteServer;
+import org.dragonet.proxy.util.PaletteManager;
 import org.dragonet.proxy.util.SkinUtils;
 import org.dragonet.proxy.util.TextFormat;
 
@@ -303,15 +307,24 @@ public class ProxySession implements PlayerSession {
         startGamePacket.setLevelId("DragonProxy " + proxy.getVersion());
         startGamePacket.setWorldName("world");
         startGamePacket.setPremiumWorldTemplateId("00000000-0000-0000-0000-000000000000");
-        startGamePacket.setCurrentTick(0);
+        //startGamePacket.setCurrentTick(0);
         startGamePacket.setEnchantmentSeed(0);
         startGamePacket.setMultiplayerCorrelationId("");
 
-        startGamePacket.setMovementServerAuthoritative(false);
+        //startGamePacket.setMovementServerAuthoritative(false);
         startGamePacket.setVanillaVersion(DragonProxy.BEDROCK_CODEC.getMinecraftVersion());
 
-        startGamePacket.setBlockPalette(DragonProxy.INSTANCE.getPaletteManager().getCachedPalette());
+        startGamePacket.setBlockPalette(BlockTranslator.BLOCK_PALETTE);
+        startGamePacket.setItemEntries(ItemTranslator.ITEM_PALETTE);
         bedrockSession.sendPacketImmediately(startGamePacket);
+
+        BiomeDefinitionListPacket biomeDefinitionListPacket = new BiomeDefinitionListPacket();
+        biomeDefinitionListPacket.setTag(PaletteManager.BIOME_ENTRIES);
+        sendPacket(biomeDefinitionListPacket);
+
+        AvailableEntityIdentifiersPacket entityPacket = new AvailableEntityIdentifiersPacket();
+        entityPacket.setTag(CompoundTag.EMPTY);
+        sendPacket(entityPacket);
 
         // Spawn
         PlayStatusPacket playStatusPacket = new PlayStatusPacket();

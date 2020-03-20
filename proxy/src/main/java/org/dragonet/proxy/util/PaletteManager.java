@@ -21,6 +21,9 @@ package org.dragonet.proxy.util;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import com.nukkitx.nbt.NbtUtils;
+import com.nukkitx.nbt.stream.NBTInputStream;
+import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.network.VarInts;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import com.nukkitx.protocol.bedrock.v388.BedrockUtils;
@@ -46,9 +49,25 @@ public class PaletteManager {
 
     private ArrayList<RuntimeEntry> entries = new ArrayList<>();
 
+    public static final CompoundTag BIOME_ENTRIES;
+
+    static {
+        // Load biome data
+        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("data/biome_definitions.dat");
+        if (stream == null) {
+            throw new AssertionError("Biome data table not found");
+        }
+
+        try(NBTInputStream biomenbtInputStream = NbtUtils.createNetworkReader(stream)) {
+            BIOME_ENTRIES = (CompoundTag) biomenbtInputStream.readTag();
+        } catch (Exception e) {
+            throw new AssertionError(e);
+        }
+    }
+
     public PaletteManager() {
-        loadBlocks();
-        loadItems();
+        //loadBlocks();
+        //loadItems();
     }
 
     private void loadBlocks() {
@@ -148,6 +167,12 @@ public class PaletteManager {
         private int data;
 
         public RuntimeEntry() {}
+
+        public RuntimeEntry(String name, int id) {
+            this.id = id;
+            this.name = name;
+            this.data = 0;
+        }
 
         public RuntimeEntry(String name, int id, int data) {
             this.id = id;
