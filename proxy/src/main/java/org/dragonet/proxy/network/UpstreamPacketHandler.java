@@ -65,7 +65,11 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
         // Check for supported protocol
         int index = Arrays.binarySearch(DragonProxy.BEDROCK_SUPPORTED_PROTOCOLS, packet.getProtocolVersion());
         if (index < 0) {
-            session.getBedrockSession().disconnect();
+            // Set a codec so we can disconnect them
+            session.getBedrockSession().setPacketCodec(DragonProxy.BEDROCK_CODEC);
+
+            // TODO: This message will never actually be displayed because the bedrock client is weird
+            session.getBedrockSession().disconnect("Please use " + DragonProxy.BEDROCK_CODEC.getMinecraftVersion());
             return true;
         }
         session.getBedrockSession().setPacketCodec(DragonProxy.BEDROCK_SUPPORTED_CODECS[index]);

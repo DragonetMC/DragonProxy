@@ -16,22 +16,22 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.java.player;
+package org.dragonet.proxy.network.translator.java;
 
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerAbilitiesPacket;
-import com.nukkitx.protocol.bedrock.packet.AdventureSettingsPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.ClientKeepAlivePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerKeepAlivePacket;
+import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
-
-public class PCPlayerAbilitiesPacketTranslator extends PacketTranslator<ServerPlayerAbilitiesPacket> {
+@Log4j2
+@PCPacketTranslator(packetClass = ServerKeepAlivePacket.class)
+public class PCKeepAliveTranslator extends PacketTranslator<ServerKeepAlivePacket> {
 
     @Override
-    public void translate(ProxySession session, ServerPlayerAbilitiesPacket packet) {
-        AdventureSettingsPacket bedrockPacket = new AdventureSettingsPacket();
-        // TODO
-
-        session.sendPacketImmediately(bedrockPacket);
+    public void translate(ProxySession session, ServerKeepAlivePacket packet) {
+        session.sendRemotePacket(new ClientKeepAlivePacket(packet.getPingId()));
     }
 }
+

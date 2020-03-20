@@ -18,11 +18,13 @@
  */
 package org.dragonet.proxy.configuration;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import org.dragonet.proxy.remote.RemoteAuthType;
 
 @Getter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DragonConfiguration {
 
     private String locale = "EN";

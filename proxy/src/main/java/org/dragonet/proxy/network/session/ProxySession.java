@@ -206,7 +206,7 @@ public class ProxySession implements PlayerSession {
 
     public void sendLoginForm() {
         CustomForm form = new CustomForm(TextFormat.BLUE + "Login to Mojang account")
-            .addComponent(new LabelComponent("DragonProxy is a piece of software that allows Minecraft: Bedrock players to join Minecraft: Java servers."))
+            .addComponent(new LabelComponent("DragonProxy"))
             .addComponent(new LabelComponent(TextFormat.GREEN + "Please enter your Mojang account credentials to authenticate"))
             .addComponent(new InputComponent(TextFormat.AQUA + "Email", "steve@example.com"))
             .addComponent(new InputComponent(TextFormat.AQUA + "Password", "123456"));

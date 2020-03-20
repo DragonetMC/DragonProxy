@@ -18,17 +18,20 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
+import com.github.steveice10.mc.protocol.data.game.scoreboard.ScoreboardAction;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerRespawnPacket;
-import com.nukkitx.protocol.bedrock.packet.ChangeDimensionPacket;
-import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
-import com.nukkitx.protocol.bedrock.packet.RespawnPacket;
-import com.nukkitx.protocol.bedrock.packet.SetPlayerGameTypePacket;
+import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.protocol.bedrock.packet.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedEntity;
+import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+
+import java.util.concurrent.TimeUnit;
 
 
 @Log4j2
@@ -38,29 +41,6 @@ public class PCRespawnTranslator extends PacketTranslator<ServerRespawnPacket> {
 
     @Override
     public void translate(ProxySession session, ServerRespawnPacket packet) {
-        if(packet.getDimension() != session.getCachedEntity().getDimension()) {
-            // TODO: finish this
-            ChangeDimensionPacket changeDimensionPacket = new ChangeDimensionPacket();
-            changeDimensionPacket.setDimension(packet.getDimension());
-            changeDimensionPacket.setPosition(session.getCachedEntity().getSpawnPosition());
-            changeDimensionPacket.setRespawn(true);
-            //session.sendPacket(changeDimensionPacket);
-
-            PlayStatusPacket playStatusPacket = new PlayStatusPacket();
-            playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
-            //session.sendPacket(playStatusPacket);
-
-            session.getCachedEntity().setDimension(packet.getDimension());
-        } else {
-            RespawnPacket respawnPacket = new RespawnPacket();
-            respawnPacket.setRuntimeEntityId(session.getCachedEntity().getProxyEid());
-            respawnPacket.setPosition(session.getCachedEntity().getSpawnPosition());
-            respawnPacket.setSpawnState(RespawnPacket.State.CLIENT_READY);
-            session.sendPacket(respawnPacket);
-        }
-
-        SetPlayerGameTypePacket setPlayerGameTypePacket = new SetPlayerGameTypePacket();
-        setPlayerGameTypePacket.setGamemode(packet.getGamemode().ordinal());
-        session.sendPacket(setPlayerGameTypePacket);
+        CachedPlayer cachedPlayer = session.getCachedEntity();
     }
 }
