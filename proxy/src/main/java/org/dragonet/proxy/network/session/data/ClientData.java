@@ -68,5 +68,5 @@ public final class ClientData {
     @JsonProperty("ThirdPartyName")
     private String thirdPartyName;
     @JsonProperty("UIProfile")
-    private int uiProfile;
+    private UIProfile uiProfile;
 }

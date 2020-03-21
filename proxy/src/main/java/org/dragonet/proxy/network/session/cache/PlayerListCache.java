@@ -19,6 +19,8 @@
 package org.dragonet.proxy.network.session.cache;
 
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -35,7 +37,7 @@ public class PlayerListCache implements Cache {
     @Setter
     private String footer;
 
-    private Map<UUID, PlayerListEntry> playerInfo = new HashMap<>();
+    private Object2ObjectMap<UUID, PlayerListEntry> playerInfo = new Object2ObjectOpenHashMap<>();
 
     @Override
     public void purge() {

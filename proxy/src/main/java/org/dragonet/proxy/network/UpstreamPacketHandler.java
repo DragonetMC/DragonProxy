@@ -46,12 +46,11 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Respresents the connection between the mcpe client and the proxy.
+ * Represents the connection between the bedrock client and the proxy.
  * Most of the LoginPacket code is from the NukkitX project.
  */
 @Log4j2
 public class UpstreamPacketHandler implements BedrockPacketHandler {
-
     private DragonProxy proxy;
     private ProxySession session;
 

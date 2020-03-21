@@ -16,13 +16,16 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.session.cache;
+package org.dragonet.proxy.network.session.data;
 
-public interface Cache {
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 
-    /**
-     * Purges all data that has been cached in a certain
-     * cache class.
-     */
-    void purge();
+/**
+ * Represents all possible user interface types
+ * specified in the bedrock LoginPacket.
+ */
+public enum UIProfile {
+    @JsonEnumDefaultValue
+    CLASSIC,
+    POCKET
 }

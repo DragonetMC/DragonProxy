@@ -54,7 +54,7 @@ public class WindowCache implements Cache {
         return window;
     }
 
-    public void destroyEntity(int windowId) {
+    public void destroyWindow(int windowId) {
         windows.remove(windowId);
     }
 

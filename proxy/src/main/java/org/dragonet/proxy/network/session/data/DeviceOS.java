@@ -20,6 +20,10 @@ package org.dragonet.proxy.network.session.data;
 
 import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 
+/**
+ * Represents all possible device operating system types
+ * specified in the bedrock LoginPacket.
+ */
 public enum DeviceOS {
     @JsonEnumDefaultValue
     UNKNOWN,

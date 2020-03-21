@@ -20,71 +20,30 @@ package org.dragonet.proxy.network.session.cache;
 
 import com.github.steveice10.mc.protocol.data.game.chunk.Chunk;
 import com.github.steveice10.mc.protocol.data.game.chunk.Column;
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.nukkitx.math.vector.Vector2f;
-import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.data.ItemData;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.chunk.ChunkData;
 import org.dragonet.proxy.data.chunk.ChunkSection;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.types.BlockTranslator;
 
-import java.util.HashMap;
-import java.util.Map;
-
-@RequiredArgsConstructor
 @Log4j2
 public class ChunkCache implements Cache {
     @Getter
-    private Map<Vector2f, Column> chunks = new HashMap<>(); // TODO
+    private Object2ObjectMap<Vector2f, Column> javaChunks = new Object2ObjectOpenHashMap<>();
 
-    private ProxySession session;
-
-    @Override
-    public void purge() {
-        chunks.clear();
-    }
-
-    public ItemData getBlockAt(Vector3f position) {
-        Vector2f chunkPosition = Vector2f.from((int) position.getX() >> 4, (int) position.getZ() >> 4);
-        if (!chunks.containsKey(chunkPosition))
-            return ItemData.AIR;
-
-        Column column = chunks.get(chunkPosition);
-        Chunk chunk = column.getChunks()[(int) position.getY() >> 4];
-        Vector3f blockPosition = getChunkBlock((int) position.getX(), (int) position.getY(), (int) position.getZ());
-        if (chunk != null) {
-            BlockState blockState = chunk.get((int) blockPosition.getX(), (int) blockPosition.getY(), (int) blockPosition.getZ());
-            return null;//BlockTranslator.translateToBedrock(new ItemStack(blockState.getId()));
-        }
-
-        return ItemData.AIR;
-    }
-
-    public Vector3f getChunkBlock(int x, int y, int z) {
-        int chunkX = x % 16;
-        int chunkY = y % 16;
-        int chunkZ = z % 16;
-
-        if (chunkX < 0)
-            chunkX = -chunkX;
-        if (chunkY < 0)
-            chunkY = -chunkY;
-        if (chunkZ < 0)
-            chunkZ = -chunkZ;
-
-        return Vector3f.from(chunkX, chunkY, chunkZ);
-    }
-
+    /**
+     * Translates a chunk from Java Edition to Bedrock Edition.
+     */
     public ChunkData translateChunk(int columnX, int columnZ) {
         Vector2f columnPos = Vector2f.from(columnX, columnZ);
 
-        if (chunks.containsKey(columnPos)) {
-            Column column = chunks.get(columnPos);
+        if (javaChunks.containsKey(columnPos)) {
+            Column column = javaChunks.get(columnPos);
             ChunkData chunkData = new ChunkData(columnX, columnZ);
 
             for (int i = 0; i < 16; i++) {
@@ -99,7 +58,7 @@ public class ChunkCache implements Cache {
                 try {
                     javaChunk = column.getChunks()[cy];
                 } catch (Exception ex) {
-                    log.warn("Chunk " + columnX + ", " + cy + ", " + columnZ + " not exist !");
+                    log.warn("Chunk " + columnX + ", " + cy + ", " + columnZ + " does not exist!");
                 }
                 if (javaChunk == null || javaChunk.isEmpty()) continue;
                 for (int x = 0; x < 16; x++) {
@@ -115,5 +74,10 @@ public class ChunkCache implements Cache {
             return chunkData;
         }
         return null;
+    }
+
+    @Override
+    public void purge() {
+        javaChunks.clear();
     }
 }

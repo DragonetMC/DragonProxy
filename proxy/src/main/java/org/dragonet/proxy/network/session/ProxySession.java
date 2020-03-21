@@ -73,6 +73,9 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Represents a bedrock player session.
+ */
 @Data
 @Log4j2
 public class ProxySession implements PlayerSession {
@@ -91,11 +94,11 @@ public class ProxySession implements PlayerSession {
 
     private AtomicInteger formIdCounter = new AtomicInteger();
 
-    private EntityCache entityCache;
-    private WindowCache windowCache;
-    private ChunkCache chunkCache;
-    private WorldCache worldCache;
-    private PlayerListCache playerListCache;
+    private EntityCache entityCache = new EntityCache();
+    private WindowCache windowCache = new WindowCache();
+    private ChunkCache chunkCache = new ChunkCache();
+    private WorldCache worldCache = new WorldCache();
+    private PlayerListCache playerListCache = new PlayerListCache();
 
     private CachedPlayer cachedEntity;
 
@@ -105,17 +108,11 @@ public class ProxySession implements PlayerSession {
     public ProxySession(DragonProxy proxy, BedrockServerSession bedrockSession) {
         this.proxy = proxy;
         this.bedrockSession = bedrockSession;
-
-        entityCache = new EntityCache();
-        windowCache = new WindowCache();
-        chunkCache = new ChunkCache();
-        worldCache = new WorldCache();
-        playerListCache = new PlayerListCache();
-
         //this.bedrockSession.setLogging(true);
 
         dataCache.put("auth_state", AuthState.NONE);
 
+        // Disconnect the player from the remote server when they disconnect
         bedrockSession.addDisconnectHandler((reason) -> {
             if (downstream != null && downstream.getSession() != null) {
                 if (cachedEntity != null) {
@@ -126,6 +123,11 @@ public class ProxySession implements PlayerSession {
         });
     }
 
+    /**
+     * Connect to a remote server.
+     *
+     * @param server the server to connect to
+     */
     public void connect(RemoteServer server) {
         if (protocol == null) {
             protocol = new MinecraftProtocol(authData.getDisplayName());
@@ -140,7 +142,7 @@ public class ProxySession implements PlayerSession {
 
             @Override
             public void disconnected(DisconnectedEvent event) {
-                log.info("Player  disconnected from remote. Reason: " + event.getReason());
+                log.info("Player disconnected from remote. Reason: " + event.getReason());
                 bedrockSession.disconnect(event.getReason());
             }
 
@@ -154,44 +156,57 @@ public class ProxySession implements PlayerSession {
                 }
             }
         });
+
         downstream.getSession().connect();
         remoteServer = server;
     }
 
+    /**
+     * Authenticate the user with Mojang account services.
+     * This method is only called if `auth-mode` is set to `online`.
+     *
+     * @param email    the mojang account email
+     * @param password the mojang account password
+     */
     public void authenticate(String email, String password) {
         proxy.getGeneralThreadPool().execute(() -> {
             try {
                 protocol = new MinecraftProtocol(email, password);
-
-                sendMessage(TextFormat.GREEN + "Login successful! Joining server...");
-
-                if (!username.equals(protocol.getProfile().getName())) {
-                    username = protocol.getProfile().getName();
-                    sendMessage(TextFormat.AQUA + "You username was changed to " + TextFormat.DARK_AQUA + username + TextFormat.AQUA + " like your Mojang account username");
-                }
-
-                // Empty line to seperate DragonProxy messages from server messages
-                sendMessage(" ");
-
-                // Start connecting to remote server
-                RemoteServer remoteServer = new RemoteServer("local", proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort());
-                connect(remoteServer);
-
-                // Enable coordinates now
-                GameRulesChangedPacket gameRulesChangedPacket = new GameRulesChangedPacket();
-                gameRulesChangedPacket.getGameRules().add(new GameRule<>("showcoordinates", true));
-                bedrockSession.sendPacket(gameRulesChangedPacket);
-
-                dataCache.put("auth_state", AuthState.AUTHENTICATED);
-
-                log.info("Player " + authData.getDisplayName() + " has been authenticated");
             } catch (RequestException e) {
                 log.warn("Failed to authenticate player: " + e.getMessage());
                 sendMessage(TextFormat.RED + e.getMessage());
             }
+
+            sendMessage(TextFormat.GREEN + "Login successful! Joining server...");
+
+            if (!username.equals(protocol.getProfile().getName())) {
+                username = protocol.getProfile().getName();
+                sendMessage(TextFormat.AQUA + "You username was changed to " + TextFormat.DARK_AQUA + username + TextFormat.AQUA + " like your Mojang account username");
+            }
+
+            // Empty line to seperate DragonProxy messages from server messages
+            sendMessage(" ");
+
+            // Start connecting to remote server
+            RemoteServer remoteServer = new RemoteServer("local", proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort());
+            connect(remoteServer);
+
+            // Enable coordinates now
+            GameRulesChangedPacket gameRulesChangedPacket = new GameRulesChangedPacket();
+            gameRulesChangedPacket.getGameRules().add(new GameRule<>("showcoordinates", true));
+            bedrockSession.sendPacket(gameRulesChangedPacket);
+
+            dataCache.put("auth_state", AuthState.AUTHENTICATED);
+
+            log.info("Player " + authData.getDisplayName() + " has been authenticated");
         });
     }
 
+    /**
+     * Fetch statistics from the remote server.
+     *
+     * @return a future that completes if the server responds to the stats request
+     */
     public CompletableFuture<Map<Statistic, Integer>> fetchStatistics() {
         CompletableFuture<Map<Statistic, Integer>> future = new CompletableFuture<>();
 
@@ -204,6 +219,10 @@ public class ProxySession implements PlayerSession {
         return future;
     }
 
+    /**
+     * Display a form that allows the player to enter their Mojang account credentials.
+     * This method is only called if `auth-mode` is set to `online`.
+     */
     public void sendLoginForm() {
         CustomForm form = new CustomForm(TextFormat.BLUE + "Login to Mojang account")
             .addComponent(new LabelComponent("DragonProxy"))
@@ -234,6 +253,10 @@ public class ProxySession implements PlayerSession {
         });
     }
 
+    /**
+     * Adds the player to the player list
+     * @param entityId
+     */
     public void spawn(long entityId) {
         PlayerListPacket.Entry entry = new PlayerListPacket.Entry(authData.getIdentity());
         entry.setEntityId(entityId);
@@ -335,6 +358,12 @@ public class ProxySession implements PlayerSession {
         cachedEntity = player;
     }
 
+    /**
+     * Set a skin for the specified player.
+     *
+     * @param playerId the target player uuid
+     * @param skinData the skin data, an rgba byte array
+     */
     public void setPlayerSkin(UUID playerId, byte[] skinData) {
         GameProfile profile = playerListCache.getPlayerInfo().get(playerId).getProfile();
 
@@ -370,8 +399,13 @@ public class ProxySession implements PlayerSession {
         // See below
     }
 
-    // Currently used for setting our own skin, however hopefully it can be used to
-    // set other players' skins in the future instead of using the player list hack
+    /**
+     * Currently used for setting our own skin, however hopefully it can be used to
+     * set other players' skins in the future instead of using the player list hack
+     *
+     * @param playerId the target player uuid
+     * @param skinData the skin data, an rgba byte array
+     */
     public void setPlayerSkin2(UUID playerId, byte[] skinData) {
         PlayerSkinPacket playerSkinPacket = new PlayerSkinPacket();
         playerSkinPacket.setUuid(playerId);
@@ -389,8 +423,18 @@ public class ProxySession implements PlayerSession {
     }
 
     public void sendMessage(String text) {
+        sendMessage(text, TextPacket.Type.RAW);
+    }
+
+    /**
+     * Send a message to the player.
+     *
+     * @param text
+     * @param type
+     */
+    public void sendMessage(String text, TextPacket.Type type) {
         TextPacket packet = new TextPacket();
-        packet.setType(TextPacket.Type.RAW);
+        packet.setType(type);
         packet.setNeedsTranslation(false);
         packet.setXuid("");
         packet.setSourceName("");
@@ -414,6 +458,12 @@ public class ProxySession implements PlayerSession {
         disconnect("Closed");
     }
 
+    /**
+     * Disconnect the player from the proxy and the remote server.
+     *
+     * @param reason the reason show on the disconnection screen and sent
+     *               to the remote server if the player is connected to it
+     */
     public void disconnect(String reason) {
         if (!isClosed()) {
             if (downstream != null) {
@@ -433,18 +483,33 @@ public class ProxySession implements PlayerSession {
         disconnect("Disconnect");
     }
 
+    /**
+     * Queue a packet to be sent to player.
+     *
+     * @param packet the bedrock packet from the NukkitX protocol lib
+     */
     public void sendPacket(BedrockPacket packet) {
         if (bedrockSession != null && !bedrockSession.isClosed()) {
             bedrockSession.sendPacket(packet);
         }
     }
 
+    /**
+     * Send a packet immediately to the player.
+     *
+     * @param packet the bedrock packet from the NukkitX protocol lib
+     */
     public void sendPacketImmediately(BedrockPacket packet) {
         if (bedrockSession != null && !bedrockSession.isClosed()) {
             bedrockSession.sendPacketImmediately(packet);
         }
     }
 
+    /**
+     * Send a packet to the remote server.
+     *
+     * @param packet the java edition packet from MCProtocolLib
+     */
     public void sendRemotePacket(Packet packet) {
         if (downstream != null && downstream.getSession() != null && protocol.getSubProtocol().equals(SubProtocol.GAME)) {
             downstream.getSession().send(packet);

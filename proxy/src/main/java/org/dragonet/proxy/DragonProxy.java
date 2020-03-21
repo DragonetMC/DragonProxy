@@ -92,11 +92,20 @@ public class DragonProxy {
     private volatile boolean running = true;
 
     private long startTime;
+    private int bindPort;
 
-    public DragonProxy(int bedrockPort, int javaPort) {
+    /**
+     * Constructs a new instance of the DragonProxy class.
+     * This is the main class for the proxy (although the command line option parsing is in the `bootstrap` module)
+     *
+     * @param bedrockPort a custom port provided from a command line option
+     *                    to override the bind port in the config
+     */
+    public DragonProxy(int bedrockPort) {
         INSTANCE = this;
 
         startTime = System.currentTimeMillis();
+        bindPort = bedrockPort;
 
         log.info("Welcome to DragonProxy version " + getVersion());
 
@@ -113,8 +122,6 @@ public class DragonProxy {
         if(!RELEASE) {
             log.warn("This is a development build. It may contain bugs. Do not use in production.");
         }
-
-       console = new DragonConsole(this);
 
         // Load configuration
         try {
@@ -143,7 +150,7 @@ public class DragonProxy {
         pingPassthroughThread = new PingPassthroughThread(this);
 
         if(configuration.isPingPassthrough()) {
-            generalThreadPool.scheduleAtFixedRate(pingPassthroughThread, 1, 1, TimeUnit.SECONDS);
+            generalThreadPool.scheduleAtFixedRate(pingPassthroughThread, 1, 10, TimeUnit.SECONDS);
             log.info("Ping passthrough enabled");
         }
 
@@ -161,6 +168,7 @@ public class DragonProxy {
         double bootTime = (System.currentTimeMillis() - startTime) / 1000d;
         log.info("Done ({}s)!", new DecimalFormat("#.##").format(bootTime));
 
+        console = new DragonConsole(this);
         console.start();
 
         while (this.running) {
@@ -190,11 +198,10 @@ public class DragonProxy {
         }
     }
 
+    /**
+     * Returns the version of DragonProxy.
+     */
     public String getVersion() {
         return DragonProxy.class.getPackage().getImplementationVersion();
-    }
-    
-    public Path getFolder() {
-        return Paths.get("");
     }
 }

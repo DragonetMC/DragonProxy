@@ -47,6 +47,9 @@ public class EntityCache implements Cache {
     private final Map<Integer, Long> remoteToClientMap = Collections.synchronizedMap(new HashMap<>());
     private final Map<Long, Integer> clientToRemoteMap = Collections.synchronizedMap(new HashMap<>());
 
+    /**
+     * Retrieve a cached entity from proxy entity id.
+     */
     public CachedEntity getByProxyId(long entityId) {
         if(!clientToRemoteMap.containsKey(entityId)) {
             return null;
@@ -54,6 +57,10 @@ public class EntityCache implements Cache {
         return entities.get(entityId);
     }
 
+    /**
+     * Retrieve a cached entity from a remote entity id,
+     * from the remote server.
+     */
     public CachedEntity getByRemoteId(int entityId) {
         if(remoteToClientMap.containsKey(entityId)) {
             return entities.get(remoteToClientMap.get(entityId));
@@ -61,6 +68,9 @@ public class EntityCache implements Cache {
         return null;
     }
 
+    /**
+     * Constructs a new cached entity.
+     */
     public CachedEntity newEntity(EntityType type, int entityId) {
         CachedEntity entity = new CachedEntity(type, nextClientEntityId.getAndIncrement(), entityId);
 
@@ -70,12 +80,25 @@ public class EntityCache implements Cache {
         return entity;
     }
 
+    /**
+     * Constructs a new local entity.
+     *
+     * A local entity is an entity that only exists on the bedrock client,
+     * and not on the remote server/
+     *
+     * This is used for when an entity id is expected for a certain packet on
+     * bedrock but not on Java, so a fake entity must be created.
+     */
     public CachedEntity newLocalEntity(EntityType type) {
         CachedEntity entity = new CachedEntity(type, nextClientEntityId.getAndIncrement());
         entities.put(entity.getProxyEid(), entity);
         return entity;
     }
 
+    /**
+     * Retrieves the next entity id from the id counter and then
+     * returns it for use in the bedrock BossEventPacket.
+     */
     public long newBossBar(UUID uuid) {
         long proxyEid = nextClientEntityId.getAndIncrement();
         bossbars.put(uuid, proxyEid);
@@ -88,6 +111,9 @@ public class EntityCache implements Cache {
         return proxyEid;
     }
 
+    /**
+     * Constructs a new cached player.
+     */
     public CachedPlayer newPlayer(int entityId, GameProfile profile) {
         CachedPlayer entity = new CachedPlayer(nextClientEntityId.getAndIncrement(), entityId, profile);
 

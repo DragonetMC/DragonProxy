@@ -39,7 +39,6 @@ public class Bootstrap {
         OptionParser optionParser = new OptionParser();
         optionParser.accepts("version", "Displays the proxy version");
         OptionSpec<String> bedrockPortOption = optionParser.accepts("bedrockPort", "Overrides the bedrock UDP bind port").withRequiredArg();
-        OptionSpec<String> javaPortOption = optionParser.accepts("javaPort", "Overrides the java TCP bind port").withRequiredArg();
         optionParser.accepts("help", "Display help/usage information").forHelp();
 
         // Handle command-line options
@@ -50,9 +49,8 @@ public class Bootstrap {
         }
 
         int bedrockPort = options.has(bedrockPortOption) ? Integer.parseInt(options.valueOf(bedrockPortOption)) : -1;
-        int javaPort = options.has(javaPortOption) ? Integer.parseInt(options.valueOf(javaPortOption)) : -1;
 
-        DragonProxy proxy = new DragonProxy(bedrockPort, javaPort);
+        DragonProxy proxy = new DragonProxy(bedrockPort);
 
         Runtime.getRuntime().addShutdownHook(new Thread(proxy::shutdown, "Shutdown thread"));
     }

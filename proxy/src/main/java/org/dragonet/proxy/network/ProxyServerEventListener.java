@@ -23,23 +23,27 @@ import com.nukkitx.protocol.bedrock.BedrockPong;
 import com.nukkitx.protocol.bedrock.BedrockServerEventHandler;
 import com.nukkitx.protocol.bedrock.BedrockServerSession;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.DragonConfiguration;
 
+import javax.annotation.Nonnull;
 import java.net.InetSocketAddress;
 
-@AllArgsConstructor
+/**
+ * Handles the bedrock client raknet ping.
+ */
+@RequiredArgsConstructor
 public class ProxyServerEventListener implements BedrockServerEventHandler {
-
-    public DragonProxy proxy;
+    public final DragonProxy proxy;
 
     @Override
-    public boolean onConnectionRequest(InetSocketAddress address) {
+    public boolean onConnectionRequest(@Nonnull InetSocketAddress address) {
         return true;
     }
 
     @Override
-    public BedrockPong onQuery(InetSocketAddress address) {
+    public BedrockPong onQuery(@Nonnull InetSocketAddress address) {
         DragonConfiguration config = proxy.getConfiguration();
 
         BedrockPong pong = new BedrockPong();
@@ -51,12 +55,14 @@ public class ProxyServerEventListener implements BedrockServerEventHandler {
         pong.setIpv4Port(config.getBindPort());
 
         if (config.isPingPassthrough()) {
-            ServerStatusInfo serverInfo = proxy.getPingPassthroughThread().getInfo();
+            ServerStatusInfo serverInfo = proxy.getPingPassthroughThread().getStatusInfo();
 
             if (serverInfo != null) {
                 pong.setMotd(serverInfo.getDescription().getText());
                 pong.setSubMotd(config.getMotd2());
-                pong.setPlayerCount(serverInfo.getPlayerInfo().getOnlinePlayers());
+
+                // Add 1 to prevent the bedrock client for disallowing the player to join the server
+                pong.setPlayerCount(serverInfo.getPlayerInfo().getOnlinePlayers() + 1);
                 pong.setMaximumPlayerCount(serverInfo.getPlayerInfo().getMaxPlayers());
             }
         } else {

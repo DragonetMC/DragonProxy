@@ -103,7 +103,7 @@ public class Statistics {
         if(statMap.containsKey(statistic)) {
             return statMap.get(statistic);
         }
-        log.warn("Statistic " + statistic.name() + " is not in the map!");
+        log.warn("No mapping for " + statistic.name() + "!");
         return null;
     }
 }

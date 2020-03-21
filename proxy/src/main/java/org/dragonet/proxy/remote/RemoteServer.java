@@ -21,6 +21,10 @@ package org.dragonet.proxy.remote;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Represents a remote server.
+ * This class is constructed based on a remote server defined in the config.
+ */
 @RequiredArgsConstructor
 @Getter
 public final class RemoteServer {
