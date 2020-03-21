@@ -19,6 +19,12 @@
 package org.dragonet.proxy.network.session.cache;
 
 import com.github.steveice10.mc.auth.data.GameProfile;
+import it.unimi.dsi.fastutil.longs.Long2ObjectArrayMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2LongArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.dragonet.proxy.data.entity.EntityType;
@@ -34,8 +40,8 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequiredArgsConstructor
 @Getter
 public class EntityCache implements Cache {
-    private Map<Long, CachedEntity> entities = new HashMap<>();
-    private Map<UUID, Long> bossbars = new HashMap<>();
+    private Long2ObjectMap<CachedEntity> entities = new Long2ObjectOpenHashMap<>();
+    private Object2LongMap<UUID> bossbars = new Object2LongOpenHashMap<>();
 
     private final AtomicLong nextClientEntityId = new AtomicLong(1L); // 1 is for client
     private final Map<Integer, Long> remoteToClientMap = Collections.synchronizedMap(new HashMap<>());

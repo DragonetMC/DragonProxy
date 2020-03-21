@@ -18,6 +18,8 @@
  */
 package org.dragonet.proxy.network.session.cache;
 
+import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.dragonet.proxy.data.stats.StatInfo;
@@ -28,7 +30,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 public class WorldCache implements Cache {
-    private Map<StatInfo, Integer> statistics = new HashMap<>();
+    private Object2IntMap<StatInfo> statistics = new Object2IntArrayMap<>();
     private double rainLevel = 0.0;
 
     @Override

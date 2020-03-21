@@ -19,6 +19,9 @@
 package org.dragonet.proxy.network.session.cache;
 
 import com.github.steveice10.mc.protocol.data.game.window.WindowType;
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 
@@ -28,7 +31,7 @@ import java.util.Map;
 @Getter
 public class WindowCache implements Cache {
     @Getter
-    private Map<Integer, CachedWindow> windows = new HashMap<>();
+    private Int2ObjectMap<CachedWindow> windows = new Int2ObjectOpenHashMap<>();
 
     public WindowCache() {
         windows.put(0, new CachedWindow(0, null, 45));
