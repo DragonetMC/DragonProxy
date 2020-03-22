@@ -152,6 +152,8 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
                     return true;
                 }
 
+                session.sendFakeStartGame();
+
                 // Start connecting to remote server
                 RemoteServer remoteServer = new RemoteServer("local", proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort());
                 session.connect(remoteServer);

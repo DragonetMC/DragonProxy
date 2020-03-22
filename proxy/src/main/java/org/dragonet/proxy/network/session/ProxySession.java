@@ -105,6 +105,8 @@ public class ProxySession implements PlayerSession {
     private AuthData authData;
     private ClientData clientData;
 
+    private int renderDistance = 4;
+
     public ProxySession(DragonProxy proxy, BedrockServerSession bedrockSession) {
         this.proxy = proxy;
         this.bedrockSession = bedrockSession;

@@ -43,11 +43,6 @@ public class PCChunkDataTranslator extends PacketTranslator<ServerChunkDataPacke
 
         session.getChunkCache().getJavaChunks().put(Vector2f.from(column.getX(), column.getZ()), column);
 
-        NetworkChunkPublisherUpdatePacket chunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
-        chunkPublisherUpdatePacket.setPosition(session.getCachedEntity().getPosition().toInt());
-        chunkPublisherUpdatePacket.setRadius(8 << 4);
-        session.sendPacket(chunkPublisherUpdatePacket);
-
         ChunkData chunkData = session.getChunkCache().translateChunk(column.getX(), column.getZ());
         if(chunkData != null) {
             LevelChunkPacket levelChunkPacket = chunkData.createChunkPacket();

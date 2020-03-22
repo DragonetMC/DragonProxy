@@ -129,7 +129,7 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
 
             // TODO: 01/04/2019 Add support for deserializing the chunk in the protocol library
 
-            session.sendPacketImmediately(startGamePacket);
+            //session.sendPacketImmediately(startGamePacket);
 
             Vector3f pos = Vector3f.from(-23, 70, 0);
             int chunkX = pos.getFloorX() >> 4;

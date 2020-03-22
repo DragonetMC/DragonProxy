@@ -46,39 +46,39 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
 
             switch(packet.getAction()) {
                 case ADD_PLAYER:
-                    // Fetch our own skin
-                    if(entry.getProfile().getName().equals(session.getUsername()) && session.getProxy().getConfiguration().isFetchPlayerSkins()) {
-                        session.getProxy().getGeneralThreadPool().execute(() -> {
-                            byte[] skinData = SkinUtils.fetchSkin(entry.getProfile());
-                            if (skinData == null) {
-                                return;
-                            }
-                            session.setPlayerSkin2(session.getAuthData().getIdentity(), skinData);
-                        });
-                        return;
-                    }
-
-                    long proxyEid = session.getEntityCache().getNextClientEntityId().getAndIncrement();
-
-                    playerListPacket.setType(PlayerListPacket.Type.ADD);
-
-                    SerializedSkin skin = SerializedSkin.of(
-                        entry.getProfile().getIdAsString(),
-                        ImageData.of(SkinUtils.STEVE_SKIN_DATA),
-                        ImageData.EMPTY,
-                        SkinUtils.getLegacyGeometryName("geometry.humanoid"),
-                        new String(session.getClientData().getSkinGeometry(), StandardCharsets.UTF_8),
-                        false);
-
-                    bedrockEntry.setEntityId(proxyEid);
-                    bedrockEntry.setName(entry.getProfile().getName());
-                    bedrockEntry.setSkin(skin);
-                    bedrockEntry.setXuid("");
-                    bedrockEntry.setPlatformChatId("");
-
-                    playerListPacket.getEntries().add(bedrockEntry);
-
-                    session.sendPacket(playerListPacket);
+//                    // Fetch our own skin
+//                    if(entry.getProfile().getName().equals(session.getUsername()) && session.getProxy().getConfiguration().isFetchPlayerSkins()) {
+//                        session.getProxy().getGeneralThreadPool().execute(() -> {
+//                            byte[] skinData = SkinUtils.fetchSkin(entry.getProfile());
+//                            if (skinData == null) {
+//                                return;
+//                            }
+//                            session.setPlayerSkin2(session.getAuthData().getIdentity(), skinData);
+//                        });
+//                        return;
+//                    }
+//
+//                    long proxyEid = session.getEntityCache().getNextClientEntityId().getAndIncrement();
+//
+//                    playerListPacket.setType(PlayerListPacket.Type.ADD);
+//
+//                    SerializedSkin skin = SerializedSkin.of(
+//                        entry.getProfile().getIdAsString(),
+//                        ImageData.EMPTY,
+//                        ImageData.EMPTY,
+//                        SkinUtils.getLegacyGeometryName("geometry.humanoid"),
+//                        new String(session.getClientData().getSkinGeometry(), StandardCharsets.UTF_8),
+//                        false);
+//
+//                    bedrockEntry.setEntityId(proxyEid);
+//                    bedrockEntry.setName(entry.getProfile().getName());
+//                    bedrockEntry.setSkin(skin);
+//                    bedrockEntry.setXuid("");
+//                    bedrockEntry.setPlatformChatId("");
+//
+//                    playerListPacket.getEntries().add(bedrockEntry);
+//
+//                    session.sendPacket(playerListPacket);
                     break;
 
                 case UPDATE_LATENCY:

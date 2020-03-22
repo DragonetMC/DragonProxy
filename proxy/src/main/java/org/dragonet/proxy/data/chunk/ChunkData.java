@@ -44,7 +44,7 @@ public final class ChunkData implements Closeable {
 
     private final int z;
 
-    private final ChunkSection[] sections;
+    public ChunkSection[] sections;
 
 //    private final Set<Player> players = new HashSet<>();
 //

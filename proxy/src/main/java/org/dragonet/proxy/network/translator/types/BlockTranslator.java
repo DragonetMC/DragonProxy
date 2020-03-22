@@ -64,6 +64,7 @@ public class BlockTranslator {
 
         ListTag<CompoundTag> blocksTag;
         try (NBTInputStream nbtInputStream = NbtUtils.createNetworkReader(stream)) {
+            // noinspection unchecked
             blocksTag = (ListTag<CompoundTag>) nbtInputStream.readTag();
         } catch (Exception e) {
             throw new AssertionError(e);
@@ -92,13 +93,13 @@ public class BlockTranslator {
         addedStatesMap.defaultReturnValue(-1);
         List<CompoundTag> paletteList = new ArrayList<>();
 
-        // I broke my old code, so heres some code borrowed from Geyser until i get the time
+        // I broke my old code, so here's some code borrowed from Geyser until i get the time
         // to change it, sorry guys
         // https://github.com/GeyserMC/Geyser
         Iterator<Map.Entry<String, JsonNode>> blocksIterator = blocks.fields();
         while (blocksIterator.hasNext()) {
             int javaProtocolId = javaIdAllocator.getAndIncrement();
-            int bedrockRuntimeId = bedrockIdAllocator.getAndIncrement();
+            int bedrockRuntimeId = bedrockIdAllocator.get();
 
             Map.Entry<String, JsonNode> entry = blocksIterator.next();
             CompoundTag blockTag = buildBedrockState(entry.getValue());
@@ -119,9 +120,12 @@ public class BlockTranslator {
                 continue;
             }
             java2BedrockMap.put(javaProtocolId, bedrockRuntimeId);
+            bedrockIdAllocator.incrementAndGet();
         }
 
         paletteList.addAll(blockStateMap.values()); // Add any missing mappings that could crash the client
+
+        //log.warn(paletteList);
 
         BLOCK_PALETTE = new ListTag<>("", CompoundTag.class, paletteList);
     }

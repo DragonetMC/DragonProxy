@@ -37,11 +37,6 @@ public class BlockStorage {
         this.bitArray = version.createPalette(SIZE);
         this.palette = new TIntArrayList(16, -1);
         this.palette.add(0); // Air is at the start of every palette.
-
-//        for(PaletteManager.RuntimeEntry entry : DragonProxy.INSTANCE.getPaletteManager().getEntries() ) {
-//            log.info("1: " + entry.getId() + " // 2: " + (entry.getId() | entry.getData()) + " // 3: " + PaletteManager.getOrCreateRuntimeId(entry.getId(), entry.getData()));
-//            this.palette.add(PaletteManager.getOrCreateRuntimeId(entry.getId(), entry.getData()));
-//        }
     }
 
     private BlockStorage(BitArray bitArray, TIntArrayList palette) {
@@ -50,11 +45,10 @@ public class BlockStorage {
     }
 
     public synchronized int getFullBlock(int index) {
-        return this.legacyIdFor(this.bitArray.get(index));
+        return this.palette.get(this.bitArray.get(index));
     }
 
-    public synchronized void setFullBlock(int index, int legacyId) {
-        int runtimeId = PaletteManager.getOrCreateRuntimeId(legacyId);
+    public synchronized void setFullBlock(int index, int runtimeId) {
         int idx = this.idFor(runtimeId);
 
 //        int idx = this.idFor(legacyId);
@@ -84,36 +78,6 @@ public class BlockStorage {
         //TODO: Write persistent NBT tags
     }
 
-//    public synchronized void readFromStorage(ByteBuf buffer) {
-//        BitArrayVersion version = getVersionFromHeader(buffer.readByte());
-//
-//        int expectedWordCount = version.getWordsForSize(SIZE);
-//        int[] words = new int[expectedWordCount];
-//        for (int i = 0; i < expectedWordCount; i++) {
-//            words[i] = buffer.readIntLE();
-//        }
-//        this.bitArray = version.createPalette(SIZE, words);
-//
-//        this.palette.clear();
-//        this.palette.add(0);
-//        int paletteSize = buffer.readIntLE();
-//        try (ByteBufInputStream stream = new ByteBufInputStream(buffer); NBTInputStream nbtStream =
-//            new NBTInputStream(stream, ByteOrder.LITTLE_ENDIAN, false)) {
-//            for (int i = 0; i < paletteSize; i++) {
-//                CompoundTag tag = (CompoundTag) Tag.readNamedTag(nbtStream);
-//                int id = PaletteManager.getLegacyIdFromName(tag.getString("name"));
-//                int data = tag.getShort("data");
-//                if (id == 0) {
-//                    continue;
-//                }
-//
-//                this.palette.add(PaletteManager.getOrCreateRuntimeId(id, data));
-//            }
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
     private void onResize(BitArrayVersion version) {
         BitArray newBitArray = version.createPalette(SIZE);
 
@@ -141,11 +105,6 @@ public class BlockStorage {
         return index;
     }
 
-    private int legacyIdFor(int index) {
-        int runtimeId = this.palette.get(index);
-        return PaletteManager.getLegacyId(runtimeId);
-    }
-
     private static int getPaletteHeader(BitArrayVersion version, boolean runtime) {
         return (version.getId() << 1) | (runtime ? 1 : 0);
     }
@@ -155,6 +114,10 @@ public class BlockStorage {
     }
 
     public boolean isEmpty() {
+        // TODO CHECK
+        if (this.palette.size() == 1) {
+            return true;
+        }
         for (int word : this.bitArray.getWords()) {
             if (word != 0) {
                 return false;

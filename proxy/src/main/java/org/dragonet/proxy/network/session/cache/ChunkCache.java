@@ -51,8 +51,8 @@ public class ChunkCache implements Cache {
             }
 
             // Blocks
-            for (int y = 0; y < 256; y++) {
-                int cy = y >> 4;
+            for (int chunkY = 0; chunkY < 256; chunkY++) {
+                int cy = chunkY >> 4;
 
                 Chunk javaChunk = null;
                 try {
@@ -62,12 +62,14 @@ public class ChunkCache implements Cache {
                 }
                 if (javaChunk == null || javaChunk.isEmpty()) continue;
                 for (int x = 0; x < 16; x++) {
-                    for (int z = 0; z < 16; z++) {
-                        BlockState block = javaChunk.get(x, y & 0xF, z);
-                        int bedrockId = BlockTranslator.translateToBedrock(block);
+                    for (int y = 0; y < 16; y++) {
+                        for (int z = 0; z < 16; z++) {
+                            BlockState block = javaChunk.get(x, y, z);
+                            int bedrockId = BlockTranslator.translateToBedrock(block);
 
-                        ChunkSection section = chunkData.getSection(cy);
-                        section.setFullBlock(x, y & 0xF, z, 0, bedrockId);
+                            ChunkSection section = chunkData.getSection(cy);
+                            section.setFullBlock(x, y, z, 0, bedrockId);
+                        }
                     }
                 }
             }
