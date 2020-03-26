@@ -42,8 +42,8 @@ public class PCPlayerHealthTranslator extends PacketTranslator<ServerPlayerHealt
     @Override
     public void translate(ProxySession session, ServerPlayerHealthPacket packet) {
         CachedEntity cachedEntity = session.getCachedEntity();
-        int health = (int) Math.ceil(10);//packet.getHealth());
-log.warn("HEALTH");
+        int health = (int) Math.ceil(packet.getHealth());
+
         cachedEntity.getAttributes().put(BedrockAttributeType.HEALTH, BedrockAttributeType.HEALTH.create(health));
         cachedEntity.getAttributes().put(BedrockAttributeType.HUNGER, BedrockAttributeType.HUNGER.create(packet.getFood()));
         cachedEntity.getAttributes().put(BedrockAttributeType.SATURATION, BedrockAttributeType.SATURATION.create(packet.getSaturation()));
