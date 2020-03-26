@@ -91,3 +91,4 @@ nb-configuration.xml
 # DragonProxy
 logs/
 /config.yml
+/metrics.properties

@@ -51,6 +51,11 @@ fetch-player-skins: true
 # them on the Bedrock client. This is currently experimental.
 enable-commands: false
 
+metrics:
+  enabled: true
+  # DO NOT CHANGE
+  server-uuid: donotchange_serveruuid
+
 # The amount of threads that will be used.
 # Only change if you know what you are doing
 thread-pool-size: 8

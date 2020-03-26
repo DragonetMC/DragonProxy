@@ -30,6 +30,7 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.command.CommandManager;
 import org.dragonet.proxy.configuration.DragonConfiguration;
 import org.dragonet.proxy.console.DragonConsole;
+import org.dragonet.proxy.metrics.MetricsManager;
 import org.dragonet.proxy.network.ProxyServerEventListener;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.dragonet.proxy.network.translator.types.BlockTranslator;
@@ -134,7 +135,7 @@ public class DragonProxy {
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         mapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
-        configuration = mapper.readValue(new FileInputStream("config.yml"), DragonConfiguration.class);
+        configuration = mapper.readValue(new FileInputStream("config.yml"), DragonConfiguration.class);;
 
         generalThreadPool = Executors.newScheduledThreadPool(configuration.getThreadPoolSize());
 
@@ -144,6 +145,9 @@ public class DragonProxy {
         new ItemTranslator();
         new BlockTranslator();
         new SkinUtils();
+
+        // Initialize metrics
+        new MetricsManager(this);
 
         commandManager = new CommandManager();
 
