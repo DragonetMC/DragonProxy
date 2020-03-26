@@ -53,16 +53,12 @@ public class PCEntityPropertiesTranslator extends PacketTranslator<ServerEntityP
 
             log.trace("Translating attribute: " + bedrockAttribute.getIdentifier() + " with value " + attribute.getValue());
             if(cachedEntity.getAttributes().containsKey(bedrockAttribute)) {
-                cachedEntity.getAttributes().replace(bedrockAttribute, new Attribute(bedrockAttribute.getIdentifier(), bedrockAttribute.getMinimumValue(), bedrockAttribute.getMaximumValue(), (float) attribute.getValue(), bedrockAttribute.getDefaultValue()));
+                cachedEntity.getAttributes().replace(bedrockAttribute, bedrockAttribute.create((float) attribute.getValue()));
             } else {
                 cachedEntity.getAttributes().remove(bedrockAttribute); // TODO: is this correct?
             }
         }
 
-        UpdateAttributesPacket updateAttributesPacket = new UpdateAttributesPacket();
-        updateAttributesPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
-        updateAttributesPacket.setAttributes(new ArrayList<>(cachedEntity.getAttributes().values()));
-
-        session.sendPacket(updateAttributesPacket);
+        cachedEntity.sendAttributes(session);
     }
 }

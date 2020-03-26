@@ -35,14 +35,13 @@ public class MessageTranslator {
     public static String translate(Message message) {
         JsonParser parser = new JsonParser();
         if (isMessage(message.getText())) {
-            JsonObject o = parser.parse(message.getText()).getAsJsonObject();
-            editJson(o);
-            message = Message.fromJson((JsonElement) o);
+            JsonObject object = parser.parse(message.getText()).getAsJsonObject();
+            message = Message.fromJson(editJson(object));
         }
         StringBuilder build = new StringBuilder(message.getText());
         for (Message msg : message.getExtra()) {
-            build.append(toMinecraftColor(msg.getStyle().getColor()));
             build.append(toMinecraftFormat(msg.getStyle().getFormats()));
+            build.append(toMinecraftColor(msg.getStyle().getColor()));
             if (!(msg.getText() == null))
                 build.append(translate(msg));
         }
@@ -55,8 +54,8 @@ public class MessageTranslator {
 
     public static String translationTranslateText(TranslationMessage message) {
         StringBuilder build = new StringBuilder("");
-        build.append(toMinecraftColor(message.getStyle().getColor()));
         build.append(toMinecraftFormat(message.getStyle().getFormats()));
+        build.append(toMinecraftColor(message.getStyle().getColor()));
         build.append("%");
         build.append(message.getTranslationKey());
         return build.toString();
@@ -77,8 +76,8 @@ public class MessageTranslator {
                     strings.add(translationTranslateParams(tmsg.getTranslationParams()).get(j));
             } else {
                 StringBuilder build = new StringBuilder("");
-                build.append(toMinecraftColor(messages[i].getStyle().getColor()));
                 build.append(toMinecraftFormat(messages[i].getStyle().getFormats()));
+                build.append(toMinecraftColor(messages[i].getStyle().getColor()));
                 build.append(translate(messages[i]));
                 strings.add(build.toString());
             }
@@ -89,37 +88,36 @@ public class MessageTranslator {
     public static boolean isMessage(String text) {
         JsonParser parser = new JsonParser();
         try {
-            JsonObject o = parser.parse(text).getAsJsonObject();
-            editJson(o);
-            try {
-                Message.fromJson((JsonElement) o);
-            } catch (Exception e) {
-                return false;
-            }
+            JsonObject object = parser.parse(text).getAsJsonObject();
+            Message.fromJson(editJson(object));
         } catch (Exception e) {
             return false;
         }
         return true;
     }
 
-    public static void editJson(JsonObject o) {
-        if (o.has("hoverEvent")) {
-            JsonObject sub = (JsonObject) o.get("hoverEvent");
-            JsonElement e = sub.get("value");
-            if (e instanceof JsonArray) {
+    public static JsonObject editJson(JsonObject object) {
+        if (object.has("hoverEvent")) {
+            JsonObject sub = (JsonObject) object.get("hoverEvent");
+            JsonElement element = sub.get("value");
+
+            if (element instanceof JsonArray) {
                 JsonObject newobj = new JsonObject();
-                newobj.add("extra", e);
+                newobj.add("extra", element);
                 newobj.addProperty("text", "");
                 sub.remove("value");
                 sub.add("value", newobj);
             }
         }
-        if (o.has("extra")) {
-            JsonArray a = o.getAsJsonArray("extra");
-            for (int i = 0; i < a.size(); i++)
-                if (!(a.get(i) instanceof JsonPrimitive))
-                    editJson((JsonObject) a.get(i));
+
+        if (object.has("extra")) {
+            JsonArray array = object.getAsJsonArray("extra");
+            for (int i = 0; i < array.size(); i++)
+                if (!(array.get(i) instanceof JsonPrimitive))
+                    editJson((JsonObject) array.get(i));
         }
+
+        return object;
     }
 
     public static String toMinecraftColor(ChatColor color) {
@@ -183,7 +181,7 @@ public class MessageTranslator {
     }
 
     private static String toMinecraftFormat(List<ChatFormat> formats) {
-        String superBase = "";
+        StringBuilder superBase = new StringBuilder();
         for (ChatFormat cf : formats) {
             String base = "\u00a7";
             switch (cf) {
@@ -205,8 +203,8 @@ public class MessageTranslator {
                 default:
                     break;
             }
-            superBase += base;
+            superBase.append(base);
         }
-        return superBase;
+        return superBase.toString();
     }
 }

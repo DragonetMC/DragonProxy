@@ -26,6 +26,7 @@ import com.nukkitx.protocol.bedrock.data.Attribute;
 import com.nukkitx.protocol.bedrock.packet.AdventureSettingsPacket;
 import com.nukkitx.protocol.bedrock.packet.RespawnPacket;
 import com.nukkitx.protocol.bedrock.packet.SetHealthPacket;
+import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockAttributeType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
@@ -34,14 +35,15 @@ import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
 
+@Log4j2
 @PCPacketTranslator(packetClass = ServerPlayerHealthPacket.class)
 public class PCPlayerHealthTranslator extends PacketTranslator<ServerPlayerHealthPacket> {
 
     @Override
     public void translate(ProxySession session, ServerPlayerHealthPacket packet) {
         CachedEntity cachedEntity = session.getCachedEntity();
-        int health = (int) Math.ceil(packet.getHealth());
-
+        int health = (int) Math.ceil(10);//packet.getHealth());
+log.warn("HEALTH");
         cachedEntity.getAttributes().put(BedrockAttributeType.HEALTH, BedrockAttributeType.HEALTH.create(health));
         cachedEntity.getAttributes().put(BedrockAttributeType.HUNGER, BedrockAttributeType.HUNGER.create(packet.getFood()));
         cachedEntity.getAttributes().put(BedrockAttributeType.SATURATION, BedrockAttributeType.SATURATION.create(packet.getSaturation()));

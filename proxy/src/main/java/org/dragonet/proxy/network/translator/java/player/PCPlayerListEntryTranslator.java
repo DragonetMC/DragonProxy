@@ -46,17 +46,17 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
 
             switch(packet.getAction()) {
                 case ADD_PLAYER:
-//                    // Fetch our own skin
-//                    if(entry.getProfile().getName().equals(session.getUsername()) && session.getProxy().getConfiguration().isFetchPlayerSkins()) {
-//                        session.getProxy().getGeneralThreadPool().execute(() -> {
-//                            byte[] skinData = SkinUtils.fetchSkin(entry.getProfile());
-//                            if (skinData == null) {
-//                                return;
-//                            }
-//                            session.setPlayerSkin2(session.getAuthData().getIdentity(), skinData);
-//                        });
-//                        return;
-//                    }
+                    // Fetch our own skin
+                    if(entry.getProfile().getName().equals(session.getUsername()) && session.getProxy().getConfiguration().isFetchPlayerSkins()) {
+                        session.getProxy().getGeneralThreadPool().execute(() -> {
+                            byte[] skinData = SkinUtils.fetchSkin(entry.getProfile());
+                            if (skinData == null) {
+                                return;
+                            }
+                            session.setPlayerSkin2(session.getAuthData().getIdentity(), skinData);
+                        });
+                        return;
+                    }
 //
 //                    long proxyEid = session.getEntityCache().getNextClientEntityId().getAndIncrement();
 //
@@ -64,7 +64,7 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
 //
 //                    SerializedSkin skin = SerializedSkin.of(
 //                        entry.getProfile().getIdAsString(),
-//                        ImageData.EMPTY,
+//                        ImageData.of(),
 //                        ImageData.EMPTY,
 //                        SkinUtils.getLegacyGeometryName("geometry.humanoid"),
 //                        new String(session.getClientData().getSkinGeometry(), StandardCharsets.UTF_8),

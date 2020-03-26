@@ -1,6 +1,8 @@
 package org.dragonet.proxy.network.translator.java.world;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerUpdateViewDistancePacket;
+import com.nukkitx.math.GenericMath;
+import com.nukkitx.math.TrigMath;
 import com.nukkitx.protocol.bedrock.packet.ChunkRadiusUpdatedPacket;
 import com.nukkitx.protocol.bedrock.packet.NetworkChunkPublisherUpdatePacket;
 import org.dragonet.proxy.network.session.ProxySession;
@@ -12,7 +14,7 @@ public class PCUpdateViewDistanceTranslator extends PacketTranslator<ServerUpdat
 
     @Override
     public void translate(ProxySession session, ServerUpdateViewDistancePacket packet) {
-        session.setRenderDistance(Math.min(packet.getViewDistance(), 30));
+        session.setRenderDistance(GenericMath.ceil(Math.min(packet.getViewDistance(), 30) * TrigMath.SQRT_OF_TWO));
 
         ChunkRadiusUpdatedPacket chunkRadiusUpdatedPacket = new ChunkRadiusUpdatedPacket();
         chunkRadiusUpdatedPacket.setRadius(session.getRenderDistance());

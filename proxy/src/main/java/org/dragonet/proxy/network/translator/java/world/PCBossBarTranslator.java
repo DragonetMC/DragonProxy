@@ -78,6 +78,7 @@ public class PCBossBarTranslator extends PacketTranslator<ServerBossBarPacket> {
                 break;
             default:
                 log.info(TextFormat.GRAY + "(debug) Unhandled boss bar action: " + packet.getAction().name());
+                break;
         }
 
         Long bossEid = session.getEntityCache().getBossbars().get(packet.getUuid());

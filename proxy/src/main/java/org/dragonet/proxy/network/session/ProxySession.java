@@ -415,7 +415,7 @@ public class ProxySession implements PlayerSession {
         SerializedSkin skin = SerializedSkin.of(
             playerId.toString(),
             ImageData.of(skinData),
-            ImageData.of(clientData.getCapeData()),
+            ImageData.EMPTY,
             SkinUtils.getLegacyGeometryName("geometry.humanoid"),
             new String(clientData.getSkinGeometry(), StandardCharsets.UTF_8),
             false);
