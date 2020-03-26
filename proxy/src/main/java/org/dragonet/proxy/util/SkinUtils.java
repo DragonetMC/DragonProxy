@@ -41,7 +41,6 @@ public class SkinUtils {
     static {
         try {
             STEVE_SKIN_DATA = convertToByteArray(ImageIO.read(DragonProxy.class.getClassLoader().getResource("skin_steve.png")));
-            log.warn(STEVE_SKIN_DATA.length);
         } catch (IOException e) {
             e.printStackTrace();
         }

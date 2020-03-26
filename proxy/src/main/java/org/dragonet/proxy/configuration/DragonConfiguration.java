@@ -26,11 +26,8 @@ import org.dragonet.proxy.remote.RemoteAuthType;
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DragonConfiguration {
-<<<<<<< HEAD
-=======
     @JsonProperty("config-version")
     private int configVersion;
->>>>>>> b4ba37a... Translate command arguments to an extent, add enable-commands to config
 
     private String locale = "EN";
 
