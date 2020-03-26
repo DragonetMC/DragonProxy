@@ -24,6 +24,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.nimbusds.jose.JWSObject;
+import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.BedrockServerSession;
 import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
 import com.nukkitx.protocol.bedrock.packet.*;
@@ -239,4 +240,9 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
         return true;
     }
 
+    @Override
+    public boolean handle(RespawnPacket packet) {
+        PacketTranslatorRegistry.BEDROCK_TO_JAVA.translate(session, packet);
+        return true;
+    }
 }

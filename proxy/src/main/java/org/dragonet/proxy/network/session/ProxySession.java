@@ -110,7 +110,7 @@ public class ProxySession implements PlayerSession {
     public ProxySession(DragonProxy proxy, BedrockServerSession bedrockSession) {
         this.proxy = proxy;
         this.bedrockSession = bedrockSession;
-        //this.bedrockSession.setLogging(true);
+        this.bedrockSession.setLogging(true);
 
         dataCache.put("auth_state", AuthState.NONE);
 

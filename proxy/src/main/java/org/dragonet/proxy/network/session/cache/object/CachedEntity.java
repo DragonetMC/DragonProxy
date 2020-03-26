@@ -23,6 +23,7 @@ import com.nukkitx.protocol.bedrock.data.*;
 import com.nukkitx.protocol.bedrock.packet.AddEntityPacket;
 import com.nukkitx.protocol.bedrock.packet.MobArmorEquipmentPacket;
 import com.nukkitx.protocol.bedrock.packet.RemoveEntityPacket;
+import com.nukkitx.protocol.bedrock.packet.UpdateAttributesPacket;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
@@ -165,6 +166,14 @@ public class CachedEntity {
         mobArmorEquipmentPacket.setBoots(boots);
 
         session.sendPacket(mobArmorEquipmentPacket);
+    }
+
+    public void sendAttributes(ProxySession session) {
+        UpdateAttributesPacket updateAttributesPacket = new UpdateAttributesPacket();
+        updateAttributesPacket.setRuntimeEntityId(proxyEid);
+        updateAttributesPacket.setAttributes(new ArrayList<>(attributes.values()));
+
+        session.sendPacket(updateAttributesPacket);
     }
 
     private void addDefaultMetadata() {

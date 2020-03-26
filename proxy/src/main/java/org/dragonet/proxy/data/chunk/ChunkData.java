@@ -10,6 +10,7 @@
  */
 package org.dragonet.proxy.data.chunk;
 
+import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
 import com.google.common.base.Preconditions;
 import com.nukkitx.network.VarInts;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
@@ -19,6 +20,7 @@ import gnu.trove.map.hash.TIntShortHashMap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.network.session.ProxySession;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -327,7 +329,7 @@ public final class ChunkData implements Closeable {
     }
 
     @Nonnull
-    public synchronized LevelChunkPacket createChunkPacket() {
+    public synchronized LevelChunkPacket createChunkPacket(ProxySession session, ServerChunkDataPacket javaChunkPacket) {
         if (this.cachedPacket != null) {
             //return cachedPacket;
         }
@@ -351,7 +353,7 @@ public final class ChunkData implements Closeable {
                 sections[i].writeToNetwork(buffer);
             }
 
-            buffer.writeBytes(this.biomes); // Biomes - 256 bytes
+            buffer.writeBytes(session.getChunkCache().translateBiome(javaChunkPacket.getColumn().getBiomeData())); // Biomes - 256 bytes
             buffer.writeByte(0); // Border blocks size - Education Edition only
 
             // Extra Data

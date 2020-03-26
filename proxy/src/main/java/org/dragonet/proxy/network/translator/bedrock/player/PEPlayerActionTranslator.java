@@ -24,45 +24,43 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.ClientRequestPacke
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerStatePacket;
 import com.nukkitx.protocol.bedrock.packet.PlayerActionPacket;
 import com.nukkitx.protocol.bedrock.packet.RespawnPacket;
+import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
+import org.dragonet.proxy.util.TextFormat;
 
+@Log4j2
 @PEPacketTranslator(packetClass = PlayerActionPacket.class)
 public class PEPlayerActionTranslator extends PacketTranslator<PlayerActionPacket> {
-    public static final PEPlayerActionTranslator INSTANCE = new PEPlayerActionTranslator();
 
     @Override
     public void translate(ProxySession session, PlayerActionPacket packet) {
+        CachedEntity cachedEntity = session.getEntityCache().getByProxyId(packet.getRuntimeEntityId());
+        if(cachedEntity == null) {
+            log.info(TextFormat.GRAY + "(debug) Cached entity not found in PEPlayerActionTranslator");
+            return;
+        }
+
         switch(packet.getAction()) {
             case RESPAWN:
-                session.sendRemotePacket(new ClientRequestPacket(ClientRequest.RESPAWN));
-
-                RespawnPacket respawnPacket = new RespawnPacket();
-                respawnPacket.setRuntimeEntityId(packet.getRuntimeEntityId());
-                respawnPacket.setPosition(session.getCachedEntity().getPosition());
-                respawnPacket.setSpawnState(RespawnPacket.State.CLIENT_READY);
-                session.sendPacket(respawnPacket);
+                // TODO: reset stuff
                 break;
             case START_SNEAK:
-                ClientPlayerStatePacket startSneakPacket = new ClientPlayerStatePacket((int) packet.getRuntimeEntityId(), PlayerState.START_SNEAKING);
-                session.sendRemotePacket(startSneakPacket);
+                session.sendRemotePacket(new ClientPlayerStatePacket(cachedEntity.getRemoteEid(), PlayerState.START_SNEAKING));
                 break;
             case STOP_SNEAK:
-                ClientPlayerStatePacket stopSneakPacket = new ClientPlayerStatePacket((int) packet.getRuntimeEntityId(), PlayerState.STOP_SNEAKING);
-                session.sendRemotePacket(stopSneakPacket);
+                session.sendRemotePacket(new ClientPlayerStatePacket(cachedEntity.getRemoteEid(), PlayerState.STOP_SNEAKING));
                 break;
             case START_SPRINT:
-                ClientPlayerStatePacket startSprintPacket = new ClientPlayerStatePacket((int) packet.getRuntimeEntityId(), PlayerState.START_SPRINTING);
-                session.sendRemotePacket(startSprintPacket);
+                session.sendRemotePacket(new ClientPlayerStatePacket(cachedEntity.getRemoteEid(), PlayerState.START_SPRINTING));
                 break;
             case STOP_SPRINT:
-                ClientPlayerStatePacket stopSprintPacket = new ClientPlayerStatePacket((int) packet.getRuntimeEntityId(), PlayerState.STOP_SPRINTING);
-                session.sendRemotePacket(stopSprintPacket);
+                session.sendRemotePacket(new ClientPlayerStatePacket(cachedEntity.getRemoteEid(), PlayerState.STOP_SPRINTING));
                 break;
             case STOP_SLEEP:
-                ClientPlayerStatePacket leaveBedPacket = new ClientPlayerStatePacket((int) packet.getRuntimeEntityId(), PlayerState.LEAVE_BED);
-                session.sendRemotePacket(leaveBedPacket);
+                session.sendRemotePacket(new ClientPlayerStatePacket(cachedEntity.getRemoteEid(), PlayerState.LEAVE_BED));
                 break;
         }
     }

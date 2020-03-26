@@ -22,10 +22,13 @@ import com.github.steveice10.mc.protocol.data.game.ClientRequest;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientRequestPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerAbilitiesPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
+import com.nukkitx.protocol.bedrock.data.Attribute;
 import com.nukkitx.protocol.bedrock.packet.AdventureSettingsPacket;
 import com.nukkitx.protocol.bedrock.packet.RespawnPacket;
 import com.nukkitx.protocol.bedrock.packet.SetHealthPacket;
+import org.dragonet.proxy.data.entity.BedrockAttributeType;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
@@ -36,19 +39,13 @@ public class PCPlayerHealthTranslator extends PacketTranslator<ServerPlayerHealt
 
     @Override
     public void translate(ProxySession session, ServerPlayerHealthPacket packet) {
-        SetHealthPacket setHealthPacket = new SetHealthPacket();
-        setHealthPacket.setHealth((int) Math.ceil(packet.getHealth()));
-        session.sendPacket(setHealthPacket);
+        CachedEntity cachedEntity = session.getCachedEntity();
+        int health = (int) Math.ceil(packet.getHealth());
 
-        if(packet.getHealth() <= 0) {
-            RespawnPacket respawnPacket = new RespawnPacket();
-            respawnPacket.setPosition(session.getCachedEntity().getSpawnPosition());
-            session.sendPacket(respawnPacket);
+        cachedEntity.getAttributes().put(BedrockAttributeType.HEALTH, BedrockAttributeType.HEALTH.create(health));
+        cachedEntity.getAttributes().put(BedrockAttributeType.HUNGER, BedrockAttributeType.HUNGER.create(packet.getFood()));
+        cachedEntity.getAttributes().put(BedrockAttributeType.SATURATION, BedrockAttributeType.SATURATION.create(packet.getSaturation()));
 
-            // Tell the server we are ready to respawn
-            session.sendRemotePacket(new ClientRequestPacket(ClientRequest.RESPAWN));
-        }
-
-        // TODO: update attributes
+        cachedEntity.sendAttributes(session);
     }
 }

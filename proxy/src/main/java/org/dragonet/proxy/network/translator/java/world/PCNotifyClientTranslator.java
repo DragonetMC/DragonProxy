@@ -19,8 +19,11 @@
 package org.dragonet.proxy.network.translator.java.world;
 
 import com.github.steveice10.mc.protocol.data.MagicValues;
+import com.github.steveice10.mc.protocol.data.game.ClientRequest;
+import com.github.steveice10.mc.protocol.data.game.world.notify.EnterCreditsValue;
 import com.github.steveice10.mc.protocol.data.game.world.notify.RainStrengthValue;
 import com.github.steveice10.mc.protocol.data.game.world.notify.ThunderStrengthValue;
+import com.github.steveice10.mc.protocol.packet.ingame.client.ClientRequestPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
@@ -74,11 +77,18 @@ public class PCNotifyClientTranslator extends PacketTranslator<ServerNotifyClien
                 }
                 break;
             case ENTER_CREDITS:
-                ShowCreditsPacket showCreditsPacket = new ShowCreditsPacket();
-                showCreditsPacket.setRuntimeEntityId(session.getCachedEntity().getProxyEid());
-                showCreditsPacket.setStatus(ShowCreditsPacket.Status.START_CREDITS);
+                switch((EnterCreditsValue) packet.getValue()) {
+                    case FIRST_TIME:
+                        ShowCreditsPacket showCreditsPacket = new ShowCreditsPacket();
+                        showCreditsPacket.setRuntimeEntityId(session.getCachedEntity().getProxyEid());
+                        showCreditsPacket.setStatus(ShowCreditsPacket.Status.START_CREDITS);
 
-                session.sendPacket(showCreditsPacket);
+                        session.sendPacket(showCreditsPacket);
+                        break;
+                    case SEEN_BEFORE:
+                        session.sendRemotePacket(new ClientRequestPacket(ClientRequest.RESPAWN));
+                        break;
+                }
                 break;
             case DEMO_MESSAGE:
                 log.info(TextFormat.AQUA + "Demo message received");

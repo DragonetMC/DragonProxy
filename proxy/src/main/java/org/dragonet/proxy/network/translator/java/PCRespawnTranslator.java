@@ -42,5 +42,17 @@ public class PCRespawnTranslator extends PacketTranslator<ServerRespawnPacket> {
     @Override
     public void translate(ProxySession session, ServerRespawnPacket packet) {
         CachedPlayer cachedPlayer = session.getCachedEntity();
+
+        // Set the players gamemode
+        SetPlayerGameTypePacket setPlayerGameTypePacket = new SetPlayerGameTypePacket();
+        setPlayerGameTypePacket.setGamemode(packet.getGamemode().ordinal());
+        session.sendPacket(setPlayerGameTypePacket);
+
+        // Respawn the player
+        RespawnPacket respawnPacket = new RespawnPacket();
+        respawnPacket.setRuntimeEntityId(cachedPlayer.getProxyEid());
+        respawnPacket.setPosition(cachedPlayer.getSpawnPosition());
+        respawnPacket.setSpawnState(RespawnPacket.State.SERVER_READY);
+        session.sendPacket(respawnPacket);
     }
 }

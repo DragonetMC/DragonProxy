@@ -30,12 +30,11 @@ import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
 @Log4j2
 @PEPacketTranslator(packetClass = CommandRequestPacket.class)
 public class PECommandRequestTranslator extends PacketTranslator<CommandRequestPacket> {
-    public static final PECommandRequestTranslator INSTANCE = new PECommandRequestTranslator();
 
     @Override
     public void translate(ProxySession session, CommandRequestPacket packet) {
+        // Proxy commands
         CommandManager commandManager = DragonProxy.INSTANCE.getCommandManager();
-        // TODO: better command management
         String command = packet.getCommand().replace("/", "");
         if(commandManager.getCommands().containsKey(command)) {
             commandManager.executeCommand(session, command);

@@ -18,22 +18,28 @@
  */
 package org.dragonet.proxy.network.translator.bedrock;
 
+import com.github.steveice10.mc.protocol.data.game.ClientRequest;
+import com.github.steveice10.mc.protocol.packet.ingame.client.ClientRequestPacket;
 import com.nukkitx.protocol.bedrock.packet.AnimatePacket;
+import com.nukkitx.protocol.bedrock.packet.RespawnPacket;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
 
-@PEPacketTranslator(packetClass = AnimatePacket.class)
-public class PEAnimateTranslator extends PacketTranslator<AnimatePacket> {
+@PEPacketTranslator(packetClass = RespawnPacket.class)
+public class PERespawnTranslator extends PacketTranslator<RespawnPacket> {
 
     @Override
-    public void translate(ProxySession session, AnimatePacket packet) {
-        switch(packet.getAction()) {
-            case SWING_ARM:
-                //ClientPlayerSwingArmPacket swingArmPacket = new ClientPlayerSwingArmPacket(Hand.MAIN_HAND);
-                //session.sendRemotePacket(swingArmPacket);
-                break;
+    public void translate(ProxySession session, RespawnPacket packet) {
+        if(packet.getSpawnState() == RespawnPacket.State.CLIENT_READY) {
+            RespawnPacket respawnPacket = new RespawnPacket();
+            respawnPacket.setRuntimeEntityId(packet.getRuntimeEntityId());
+            respawnPacket.setPosition(packet.getPosition());
+            respawnPacket.setSpawnState(RespawnPacket.State.SERVER_SEARCHING);
 
+            session.sendPacket(respawnPacket);
+
+            session.sendRemotePacket(new ClientRequestPacket(ClientRequest.RESPAWN));
         }
     }
 }

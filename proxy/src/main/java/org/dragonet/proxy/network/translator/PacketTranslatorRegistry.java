@@ -76,7 +76,7 @@ public class PacketTranslatorRegistry<P> {
         if (session.getDownstream() == null || session.getBedrockSession().isClosed()) {
             return;
         }
-        log.trace("Translating packet: " + packetClass.getSimpleName());
+        //log.trace("Translating packet: " + packetClass.getSimpleName());
         target.translate(session, packet);
     }
 

@@ -18,8 +18,10 @@
  */
 package org.dragonet.proxy.data.entity;
 
+import com.nukkitx.protocol.bedrock.data.Attribute;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.w3c.dom.Attr;
 
 @Getter
 @AllArgsConstructor
@@ -35,4 +37,8 @@ public enum BedrockAttributeType {
     private float minimumValue;
     private float maximumValue;
     private float defaultValue;
+
+    public Attribute create(float value) {
+        return new Attribute(identifier, minimumValue, maximumValue, value, defaultValue);
+    }
 }

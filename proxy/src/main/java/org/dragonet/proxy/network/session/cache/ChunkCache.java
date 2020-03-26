@@ -31,6 +31,8 @@ import org.dragonet.proxy.data.chunk.ChunkSection;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.types.BlockTranslator;
 
+import java.util.Arrays;
+
 @Log4j2
 public class ChunkCache implements Cache {
     @Getter
@@ -76,6 +78,34 @@ public class ChunkCache implements Cache {
             return chunkData;
         }
         return null;
+    }
+
+    public byte[] translateBiome(int[] javaBiomeData) {
+        byte[] bedrockBiomeData = new byte[256];
+        for (int z = 0; z < 16; z += 4) {
+            for (int x = 0; x < 16; x += 4) {
+                int biomeId = getBiomeId(javaBiomeData, x, z);
+                fillBedrockBiomeData(z, x, bedrockBiomeData, biomeId);
+                fillBedrockBiomeData(z + 1, x, bedrockBiomeData, biomeId);
+                fillBedrockBiomeData(z + 2, x, bedrockBiomeData, biomeId);
+                fillBedrockBiomeData(z + 3, x, bedrockBiomeData, biomeId);
+            }
+        }
+        return bedrockBiomeData;
+    }
+
+    protected static void fillBedrockBiomeData(int z, int x, byte[] bedrockBiomeData, int biomeId) {
+        int offset = (z << 4) | x;
+        Arrays.fill(bedrockBiomeData, offset, offset + 4, (byte) biomeId);
+    }
+
+    /*
+     * biomeData[((y >> 2) << 4) | ((z >> 2) << 2) | ((x >> 2)]
+     * Use y == 0, because vanilla 1.15 + only uses lowest layer for biome
+     * Transform 2 z bit shifts into mask
+     */
+    protected static byte getBiomeId(int[] biomeData, int x, int z) {
+        return (byte) biomeData[((z >> 2) & 3) << 2 | ((x >> 2) & 3)];
     }
 
     @Override

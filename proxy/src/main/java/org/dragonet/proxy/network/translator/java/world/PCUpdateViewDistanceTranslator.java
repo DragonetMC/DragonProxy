@@ -12,8 +12,10 @@ public class PCUpdateViewDistanceTranslator extends PacketTranslator<ServerUpdat
 
     @Override
     public void translate(ProxySession session, ServerUpdateViewDistancePacket packet) {
+        session.setRenderDistance(Math.min(packet.getViewDistance(), 30));
+
         ChunkRadiusUpdatedPacket chunkRadiusUpdatedPacket = new ChunkRadiusUpdatedPacket();
-        chunkRadiusUpdatedPacket.setRadius(packet.getViewDistance());
+        chunkRadiusUpdatedPacket.setRadius(session.getRenderDistance());
         session.sendPacket(chunkRadiusUpdatedPacket);
     }
 }

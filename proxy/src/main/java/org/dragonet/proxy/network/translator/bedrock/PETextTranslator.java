@@ -26,10 +26,10 @@ import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
 
 @PEPacketTranslator(packetClass = TextPacket.class)
 public class PETextTranslator extends PacketTranslator<TextPacket> {
-    public static final PETextTranslator INSTANCE = new PETextTranslator();
 
     @Override
     public void translate(ProxySession session, TextPacket packet) {
+        // Hack for entering commands without the bedrock client suggestions showing up
         if(packet.getMessage().charAt(0) == '.' && packet.getMessage().charAt(1) == '/') {
             ClientChatPacket chatPacket = new ClientChatPacket(packet.getMessage().replace("./", "/"));
             session.sendRemotePacket(chatPacket);
