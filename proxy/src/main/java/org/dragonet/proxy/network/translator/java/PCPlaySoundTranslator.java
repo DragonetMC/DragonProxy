@@ -19,9 +19,11 @@
 package org.dragonet.proxy.network.translator.java;
 
 import com.github.steveice10.mc.protocol.data.game.world.sound.BuiltinSound;
+import com.github.steveice10.mc.protocol.data.game.world.sound.CustomSound;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientKeepAlivePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerKeepAlivePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerPlayBuiltinSoundPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerPlaySoundPacket;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.SoundEvent;
 import com.nukkitx.protocol.bedrock.packet.LevelEventGenericPacket;
@@ -35,18 +37,25 @@ import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.types.SoundTranslator;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerPlayBuiltinSoundPacket.class)
-public class PCPlayBuiltinSoundTranslator extends PacketTranslator<ServerPlayBuiltinSoundPacket> {
+@PCPacketTranslator(packetClass = ServerPlaySoundPacket.class)
+public class PCPlaySoundTranslator extends PacketTranslator<ServerPlaySoundPacket> {
 
     @Override
-    public void translate(ProxySession session, ServerPlayBuiltinSoundPacket packet) {
-        String soundName = SoundTranslator.translateToBedrock(packet.getSound());
-        if(soundName == null) {
-            log.warn("No mapping for sound: " + packet.getSound().name());
+    public void translate(ProxySession session, ServerPlaySoundPacket packet) {
+        if(!(packet.getSound() instanceof BuiltinSound)) {
+            log.info("PCPlaySoundTranslator: Custom sound received, ignoring");
             return;
         }
 
-        //log.info("translating sound: " + packet.getSound().name().toLowerCase() + "  ///  " + soundName);
+        BuiltinSound sound = (BuiltinSound) packet.getSound();
+        String soundName = SoundTranslator.translateToBedrock(sound);
+
+        if(soundName == null) {
+            log.warn("No mapping for sound: " + sound.name());
+            return;
+        }
+
+        //log.info("translating sound: " + sound.name().toLowerCase() + "  ///  " + soundName);
 
         PlaySoundPacket playSoundPacket = new PlaySoundPacket();
         playSoundPacket.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));

@@ -31,7 +31,9 @@ public enum BedrockAttributeType {
     ATTACK_DAMAGE("minecraft:attack_damage", 0f, 2048f, 1f),
     HUNGER("minecraft:player.hunger", 0f, 20f, 20f),
     SATURATION("minecraft:player.saturation", 0f, 20f, 20f),
-    HEALTH("minecraft:health", 0f, 1024f, 20f);
+    HEALTH("minecraft:health", 0f, 1024f, 20f),
+    EXPERIENCE_LEVEL("minecraft:player.level", 0.00f, 24791.00f, 0.00f),
+    EXPERIENCE("minecraft:player.experience", 0.00f, 1.00f, 0.00f);
 
     private String identifier;
     private float minimumValue;

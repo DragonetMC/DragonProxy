@@ -32,6 +32,7 @@ The project has been undergoing a rewrite for some time, and development has rec
 - [x] Fetching skins
 - [x] Titles
 - [x] Bossbar
+- [x] Sounds
 - [ ] Scoreboard
 - [ ] Statistics viewing (./stats)
   - [x] General

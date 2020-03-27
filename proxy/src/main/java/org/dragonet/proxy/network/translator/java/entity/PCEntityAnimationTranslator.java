@@ -25,6 +25,7 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.util.TextFormat;
 
 @Log4j2
 @PCPacketTranslator(packetClass = ServerEntityAnimationPacket.class)
@@ -35,7 +36,7 @@ public class PCEntityAnimationTranslator extends PacketTranslator<ServerEntityAn
     public void translate(ProxySession session, ServerEntityAnimationPacket packet) {
         CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(packet.getEntityId());
         if(cachedEntity == null) {
-            //log.info("(debug) Cached entity is null");
+            log.info(TextFormat.GRAY + "(debug) PCEntityAnimationTranslator: Cached entity is null");
             return;
         }
 
