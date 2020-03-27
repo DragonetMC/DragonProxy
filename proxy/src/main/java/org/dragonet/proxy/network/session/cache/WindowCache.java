@@ -27,11 +27,12 @@ import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
 public class WindowCache implements Cache {
-    @Getter
     private Int2ObjectMap<CachedWindow> windows = new Int2ObjectOpenHashMap<>();
+    private AtomicInteger javaActionIdAllocator = new AtomicInteger(1);
 
     public WindowCache() {
         windows.put(0, new CachedWindow(0, null, 45));

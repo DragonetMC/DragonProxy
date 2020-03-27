@@ -18,24 +18,28 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
-import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
+import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientConfirmTransactionPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerConfirmTransactionPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.WindowCache;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.types.InventoryTranslator;
+import org.dragonet.proxy.util.TextFormat;
+
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerOpenWindowPacket.class)
-public class PCOpenWindowTranslator extends PacketTranslator<ServerOpenWindowPacket> {
-    public static final PCOpenWindowTranslator INSTANCE = new PCOpenWindowTranslator();
+@PCPacketTranslator(packetClass = ServerConfirmTransactionPacket.class)
+public class PCConfirmTransactionTranslator extends PacketTranslator<ServerConfirmTransactionPacket> {
 
     @Override
-    public void translate(ProxySession session, ServerOpenWindowPacket packet) {
-        CachedWindow cachedWindow = session.getWindowCache().newWindow(packet.getType(), packet.getWindowId());
-        cachedWindow.setName(packet.getName());
-        cachedWindow.open(session);
-
-        log.warn("OPENING WINDOW id: " + packet.getWindowId() + "  -  " + packet.getName());
+    public void translate(ProxySession session, ServerConfirmTransactionPacket packet) {
+        session.sendRemotePacket(new ClientConfirmTransactionPacket(packet.getWindowId(), packet.getActionId(), packet.isAccepted()));
     }
 }

@@ -33,6 +33,7 @@ public class CachedPlayer extends CachedEntity {
     private final GameProfile profile;
 
     private float flySpeed = 0.05f;
+    private int selectedHotbarSlot = 0;
 
     public CachedPlayer(long proxyEid, int remoteEid, GameProfile profile) {
         super(EntityType.PLAYER, proxyEid, remoteEid);

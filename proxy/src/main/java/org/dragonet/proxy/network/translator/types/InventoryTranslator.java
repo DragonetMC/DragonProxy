@@ -70,7 +70,7 @@ public class InventoryTranslator {
 
         inventoryContentPacket.setContents(contents);
         // TODO: fixes issues on cubecraft and hypixel with crashing clients. Need to investate.
-        //session.sendPacket(inventoryContentPacket);
+        session.sendPacket(inventoryContentPacket);
     }
 
     public static void updateSlot(ProxySession session, ServerSetSlotPacket packet) {

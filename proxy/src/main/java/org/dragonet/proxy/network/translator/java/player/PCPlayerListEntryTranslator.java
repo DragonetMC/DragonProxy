@@ -57,28 +57,28 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
                         });
                         return;
                     }
-//
-//                    long proxyEid = session.getEntityCache().getNextClientEntityId().getAndIncrement();
-//
-//                    playerListPacket.setType(PlayerListPacket.Type.ADD);
-//
-//                    SerializedSkin skin = SerializedSkin.of(
-//                        entry.getProfile().getIdAsString(),
-//                        ImageData.of(),
-//                        ImageData.EMPTY,
-//                        SkinUtils.getLegacyGeometryName("geometry.humanoid"),
-//                        new String(session.getClientData().getSkinGeometry(), StandardCharsets.UTF_8),
-//                        false);
-//
-//                    bedrockEntry.setEntityId(proxyEid);
-//                    bedrockEntry.setName(entry.getProfile().getName());
-//                    bedrockEntry.setSkin(skin);
-//                    bedrockEntry.setXuid("");
-//                    bedrockEntry.setPlatformChatId("");
-//
-//                    playerListPacket.getEntries().add(bedrockEntry);
-//
-//                    session.sendPacket(playerListPacket);
+
+                    long proxyEid = session.getEntityCache().getNextClientEntityId().getAndIncrement();
+
+                    playerListPacket.setType(PlayerListPacket.Type.ADD);
+
+                    SerializedSkin skin = SerializedSkin.of(
+                        entry.getProfile().getIdAsString(),
+                        ImageData.of(session.getClientData().getSkinImageWidth(), session.getClientData().getSkinImageHeight(), SkinUtils.STEVE_SKIN_DATA),
+                        ImageData.EMPTY,
+                        SkinUtils.getLegacyGeometryName("geometry.humanoid"),
+                        new String(session.getClientData().getSkinGeometry(), StandardCharsets.UTF_8),
+                        false);
+
+                    bedrockEntry.setEntityId(proxyEid);
+                    bedrockEntry.setName(entry.getProfile().getName());
+                    bedrockEntry.setSkin(skin);
+                    bedrockEntry.setXuid("");
+                    bedrockEntry.setPlatformChatId("");
+
+                    playerListPacket.getEntries().add(bedrockEntry);
+
+                    session.sendPacket(playerListPacket);
                     break;
 
                 case UPDATE_LATENCY:

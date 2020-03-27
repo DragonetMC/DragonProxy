@@ -63,7 +63,7 @@ public class EntityCache implements Cache {
      */
     public CachedEntity getByRemoteId(int entityId) {
         if(remoteToClientMap.containsKey(entityId)) {
-            return entities.get(remoteToClientMap.get(entityId));
+            return entities.getOrDefault(remoteToClientMap.get(entityId), null);
         }
         return null;
     }

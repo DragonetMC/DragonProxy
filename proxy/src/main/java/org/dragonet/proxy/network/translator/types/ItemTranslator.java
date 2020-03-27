@@ -113,6 +113,15 @@ public class ItemTranslator {
         return data;
     }
 
+    public static ItemStack translateToJava(ItemData item) {
+        for(ItemEntry entry : ITEM_ENTRIES.values()) {
+            if(entry.getBedrockRuntimeId() == item.getId()) {
+                return new ItemStack(entry.getJavaProtocolId(), item.getCount());
+            }
+        }
+        return new ItemStack(0);
+    }
+
     public static com.nukkitx.nbt.tag.CompoundTag translateItemNBT(CompoundTag tag) {
         CompoundTagBuilder root = CompoundTagBuilder.builder();
 
@@ -185,17 +194,4 @@ public class ItemTranslator {
 
         return null;
     }
-
-//
-//    private static String getBedrockIdentifier(String javaIdentifier) {
-//        if (!JAVA_TO_BEDROCK_MAP.containsKey(javaIdentifier)) {
-//            return javaIdentifier;
-//        }
-//        return (String) JAVA_TO_BEDROCK_MAP.get(javaIdentifier).get("name");
-//    }
-//
-//    private static int getBedrockData(String javaIdentifier) {
-//        return (int) JAVA_TO_BEDROCK_MAP.get(javaIdentifier).get("data");
-//    }
-//
 }

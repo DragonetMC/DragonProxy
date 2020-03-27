@@ -353,7 +353,7 @@ public final class ChunkData implements Closeable {
                 sections[i].writeToNetwork(buffer);
             }
 
-            buffer.writeBytes(session.getChunkCache().translateBiome(javaChunkPacket.getColumn().getBiomeData())); // Biomes - 256 bytes
+            buffer.writeBytes(new byte[256]); // Biomes - 256 bytes
             buffer.writeByte(0); // Border blocks size - Education Edition only
 
             // Extra Data

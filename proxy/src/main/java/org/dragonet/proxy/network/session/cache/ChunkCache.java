@@ -20,8 +20,10 @@ package org.dragonet.proxy.network.session.cache;
 
 import com.github.steveice10.mc.protocol.data.game.chunk.Chunk;
 import com.github.steveice10.mc.protocol.data.game.chunk.Column;
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.nukkitx.math.vector.Vector2f;
+import com.nukkitx.math.vector.Vector3i;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
@@ -80,32 +82,12 @@ public class ChunkCache implements Cache {
         return null;
     }
 
-    public byte[] translateBiome(int[] javaBiomeData) {
-        byte[] bedrockBiomeData = new byte[256];
-        for (int z = 0; z < 16; z += 4) {
-            for (int x = 0; x < 16; x += 4) {
-                int biomeId = getBiomeId(javaBiomeData, x, z);
-                fillBedrockBiomeData(z, x, bedrockBiomeData, biomeId);
-                fillBedrockBiomeData(z + 1, x, bedrockBiomeData, biomeId);
-                fillBedrockBiomeData(z + 2, x, bedrockBiomeData, biomeId);
-                fillBedrockBiomeData(z + 3, x, bedrockBiomeData, biomeId);
-            }
+    public BlockState getBlockAt(Vector3i position) {
+        Vector2f chunkPosition = Vector2f.from(position.getX() >> 4, position.getZ() >> 4);
+        if(!javaChunks.containsKey(chunkPosition)) {
+            return new BlockState(0); // Air
         }
-        return bedrockBiomeData;
-    }
-
-    protected static void fillBedrockBiomeData(int z, int x, byte[] bedrockBiomeData, int biomeId) {
-        int offset = (z << 4) | x;
-        Arrays.fill(bedrockBiomeData, offset, offset + 4, (byte) biomeId);
-    }
-
-    /*
-     * biomeData[((y >> 2) << 4) | ((z >> 2) << 2) | ((x >> 2)]
-     * Use y == 0, because vanilla 1.15 + only uses lowest layer for biome
-     * Transform 2 z bit shifts into mask
-     */
-    protected static byte getBiomeId(int[] biomeData, int x, int z) {
-        return (byte) biomeData[((z >> 2) & 3) << 2 | ((x >> 2) & 3)];
+        return null; // TODO
     }
 
     @Override

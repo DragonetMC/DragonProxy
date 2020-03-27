@@ -51,32 +51,10 @@ public class CachedWindow {
     }
 
     public void open(ProxySession session) {
-        Vector3i pos = Vector3i.from(31, 35, 0);
-        log.info(TextFormat.AQUA + "pos: " + pos);
-        log.info(TextFormat.AQUA + "session pos: " + session.getCachedEntity().getPosition());
-        // fake block data
-        UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-        //updateBlockPacket.setRuntimeId(BlockTranslator.BEDROCK_BLOCKS.get("minecraft:chest").getRuntimeId());
-        updateBlockPacket.setDataLayer(0);
-        updateBlockPacket.setBlockPosition(pos);
-        //log.info("chest:" + BlockTranslator.BEDROCK_BLOCKS.get("minecraft:chest").getRuntimeId());
-
-        session.sendPacket(updateBlockPacket);
-
-        CompoundTag tag = CompoundTagBuilder.builder().stringTag("id", "Chest").buildRootTag();
-        BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
-        blockEntityDataPacket.setBlockPosition(pos);
-        blockEntityDataPacket.setData(tag);
-
-        session.sendPacket(blockEntityDataPacket);
-
-        // open
-
         ContainerOpenPacket containerOpenPacket = new ContainerOpenPacket();
-        containerOpenPacket.setUniqueEntityId(session.getCachedEntity().getProxyEid());
         containerOpenPacket.setWindowId((byte) windowId);
         containerOpenPacket.setType((byte) 0);
-        containerOpenPacket.setBlockPosition(pos);
+        containerOpenPacket.setBlockPosition(Vector3i.ZERO);
 
         session.sendPacket(containerOpenPacket);
         open = true;

@@ -63,6 +63,10 @@ public final class ClientData {
     private byte[] skinGeometry; // deserialized
     @JsonProperty("SkinResourcePatch")
     private String skinGeometryName;
+    @JsonProperty("SkinImageHeight")
+    private int skinImageHeight;
+    @JsonProperty("SkinImageWidth")
+    private int skinImageWidth;
     @JsonProperty("SkinId")
     private String skinId;
     @JsonProperty("ThirdPartyName")
