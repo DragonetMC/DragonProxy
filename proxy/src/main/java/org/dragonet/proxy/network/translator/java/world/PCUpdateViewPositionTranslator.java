@@ -14,9 +14,9 @@ public class PCUpdateViewPositionTranslator extends PacketTranslator<ServerUpdat
 
     @Override
     public void translate(ProxySession session, ServerUpdateViewPositionPacket packet) {
-        NetworkChunkPublisherUpdatePacket chunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
-        chunkPublisherUpdatePacket.setPosition(Vector3i.from(packet.getChunkX() << 4, 0, packet.getChunkZ() << 4));
-        chunkPublisherUpdatePacket.setRadius(session.getRenderDistance() << 4);
-        session.sendPacket(chunkPublisherUpdatePacket);
+//        NetworkChunkPublisherUpdatePacket chunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
+//        chunkPublisherUpdatePacket.setPosition(Vector3i.from(packet.getChunkX() << 4, 0, packet.getChunkZ() << 4));
+//        chunkPublisherUpdatePacket.setRadius(session.getRenderDistance() << 4);
+//        session.sendPacket(chunkPublisherUpdatePacket);
     }
 }

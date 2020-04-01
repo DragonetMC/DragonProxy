@@ -31,6 +31,7 @@ import com.nukkitx.protocol.bedrock.data.GamePublishSetting;
 import com.nukkitx.protocol.bedrock.data.GameRule;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
+import com.nukkitx.protocol.bedrock.packet.SetPlayerGameTypePacket;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -54,7 +55,7 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
     public static final PCJoinGameTranslator INSTANCE = new PCJoinGameTranslator();
 
     private static final CompoundTag EMPTY_TAG = CompoundTagBuilder.builder().buildRootTag();
-    private static final byte[] EMPTY_LEVEL_CHUNK_DATA;
+    public static final byte[] EMPTY_LEVEL_CHUNK_DATA;
 
     static {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
@@ -75,61 +76,12 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
         // Cache the player's entity id
         session.getDataCache().put("player_eid", packet.getEntityId());
 
-        //if(session.getDataCache().get("auth_state") != AuthState.AUTHENTICATED) {
-            StartGamePacket startGamePacket = new StartGamePacket();
-            startGamePacket.setUniqueEntityId(packet.getEntityId());
-            startGamePacket.setRuntimeEntityId(packet.getEntityId());
-            startGamePacket.setPlayerGamemode(packet.getGameMode().ordinal());
-            startGamePacket.setPlayerPosition(Vector3f.from(-23, 70, 0)); // Hypixel bedwars lobby spawn
-            startGamePacket.setRotation(Vector2f.from(1, 1));
+        session.getEntityCache().clonePlayer(packet.getEntityId(), session.getCachedEntity());
 
-            startGamePacket.setSeed(1111);
-            startGamePacket.setDimensionId(0);
-            startGamePacket.setGeneratorId(0);
-            startGamePacket.setLevelGamemode(packet.getGameMode().ordinal());
-            startGamePacket.setDifficulty(0);
-            startGamePacket.setDefaultSpawn(Vector3i.from(-23, 70, 0));
-            startGamePacket.setAchievementsDisabled(true);
-            startGamePacket.setTime(0);
-            startGamePacket.setEduFeaturesEnabled(false);
-            startGamePacket.setEduFeaturesEnabled(false);
-            startGamePacket.setRainLevel(0);
-            startGamePacket.setLightningLevel(0);
-            startGamePacket.setMultiplayerGame(true);
-            startGamePacket.setBroadcastingToLan(true);
-            startGamePacket.getGamerules().add((new GameRule<>("showcoordinates", true)));
-            startGamePacket.setPlatformBroadcastMode(GamePublishSetting.PUBLIC);
-            startGamePacket.setXblBroadcastMode(GamePublishSetting.PUBLIC);
-            startGamePacket.setCommandsEnabled(true);
-            startGamePacket.setTexturePacksRequired(false);
-            startGamePacket.setBonusChestEnabled(false);
-            startGamePacket.setStartingWithMap(false);
-            startGamePacket.setTrustingPlayers(true);
-            startGamePacket.setDefaultPlayerPermission(1);
-            startGamePacket.setServerChunkTickRange(4);
-            startGamePacket.setBehaviorPackLocked(false);
-            startGamePacket.setResourcePackLocked(false);
-            startGamePacket.setFromLockedWorldTemplate(false);
-            startGamePacket.setUsingMsaGamertagsOnly(false);
-            startGamePacket.setFromWorldTemplate(false);
-            startGamePacket.setWorldTemplateOptionLocked(false);
-
-            startGamePacket.setLevelId("world test");
-            startGamePacket.setWorldName("world");
-            startGamePacket.setPremiumWorldTemplateId("00000000-0000-0000-0000-000000000000");
-            startGamePacket.setCurrentTick(0);
-            startGamePacket.setEnchantmentSeed(0);
-            startGamePacket.setMultiplayerCorrelationId("");
-
-            startGamePacket.setMovementServerAuthoritative(false);
-            startGamePacket.setVanillaVersion(DragonProxy.BEDROCK_CODEC.getMinecraftVersion());
-
-            startGamePacket.setBlockPalette(BlockTranslator.BLOCK_PALETTE);
-            startGamePacket.setItemEntries(ItemTranslator.ITEM_PALETTE);
-
-            // TODO: 01/04/2019 Add support for deserializing the chunk in the protocol library
-
-            //session.sendPacketImmediately(startGamePacket);
+        // TODO: Temporary
+        SetPlayerGameTypePacket setPlayerGameTypePacket = new SetPlayerGameTypePacket();
+        setPlayerGameTypePacket.setGamemode(packet.getGameMode().ordinal());
+        session.sendPacket(setPlayerGameTypePacket);
 
             Vector3f pos = Vector3f.from(-23, 70, 0);
             int chunkX = pos.getFloorX() >> 4;
@@ -155,9 +107,9 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
         // Add the player to the cache (still need to remove them, but thats a TODO)
         if(session.getDataCache().get("auth_state") != AuthState.AUTHENTICATED) {
             GameProfile profile = new GameProfile(session.getAuthData().getIdentity(), session.getAuthData().getDisplayName());
-            CachedPlayer player = session.getEntityCache().newPlayer(1, profile);
+            CachedPlayer player1 = session.getEntityCache().newPlayer(1, profile);
 
-            session.setCachedEntity(player);
+            session.setCachedEntity(player1);
         }
     }
 

@@ -73,6 +73,8 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.dragonet.proxy.network.translator.java.PCJoinGameTranslator.EMPTY_LEVEL_CHUNK_DATA;
+
 /**
  * Represents a bedrock player session.
  */
@@ -144,6 +146,9 @@ public class ProxySession implements PlayerSession {
 
             @Override
             public void disconnected(DisconnectedEvent event) {
+                if(event.getCause() != null) {
+                    event.getCause().printStackTrace();
+                }
                 log.info("Player disconnected from remote. Reason: " + event.getReason());
                 bedrockSession.disconnect(event.getReason());
             }
@@ -266,7 +271,7 @@ public class ProxySession implements PlayerSession {
 
         SerializedSkin skin = SerializedSkin.of(
             clientData.getSkinId(),
-            ImageData.of(clientData.getSkinData()),
+            ImageData.of(clientData.getSkinImageWidth(), clientData.getSkinImageHeight(), clientData.getSkinData()),
             ImageData.of(clientData.getCapeData()),
             clientData.getSkinGeometryName(),
             new String(clientData.getSkinGeometry(), StandardCharsets.UTF_8),
@@ -300,7 +305,7 @@ public class ProxySession implements PlayerSession {
 
         startGamePacket.setSeed(1111);
         startGamePacket.setDimensionId(0);
-        startGamePacket.setGeneratorId(0);
+        startGamePacket.setGeneratorId(1);
         startGamePacket.setLevelGamemode(0);
         startGamePacket.setDifficulty(0);
         startGamePacket.setDefaultSpawn(Vector3i.ZERO);
@@ -354,10 +359,9 @@ public class ProxySession implements PlayerSession {
         // Spawn
         PlayStatusPacket playStatusPacket = new PlayStatusPacket();
         playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
-        bedrockSession.sendPacketImmediately(playStatusPacket);
+        sendPacket(playStatusPacket);
 
-        CachedPlayer player = entityCache.newPlayer(1, new GameProfile(getAuthData().getIdentity(), getAuthData().getDisplayName()));
-        cachedEntity = player;
+        cachedEntity = entityCache.newPlayer(1, new GameProfile(getAuthData().getIdentity(), getAuthData().getDisplayName()));
     }
 
     /**

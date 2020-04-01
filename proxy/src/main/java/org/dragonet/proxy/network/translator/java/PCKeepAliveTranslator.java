@@ -31,7 +31,13 @@ public class PCKeepAliveTranslator extends PacketTranslator<ServerKeepAlivePacke
 
     @Override
     public void translate(ProxySession session, ServerKeepAlivePacket packet) {
-        session.sendRemotePacket(new ClientKeepAlivePacket(packet.getPingId()));
+        // This packet will cause the remote server (in my testing only vanilla servers)
+        // to disconnect the client with a 'Timed out' message.
+        // This is completely the opposite to what is described on wiki.vg:
+        // https://wiki.vg/Protocol#Keep_Alive_.28clientbound.29
+
+        //session.sendRemotePacket(new ClientKeepAlivePacket(packet.getPingId()));
     }
 }
+
 

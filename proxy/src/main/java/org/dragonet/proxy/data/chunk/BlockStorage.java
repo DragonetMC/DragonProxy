@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.chunk.bitarray.BitArray;
 import org.dragonet.proxy.data.chunk.bitarray.BitArrayVersion;
+import org.dragonet.proxy.network.translator.types.BlockTranslator;
 import org.dragonet.proxy.util.PaletteManager;
 
 @Log4j2

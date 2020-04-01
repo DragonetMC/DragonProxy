@@ -42,7 +42,6 @@ import static com.nukkitx.protocol.bedrock.packet.LevelEventPacket.Event.*;
 @Log4j2
 @PCPacketTranslator(packetClass = ServerNotifyClientPacket.class)
 public class PCNotifyClientTranslator extends PacketTranslator<ServerNotifyClientPacket> {
-    public static final PCNotifyClientTranslator INSTANCE = new PCNotifyClientTranslator();
 
     @Override
     public void translate(ProxySession session, ServerNotifyClientPacket packet) {
@@ -68,7 +67,7 @@ public class PCNotifyClientTranslator extends PacketTranslator<ServerNotifyClien
             case THUNDER_STRENGTH:
                 double thunderStrength = ((ThunderStrengthValue) packet.getValue()).getStrength();
 
-                log.info(TextFormat.DARK_AQUA + "Thunder strength: " + thunderStrength);
+                //log.info(TextFormat.DARK_AQUA + "Thunder strength: " + thunderStrength);
                 if(thunderStrength > 0.0) {
                     // TODO: this doesnt work?
                     session.sendPacket(createLevelEvent(START_THUNDER, (int) thunderStrength * 65535));

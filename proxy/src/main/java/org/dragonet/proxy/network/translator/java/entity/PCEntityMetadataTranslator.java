@@ -27,17 +27,19 @@ import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.types.EntityMetaTranslator;
+import org.dragonet.proxy.util.TextFormat;
+
+import java.util.Arrays;
 
 @Log4j2
 @PCPacketTranslator(packetClass = ServerEntityMetadataPacket.class)
 public class PCEntityMetadataTranslator extends PacketTranslator<ServerEntityMetadataPacket> {
-    public static final PCEntityMetadataTranslator INSTANCE = new PCEntityMetadataTranslator();
 
     @Override
     public void translate(ProxySession session, ServerEntityMetadataPacket packet) {
         CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(packet.getEntityId());
         if(cachedEntity == null) {
-            //log.info("(debug) Cached entity is null");
+            log.info(TextFormat.GRAY + "(debug) EntityMetadataTranslator: Cached entity is null");
             return;
         }
 

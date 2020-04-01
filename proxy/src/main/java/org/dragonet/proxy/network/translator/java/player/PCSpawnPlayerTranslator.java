@@ -33,7 +33,6 @@ import org.dragonet.proxy.util.SkinUtils;
 @Log4j2
 @PCPacketTranslator(packetClass = ServerSpawnPlayerPacket.class)
 public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerPacket> {
-    public static final PCSpawnPlayerTranslator INSTANCE = new PCSpawnPlayerTranslator();
 
     @Override
     public void translate(ProxySession session, ServerSpawnPlayerPacket packet) {
@@ -42,7 +41,6 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
         CachedPlayer cachedPlayer = session.getEntityCache().newPlayer(packet.getEntityId(), playerListEntry.getProfile());
         cachedPlayer.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
         cachedPlayer.setRotation(Vector3f.from(packet.getYaw(), packet.getPitch(), 0));
-        cachedPlayer.getMetadata().putAll(EntityMetaTranslator.translateToBedrock(cachedPlayer, packet.getMetadata()));
         cachedPlayer.spawn(session);
 
         if(session.getProxy().getConfiguration().isFetchPlayerSkins()) {

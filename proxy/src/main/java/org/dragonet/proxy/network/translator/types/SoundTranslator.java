@@ -235,6 +235,7 @@ public class SoundTranslator {
         soundMap.put(BuiltinSound.ENTITY_FISHING_BOBBER_THROW, null);
 
         soundMap.put(BuiltinSound.ENTITY_CAT_AMBIENT, "mob.cat.meow");
+        soundMap.put(BuiltinSound.ENTITY_CAT_STRAY_AMBIENT, "mob.cat.meow");
         soundMap.put(BuiltinSound.ENTITY_CAT_DEATH, "mob.cat.hurt");
         soundMap.put(BuiltinSound.ENTITY_CAT_HISS, "mob.cat.hiss");
         soundMap.put(BuiltinSound.ENTITY_CAT_HURT, "mob.cat.hit");
@@ -476,8 +477,8 @@ public class SoundTranslator {
         soundMap.put(BuiltinSound.ENTITY_PLAYER_ATTACK_NODAMAGE, "game.player.attack.nodamage");
         soundMap.put(BuiltinSound.ENTITY_PLAYER_ATTACK_STRONG, null);
         soundMap.put(BuiltinSound.ENTITY_PLAYER_ATTACK_SWEEP, null);
-//        soundMap.put(BuiltinSound.ENTITY_PLAYER_ATTACK_WEAK, BuiltinSound.ENTITY_PLAYER_ATTACK_NODAMAGE);
-//        soundMap.put(BuiltinSound.ENTITY_PLAYER_BIG_FALL, BuiltinSound.ENTITY_GENERIC_BIG_FALL);
+        soundMap.put(BuiltinSound.ENTITY_PLAYER_ATTACK_WEAK, "game.player.attack.nodamage");
+        soundMap.put(BuiltinSound.ENTITY_PLAYER_BIG_FALL, "damage.fallbig");
         soundMap.put(BuiltinSound.ENTITY_PLAYER_BREATH, null);
         soundMap.put(BuiltinSound.ENTITY_PLAYER_BURP, "random.burp");
         soundMap.put(BuiltinSound.ENTITY_PLAYER_DEATH, "game.player.die");
@@ -706,6 +707,8 @@ public class SoundTranslator {
 
         soundMap.put(BuiltinSound.WEATHER_RAIN, "ambient.weather.rain");
         soundMap.put(BuiltinSound.WEATHER_RAIN_ABOVE, "ambient.weather.rain");
+
+        // TODO: wandering trader
     }
 
     /**

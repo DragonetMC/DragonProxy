@@ -35,6 +35,7 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.types.SoundTranslator;
+import org.dragonet.proxy.util.TextFormat;
 
 @Log4j2
 @PCPacketTranslator(packetClass = ServerPlaySoundPacket.class)
@@ -51,7 +52,7 @@ public class PCPlaySoundTranslator extends PacketTranslator<ServerPlaySoundPacke
         String soundName = SoundTranslator.translateToBedrock(sound);
 
         if(soundName == null) {
-            log.warn("No mapping for sound: " + sound.name());
+            log.info(TextFormat.DARK_AQUA + "No mapping for sound: " + sound.name());
             return;
         }
 

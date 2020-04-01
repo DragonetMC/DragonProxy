@@ -26,69 +26,70 @@ import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.NetworkChunkPublisherUpdatePacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.chunk.ChunkData;
+import org.dragonet.proxy.data.chunk.ChunkSection;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.ChunkCache;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-
-import java.util.Arrays;
-import java.util.Objects;
 
 
 @Log4j2
 @PCPacketTranslator(packetClass = ServerChunkDataPacket.class)
 public class PCChunkDataTranslator extends PacketTranslator<ServerChunkDataPacket> {
-    public static final PCChunkDataTranslator INSTANCE = new PCChunkDataTranslator();
 
     @Override
     public void translate(ProxySession session, ServerChunkDataPacket packet) {
         Column column = packet.getColumn();
-
         session.getChunkCache().getJavaChunks().put(Vector2f.from(column.getX(), column.getZ()), column);
 
         ChunkData chunkData = session.getChunkCache().translateChunk(column.getX(), column.getZ());
-        if(chunkData != null) {
-            LevelChunkPacket levelChunkPacket = new LevelChunkPacket();
-            levelChunkPacket.setChunkX(column.getX());
-            levelChunkPacket.setChunkZ(column.getZ());
-            levelChunkPacket.setCachingEnabled(false);
 
-            int subChunkCount = chunkData.sections.length - 1;
+        NetworkChunkPublisherUpdatePacket chunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
+        chunkPublisherUpdatePacket.setPosition(session.getCachedEntity().getPosition().toInt());
+        chunkPublisherUpdatePacket.setRadius(8 << 4);
+        session.sendPacket(chunkPublisherUpdatePacket);
 
-            while (subChunkCount >= 0 && chunkData.sections[subChunkCount].isEmpty()) {
-                subChunkCount--;
-            }
-            subChunkCount++;
-
-            levelChunkPacket.setSubChunksLength(subChunkCount);
-
+        if(column.getBiomeData() != null) { // Full chunk
             ByteBuf buffer = ByteBufAllocator.DEFAULT.directBuffer();
             try {
-                for (int i = 0; i < subChunkCount; i++) {
+                ChunkSection[] sections = chunkData.sections;
+
+                int sectionCount = sections.length - 1;
+                while (sectionCount >= 0 && sections[sectionCount].isEmpty()) {
+                    sectionCount--;
+                }
+                sectionCount++;
+
+                for (int i = 0; i < sectionCount; i++) {
                     chunkData.sections[i].writeToNetwork(buffer);
                 }
 
                 buffer.writeBytes(new byte[256]); // Biomes - 256 bytes
-                buffer.writeByte(0); // Border blocks size - Education Edition only
+                buffer.writeByte(0); // Border blocks - Education Edition only
 
                 // Extra Data
                 VarInts.writeUnsignedInt(buffer, 0);
 
-                byte[] chunkData1 = new byte[buffer.readableBytes()];
-                buffer.readBytes(chunkData1);
-                levelChunkPacket.setData(chunkData1);
-            } catch (Exception e) { // IOException
-                throw new RuntimeException("Unable to create chunk packet", e);
+                byte[] payload = new byte[buffer.readableBytes()];
+                buffer.readBytes(payload);
+
+                LevelChunkPacket levelChunkPacket = new LevelChunkPacket();
+                levelChunkPacket.setChunkX(column.getX());
+                levelChunkPacket.setChunkZ(column.getZ());
+                levelChunkPacket.setCachingEnabled(false);
+                levelChunkPacket.setSubChunksLength(sectionCount);
+                levelChunkPacket.setData(payload);
+
+                session.sendPacket(levelChunkPacket);
             } finally {
                 buffer.release();
             }
-
-            session.sendPacket(levelChunkPacket);
         } else {
-            log.warn("ChunkData is null");
+            log.warn("non full chunk");
         }
     }
 }

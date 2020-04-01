@@ -30,6 +30,7 @@ import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.types.EntityMetaTranslator;
+import org.dragonet.proxy.util.TextFormat;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,8 +43,16 @@ public class PCEntityStatusTranslator extends PacketTranslator<ServerEntityStatu
     static {
         eventMap.put(EntityStatus.LIVING_HURT, EntityEventPacket.Event.HURT_ANIMATION);
         eventMap.put(EntityStatus.LIVING_HURT_SWEET_BERRY_BUSH, EntityEventPacket.Event.HURT_ANIMATION);
+        eventMap.put(EntityStatus.LIVING_HURT_THORNS, EntityEventPacket.Event.HURT_ANIMATION);
         eventMap.put(EntityStatus.LIVING_DEATH, EntityEventPacket.Event.DEATH_ANIMATION);
         eventMap.put(EntityStatus.FIREWORK_EXPLODE, EntityEventPacket.Event.FIREWORK_PARTICLES);
+        eventMap.put(EntityStatus.WITCH_EMIT_PARTICLES, EntityEventPacket.Event.WITCH_SPELL_PARTICLES);
+        eventMap.put(EntityStatus.WOLF_SHAKE_WATER, EntityEventPacket.Event.SHAKE_WET);
+        eventMap.put(EntityStatus.TAMEABLE_TAMING_SUCCEEDED, EntityEventPacket.Event.TAME_SUCCESS);
+        eventMap.put(EntityStatus.TAMEABLE_TAMING_FAILED, EntityEventPacket.Event.TAME_FAIL);
+        eventMap.put(EntityStatus.OCELOT_TAMING_SUCCEEDED, EntityEventPacket.Event.TAME_SUCCESS);
+        eventMap.put(EntityStatus.OCELOT_TAMING_FAILED, EntityEventPacket.Event.TAME_FAIL);
+        eventMap.put(EntityStatus.VILLAGER_ANGRY, EntityEventPacket.Event.VILLAGER_HURT); // TODO: check
     }
 
     @Override
@@ -59,7 +68,7 @@ public class PCEntityStatusTranslator extends PacketTranslator<ServerEntityStatu
 
         EntityEventPacket.Event bedrockEvent = eventMap.get(packet.getStatus());
         if(bedrockEvent == null) {
-            log.info("(debug) Unhandled entity status: " + packet.getStatus().name());
+            log.info(TextFormat.GRAY + "(debug) Unhandled entity status: " + packet.getStatus().name());
             return;
         }
 

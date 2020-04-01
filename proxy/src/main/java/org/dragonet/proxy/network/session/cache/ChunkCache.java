@@ -50,20 +50,13 @@ public class ChunkCache implements Cache {
             Column column = javaChunks.get(columnPos);
             ChunkData chunkData = new ChunkData(columnX, columnZ);
 
-            for (int i = 0; i < 16; i++) {
-                chunkData.getOrCreateSection(i);
-            }
+            int chunkSectionCount = column.getChunks().length;
+            chunkData.sections = new ChunkSection[chunkSectionCount];
 
-            // Blocks
-            for (int chunkY = 0; chunkY < 256; chunkY++) {
-                int cy = chunkY >> 4;
+            for (int chunkY = 0; chunkY < chunkSectionCount; chunkY++) {
+                chunkData.sections[chunkY] = new ChunkSection();
+                Chunk javaChunk = column.getChunks()[chunkY];
 
-                Chunk javaChunk = null;
-                try {
-                    javaChunk = column.getChunks()[cy];
-                } catch (Exception ex) {
-                    log.warn("Chunk " + columnX + ", " + cy + ", " + columnZ + " does not exist!");
-                }
                 if (javaChunk == null || javaChunk.isEmpty()) continue;
                 for (int x = 0; x < 16; x++) {
                     for (int y = 0; y < 16; y++) {
@@ -71,7 +64,9 @@ public class ChunkCache implements Cache {
                             BlockState block = javaChunk.get(x, y, z);
                             int bedrockId = BlockTranslator.translateToBedrock(block);
 
-                            ChunkSection section = chunkData.getSection(cy);
+                            //log.warn("setting id: " + BlockTranslator.BEDROCK_TEMP.get(bedrockId));
+
+                            ChunkSection section = chunkData.sections[chunkY];
                             section.setFullBlock(x, y, z, 0, bedrockId);
                         }
                     }

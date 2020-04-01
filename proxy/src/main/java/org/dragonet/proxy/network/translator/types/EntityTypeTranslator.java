@@ -126,6 +126,7 @@ public class EntityTypeTranslator {
         entityMap.put(MobType.MINECART_HOPPER, EntityType.HOPPER_MINECART);
         entityMap.put(MobType.MINECART_TNT, EntityType.TNT_MINECART);
         entityMap.put(MobType.MINECART_CHEST, EntityType.CHEST_MINECART);
+        entityMap.put(MobType.TRADER_LLAMA, EntityType.LLAMA); // todo: check
 
         entityMap.put(MobType.MINECART_COMMAND_BLOCK, EntityType.COMMAND_BLOCK_MINECART);
         //entityMap.put(MobType.LINGERING_POTION, EntityType.LINGERING_POTION);
@@ -139,6 +140,7 @@ public class EntityTypeTranslator {
         entityMap.put(MobType.SALMON, EntityType.SALMON);
         entityMap.put(MobType.TROPICAL_FISH, EntityType.TROPICAL_FISH);
         entityMap.put(MobType.COD, EntityType.COD);
+        entityMap.put(MobType.CAT, EntityType.OCELOT); // todo: check
 
 
         // Global entities

@@ -33,7 +33,6 @@ import org.dragonet.proxy.network.translator.types.EntityTypeTranslator;
 @Log4j2
 @PCPacketTranslator(packetClass = ServerSpawnMobPacket.class)
 public class PCSpawnMobTranslator extends PacketTranslator<ServerSpawnMobPacket> {
-    public static final PCSpawnMobTranslator INSTANCE = new PCSpawnMobTranslator();
 
     @Override
     public void translate(ProxySession session, ServerSpawnMobPacket packet) {
@@ -50,9 +49,6 @@ public class PCSpawnMobTranslator extends PacketTranslator<ServerSpawnMobPacket>
         }
 
         cachedEntity = session.getEntityCache().newEntity(entityType, packet.getEntityId());
-
-        EntityDataDictionary metadata = EntityMetaTranslator.translateToBedrock(cachedEntity, packet.getMetadata());
-        cachedEntity.getMetadata().putAll(metadata);
 
         cachedEntity.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
         cachedEntity.setMotion(Vector3f.from(packet.getMotionX(), packet.getMotionY(), packet.getMotionZ()));

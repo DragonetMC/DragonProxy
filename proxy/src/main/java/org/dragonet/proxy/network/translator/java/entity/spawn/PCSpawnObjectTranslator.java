@@ -31,7 +31,6 @@ import org.dragonet.proxy.network.translator.types.EntityTypeTranslator;
 @Log4j2
 @PCPacketTranslator(packetClass = ServerSpawnObjectPacket.class)
 public class PCSpawnObjectTranslator extends PacketTranslator<ServerSpawnObjectPacket> {
-    public static final PCSpawnObjectTranslator INSTANCE = new PCSpawnObjectTranslator();
 
     @Override
     public void translate(ProxySession session, ServerSpawnObjectPacket packet) {

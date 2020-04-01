@@ -34,7 +34,6 @@ import java.nio.charset.StandardCharsets;
 @Log4j2
 @PCPacketTranslator(packetClass = ServerPlayerListEntryPacket.class)
 public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerListEntryPacket> {
-    public static final PCPlayerListEntryTranslator INSTANCE = new PCPlayerListEntryTranslator();
 
     @Override
     public void translate(ProxySession session, ServerPlayerListEntryPacket packet) {

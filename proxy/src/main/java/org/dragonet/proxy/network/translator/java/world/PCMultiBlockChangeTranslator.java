@@ -16,34 +16,34 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.java;
+package org.dragonet.proxy.network.translator.java.world;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockChangeRecord;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMultiBlockChangePacket;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.types.BlockTranslator;
 
 
 @PCPacketTranslator(packetClass = ServerMultiBlockChangePacket.class)
 public class PCMultiBlockChangeTranslator extends PacketTranslator<ServerMultiBlockChangePacket> {
-    public static final PCMultiBlockChangeTranslator INSTANCE = new PCMultiBlockChangeTranslator();
 
     @Override
     public void translate(ProxySession session, ServerMultiBlockChangePacket packet) {
         for(BlockChangeRecord record : packet.getRecords()) {
-            UpdateBlockPacket updateBlock = new UpdateBlockPacket();
+            UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
+            updateBlockPacket.setRuntimeId(BlockTranslator.translateToBedrock(record.getBlock()));
+            updateBlockPacket.setBlockPosition(Vector3i.from(record.getPosition().getX(), record.getPosition().getY(), record.getPosition().getZ()));
+            updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NEIGHBORS);
+            updateBlockPacket.setDataLayer(0);
 
-            Position pos = record.getPosition();
+            session.sendPacket(updateBlockPacket);
 
-            updateBlock.setBlockPosition(Vector3i.from(pos.getX(), pos.getY(), pos.getY()));
-
-            session.sendPacket(updateBlock);
+            // TODO: waterlogged, update in chunk cache?
         }
     }
 }

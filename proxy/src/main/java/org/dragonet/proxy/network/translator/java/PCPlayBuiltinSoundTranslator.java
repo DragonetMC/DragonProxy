@@ -33,6 +33,7 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.types.SoundTranslator;
+import org.dragonet.proxy.util.TextFormat;
 
 @Log4j2
 @PCPacketTranslator(packetClass = ServerPlayBuiltinSoundPacket.class)
@@ -42,9 +43,11 @@ public class PCPlayBuiltinSoundTranslator extends PacketTranslator<ServerPlayBui
     public void translate(ProxySession session, ServerPlayBuiltinSoundPacket packet) {
         String soundName = SoundTranslator.translateToBedrock(packet.getSound());
         if(soundName == null) {
-            log.warn("No mapping for sound: " + packet.getSound().name());
+            log.info(TextFormat.DARK_AQUA + "No mapping for sound: " + packet.getSound().name());
             return;
         }
+
+        // TODO: use LevelSoundEventPacket for supported sounds?
 
         //log.info("translating sound: " + packet.getSound().name().toLowerCase() + "  ///  " + soundName);
 

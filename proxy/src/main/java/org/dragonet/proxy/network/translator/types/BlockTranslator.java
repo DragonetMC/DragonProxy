@@ -55,6 +55,7 @@ public class BlockTranslator {
     private static final AtomicInteger javaIdAllocator = new AtomicInteger();
 
     private static final int BLOCK_STATE_VERSION = 17760256;
+    public static HashMap<Integer, String> BEDROCK_TEMP = new HashMap<>();
 
     static {
         InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("data/runtime_block_states.dat");
@@ -105,6 +106,7 @@ public class BlockTranslator {
             CompoundTag blockTag = buildBedrockState(entry.getValue());
 
             bedrock2JavaMap.putIfAbsent(bedrockRuntimeId, new BlockState(javaProtocolId));
+            BEDROCK_TEMP.putIfAbsent(bedrockRuntimeId, entry.getValue().get("bedrock_identifier").textValue());
 
             CompoundTag runtimeTag = blockStateMap.remove(blockTag);
             if (runtimeTag != null) {

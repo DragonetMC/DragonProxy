@@ -31,7 +31,7 @@ import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 public class EntityMetaTranslator {
 
     /**
-     * This method translates a Java mob type to a Bedrock entity type.
+     * This method translates Java entity metadata to Bedrock.
      */
     public static EntityDataDictionary translateToBedrock(CachedEntity entity, EntityMetadata[] metadata) {
         EntityDataDictionary dictionary = new EntityDataDictionary();
@@ -46,14 +46,15 @@ public class EntityMetaTranslator {
                     flags.setFlag(EntityFlag.SPRINTING, (javaFlags & 0x08) > 0);
                     flags.setFlag(EntityFlag.SWIMMING, (javaFlags & 0x10) > 0);
                     flags.setFlag(EntityFlag.GLIDING, (javaFlags & 0x80) > 0);
+                    flags.setFlag(EntityFlag.INVISIBLE, false);
 
-                    if((javaFlags & 0x20) > 0) { // Invisible
-                        // HACK! Setting the invisible flag will also hide the nametag on bedrock,
-                        // so this hack is needed to simulate invisibility.
-                        dictionary.put(EntityData.SCALE, 0.01f);
-                    } else {
-                        dictionary.put(EntityData.SCALE, entity.getScale());
-                    }
+//                    if((javaFlags & 0x20) > 0) { // Invisible
+//                        // HACK! Setting the invisible flag will also hide the nametag on bedrock,
+//                        // so this hack is needed to simulate invisibility.
+//                        dictionary.put(EntityData.SCALE, 0.01f);
+//                    } else {
+//                        dictionary.put(EntityData.SCALE, entity.getScale());
+//                    }
                     break;
                 case 1: // Air
                     dictionary.put(EntityData.AIR, meta.getValue());
