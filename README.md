@@ -7,6 +7,10 @@
 
 A proxy made to allow **Minecraft: Bedrock Edition** clients to connect to **Minecraft: Java Edition** servers.
 
+```
+Bedrock 1.14 // Java 1.15.2
+```
+
 ### What's been done so far
 See the (almost) full list in [#464](https://github.com/DragonetMC/DragonProxy/issues/464).
 
