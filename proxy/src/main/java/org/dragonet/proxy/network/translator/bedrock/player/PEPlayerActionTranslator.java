@@ -18,6 +18,7 @@
  */
 package org.dragonet.proxy.network.translator.bedrock.player;
 
+import com.github.steveice10.mc.protocol.data.MagicValues;
 import com.github.steveice10.mc.protocol.data.game.ClientRequest;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction;
@@ -65,6 +66,24 @@ public class PEPlayerActionTranslator extends PacketTranslator<PlayerActionPacke
                 break;
             case STOP_SLEEP:
                 session.sendRemotePacket(new ClientPlayerStatePacket(cachedEntity.getRemoteEid(), PlayerState.LEAVE_BED));
+                break;
+            case START_GLIDE:
+            case STOP_GLIDE:
+                session.sendRemotePacket(new ClientPlayerStatePacket(cachedEntity.getRemoteEid(), PlayerState.START_ELYTRA_FLYING));
+                break;
+            case START_BREAK:
+                session.sendRemotePacket(new ClientPlayerActionPacket(PlayerAction.START_DIGGING, new Position(packet.getBlockPosition().getX(),
+                    packet.getBlockPosition().getY(), packet.getBlockPosition().getZ()), MagicValues.key(BlockFace.class, packet.getFace())));
+                break;
+            case ABORT_BREAK:
+                session.sendRemotePacket(new ClientPlayerActionPacket(PlayerAction.CANCEL_DIGGING, new Position(packet.getBlockPosition().getX(),
+                    packet.getBlockPosition().getY(), packet.getBlockPosition().getZ()), BlockFace.DOWN));
+                break;
+            case CONTINUE_BREAK:
+
+                break;
+            default:
+                log.info(TextFormat.GRAY + "(debug) Unhandled player action: " + packet.getAction().name());
                 break;
         }
     }

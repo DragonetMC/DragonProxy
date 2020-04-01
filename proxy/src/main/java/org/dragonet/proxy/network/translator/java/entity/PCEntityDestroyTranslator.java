@@ -28,7 +28,6 @@ import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 @Log4j2
 @PCPacketTranslator(packetClass = ServerEntityDestroyPacket.class)
 public class PCEntityDestroyTranslator extends PacketTranslator<ServerEntityDestroyPacket> {
-    public static final PCEntityDestroyTranslator INSTANCE = new PCEntityDestroyTranslator();
 
     @Override
     public void translate(ProxySession session, ServerEntityDestroyPacket packet) {

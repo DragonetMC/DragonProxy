@@ -34,7 +34,6 @@ import java.util.ArrayList;
 @Log4j2
 @PCPacketTranslator(packetClass = ServerEntityPropertiesPacket.class)
 public class PCEntityPropertiesTranslator extends PacketTranslator<ServerEntityPropertiesPacket> {
-    public static final PCEntityPropertiesTranslator INSTANCE = new PCEntityPropertiesTranslator();
 
     @Override
     public void translate(ProxySession session, ServerEntityPropertiesPacket packet) {

@@ -33,7 +33,6 @@ public class AttributeTypeTranslator {
     static {
         // TODO: finish these
         attributeMap.put(AttributeType.GENERIC_MOVEMENT_SPEED, BedrockAttributeType.MOVEMENT_SPEED);
-        //attributeMap.put(AttributeType.GENERIC_MAX_HEALTH, BedrockAttributeType.MAX_HEALTH);
     }
 
     /**

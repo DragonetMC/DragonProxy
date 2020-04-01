@@ -30,7 +30,6 @@ import org.dragonet.proxy.util.TextFormat;
 @Log4j2
 @PCPacketTranslator(packetClass = ServerEntityAnimationPacket.class)
 public class PCEntityAnimationTranslator extends PacketTranslator<ServerEntityAnimationPacket> {
-    public static final PCEntityAnimationTranslator INSTANCE = new PCEntityAnimationTranslator();
 
     @Override
     public void translate(ProxySession session, ServerEntityAnimationPacket packet) {

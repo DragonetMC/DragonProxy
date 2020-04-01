@@ -41,6 +41,10 @@ public enum BedrockAttributeType {
     private float defaultValue;
 
     public Attribute create(float value) {
+        return create(value, maximumValue);
+    }
+
+    public Attribute create(float value, float maximumValue) {
         return new Attribute(identifier, minimumValue, maximumValue, value, defaultValue);
     }
 }

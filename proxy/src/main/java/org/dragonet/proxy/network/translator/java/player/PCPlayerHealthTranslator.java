@@ -44,7 +44,8 @@ public class PCPlayerHealthTranslator extends PacketTranslator<ServerPlayerHealt
         CachedEntity cachedEntity = session.getCachedEntity();
         int health = (int) Math.ceil(packet.getHealth());
 
-        cachedEntity.getAttributes().put(BedrockAttributeType.HEALTH, BedrockAttributeType.HEALTH.create(health));
+        // TODO: actually set max health properly
+        cachedEntity.getAttributes().put(BedrockAttributeType.HEALTH, BedrockAttributeType.HEALTH.create(health, 20f));
         cachedEntity.getAttributes().put(BedrockAttributeType.HUNGER, BedrockAttributeType.HUNGER.create(packet.getFood()));
         cachedEntity.getAttributes().put(BedrockAttributeType.SATURATION, BedrockAttributeType.SATURATION.create(packet.getSaturation()));
 

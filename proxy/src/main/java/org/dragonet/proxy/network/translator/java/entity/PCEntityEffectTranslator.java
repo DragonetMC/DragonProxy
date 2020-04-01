@@ -26,17 +26,17 @@ import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.types.EntityEffectTranslator;
+import org.dragonet.proxy.util.TextFormat;
 
 @Log4j2
 @PCPacketTranslator(packetClass = ServerEntityEffectPacket.class)
 public class PCEntityEffectTranslator extends PacketTranslator<ServerEntityEffectPacket> {
-    public static final PCEntityEffectTranslator INSTANCE = new PCEntityEffectTranslator();
 
     @Override
     public void translate(ProxySession session, ServerEntityEffectPacket packet) {
         CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(packet.getEntityId());
         if(cachedEntity == null) {
-            //log.info("(debug) EntityEffectTranslator: Cached entity is null");
+            log.info(TextFormat.GRAY + "(debug) EntityEffectTranslator: Cached entity is null");
             return;
         }
 
@@ -47,7 +47,7 @@ public class PCEntityEffectTranslator extends PacketTranslator<ServerEntityEffec
         }
 
         MobEffectPacket mobEffectPacket = new MobEffectPacket();
-        mobEffectPacket.setRuntimeEntityId(packet.getEntityId());
+        mobEffectPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
         mobEffectPacket.setEffectId(effect.ordinal() + 1); // We add 1 as enums begin at 0
         mobEffectPacket.setAmplifier(packet.getAmplifier());
         mobEffectPacket.setDuration(packet.getDuration());

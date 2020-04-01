@@ -21,9 +21,11 @@ package org.dragonet.proxy.network.session.cache;
 import com.github.steveice10.mc.protocol.data.game.chunk.Chunk;
 import com.github.steveice10.mc.protocol.data.game.chunk.Column;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector3i;
+import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
@@ -83,6 +85,14 @@ public class ChunkCache implements Cache {
             return new BlockState(0); // Air
         }
         return null; // TODO
+    }
+
+    public void updateBlock(Position position, BlockState block) {
+        Vector2f chunkPosition = Vector2f.from(position.getX() >> 4, position.getY() >> 4);
+        if(javaChunks.containsKey(chunkPosition)) {
+            Column column = javaChunks.get(chunkPosition);
+
+        }
     }
 
     @Override
