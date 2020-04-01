@@ -59,7 +59,7 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
 
                     long proxyEid = session.getEntityCache().getNextClientEntityId().getAndIncrement();
 
-                    playerListPacket.setType(PlayerListPacket.Type.ADD);
+                    playerListPacket.setAction(PlayerListPacket.Action.ADD);
 
                     SerializedSkin skin = SerializedSkin.of(
                         entry.getProfile().getIdAsString(),
@@ -85,7 +85,7 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
                     break;
 
                 case REMOVE_PLAYER:
-                    playerListPacket.setType(PlayerListPacket.Type.REMOVE);
+                    playerListPacket.setAction(PlayerListPacket.Action.REMOVE);
                     playerListPacket.getEntries().add(bedrockEntry);
 
                     session.sendPacket(playerListPacket);

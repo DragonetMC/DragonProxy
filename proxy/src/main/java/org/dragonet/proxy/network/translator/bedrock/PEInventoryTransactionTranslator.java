@@ -33,7 +33,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlaye
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerUseItemPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientWindowActionPacket;
 import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.data.InventoryAction;
+import com.nukkitx.protocol.bedrock.data.InventoryActionData;
 import com.nukkitx.protocol.bedrock.data.InventorySource;
 import com.nukkitx.protocol.bedrock.packet.InventoryTransactionPacket;
 import lombok.extern.log4j.Log4j2;
@@ -54,7 +54,7 @@ public class PEInventoryTransactionTranslator extends PacketTranslator<Inventory
 
         switch(packet.getTransactionType()) {
             case NORMAL:
-                for(InventoryAction action : packet.getActions()) {
+                for(InventoryActionData action : packet.getActions()) {
                     //log.info("ACTION: " + action.getSource().getType().name());
                     switch(action.getSource().getType()) {
                         case WORLD_INTERACTION:
@@ -83,8 +83,7 @@ public class PEInventoryTransactionTranslator extends PacketTranslator<Inventory
             case ITEM_RELEASE:
                 switch(packet.getActionType()) {
                     case 0: // Release
-                        Position position = new Position((int) packet.getPlayerPosition().getX(), (int) packet.getPlayerPosition().getY(), (int) packet.getPlayerPosition().getZ());
-                        session.sendRemotePacket(new ClientPlayerActionPacket(PlayerAction.RELEASE_USE_ITEM, position, BlockFace.DOWN));
+                        session.sendRemotePacket(new ClientPlayerActionPacket(PlayerAction.RELEASE_USE_ITEM, new Position(0, 0, 0), BlockFace.DOWN));
                         break;
                     case 1: // Consume
 

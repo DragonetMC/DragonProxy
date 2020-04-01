@@ -21,7 +21,7 @@ package org.dragonet.proxy.network.translator.types;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import com.github.steveice10.mc.protocol.data.message.Message;
 import com.nukkitx.protocol.bedrock.data.EntityData;
-import com.nukkitx.protocol.bedrock.data.EntityDataDictionary;
+import com.nukkitx.protocol.bedrock.data.EntityDataMap;
 import com.nukkitx.protocol.bedrock.data.EntityFlag;
 import com.nukkitx.protocol.bedrock.data.EntityFlags;
 import lombok.extern.log4j.Log4j2;
@@ -33,8 +33,8 @@ public class EntityMetaTranslator {
     /**
      * This method translates Java entity metadata to Bedrock.
      */
-    public static EntityDataDictionary translateToBedrock(CachedEntity entity, EntityMetadata[] metadata) {
-        EntityDataDictionary dictionary = new EntityDataDictionary();
+    public static EntityDataMap translateToBedrock(CachedEntity entity, EntityMetadata[] metadata) {
+        EntityDataMap dictionary = new EntityDataMap();
         EntityFlags flags = new EntityFlags();
 
         for(EntityMetadata meta : metadata) {

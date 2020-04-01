@@ -52,7 +52,7 @@ public class PCRespawnTranslator extends PacketTranslator<ServerRespawnPacket> {
         RespawnPacket respawnPacket = new RespawnPacket();
         respawnPacket.setRuntimeEntityId(cachedPlayer.getProxyEid());
         respawnPacket.setPosition(cachedPlayer.getSpawnPosition());
-        respawnPacket.setSpawnState(RespawnPacket.State.SERVER_READY);
+        respawnPacket.setState(RespawnPacket.State.SERVER_READY);
         session.sendPacket(respawnPacket);
     }
 }

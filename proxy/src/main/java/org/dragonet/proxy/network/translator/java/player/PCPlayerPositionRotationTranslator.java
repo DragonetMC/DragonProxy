@@ -37,25 +37,20 @@ public class PCPlayerPositionRotationTranslator extends PacketTranslator<ServerP
 
     @Override
     public void translate(ProxySession session, ServerPlayerPositionRotationPacket packet) {
-        log.trace("GOT player position x=" + packet.getX() + ", y=" + packet.getY() + ", z=" + packet.getZ());
-
         CachedEntity cachedEntity = session.getCachedEntity();
 
         if (!cachedEntity.isSpawned()) {
-            cachedEntity.moveAbsolute(Vector3f.from(packet.getX(), packet.getY() + EntityType.PLAYER.getOffset() + 0.1f, packet.getZ()), packet.getPitch(), packet.getYaw());
-
             SetEntityDataPacket entityDataPacket = new SetEntityDataPacket();
-            entityDataPacket.setRuntimeEntityId(1);
+            entityDataPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
             entityDataPacket.getMetadata().putAll(cachedEntity.getMetadata());
             session.sendPacket(entityDataPacket);
 
             MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
-            movePlayerPacket.setRuntimeEntityId(1);
+            movePlayerPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
             movePlayerPacket.setPosition(Vector3f.from(packet.getX(), packet.getY() + EntityType.PLAYER.getOffset() + 0.1f, packet.getZ()));
             movePlayerPacket.setRotation(Vector3f.from(packet.getPitch(), packet.getYaw(), 0));
             movePlayerPacket.setMode(MovePlayerPacket.Mode.RESET);
             movePlayerPacket.setOnGround(true);
-            cachedEntity.setShouldMove(false);
 
             session.sendPacket(movePlayerPacket);
             cachedEntity.setSpawned(true);
@@ -64,21 +59,11 @@ public class PCPlayerPositionRotationTranslator extends PacketTranslator<ServerP
             return;
         }
 
-        cachedEntity.moveAbsolute(Vector3f.from(packet.getX(), packet.getY() + EntityType.PLAYER.getOffset() + 0.1f, packet.getZ()), packet.getPitch(), packet.getYaw());
-
-        MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
-        movePlayerPacket.setRuntimeEntityId(1);
-        movePlayerPacket.setPosition(Vector3f.from(packet.getX(), packet.getY() + EntityType.PLAYER.getOffset() + 0.01f, packet.getZ()));
-        movePlayerPacket.setRotation(Vector3f.from(packet.getPitch(), packet.getYaw(), 0));
-        movePlayerPacket.setMode(MovePlayerPacket.Mode.NORMAL);
-        movePlayerPacket.setOnGround(true);
-
-        cachedEntity.setShouldMove(false);
-
-        session.sendPacket(movePlayerPacket);
         cachedEntity.setSpawned(true);
 
-        ClientTeleportConfirmPacket teleportConfirmPacket = new ClientTeleportConfirmPacket(packet.getTeleportId());
-        session.sendRemotePacket(teleportConfirmPacket);
+        cachedEntity.moveAbsolute(session, Vector3f.from(packet.getX(), packet.getY() + EntityType.PLAYER.getOffset() + 0.1f, packet.getZ()),
+            Vector3f.from(packet.getPitch(), packet.getYaw(), 0), true, false);
+
+        session.sendRemotePacket(new ClientTeleportConfirmPacket(packet.getTeleportId()));
     }
 }

@@ -28,12 +28,13 @@ import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
 @PCPacketTranslator(packetClass = ServerDifficultyPacket.class)
 public class PCDifficultyTranslator extends PacketTranslator<ServerDifficultyPacket> {
-    public static final PCDifficultyTranslator INSTANCE = new PCDifficultyTranslator();
 
     @Override
     public void translate(ProxySession session, ServerDifficultyPacket packet) {
-        SetDifficultyPacket bedrockPacket = new SetDifficultyPacket();
-        bedrockPacket.setDifficulty(packet.getDifficulty().ordinal());
-        session.sendPacket(bedrockPacket);
+        session.getWorldCache().setDifficulty(packet.getDifficulty());
+
+        SetDifficultyPacket setDifficultyPacket = new SetDifficultyPacket();
+        setDifficultyPacket.setDifficulty(packet.getDifficulty().ordinal());
+        session.sendPacket(setDifficultyPacket);
     }
 }

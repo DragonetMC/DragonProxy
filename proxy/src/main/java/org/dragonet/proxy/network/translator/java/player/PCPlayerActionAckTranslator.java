@@ -21,6 +21,7 @@ package org.dragonet.proxy.network.translator.java.player;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerAbilitiesPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerActionAckPacket;
 import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.protocol.bedrock.data.LevelEventType;
 import com.nukkitx.protocol.bedrock.packet.AdventureSettingsPacket;
 import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
@@ -49,12 +50,12 @@ public class PCPlayerActionAckTranslator extends PacketTranslator<ServerPlayerAc
         switch(packet.getAction()) {
             case START_DIGGING:
                 // TODO: ServerBlockBreakAnimPacket?
-                levelEventPacket.setEvent(LevelEventPacket.Event.BLOCK_START_BREAK);
+                levelEventPacket.setType(LevelEventType.BLOCK_START_BREAK);
                 levelEventPacket.setPosition(position);
                 levelEventPacket.setData((int) (65535 / Math.ceil(0.5 * 20))); // TODO: break times
                 break;
             case CANCEL_DIGGING:
-                levelEventPacket.setEvent(LevelEventPacket.Event.BLOCK_STOP_BREAK);
+                levelEventPacket.setType(LevelEventType.BLOCK_STOP_BREAK);
                 levelEventPacket.setPosition(position);
                 levelEventPacket.setData(0);
 

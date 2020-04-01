@@ -30,10 +30,8 @@ import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
 @Log4j2
-
 @PCPacketTranslator(packetClass = ServerSpawnPositionPacket.class)
 public class PCSpawnPositionTranslator extends PacketTranslator<ServerSpawnPositionPacket> {
-    public static final PCSpawnPositionTranslator INSTANCE = new PCSpawnPositionTranslator();
 
     @Override
     public void translate(ProxySession session, ServerSpawnPositionPacket packet) {

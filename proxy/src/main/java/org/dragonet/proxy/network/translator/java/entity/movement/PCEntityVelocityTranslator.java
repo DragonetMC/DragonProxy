@@ -28,7 +28,6 @@ import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
 @PCPacketTranslator(packetClass = ServerEntityVelocityPacket.class)
 public class PCEntityVelocityTranslator extends PacketTranslator<ServerEntityVelocityPacket> {
-    public static final PCEntityVelocityTranslator INSTANCE = new PCEntityVelocityTranslator();
 
     @Override
     public void translate(ProxySession session, ServerEntityVelocityPacket packet) {

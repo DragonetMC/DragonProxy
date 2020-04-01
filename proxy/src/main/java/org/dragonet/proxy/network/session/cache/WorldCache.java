@@ -18,20 +18,23 @@
  */
 package org.dragonet.proxy.network.session.cache;
 
+import com.github.steveice10.mc.protocol.data.game.setting.Difficulty;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.dragonet.proxy.data.stats.StatInfo;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@RequiredArgsConstructor
-@Getter
+@Data
 public class WorldCache implements Cache {
+    @Setter(value = AccessLevel.NONE)
     private Object2IntMap<StatInfo> statistics = new Object2IntArrayMap<>();
     private double rainLevel = 0.0;
+
+    private Difficulty difficulty = Difficulty.EASY;
+
 
     @Override
     public void purge() {

@@ -20,7 +20,7 @@ package org.dragonet.proxy.network.translator.java.entity.spawn;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
 import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.data.EntityDataDictionary;
+import com.nukkitx.protocol.bedrock.data.EntityDataMap;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.session.ProxySession;

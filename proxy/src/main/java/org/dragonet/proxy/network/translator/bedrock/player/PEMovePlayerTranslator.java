@@ -18,7 +18,11 @@
  */
 package org.dragonet.proxy.network.translator.bedrock.player;
 
+import com.github.steveice10.mc.protocol.data.SubProtocol;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientVehicleMovePacket;
+import com.nukkitx.math.GenericMath;
+import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.EntityType;
@@ -26,33 +30,36 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
+import org.dragonet.proxy.util.TextFormat;
 
 @Log4j2
 @PEPacketTranslator(packetClass = MovePlayerPacket.class)
 public class PEMovePlayerTranslator extends PacketTranslator<MovePlayerPacket> {
-    public static final PEMovePlayerTranslator INSTANCE = new PEMovePlayerTranslator();
 
     @Override
     public void translate(ProxySession session, MovePlayerPacket packet) {
         CachedEntity cachedEntity = session.getEntityCache().getByProxyId(packet.getRuntimeEntityId());
-        //log.info(packet.getRuntimeEntityId() + " : " + session.getCachedEntity().getProxyEid() + " - " + session.getCachedEntity().getRemoteEid());
         if(cachedEntity == null) {
-//            log.info("(debug) Cached entity is null in MovePlayerTranslator: " + packet.getRuntimeEntityId());
-////            log.info(packet.getEntityType());
-////            log.info(packet.getMode().name());
-////            log.info(session.getEntityCache().getEntities().keySet());
+            log.info(TextFormat.GRAY + "(debug) MovePlayer: cached entity is null");
             return;
         }
 
-        ClientPlayerPositionRotationPacket playerPositionRotationPacket = new ClientPlayerPositionRotationPacket(
-            packet.isOnGround(),
-            packet.getPosition().getX(),
-            Math.ceil(packet.getPosition().getY() - EntityType.PLAYER.getOffset() * 2) / 2,
-            packet.getPosition().getZ(),
-            packet.getRotation().getX(),
-            packet.getRotation().getY());
+        // Handle controlling a vehicle
+        if(packet.getRidingRuntimeEntityId() != 0) {
+            ClientVehicleMovePacket clientVehicleMovePacket = new ClientVehicleMovePacket(packet.getPosition().getX(),
+                packet.getPosition().getY() - EntityType.PLAYER.getOffset(), packet.getPosition().getZ(), packet.getRotation().getY(), packet.getRotation().getX());
 
-        cachedEntity.moveAbsolute(packet.getPosition(), packet.getRotation());
+            session.sendRemotePacket(clientVehicleMovePacket);
+            return;
+        }
+
+        // Update the cached position and rotation
+        cachedEntity.setPosition(packet.getPosition());
+        cachedEntity.setRotation(Vector3f.from(packet.getRotation().getY(), packet.getRotation().getX(), packet.getRotation().getY()));
+
+        // Tell the remote server that we have moved
+        ClientPlayerPositionRotationPacket playerPositionRotationPacket = new ClientPlayerPositionRotationPacket(packet.isOnGround(), packet.getPosition().getX(),
+            Math.ceil(packet.getPosition().getY() - EntityType.PLAYER.getOffset()), packet.getPosition().getZ(), packet.getRotation().getY(), packet.getRotation().getX());
 
         session.sendRemotePacket(playerPositionRotationPacket);
     }

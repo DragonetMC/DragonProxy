@@ -19,7 +19,7 @@
 package org.dragonet.proxy.network.translator.java.entity;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityMetadataPacket;
-import com.nukkitx.protocol.bedrock.data.EntityDataDictionary;
+import com.nukkitx.protocol.bedrock.data.EntityDataMap;
 import com.nukkitx.protocol.bedrock.packet.SetEntityDataPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
@@ -43,7 +43,7 @@ public class PCEntityMetadataTranslator extends PacketTranslator<ServerEntityMet
             return;
         }
 
-        EntityDataDictionary metadata = EntityMetaTranslator.translateToBedrock(cachedEntity, packet.getMetadata());
+        EntityDataMap metadata = EntityMetaTranslator.translateToBedrock(cachedEntity, packet.getMetadata());
         cachedEntity.getMetadata().putAll(metadata);
 
         SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();

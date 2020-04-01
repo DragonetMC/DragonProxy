@@ -19,36 +19,41 @@
 package org.dragonet.proxy.network.translator.java.player;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerAbilitiesPacket;
+import com.nukkitx.protocol.bedrock.data.CommandPermission;
+import com.nukkitx.protocol.bedrock.data.EntityFlag;
+import com.nukkitx.protocol.bedrock.data.PlayerPermission;
 import com.nukkitx.protocol.bedrock.packet.AdventureSettingsPacket;
+import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
-
+@Log4j2
 @PCPacketTranslator(packetClass = ServerPlayerAbilitiesPacket.class)
 public class PCPlayerAbilitiesTranslator extends PacketTranslator<ServerPlayerAbilitiesPacket> {
-    private int flags = 0;
 
     @Override
     public void translate(ProxySession session, ServerPlayerAbilitiesPacket packet) {
+        CachedPlayer cachedEntity = session.getCachedEntity();
+
         AdventureSettingsPacket adventureSettingsPacket = new AdventureSettingsPacket();
+        adventureSettingsPacket.setUniqueEntityId(cachedEntity.getProxyEid());
+        adventureSettingsPacket.setPlayerPermission(PlayerPermission.MEMBER);
+        adventureSettingsPacket.setCommandPermission(CommandPermission.NORMAL);
 
-        setFlag(0x40, packet.isCanFly());
-        setFlag(0x200, packet.isFlying());
+        cachedEntity.setFlySpeed(packet.getFlySpeed());
+        cachedEntity.getFlags().setFlag(EntityFlag.CAN_FLY, packet.isCanFly());
+        cachedEntity.sendMetadata(session);
 
-        session.getCachedEntity().setFlySpeed(packet.getFlySpeed());
-
-        adventureSettingsPacket.setPlayerFlags(flags);
+        if(packet.isCanFly()) {
+            adventureSettingsPacket.getFlags().add(AdventureSettingsPacket.Flag.MAY_FLY);
+        }
+        if(packet.isFlying()) {
+            adventureSettingsPacket.getFlags().add(AdventureSettingsPacket.Flag.FLYING);
+        }
 
         session.sendPacket(adventureSettingsPacket);
-    }
-
-    private void setFlag(int flag, boolean value) {
-        if (value) {
-            this.flags |= flag;
-        } else {
-            this.flags &= ~flag;
-        }
     }
 }

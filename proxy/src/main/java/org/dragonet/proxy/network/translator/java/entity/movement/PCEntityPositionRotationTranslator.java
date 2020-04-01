@@ -26,36 +26,21 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.util.TextFormat;
 
 @Log4j2
 @PCPacketTranslator(packetClass = ServerEntityPositionRotationPacket.class)
 public class PCEntityPositionRotationTranslator extends PacketTranslator<ServerEntityPositionRotationPacket> {
-    public static final PCEntityPositionRotationTranslator INSTANCE = new PCEntityPositionRotationTranslator();
 
     @Override
     public void translate(ProxySession session, ServerEntityPositionRotationPacket packet) {
         CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(packet.getEntityId());
         if(cachedEntity == null) {
-            //log.info("(debug) EntityPositionRotation: Cached entity is null");
+            //log.info(TextFormat.GRAY + "(debug) EntityPositionRotation: Cached entity is null");
             return;
         }
 
-        cachedEntity.moveRelative(Vector3f.from(packet.getMoveX(), packet.getMoveY(), packet.getMoveZ()), packet.getPitch(), packet.getYaw());
-
-        Vector3f rotation = Vector3f.from(cachedEntity.getRotation().getX() / (360d / 256d),
-            cachedEntity.getRotation().getY() / (360d / 256d), cachedEntity.getRotation().getZ() / (360d / 256d));
-
-        if(cachedEntity.isShouldMove()) {
-            MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
-            moveEntityPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
-            moveEntityPacket.setPosition(cachedEntity.getOffsetPosition());
-            moveEntityPacket.setRotation(rotation);
-            moveEntityPacket.setOnGround(packet.isOnGround());
-            moveEntityPacket.setTeleported(false);
-
-            session.sendPacket(moveEntityPacket);
-
-            cachedEntity.setShouldMove(false);
-        }
+        cachedEntity.moveRelative(session, Vector3f.from(packet.getMoveX(), packet.getMoveY(), packet.getMoveZ()),
+            Vector3f.from(packet.getPitch(), packet.getYaw(), packet.getYaw()), packet.isOnGround(), false);
     }
 }

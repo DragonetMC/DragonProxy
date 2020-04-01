@@ -31,11 +31,11 @@ public class PERespawnTranslator extends PacketTranslator<RespawnPacket> {
 
     @Override
     public void translate(ProxySession session, RespawnPacket packet) {
-        if(packet.getSpawnState() == RespawnPacket.State.CLIENT_READY) {
+        if(packet.getState() == RespawnPacket.State.CLIENT_READY) {
             RespawnPacket respawnPacket = new RespawnPacket();
             respawnPacket.setRuntimeEntityId(packet.getRuntimeEntityId());
             respawnPacket.setPosition(packet.getPosition());
-            respawnPacket.setSpawnState(RespawnPacket.State.SERVER_SEARCHING);
+            respawnPacket.setState(RespawnPacket.State.SERVER_SEARCHING);
 
             session.sendPacket(respawnPacket);
 

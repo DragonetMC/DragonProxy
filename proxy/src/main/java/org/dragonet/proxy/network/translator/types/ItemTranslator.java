@@ -43,7 +43,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Log4j2
 public class ItemTranslator {
-    public static final Collection<StartGamePacket.ItemEntry> ITEM_PALETTE = new ArrayList<>();
+    public static final List<StartGamePacket.ItemEntry> ITEM_PALETTE = new ArrayList<>();
     public static final Int2ObjectMap<ItemEntry> ITEM_ENTRIES = new Int2ObjectOpenHashMap<>();
 
     private static final AtomicInteger javaIdAllocator = new AtomicInteger(0);

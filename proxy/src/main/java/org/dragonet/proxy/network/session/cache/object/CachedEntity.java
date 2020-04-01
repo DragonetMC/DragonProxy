@@ -20,10 +20,7 @@ package org.dragonet.proxy.network.session.cache.object;
 
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.*;
-import com.nukkitx.protocol.bedrock.packet.AddEntityPacket;
-import com.nukkitx.protocol.bedrock.packet.MobArmorEquipmentPacket;
-import com.nukkitx.protocol.bedrock.packet.RemoveEntityPacket;
-import com.nukkitx.protocol.bedrock.packet.UpdateAttributesPacket;
+import com.nukkitx.protocol.bedrock.packet.*;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
@@ -38,16 +35,15 @@ import java.util.*;
 @Data
 @Log4j2
 public class CachedEntity {
-    protected EntityType type;
+    protected EntityType entityType;
     protected long proxyEid;
     protected int remoteEid; // will be -1 if its a local entity
     protected UUID javaUuid;
 
-    protected EntityDataDictionary metadata = new EntityDataDictionary();
+    protected EntityDataMap metadata = new EntityDataMap();
     protected EntityFlags flags = new EntityFlags();
 
     protected boolean spawned = false;
-    protected boolean shouldMove = false;
 
     protected Vector3f position = Vector3f.ZERO;
     protected Vector3f rotation = Vector3f.ZERO;
@@ -73,16 +69,16 @@ public class CachedEntity {
     @Setter(AccessLevel.PRIVATE)
     private boolean local = false;
 
-    public CachedEntity(EntityType type, long proxyEid, int remoteEid) {
-        this.type = type;
+    public CachedEntity(EntityType entityType, long proxyEid, int remoteEid) {
+        this.entityType = entityType;
         this.proxyEid = proxyEid;
         this.remoteEid = remoteEid;
 
         addDefaultMetadata();
     }
 
-    public CachedEntity(EntityType type, long proxyEid) {
-        this.type = type;
+    public CachedEntity(EntityType entityType, long proxyEid) {
+        this.entityType = entityType;
         this.proxyEid = proxyEid;
         this.local = true;
 
@@ -97,8 +93,8 @@ public class CachedEntity {
         AddEntityPacket addEntityPacket = new AddEntityPacket();
         addEntityPacket.setRuntimeEntityId(proxyEid);
         addEntityPacket.setUniqueEntityId(proxyEid);
-        addEntityPacket.setIdentifier("minecraft:" + type.name().toLowerCase()); // TODO: this may need mapping
-        addEntityPacket.setEntityType(type.getType());
+        addEntityPacket.setIdentifier("minecraft:" + entityType.name().toLowerCase()); // TODO: this may need mapping
+        addEntityPacket.setEntityType(entityType.getType());
         addEntityPacket.setRotation(rotation);
         addEntityPacket.setMotion(Vector3f.ZERO);
         addEntityPacket.setPosition(getOffsetPosition());
@@ -108,8 +104,6 @@ public class CachedEntity {
 
         session.sendPacket(addEntityPacket);
         spawned = true;
-
-        session.getEntityCache().getEntities().put(proxyEid, this);
     }
 
     public void despawn(ProxySession session) {
@@ -127,34 +121,50 @@ public class CachedEntity {
         session.getEntityCache().destroyEntity(proxyEid);
     }
 
-    public void moveRelative(Vector3f relPos, float pitch, float yaw) {
-        moveRelative(relPos, Vector3f.from(pitch, yaw, yaw));
-    }
-
-    public void moveRelative(Vector3f relPos, Vector3f rotation) {
-        this.rotation = rotation;
-        moveRelative(relPos);
-    }
-
-    public void moveRelative(Vector3f relPos) {
+    public void moveRelative(ProxySession session, Vector3f relPos, Vector3f rotation, boolean onGround, boolean teleported) {
         if (relPos.getX() == 0 && relPos.getY() == 0 && relPos.getZ() == 0 && position.getX() == 0 && position.getY() == 0)
             return;
 
         this.position = Vector3f.from(position.getX() + relPos.getX(), position.getY() + relPos.getY(), position.getZ() + relPos.getZ());
-        this.shouldMove = true;
+        this.rotation = rotation;
+
+        MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
+        moveEntityPacket.setRuntimeEntityId(proxyEid);
+        moveEntityPacket.setPosition(getOffsetPosition());
+        moveEntityPacket.setRotation(rotation);
+        moveEntityPacket.setTeleported(teleported);
+        moveEntityPacket.setOnGround(onGround);
+
+        session.sendPacket(moveEntityPacket);
     }
 
-    public void moveAbsolute(Vector3f position, float pitch, float yaw) {
-        moveAbsolute(position, Vector3f.from(pitch, yaw, yaw));
-    }
-
-    public void moveAbsolute(Vector3f position, Vector3f rotation) {
+    public void moveAbsolute(ProxySession session, Vector3f position, Vector3f rotation, boolean onGround, boolean teleported) {
         if (position.getX() == 0 && position.getY() == 0 && position.getZ() == 0 && rotation.getX() == 0 && rotation.getY() == 0)
             return;
 
         this.position = position;
         this.rotation = rotation;
-        this.shouldMove = true;
+
+        MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
+        moveEntityPacket.setRuntimeEntityId(proxyEid);
+        moveEntityPacket.setPosition(getOffsetPosition());
+        moveEntityPacket.setRotation(rotation);
+        moveEntityPacket.setTeleported(teleported);
+        moveEntityPacket.setOnGround(onGround);
+
+        session.sendPacket(moveEntityPacket);
+    }
+
+    public void rotate(ProxySession session, Vector3f rotation) {
+        this.rotation = rotation;
+
+        MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
+        moveEntityPacket.setRuntimeEntityId(proxyEid);
+        moveEntityPacket.setPosition(getOffsetPosition());
+        moveEntityPacket.setRotation(rotation);
+        moveEntityPacket.setTeleported(false);
+
+        session.sendPacket(moveEntityPacket);
     }
 
     public void sendArmor(ProxySession session) {
@@ -176,25 +186,30 @@ public class CachedEntity {
         session.sendPacket(updateAttributesPacket);
     }
 
+    public void sendMetadata(ProxySession session) {
+        SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
+        setEntityDataPacket.setRuntimeEntityId(proxyEid);
+        setEntityDataPacket.getMetadata().putAll(metadata.putFlags(flags));
+
+        session.sendPacket(setEntityDataPacket);
+    }
+
     private void addDefaultMetadata() {
         flags.setFlag(EntityFlag.HAS_GRAVITY, true);
         flags.setFlag(EntityFlag.HAS_COLLISION, true);
         flags.setFlag(EntityFlag.CAN_SHOW_NAME, true);
         flags.setFlag(EntityFlag.CAN_CLIMB, true);
-        flags.setFlag(EntityFlag.NO_AI, false);
 
-        //metadata.put(EntityData.NAMETAG, "test - " + proxyEid);
         scale = 1f;
         metadata.put(EntityData.SCALE, 1f);
-        metadata.put(EntityData.AIR, 0);
-        metadata.put(EntityData.MAX_AIR, 400);
-        metadata.put(EntityData.ENTITY_AGE, 0);
-        metadata.put(EntityData.BOUNDING_BOX_HEIGHT, type.getHeight());
-        metadata.put(EntityData.BOUNDING_BOX_WIDTH, type.getWidth());
+        metadata.put(EntityData.AIR, (short) 0);
+        metadata.put(EntityData.MAX_AIR, (short) 400);
+        metadata.put(EntityData.BOUNDING_BOX_HEIGHT, entityType.getHeight());
+        metadata.put(EntityData.BOUNDING_BOX_WIDTH, entityType.getWidth());
         metadata.putFlags(flags);
     }
 
     public Vector3f getOffsetPosition() {
-        return Vector3f.from(position.getX(), position.getY() + type.getOffset(), position.getZ());
+        return Vector3f.from(position.getX(), position.getY() + entityType.getOffset(), position.getZ());
     }
 }

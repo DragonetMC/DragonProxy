@@ -21,12 +21,15 @@ package org.dragonet.proxy.network.translator.bedrock.player;
 import com.github.steveice10.mc.protocol.data.MagicValues;
 import com.github.steveice10.mc.protocol.data.game.ClientRequest;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
+import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
 import com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction;
 import com.github.steveice10.mc.protocol.data.game.entity.player.PlayerState;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockFace;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientRequestPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerActionPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPlaceBlockPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerStatePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerUseItemPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayerActionPacket;
 import com.nukkitx.protocol.bedrock.packet.RespawnPacket;
 import lombok.extern.log4j.Log4j2;
@@ -81,6 +84,10 @@ public class PEPlayerActionTranslator extends PacketTranslator<PlayerActionPacke
                 break;
             case CONTINUE_BREAK:
 
+                break;
+            case BLOCK_INTERACT:
+                session.sendRemotePacket(new ClientPlayerPlaceBlockPacket(new Position(packet.getBlockPosition().getX(), packet.getBlockPosition().getY(),
+                    packet.getBlockPosition().getZ()), BlockFace.values()[packet.getFace()], Hand.MAIN_HAND, 0, 0, 0, false));
                 break;
             default:
                 log.info(TextFormat.GRAY + "(debug) Unhandled player action: " + packet.getAction().name());

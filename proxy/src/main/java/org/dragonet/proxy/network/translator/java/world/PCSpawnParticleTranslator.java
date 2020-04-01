@@ -29,15 +29,13 @@ import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
 @Log4j2
-
 @PCPacketTranslator(packetClass = ServerSpawnParticlePacket.class)
 public class PCSpawnParticleTranslator extends PacketTranslator<ServerSpawnParticlePacket> {
-    public static final PCSpawnParticleTranslator INSTANCE = new PCSpawnParticleTranslator();
 
     @Override
     public void translate(ProxySession session, ServerSpawnParticlePacket packet) {
-        // This doesnt work yet, ffs Mojang
         SpawnParticleEffectPacket spawnParticlePacket = new SpawnParticleEffectPacket();
+        //spawnParticlePacket.setUniqueEntityId();
         spawnParticlePacket.setDimensionId(0);
         spawnParticlePacket.setIdentifier("minecraft:heart");
         spawnParticlePacket.setPosition(Vector3f.from(0, 48, 2));

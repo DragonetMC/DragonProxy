@@ -37,20 +37,5 @@ public class PEInteractTranslator extends PacketTranslator<InteractPacket> {
             //log.warn("InteractPacket: Cached entity is null");
             return;
         }
-
-        switch(packet.getAction()) {
-            case 3: // Leave vehicle
-
-                break;
-            case 4: // Mouseover
-
-                break;
-            case 6: // Open inventory
-
-                break;
-            default:
-                log.warn("Unknown interact action: " + packet.getAction());
-                break;
-        }
     }
 }

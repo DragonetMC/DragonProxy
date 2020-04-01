@@ -56,20 +56,20 @@ public class PCBossBarTranslator extends PacketTranslator<ServerBossBarPacket> {
                 addFakeEntity(session, packet.getUuid());
 
                 bossEventPacket.setTitle(MessageTranslator.translate(packet.getTitle().getFullText()));
-                bossEventPacket.setType(BossEventPacket.Type.SHOW);
+                bossEventPacket.setAction(BossEventPacket.Action.SHOW);
                 bossEventPacket.setHealthPercentage(packet.getHealth());
                 break;
             case REMOVE:
                 removeFakeEntity(session, packet.getUuid());
 
-                bossEventPacket.setType(BossEventPacket.Type.HIDE);
+                bossEventPacket.setAction(BossEventPacket.Action.HIDE);
                 break;
             case UPDATE_HEALTH:
-                bossEventPacket.setType(BossEventPacket.Type.HEALTH_PERCENTAGE);
+                bossEventPacket.setAction(BossEventPacket.Action.HEALTH_PERCENTAGE);
                 bossEventPacket.setHealthPercentage(packet.getHealth());
                 break;
             case UPDATE_TITLE:
-                bossEventPacket.setType(BossEventPacket.Type.TITLE);
+                bossEventPacket.setAction(BossEventPacket.Action.TITLE);
                 bossEventPacket.setTitle(MessageTranslator.translate(packet.getTitle().getFullText()));
                 break;
             case UPDATE_STYLE:

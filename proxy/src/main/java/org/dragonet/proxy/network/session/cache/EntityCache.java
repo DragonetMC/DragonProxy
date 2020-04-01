@@ -29,6 +29,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
+import org.dragonet.proxy.network.session.cache.object.CachedPainting;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 
 import java.util.Collections;
@@ -116,6 +117,18 @@ public class EntityCache implements Cache {
      */
     public CachedPlayer newPlayer(int entityId, GameProfile profile) {
         CachedPlayer entity = new CachedPlayer(nextClientEntityId.getAndIncrement(), entityId, profile);
+
+        entities.put(entity.getProxyEid(), entity);
+        clientToRemoteMap.put(entity.getProxyEid(), entity.getRemoteEid());
+        remoteToClientMap.put(entity.getRemoteEid(), entity.getProxyEid());
+        return entity;
+    }
+
+    /**
+     * Constructs a new cached painting.
+     */
+    public CachedPainting newPainting(int entityId, String name) {
+        CachedPainting entity = new CachedPainting(nextClientEntityId.getAndIncrement(), entityId, name);
 
         entities.put(entity.getProxyEid(), entity);
         clientToRemoteMap.put(entity.getProxyEid(), entity.getRemoteEid());

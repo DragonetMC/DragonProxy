@@ -41,10 +41,7 @@ import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.PlayerSession;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.BedrockServerSession;
-import com.nukkitx.protocol.bedrock.data.GamePublishSetting;
-import com.nukkitx.protocol.bedrock.data.GameRule;
-import com.nukkitx.protocol.bedrock.data.ImageData;
-import com.nukkitx.protocol.bedrock.data.SerializedSkin;
+import com.nukkitx.protocol.bedrock.data.*;
 import com.nukkitx.protocol.bedrock.packet.*;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
@@ -200,7 +197,7 @@ public class ProxySession implements PlayerSession {
 
             // Enable coordinates now
             GameRulesChangedPacket gameRulesChangedPacket = new GameRulesChangedPacket();
-            gameRulesChangedPacket.getGameRules().add(new GameRule<>("showcoordinates", true));
+            gameRulesChangedPacket.getGameRules().add(new GameRuleData<>("showcoordinates", true));
             bedrockSession.sendPacket(gameRulesChangedPacket);
 
             dataCache.put("auth_state", AuthState.AUTHENTICATED);
@@ -282,7 +279,7 @@ public class ProxySession implements PlayerSession {
         entry.setSkin(skin);
 
         PlayerListPacket playerListPacket = new PlayerListPacket();
-        playerListPacket.setType(PlayerListPacket.Type.ADD);
+        playerListPacket.setAction(PlayerListPacket.Action.ADD);
         playerListPacket.getEntries().add(entry);
 
         bedrockSession.sendPacket(playerListPacket);
@@ -317,7 +314,7 @@ public class ProxySession implements PlayerSession {
         startGamePacket.setLightningLevel(0);
         startGamePacket.setMultiplayerGame(true);
         startGamePacket.setBroadcastingToLan(true);
-        startGamePacket.getGamerules().add((new GameRule<>("showcoordinates", true)));
+        startGamePacket.getGamerules().add((new GameRuleData<>("showcoordinates", true)));
         startGamePacket.setPlatformBroadcastMode(GamePublishSetting.PUBLIC);
         startGamePacket.setXblBroadcastMode(GamePublishSetting.PUBLIC);
         startGamePacket.setCommandsEnabled(true);
@@ -325,7 +322,7 @@ public class ProxySession implements PlayerSession {
         startGamePacket.setBonusChestEnabled(false);
         startGamePacket.setStartingWithMap(false);
         startGamePacket.setTrustingPlayers(true);
-        startGamePacket.setDefaultPlayerPermission(1);
+        startGamePacket.setDefaultPlayerPermission(PlayerPermission.MEMBER);
         startGamePacket.setServerChunkTickRange(4);
         startGamePacket.setBehaviorPackLocked(false);
         startGamePacket.setResourcePackLocked(false);
@@ -375,13 +372,13 @@ public class ProxySession implements PlayerSession {
 
         // Remove the player from the player list
         PlayerListPacket removePacket = new PlayerListPacket();
-        removePacket.setType(PlayerListPacket.Type.REMOVE);
+        removePacket.setAction(PlayerListPacket.Action.REMOVE);
         removePacket.getEntries().add(new PlayerListPacket.Entry(playerId));
         sendPacket(removePacket);
 
         // Add them back to the player list with a new skin
         PlayerListPacket addPacket = new PlayerListPacket();
-        addPacket.setType(PlayerListPacket.Type.ADD);
+        addPacket.setAction(PlayerListPacket.Action.ADD);
 
         SerializedSkin skin = SerializedSkin.of(
             profile.getIdAsString(),
