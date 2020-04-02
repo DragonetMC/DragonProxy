@@ -47,8 +47,7 @@ public class BlockEntityTranslator {
     }
 
     public static CompoundTag translateToBedrock(com.github.steveice10.opennbt.tag.builtin.CompoundTag javaTag) {
-        CompoundTagBuilder root = ItemTranslator.translateRawNBT(javaTag).toBuilder();
-        root.remove("id"); // Remove it so we can then add the field again later
+        CompoundTagBuilder root = CompoundTagBuilder.builder(); //ItemTranslate.translateRawNBT(javaTag).toBuilder()
 
         if(!javaTag.contains("id")) {
             log.warn("Tag does not contain id");
@@ -68,11 +67,18 @@ public class BlockEntityTranslator {
 
         switch(bedrockId) {
             case "Beacon":
+                // TODO: see above, make this automatically translate
+                root.intTag("Primary", (int) javaTag.get("Primary").getValue());
+                root.intTag("Secondary", (int) javaTag.get("Secondary").getValue());
+                root.intTag("Levels", (int) javaTag.get("Levels").getValue());
                 root.stringTag("Lock", "");
                 break;
         }
 
         root.stringTag("id", bedrockId);
+        root.intTag("x", (int) javaTag.get("x").getValue());
+        root.intTag("y", (int) javaTag.get("y").getValue());
+        root.intTag("z", (int) javaTag.get("z").getValue());
         return root.buildRootTag();
     }
 

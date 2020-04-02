@@ -19,17 +19,15 @@
 package org.dragonet.proxy.network.session.cache.object;
 
 import com.github.steveice10.mc.auth.data.GameProfile;
-import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.CommandPermission;
 import com.nukkitx.protocol.bedrock.data.ItemData;
 import com.nukkitx.protocol.bedrock.data.PlayerPermission;
 import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket;
-import com.nukkitx.protocol.bedrock.packet.MoveEntityAbsolutePacket;
 import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
 import lombok.Getter;
 import lombok.Setter;
-import org.dragonet.proxy.data.entity.EntityType;
+import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 
 @Getter
@@ -41,7 +39,7 @@ public class CachedPlayer extends CachedEntity {
     private int selectedHotbarSlot = 0;
 
     public CachedPlayer(long proxyEid, int remoteEid, GameProfile profile) {
-        super(EntityType.PLAYER, proxyEid, remoteEid);
+        super(BedrockEntityType.PLAYER, proxyEid, remoteEid);
         this.profile = profile;
     }
 

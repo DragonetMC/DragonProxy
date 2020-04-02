@@ -18,27 +18,21 @@
  */
 package org.dragonet.proxy.network.session.cache.object;
 
-import com.github.steveice10.mc.auth.data.GameProfile;
-import com.github.steveice10.mc.protocol.data.game.entity.type.object.HangingDirection;
-import com.nukkitx.math.vector.Vector2f;
-import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.data.EntityData;
 import com.nukkitx.protocol.bedrock.data.EntityDataMap;
 import com.nukkitx.protocol.bedrock.data.ItemData;
 import com.nukkitx.protocol.bedrock.packet.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.dragonet.proxy.data.entity.EntityType;
+import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.types.EntityMetaTranslator;
-import org.dragonet.proxy.network.translator.types.ItemTranslator;
 
 @Getter
 @Setter
 public class CachedItemEntity extends CachedEntity {
 
     public CachedItemEntity(long proxyEid, int remoteEid) {
-        super(EntityType.ITEM, proxyEid, remoteEid);
+        super(BedrockEntityType.ITEM, proxyEid, remoteEid);
     }
 
     @Override

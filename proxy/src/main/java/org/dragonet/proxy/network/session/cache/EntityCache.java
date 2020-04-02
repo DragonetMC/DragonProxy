@@ -19,15 +19,13 @@
 package org.dragonet.proxy.network.session.cache;
 
 import com.github.steveice10.mc.auth.data.GameProfile;
-import it.unimi.dsi.fastutil.longs.Long2ObjectArrayMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2LongArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.dragonet.proxy.data.entity.EntityType;
+import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.cache.object.CachedPainting;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
@@ -72,7 +70,7 @@ public class EntityCache implements Cache {
     /**
      * Constructs a new cached entity.
      */
-    public CachedEntity newEntity(EntityType type, int entityId) {
+    public CachedEntity newEntity(BedrockEntityType type, int entityId) {
         CachedEntity entity = new CachedEntity(type, nextClientEntityId.getAndIncrement(), entityId);
 
         entities.put(entity.getProxyEid(), entity);
@@ -90,7 +88,7 @@ public class EntityCache implements Cache {
      * This is used for when an entity id is expected for a certain packet on
      * bedrock but not on Java, so a fake entity must be created.
      */
-    public CachedEntity newLocalEntity(EntityType type) {
+    public CachedEntity newLocalEntity(BedrockEntityType type) {
         CachedEntity entity = new CachedEntity(type, nextClientEntityId.getAndIncrement());
         entities.put(entity.getProxyEid(), entity);
         return entity;

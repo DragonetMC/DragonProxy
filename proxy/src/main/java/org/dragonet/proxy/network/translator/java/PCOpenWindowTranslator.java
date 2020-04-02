@@ -18,24 +18,48 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
+import com.github.steveice10.mc.protocol.data.game.window.WindowType;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.data.window.BedrockWindowType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.types.MessageTranslator;
+import org.dragonet.proxy.util.TextFormat;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Log4j2
 @PCPacketTranslator(packetClass = ServerOpenWindowPacket.class)
 public class PCOpenWindowTranslator extends PacketTranslator<ServerOpenWindowPacket> {
-    public static final PCOpenWindowTranslator INSTANCE = new PCOpenWindowTranslator();
+    private static final Map<WindowType, BedrockWindowType> windowMap = new HashMap<>();
+
+    static {
+        windowMap.put(WindowType.ANVIL, BedrockWindowType.ANVIL);
+        windowMap.put(WindowType.BEACON, BedrockWindowType.BEACON);
+        windowMap.put(WindowType.ENCHANTMENT, BedrockWindowType.ENCHANT_TABLE);
+        windowMap.put(WindowType.BREWING_STAND, BedrockWindowType.BREWING_STAND);
+        windowMap.put(WindowType.FURNACE, BedrockWindowType.FURNACE);
+        windowMap.put(WindowType.HOPPER, BedrockWindowType.HOPPER);
+        windowMap.put(WindowType.CRAFTING, BedrockWindowType.CRAFTING_TABLE);
+        // TODO: chest style inventories
+    }
 
     @Override
     public void translate(ProxySession session, ServerOpenWindowPacket packet) {
-        CachedWindow cachedWindow = session.getWindowCache().newWindow(packet.getType(), packet.getWindowId());
-        cachedWindow.setName(packet.getName());
+        BedrockWindowType bedrockWindowType = windowMap.get(packet.getType());
+        if(bedrockWindowType == null) {
+            log.info(TextFormat.GRAY + "(debug) Unhandled window type: " + packet.getType().name() + TextFormat.AQUA + "It is not supported yet.");
+            return;
+        }
+
+        CachedWindow cachedWindow = session.getWindowCache().newWindow(bedrockWindowType, packet.getWindowId());
+        cachedWindow.setName(MessageTranslator.translate(packet.getName()));
         cachedWindow.open(session);
 
-        log.warn("OPENING WINDOW id: " + packet.getWindowId() + "  -  " + packet.getName());
+        //log.warn("OPENING WINDOW id: " + packet.getWindowId() + "  -  " + packet.getName());
     }
 }

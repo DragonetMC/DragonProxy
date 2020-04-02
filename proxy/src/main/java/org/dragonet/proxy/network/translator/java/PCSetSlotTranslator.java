@@ -45,7 +45,7 @@ public class PCSetSlotTranslator extends PacketTranslator<ServerSetSlotPacket> {
             return;
         }
         CachedWindow window = windowCache.getWindows().get(packet.getWindowId());
-        if(packet.getWindowId() != 0 && window.getType() == null) {
+        if(packet.getWindowId() != 0 && window.getWindowType() == null) {
             return;
         }
 

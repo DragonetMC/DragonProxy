@@ -21,7 +21,7 @@ package org.dragonet.proxy.data.entity;
 import lombok.Getter;
 
 @Getter
-public enum EntityType {
+public enum BedrockEntityType {
     CHICKEN(10, 0.7f, 0.4f),
     COW(11, 0.9f),
     PIG(12, 0.9f),
@@ -134,15 +134,15 @@ public enum EntityType {
     private float width;
     private float offset;
 
-    EntityType(int type, float height) {
+    BedrockEntityType(int type, float height) {
         this(type, height, 0f);
     }
 
-    EntityType(int type, float height, float width) {
+    BedrockEntityType(int type, float height, float width) {
         this(type, height, width, 0f);
     }
 
-    EntityType(int type, float height, float width, float offset) {
+    BedrockEntityType(int type, float height, float width, float offset) {
         this.type = type;
         this.height = height;
         this.width = width;

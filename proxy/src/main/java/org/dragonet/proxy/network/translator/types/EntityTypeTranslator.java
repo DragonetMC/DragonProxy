@@ -22,7 +22,7 @@ import com.github.steveice10.mc.protocol.data.game.entity.type.GlobalEntityType;
 import com.github.steveice10.mc.protocol.data.game.entity.type.MobType;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.data.entity.EntityType;
+import org.dragonet.proxy.data.entity.BedrockEntityType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,168 +30,168 @@ import java.util.Map;
 @Log4j2
 public class EntityTypeTranslator {
     // Java to Bedrock entity type map
-    private static Map<MobType, EntityType> entityMap = new HashMap<>();
-    private static Map<GlobalEntityType, EntityType> globalEntityMap = new HashMap<>();
-    private static Map<ObjectType, EntityType> objectMap = new HashMap<>();
+    private static Map<MobType, BedrockEntityType> entityMap = new HashMap<>();
+    private static Map<GlobalEntityType, BedrockEntityType> globalEntityMap = new HashMap<>();
+    private static Map<ObjectType, BedrockEntityType> objectMap = new HashMap<>();
 
     static {
         // Normal entities
-        entityMap.put(MobType.CHICKEN, EntityType.CHICKEN);
-        entityMap.put(MobType.COW, EntityType.COW);
-        entityMap.put(MobType.PIG, EntityType.PIG);
-        entityMap.put(MobType.SHEEP, EntityType.SHEEP);
-        entityMap.put(MobType.WOLF, EntityType.WOLF);
-        entityMap.put(MobType.VILLAGER, EntityType.VILLAGER);
-        entityMap.put(MobType.MOOSHROOM, EntityType.MOOSHROOM);
-        entityMap.put(MobType.SQUID, EntityType.SQUID);
-        entityMap.put(MobType.RABBIT, EntityType.RABBIT);
-        entityMap.put(MobType.BAT, EntityType.BAT);
-        entityMap.put(MobType.IRON_GOLEM, EntityType.IRON_GOLEM);
-        entityMap.put(MobType.SNOW_GOLEM, EntityType.SNOW_GOLEM);
-        entityMap.put(MobType.OCELOT, EntityType.OCELOT);
-        entityMap.put(MobType.HORSE, EntityType.HORSE);
-        entityMap.put(MobType.DONKEY, EntityType.DONKEY);
-        entityMap.put(MobType.MULE, EntityType.MULE);
-        entityMap.put(MobType.SKELETON_HORSE, EntityType.SKELETON_HORSE);
-        entityMap.put(MobType.ZOMBIE_HORSE, EntityType.ZOMBIE_HORSE);
-        entityMap.put(MobType.POLAR_BEAR, EntityType.POLAR_BEAR);
-        entityMap.put(MobType.LLAMA, EntityType.LLAMA);
-        entityMap.put(MobType.PARROT, EntityType.PARROT);
-        entityMap.put(MobType.DOLPHIN, EntityType.DOLPHIN);
-        entityMap.put(MobType.ZOMBIE, EntityType.ZOMBIE);
-        entityMap.put(MobType.CREEPER, EntityType.CREEPER);
-        entityMap.put(MobType.SKELETON, EntityType.SKELETON);
-        entityMap.put(MobType.SPIDER, EntityType.SPIDER);
-        entityMap.put(MobType.ZOMBIE_PIGMAN, EntityType.ZOMBIE_PIGMAN);
-        entityMap.put(MobType.SLIME, EntityType.SLIME);
-        entityMap.put(MobType.ENDERMAN, EntityType.ENDERMAN);
-        entityMap.put(MobType.SILVERFISH, EntityType.SILVERFISH);
-        entityMap.put(MobType.CAVE_SPIDER, EntityType.CAVE_SPIDER);
-        entityMap.put(MobType.GHAST, EntityType.GHAST);
-        entityMap.put(MobType.MAGMA_CUBE, EntityType.MAGMA_CUBE);
-        entityMap.put(MobType.BLAZE, EntityType.BLAZE);
-        entityMap.put(MobType.ZOMBIE_VILLAGER, EntityType.ZOMBIE_VILLAGER);
-        entityMap.put(MobType.WITCH, EntityType.WITCH);
-        entityMap.put(MobType.STRAY, EntityType.STRAY);
-        entityMap.put(MobType.HUSK, EntityType.HUSK);
-        entityMap.put(MobType.WITHER_SKELETON, EntityType.WITHER_SKELETON);
-        entityMap.put(MobType.GUARDIAN, EntityType.GUARDIAN);
-        entityMap.put(MobType.ELDER_GUARDIAN, EntityType.ELDER_GUARDIAN);
-        //entityMap.put(MobType., EntityType.NPC);
-        entityMap.put(MobType.WITHER, EntityType.WITHER);
-        entityMap.put(MobType.ENDER_DRAGON, EntityType.ENDER_DRAGON);
-        entityMap.put(MobType.SHULKER, EntityType.SHULKER);
-        entityMap.put(MobType.ENDERMITE, EntityType.ENDERMITE);
-        //entityMap.put(MobType.AGENT, EntityType.AGENT);
-        entityMap.put(MobType.VINDICATOR, EntityType.VINDICATOR);
-        entityMap.put(MobType.PILLAGER, EntityType.PILLAGER);
-        entityMap.put(MobType.WANDERING_TRADER, EntityType.WANDERING_TRADER);
-        entityMap.put(MobType.PHANTOM, EntityType.PHANTOM);
-        entityMap.put(MobType.RAVAGER, EntityType.RAVAGER);
-        entityMap.put(MobType.PANDA, EntityType.PANDA);
-        entityMap.put(MobType.PAINTING, EntityType.PAINTING);
+        entityMap.put(MobType.CHICKEN, BedrockEntityType.CHICKEN);
+        entityMap.put(MobType.COW, BedrockEntityType.COW);
+        entityMap.put(MobType.PIG, BedrockEntityType.PIG);
+        entityMap.put(MobType.SHEEP, BedrockEntityType.SHEEP);
+        entityMap.put(MobType.WOLF, BedrockEntityType.WOLF);
+        entityMap.put(MobType.VILLAGER, BedrockEntityType.VILLAGER);
+        entityMap.put(MobType.MOOSHROOM, BedrockEntityType.MOOSHROOM);
+        entityMap.put(MobType.SQUID, BedrockEntityType.SQUID);
+        entityMap.put(MobType.RABBIT, BedrockEntityType.RABBIT);
+        entityMap.put(MobType.BAT, BedrockEntityType.BAT);
+        entityMap.put(MobType.IRON_GOLEM, BedrockEntityType.IRON_GOLEM);
+        entityMap.put(MobType.SNOW_GOLEM, BedrockEntityType.SNOW_GOLEM);
+        entityMap.put(MobType.OCELOT, BedrockEntityType.OCELOT);
+        entityMap.put(MobType.HORSE, BedrockEntityType.HORSE);
+        entityMap.put(MobType.DONKEY, BedrockEntityType.DONKEY);
+        entityMap.put(MobType.MULE, BedrockEntityType.MULE);
+        entityMap.put(MobType.SKELETON_HORSE, BedrockEntityType.SKELETON_HORSE);
+        entityMap.put(MobType.ZOMBIE_HORSE, BedrockEntityType.ZOMBIE_HORSE);
+        entityMap.put(MobType.POLAR_BEAR, BedrockEntityType.POLAR_BEAR);
+        entityMap.put(MobType.LLAMA, BedrockEntityType.LLAMA);
+        entityMap.put(MobType.PARROT, BedrockEntityType.PARROT);
+        entityMap.put(MobType.DOLPHIN, BedrockEntityType.DOLPHIN);
+        entityMap.put(MobType.ZOMBIE, BedrockEntityType.ZOMBIE);
+        entityMap.put(MobType.CREEPER, BedrockEntityType.CREEPER);
+        entityMap.put(MobType.SKELETON, BedrockEntityType.SKELETON);
+        entityMap.put(MobType.SPIDER, BedrockEntityType.SPIDER);
+        entityMap.put(MobType.ZOMBIE_PIGMAN, BedrockEntityType.ZOMBIE_PIGMAN);
+        entityMap.put(MobType.SLIME, BedrockEntityType.SLIME);
+        entityMap.put(MobType.ENDERMAN, BedrockEntityType.ENDERMAN);
+        entityMap.put(MobType.SILVERFISH, BedrockEntityType.SILVERFISH);
+        entityMap.put(MobType.CAVE_SPIDER, BedrockEntityType.CAVE_SPIDER);
+        entityMap.put(MobType.GHAST, BedrockEntityType.GHAST);
+        entityMap.put(MobType.MAGMA_CUBE, BedrockEntityType.MAGMA_CUBE);
+        entityMap.put(MobType.BLAZE, BedrockEntityType.BLAZE);
+        entityMap.put(MobType.ZOMBIE_VILLAGER, BedrockEntityType.ZOMBIE_VILLAGER);
+        entityMap.put(MobType.WITCH, BedrockEntityType.WITCH);
+        entityMap.put(MobType.STRAY, BedrockEntityType.STRAY);
+        entityMap.put(MobType.HUSK, BedrockEntityType.HUSK);
+        entityMap.put(MobType.WITHER_SKELETON, BedrockEntityType.WITHER_SKELETON);
+        entityMap.put(MobType.GUARDIAN, BedrockEntityType.GUARDIAN);
+        entityMap.put(MobType.ELDER_GUARDIAN, BedrockEntityType.ELDER_GUARDIAN);
+        //entityMap.put(MobType., BedrockEntityType.NPC);
+        entityMap.put(MobType.WITHER, BedrockEntityType.WITHER);
+        entityMap.put(MobType.ENDER_DRAGON, BedrockEntityType.ENDER_DRAGON);
+        entityMap.put(MobType.SHULKER, BedrockEntityType.SHULKER);
+        entityMap.put(MobType.ENDERMITE, BedrockEntityType.ENDERMITE);
+        //entityMap.put(MobType.AGENT, BedrockEntityType.AGENT);
+        entityMap.put(MobType.VINDICATOR, BedrockEntityType.VINDICATOR);
+        entityMap.put(MobType.PILLAGER, BedrockEntityType.PILLAGER);
+        entityMap.put(MobType.WANDERING_TRADER, BedrockEntityType.WANDERING_TRADER);
+        entityMap.put(MobType.PHANTOM, BedrockEntityType.PHANTOM);
+        entityMap.put(MobType.RAVAGER, BedrockEntityType.RAVAGER);
+        entityMap.put(MobType.PANDA, BedrockEntityType.PANDA);
+        entityMap.put(MobType.PAINTING, BedrockEntityType.PAINTING);
 
-        entityMap.put(MobType.ARMOR_STAND, EntityType.ARMOR_STAND);
-        //entityMap.put(MobType.TRIPOD_CAMERA, EntityType.TRIPOD_CAMERA);
-        entityMap.put(MobType.PLAYER, EntityType.PLAYER);
-        entityMap.put(MobType.ITEM, EntityType.ITEM);
-        entityMap.put(MobType.PRIMED_TNT, EntityType.PRIMED_TNT);
-        entityMap.put(MobType.FALLING_BLOCK, EntityType.FALLING_BLOCK);
-        //entityMap.put(MobType.MOVING_BLOCK, EntityType.MOVING_BLOCK);
-        entityMap.put(MobType.THROWN_EXP_BOTTLE, EntityType.EXPERIENCE_BOTTLE);
-        entityMap.put(MobType.EXPERIENCE_ORB, EntityType.EXPERIENCE_ORB);
-        entityMap.put(MobType.EYE_OF_ENDER, EntityType.EYE_OF_ENDER);
-        entityMap.put(MobType.END_CRYSTAL, EntityType.ENDER_CRYSTAL);
-        entityMap.put(MobType.FIREWORK_ROCKET, EntityType.FIREWORK_ROCKET);
-        entityMap.put(MobType.TRIDENT, EntityType.TRIDENT);
+        entityMap.put(MobType.ARMOR_STAND, BedrockEntityType.ARMOR_STAND);
+        //entityMap.put(MobType.TRIPOD_CAMERA, BedrockEntityType.TRIPOD_CAMERA);
+        entityMap.put(MobType.PLAYER, BedrockEntityType.PLAYER);
+        entityMap.put(MobType.ITEM, BedrockEntityType.ITEM);
+        entityMap.put(MobType.PRIMED_TNT, BedrockEntityType.PRIMED_TNT);
+        entityMap.put(MobType.FALLING_BLOCK, BedrockEntityType.FALLING_BLOCK);
+        //entityMap.put(MobType.MOVING_BLOCK, BedrockEntityType.MOVING_BLOCK);
+        entityMap.put(MobType.THROWN_EXP_BOTTLE, BedrockEntityType.EXPERIENCE_BOTTLE);
+        entityMap.put(MobType.EXPERIENCE_ORB, BedrockEntityType.EXPERIENCE_ORB);
+        entityMap.put(MobType.EYE_OF_ENDER, BedrockEntityType.EYE_OF_ENDER);
+        entityMap.put(MobType.END_CRYSTAL, BedrockEntityType.ENDER_CRYSTAL);
+        entityMap.put(MobType.FIREWORK_ROCKET, BedrockEntityType.FIREWORK_ROCKET);
+        entityMap.put(MobType.TRIDENT, BedrockEntityType.TRIDENT);
 
-        entityMap.put(MobType.SHULKER_BULLET, EntityType.SHULKER_BULLET);
-        entityMap.put(MobType.FISHING_BOBBER, EntityType.FISHING_HOOK);
-        //entityMap.put(MobType.CHALKBOARD, EntityType.CHALKBOARD);
-        entityMap.put(MobType.DRAGON_FIREBALL, EntityType.DRAGON_FIREBALL);
-        entityMap.put(MobType.ARROW, EntityType.ARROW);
-        entityMap.put(MobType.SNOWBALL, EntityType.SNOWBALL);
-        entityMap.put(MobType.THROWN_EGG, EntityType.EGG);
-        //entityMap.put(MobType.PAINING, EntityType.PAINTING);
-        entityMap.put(MobType.MINECART, EntityType.MINECART);
-        entityMap.put(MobType.FIREBALL, EntityType.LARGE_FIREBALL);
-        entityMap.put(MobType.THROWN_POTION, EntityType.SPLASH_POTION);
-        entityMap.put(MobType.THROWN_ENDERPEARL, EntityType.ENDER_PEARL);
-        entityMap.put(MobType.LEASH_KNOT, EntityType.LEASH_KNOT);
-        entityMap.put(MobType.WITHER_SKULL, EntityType.WITHER_SKULL);
-        entityMap.put(MobType.BOAT, EntityType.BOAT);
-        //entityMap.put(MobType.WITHER_SKULL_DANGEROUS, EntityType.WITHER_SKULL_DANGEROUS);
-        entityMap.put(MobType.SMALL_FIREBALL, EntityType.SMALL_FIREBALL);
-        entityMap.put(MobType.AREA_EFFECT_CLOUD, EntityType.AREA_EFFECT_CLOUD);
-        entityMap.put(MobType.MINECART_HOPPER, EntityType.HOPPER_MINECART);
-        entityMap.put(MobType.MINECART_TNT, EntityType.TNT_MINECART);
-        entityMap.put(MobType.MINECART_CHEST, EntityType.CHEST_MINECART);
-        entityMap.put(MobType.TRADER_LLAMA, EntityType.LLAMA); // todo: check
+        entityMap.put(MobType.SHULKER_BULLET, BedrockEntityType.SHULKER_BULLET);
+        entityMap.put(MobType.FISHING_BOBBER, BedrockEntityType.FISHING_HOOK);
+        //entityMap.put(MobType.CHALKBOARD, BedrockEntityType.CHALKBOARD);
+        entityMap.put(MobType.DRAGON_FIREBALL, BedrockEntityType.DRAGON_FIREBALL);
+        entityMap.put(MobType.ARROW, BedrockEntityType.ARROW);
+        entityMap.put(MobType.SNOWBALL, BedrockEntityType.SNOWBALL);
+        entityMap.put(MobType.THROWN_EGG, BedrockEntityType.EGG);
+        //entityMap.put(MobType.PAINING, BedrockEntityType.PAINTING);
+        entityMap.put(MobType.MINECART, BedrockEntityType.MINECART);
+        entityMap.put(MobType.FIREBALL, BedrockEntityType.LARGE_FIREBALL);
+        entityMap.put(MobType.THROWN_POTION, BedrockEntityType.SPLASH_POTION);
+        entityMap.put(MobType.THROWN_ENDERPEARL, BedrockEntityType.ENDER_PEARL);
+        entityMap.put(MobType.LEASH_KNOT, BedrockEntityType.LEASH_KNOT);
+        entityMap.put(MobType.WITHER_SKULL, BedrockEntityType.WITHER_SKULL);
+        entityMap.put(MobType.BOAT, BedrockEntityType.BOAT);
+        //entityMap.put(MobType.WITHER_SKULL_DANGEROUS, BedrockEntityType.WITHER_SKULL_DANGEROUS);
+        entityMap.put(MobType.SMALL_FIREBALL, BedrockEntityType.SMALL_FIREBALL);
+        entityMap.put(MobType.AREA_EFFECT_CLOUD, BedrockEntityType.AREA_EFFECT_CLOUD);
+        entityMap.put(MobType.MINECART_HOPPER, BedrockEntityType.HOPPER_MINECART);
+        entityMap.put(MobType.MINECART_TNT, BedrockEntityType.TNT_MINECART);
+        entityMap.put(MobType.MINECART_CHEST, BedrockEntityType.CHEST_MINECART);
+        entityMap.put(MobType.TRADER_LLAMA, BedrockEntityType.LLAMA); // todo: check
 
-        entityMap.put(MobType.MINECART_COMMAND_BLOCK, EntityType.COMMAND_BLOCK_MINECART);
-        //entityMap.put(MobType.LINGERING_POTION, EntityType.LINGERING_POTION);
-        entityMap.put(MobType.LLAMA_SPIT, EntityType.LLAMA_SPIT);
-        entityMap.put(MobType.EVOKER_FANGS, EntityType.EVOKER_FANGS);
-        entityMap.put(MobType.EVOKER, EntityType.EVOKER);
-        entityMap.put(MobType.VEX, EntityType.VEX);
-        //entityMap.put(MobType.ICE_BOMB, EntityType.ICE_BOMB);
-        //entityMap.put(MobType.BALLOON, EntityType.BALLOON);
-        entityMap.put(MobType.PUFFERFISH, EntityType.PUFFERFISH);
-        entityMap.put(MobType.SALMON, EntityType.SALMON);
-        entityMap.put(MobType.TROPICAL_FISH, EntityType.TROPICAL_FISH);
-        entityMap.put(MobType.COD, EntityType.COD);
-        entityMap.put(MobType.CAT, EntityType.CAT);
-        entityMap.put(MobType.BEE, EntityType.BEE);
-        entityMap.put(MobType.TURTLE, EntityType.TURTLE);
+        entityMap.put(MobType.MINECART_COMMAND_BLOCK, BedrockEntityType.COMMAND_BLOCK_MINECART);
+        //entityMap.put(MobType.LINGERING_POTION, BedrockEntityType.LINGERING_POTION);
+        entityMap.put(MobType.LLAMA_SPIT, BedrockEntityType.LLAMA_SPIT);
+        entityMap.put(MobType.EVOKER_FANGS, BedrockEntityType.EVOKER_FANGS);
+        entityMap.put(MobType.EVOKER, BedrockEntityType.EVOKER);
+        entityMap.put(MobType.VEX, BedrockEntityType.VEX);
+        //entityMap.put(MobType.ICE_BOMB, BedrockEntityType.ICE_BOMB);
+        //entityMap.put(MobType.BALLOON, BedrockEntityType.BALLOON);
+        entityMap.put(MobType.PUFFERFISH, BedrockEntityType.PUFFERFISH);
+        entityMap.put(MobType.SALMON, BedrockEntityType.SALMON);
+        entityMap.put(MobType.TROPICAL_FISH, BedrockEntityType.TROPICAL_FISH);
+        entityMap.put(MobType.COD, BedrockEntityType.COD);
+        entityMap.put(MobType.CAT, BedrockEntityType.CAT);
+        entityMap.put(MobType.BEE, BedrockEntityType.BEE);
+        entityMap.put(MobType.TURTLE, BedrockEntityType.TURTLE);
 
 
         // Global entities
-        globalEntityMap.put(GlobalEntityType.LIGHTNING_BOLT, EntityType.LIGHTNING_BOLT);
+        globalEntityMap.put(GlobalEntityType.LIGHTNING_BOLT, BedrockEntityType.LIGHTNING_BOLT);
 
 
         // Objects
-        objectMap.put(ObjectType.EVOKER_FANGS, EntityType.EVOKER_FANGS);
-        objectMap.put(ObjectType.AREA_EFFECT_CLOUD, EntityType.AREA_EFFECT_CLOUD);
-        objectMap.put(ObjectType.ARROW, EntityType.ARROW);
-        objectMap.put(ObjectType.ARMOR_STAND, EntityType.ARMOR_STAND);
-        objectMap.put(ObjectType.BOAT, EntityType.BOAT);
-        objectMap.put(ObjectType.DRAGON_FIREBALL, EntityType.DRAGON_FIREBALL);
-        objectMap.put(ObjectType.END_CRYSTAL, EntityType.ENDER_CRYSTAL);
-        objectMap.put(ObjectType.EXPERIENCE_ORB, EntityType.EXPERIENCE_ORB);
-        objectMap.put(ObjectType.EYE_OF_ENDER, EntityType.EYE_OF_ENDER);
-        objectMap.put(ObjectType.FALLING_BLOCK, EntityType.FALLING_BLOCK);
-        objectMap.put(ObjectType.FIREWORK_ROCKET, EntityType.FIREWORK_ROCKET);
-        objectMap.put(ObjectType.ITEM, EntityType.ITEM);
-        //objectMap.put(ObjectType.ITEM_FRAME, EntityType.ITEM_FRAME);
-        //objectMap.put(ObjectType.FIREBALL, EntityType.FIREBALL);
-        objectMap.put(ObjectType.LEASH_KNOT, EntityType.LEASH_KNOT);
-        objectMap.put(ObjectType.LLAMA_SPIT, EntityType.LLAMA_SPIT);
-        objectMap.put(ObjectType.MINECART, EntityType.MINECART);
-        objectMap.put(ObjectType.CHEST_MINECART, EntityType.CHEST_MINECART);
-        objectMap.put(ObjectType.COMMAND_BLOCK_MINECART, EntityType.COMMAND_BLOCK_MINECART);
-        //objectMap.put(ObjectType.FURNACE_MINECART, EntityType.FURNACE_MINECART);
-        objectMap.put(ObjectType.HOPPER_MINECART, EntityType.HOPPER_MINECART);
-        //objectMap.put(ObjectType.SPAWNER_MINECART, EntityType.SPAWNER_MINECART);
-        objectMap.put(ObjectType.TNT_MINECART, EntityType.TNT_MINECART);
-        objectMap.put(ObjectType.TNT, EntityType.PRIMED_TNT);
-        objectMap.put(ObjectType.SMALL_FIREBALL, EntityType.SMALL_FIREBALL);
-        objectMap.put(ObjectType.SNOWBALL, EntityType.SNOWBALL);
-        //objectMap.put(ObjectType.SPECTRAL_ARROW, EntityType.SPECTRAL_ARROW);
-        objectMap.put(ObjectType.SHULKER_BULLET, EntityType.SHULKER_BULLET);
-        objectMap.put(ObjectType.EGG, EntityType.EGG);
-        objectMap.put(ObjectType.ENDER_PEARL, EntityType.ENDER_PEARL);
-        objectMap.put(ObjectType.EXPERIENCE_BOTTLE, EntityType.EXPERIENCE_BOTTLE);
-        objectMap.put(ObjectType.POTION, EntityType.SPLASH_POTION);
-        objectMap.put(ObjectType.TRIDENT, EntityType.TRIDENT);
-        objectMap.put(ObjectType.WITHER_SKULL, EntityType.WITHER_SKULL);
-        objectMap.put(ObjectType.FISHING_BOBBER, EntityType.FISHING_HOOK);
+        objectMap.put(ObjectType.EVOKER_FANGS, BedrockEntityType.EVOKER_FANGS);
+        objectMap.put(ObjectType.AREA_EFFECT_CLOUD, BedrockEntityType.AREA_EFFECT_CLOUD);
+        objectMap.put(ObjectType.ARROW, BedrockEntityType.ARROW);
+        objectMap.put(ObjectType.ARMOR_STAND, BedrockEntityType.ARMOR_STAND);
+        objectMap.put(ObjectType.BOAT, BedrockEntityType.BOAT);
+        objectMap.put(ObjectType.DRAGON_FIREBALL, BedrockEntityType.DRAGON_FIREBALL);
+        objectMap.put(ObjectType.END_CRYSTAL, BedrockEntityType.ENDER_CRYSTAL);
+        objectMap.put(ObjectType.EXPERIENCE_ORB, BedrockEntityType.EXPERIENCE_ORB);
+        objectMap.put(ObjectType.EYE_OF_ENDER, BedrockEntityType.EYE_OF_ENDER);
+        objectMap.put(ObjectType.FALLING_BLOCK, BedrockEntityType.FALLING_BLOCK);
+        objectMap.put(ObjectType.FIREWORK_ROCKET, BedrockEntityType.FIREWORK_ROCKET);
+        objectMap.put(ObjectType.ITEM, BedrockEntityType.ITEM);
+        //objectMap.put(ObjectType.ITEM_FRAME, BedrockEntityType.ITEM_FRAME);
+        //objectMap.put(ObjectType.FIREBALL, BedrockEntityType.FIREBALL);
+        objectMap.put(ObjectType.LEASH_KNOT, BedrockEntityType.LEASH_KNOT);
+        objectMap.put(ObjectType.LLAMA_SPIT, BedrockEntityType.LLAMA_SPIT);
+        objectMap.put(ObjectType.MINECART, BedrockEntityType.MINECART);
+        objectMap.put(ObjectType.CHEST_MINECART, BedrockEntityType.CHEST_MINECART);
+        objectMap.put(ObjectType.COMMAND_BLOCK_MINECART, BedrockEntityType.COMMAND_BLOCK_MINECART);
+        //objectMap.put(ObjectType.FURNACE_MINECART, BedrockEntityType.FURNACE_MINECART);
+        objectMap.put(ObjectType.HOPPER_MINECART, BedrockEntityType.HOPPER_MINECART);
+        //objectMap.put(ObjectType.SPAWNER_MINECART, BedrockEntityType.SPAWNER_MINECART);
+        objectMap.put(ObjectType.TNT_MINECART, BedrockEntityType.TNT_MINECART);
+        objectMap.put(ObjectType.TNT, BedrockEntityType.PRIMED_TNT);
+        objectMap.put(ObjectType.SMALL_FIREBALL, BedrockEntityType.SMALL_FIREBALL);
+        objectMap.put(ObjectType.SNOWBALL, BedrockEntityType.SNOWBALL);
+        //objectMap.put(ObjectType.SPECTRAL_ARROW, BedrockEntityType.SPECTRAL_ARROW);
+        objectMap.put(ObjectType.SHULKER_BULLET, BedrockEntityType.SHULKER_BULLET);
+        objectMap.put(ObjectType.EGG, BedrockEntityType.EGG);
+        objectMap.put(ObjectType.ENDER_PEARL, BedrockEntityType.ENDER_PEARL);
+        objectMap.put(ObjectType.EXPERIENCE_BOTTLE, BedrockEntityType.EXPERIENCE_BOTTLE);
+        objectMap.put(ObjectType.POTION, BedrockEntityType.SPLASH_POTION);
+        objectMap.put(ObjectType.TRIDENT, BedrockEntityType.TRIDENT);
+        objectMap.put(ObjectType.WITHER_SKULL, BedrockEntityType.WITHER_SKULL);
+        objectMap.put(ObjectType.FISHING_BOBBER, BedrockEntityType.FISHING_HOOK);
 
     }
 
     /**
      * This method translates a Java mob type to a Bedrock entity type.
      */
-    public static EntityType translateToBedrock(MobType mobType) {
+    public static BedrockEntityType translateToBedrock(MobType mobType) {
         if(entityMap.containsKey(mobType)) {
             return entityMap.get(mobType);
         }
@@ -202,14 +202,14 @@ public class EntityTypeTranslator {
      * This method translates a Java global entity type to a Bedrock entity type.
      * The only current global entity is lightning.
      */
-    public static EntityType translateToBedrock(GlobalEntityType globalEntityType) {
+    public static BedrockEntityType translateToBedrock(GlobalEntityType globalEntityType) {
         if(globalEntityMap.containsKey(globalEntityType)) {
             return globalEntityMap.get(globalEntityType);
         }
         return null;
     }
 
-    public static EntityType translateToBedrock(ObjectType objectType) {
+    public static BedrockEntityType translateToBedrock(ObjectType objectType) {
         if(objectMap.containsKey(objectType)) {
             return objectMap.get(objectType);
         }

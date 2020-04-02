@@ -29,9 +29,13 @@ import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.data.window.BedrockWindowType;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.translator.types.BlockEntityTranslator;
 import org.dragonet.proxy.network.translator.types.BlockTranslator;
 import org.dragonet.proxy.util.TextFormat;
+
+import java.util.concurrent.TimeUnit;
 
 @Data
 @Log4j2
@@ -39,22 +43,47 @@ public class CachedWindow {
     private final int windowId;
 
     private ItemStack[] items;
-    private WindowType type;
+    private BedrockWindowType windowType;
 
     private String name;
     private boolean open = false;
 
-    public CachedWindow(int windowId, WindowType type, int size) {
+    public CachedWindow(int windowId, BedrockWindowType windowType, int size) {
         this.windowId = windowId;
-        this.type = type;
+        this.windowType = windowType;
         this.items = new ItemStack[size];
     }
 
+    /**
+     * TODO: Only send fake blocks if its a virtual inventory. It may be possible to
+     *       measure the time before the last block click and then the inventory that appears.
+     *
+     *       This will fix the fact that command blocks will not save your command, as the bedrock
+     *       client only knows about the fake one and obviously it doesn't exist on the remote server,
+     *       so the command is not set.
+     *
+     *       I could fix the command block issue fairly easily, but it'll just be a hack, so i won't.
+     */
     public void open(ProxySession session) {
+        Vector3i position = session.getCachedEntity().getPosition().sub(1, 3, 1).toInt();
+
+        session.getChunkCache().sendFakeBlock(session, windowType.getFakeBlockId(), position);
+
+        BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
+        blockEntityDataPacket.setBlockPosition(position);
+        blockEntityDataPacket.setData(CompoundTag.builder()
+            .stringTag("id", BlockEntityTranslator.getBedrockIdentifier(windowType.getFakeBlockId()))
+            .intTag("x", position.getX())
+            .intTag("y", position.getY())
+            .intTag("z", position.getZ())
+            .buildRootTag());
+
+        session.sendPacket(blockEntityDataPacket);
+
         ContainerOpenPacket containerOpenPacket = new ContainerOpenPacket();
         containerOpenPacket.setWindowId((byte) windowId);
-        containerOpenPacket.setType((byte) 0);
-        containerOpenPacket.setBlockPosition(Vector3i.ZERO);
+        containerOpenPacket.setType((byte) windowType.getContainerId());
+        containerOpenPacket.setBlockPosition(position);
 
         session.sendPacket(containerOpenPacket);
         open = true;
@@ -66,5 +95,7 @@ public class CachedWindow {
 
         session.sendPacket(containerClosePacket);
         open = false;
+
+        // TODO: should we remove the window from the cache at this point? i'll leave it for now.
     }
 }

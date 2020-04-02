@@ -18,18 +18,11 @@
  */
 package org.dragonet.proxy.network.session.cache.object;
 
-import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.HangingDirection;
-import com.nukkitx.math.vector.Vector2f;
-import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.data.ItemData;
 import com.nukkitx.protocol.bedrock.packet.AddPaintingPacket;
-import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket;
-import com.nukkitx.protocol.bedrock.packet.MoveEntityAbsolutePacket;
-import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
 import lombok.Getter;
 import lombok.Setter;
-import org.dragonet.proxy.data.entity.EntityType;
+import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 
 @Getter
@@ -39,7 +32,7 @@ public class CachedPainting extends CachedEntity {
     private HangingDirection hangingDirection;
 
     public CachedPainting(long proxyEid, int remoteEid, String name) {
-        super(EntityType.PAINTING, proxyEid, remoteEid);
+        super(BedrockEntityType.PAINTING, proxyEid, remoteEid);
         this.name = name;
     }
 

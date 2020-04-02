@@ -21,7 +21,7 @@ package org.dragonet.proxy.network.translator.java.entity.spawn;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnObjectPacket;
 import com.nukkitx.math.vector.Vector3f;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.data.entity.EntityType;
+import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
@@ -40,7 +40,7 @@ public class PCSpawnObjectTranslator extends PacketTranslator<ServerSpawnObjectP
             return;
         }
 
-        EntityType entityType = EntityTypeTranslator.translateToBedrock(packet.getType());
+        BedrockEntityType entityType = EntityTypeTranslator.translateToBedrock(packet.getType());
         if(entityType == null) {
             log.warn("Cannot translate object type: " + packet.getType().name());
             return;

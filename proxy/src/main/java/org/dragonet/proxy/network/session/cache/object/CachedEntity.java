@@ -22,15 +22,12 @@ import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadat
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.*;
 import com.nukkitx.protocol.bedrock.packet.*;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockAttributeType;
-import org.dragonet.proxy.data.entity.EntityType;
+import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.types.EntityEffectTranslator;
 
@@ -40,7 +37,7 @@ import java.util.*;
 @Setter
 @Log4j2
 public class CachedEntity {
-    protected EntityType entityType;
+    protected BedrockEntityType entityType;
     protected long proxyEid;
     protected int remoteEid; // will be -1 if its a local entity
     protected UUID javaUuid;
@@ -79,7 +76,7 @@ public class CachedEntity {
     @Setter(AccessLevel.PRIVATE)
     private boolean local = false;
 
-    public CachedEntity(EntityType entityType, long proxyEid, int remoteEid) {
+    public CachedEntity(BedrockEntityType entityType, long proxyEid, int remoteEid) {
         this.entityType = entityType;
         this.proxyEid = proxyEid;
         this.remoteEid = remoteEid;
@@ -87,7 +84,7 @@ public class CachedEntity {
         addDefaultMetadata();
     }
 
-    public CachedEntity(EntityType entityType, long proxyEid) {
+    public CachedEntity(BedrockEntityType entityType, long proxyEid) {
         this.entityType = entityType;
         this.proxyEid = proxyEid;
         this.local = true;

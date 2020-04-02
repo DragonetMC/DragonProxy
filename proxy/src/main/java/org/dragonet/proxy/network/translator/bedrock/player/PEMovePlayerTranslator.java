@@ -18,14 +18,12 @@
  */
 package org.dragonet.proxy.network.translator.bedrock.player;
 
-import com.github.steveice10.mc.protocol.data.SubProtocol;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientVehicleMovePacket;
-import com.nukkitx.math.GenericMath;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.data.entity.EntityType;
+import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
@@ -47,7 +45,7 @@ public class PEMovePlayerTranslator extends PacketTranslator<MovePlayerPacket> {
         // Handle controlling a vehicle
         if(packet.getRidingRuntimeEntityId() != 0) {
             ClientVehicleMovePacket clientVehicleMovePacket = new ClientVehicleMovePacket(packet.getPosition().getX(),
-                packet.getPosition().getY() - EntityType.PLAYER.getOffset(), packet.getPosition().getZ(), packet.getRotation().getY(), packet.getRotation().getX());
+                packet.getPosition().getY() - BedrockEntityType.PLAYER.getOffset(), packet.getPosition().getZ(), packet.getRotation().getY(), packet.getRotation().getX());
 
             session.sendRemotePacket(clientVehicleMovePacket);
             return;
@@ -59,7 +57,7 @@ public class PEMovePlayerTranslator extends PacketTranslator<MovePlayerPacket> {
 
         // Tell the remote server that we have moved
         ClientPlayerPositionRotationPacket playerPositionRotationPacket = new ClientPlayerPositionRotationPacket(packet.isOnGround(), packet.getPosition().getX(),
-            Math.ceil(packet.getPosition().getY() - EntityType.PLAYER.getOffset()), packet.getPosition().getZ(), packet.getRotation().getY(), packet.getRotation().getX());
+            Math.ceil(packet.getPosition().getY() - BedrockEntityType.PLAYER.getOffset()), packet.getPosition().getZ(), packet.getRotation().getY(), packet.getRotation().getX());
 
         session.sendRemotePacket(playerPositionRotationPacket);
     }

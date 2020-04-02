@@ -29,6 +29,7 @@ import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import javafx.geometry.Pos;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.chunk.ChunkData;
@@ -94,12 +95,19 @@ public class ChunkCache implements Cache {
         return null;
     }
 
-    public BlockState getBlockAt(Vector3i position) {
+    public int getBlockAt(Vector3i position) {
         Vector2f chunkPosition = Vector2f.from(position.getX() >> 4, position.getZ() >> 4);
         if(!javaChunks.containsKey(chunkPosition)) {
-            return new BlockState(0); // Air
+            return 0; // Air
         }
-        return null; // TODO
+        Column column = javaChunks.get(chunkPosition);
+        Chunk chunk = column.getChunks()[position.getY() >> 4];
+        Vector3i blockPosition = Vector3i.from(position.getX() & 15, position.getY() & 15, position.getZ() & 15);
+
+        if(chunk != null) {
+            return BlockTranslator.translateToBedrock(chunk.get(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ()));
+        }
+        return 0;
     }
 
     public void updateBlock(Position position, BlockState block) {
@@ -108,6 +116,16 @@ public class ChunkCache implements Cache {
             Column column = javaChunks.get(chunkPosition);
 
         }
+    }
+
+    public void sendFakeBlock(ProxySession session, String identifier, Vector3i position) {
+        UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
+        updateBlockPacket.setBlockPosition(position);
+        updateBlockPacket.setDataLayer(0);
+        updateBlockPacket.setRuntimeId(BlockTranslator.BEDROCK_TEMP.get(identifier)); // TODO: change the method of retrieving the id
+        updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NEIGHBORS);
+
+        session.sendPacket(updateBlockPacket);
     }
 
     @Override
