@@ -93,22 +93,14 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
                     data.setSubChunksLength(0);
                     data.setData(EMPTY_LEVEL_CHUNK_DATA);
                     data.setCachingEnabled(false);
-                    session.sendPacketImmediately(data);
+                    session.sendPacket(data);
                 }
             }
         //}
 
         PlayStatusPacket playStatus = new PlayStatusPacket();
         playStatus.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
-        session.sendPacketImmediately(playStatus);
-
-        // Add the player to the cache (still need to remove them, but thats a TODO)
-        if(session.getDataCache().get("auth_state") != AuthState.AUTHENTICATED) {
-            GameProfile profile = new GameProfile(session.getAuthData().getIdentity(), session.getAuthData().getDisplayName());
-            CachedPlayer player1 = session.getEntityCache().newPlayer(1, profile);
-
-            session.setCachedEntity(player1);
-        }
+        session.sendPacket(playStatus);
     }
 
 }

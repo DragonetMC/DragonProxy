@@ -30,7 +30,6 @@ import org.dragonet.proxy.network.translator.types.EntityEffectTranslator;
 @Log4j2
 @PCPacketTranslator(packetClass = ServerEntityRemoveEffectPacket.class)
 public class PCEntityRemoveEffectTranslator extends PacketTranslator<ServerEntityRemoveEffectPacket> {
-    public static final PCEntityRemoveEffectTranslator INSTANCE = new PCEntityRemoveEffectTranslator();
 
     @Override
     public void translate(ProxySession session, ServerEntityRemoveEffectPacket packet) {

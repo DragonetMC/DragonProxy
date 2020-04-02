@@ -57,6 +57,7 @@ import org.dragonet.proxy.network.session.data.ClientData;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.dragonet.proxy.network.translator.types.BlockTranslator;
 import org.dragonet.proxy.network.translator.types.ItemTranslator;
+import org.dragonet.proxy.remote.RemoteAuthType;
 import org.dragonet.proxy.remote.RemoteServer;
 import org.dragonet.proxy.util.PaletteManager;
 import org.dragonet.proxy.util.SkinUtils;
@@ -68,6 +69,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.dragonet.proxy.network.translator.java.PCJoinGameTranslator.EMPTY_LEVEL_CHUNK_DATA;
@@ -224,6 +226,28 @@ public class ProxySession implements PlayerSession {
     }
 
     /**
+     * This method handles the initial bedrock client connection.
+     */
+    public void handleJoin() {
+        if(proxy.getConfiguration().getRemoteAuthType() == RemoteAuthType.CREDENTIALS) {
+            dataCache.put("auth_state", AuthState.AUTHENTICATING);
+            sendFakeStartGame();
+            sendLoginForm();
+            return;
+        }
+
+        sendFakeStartGame();
+
+        // Start connecting to remote server.
+        // There is a slight delay before connection because otherwise the player will join
+        // the server too quikcly and chunks will not show.
+        proxy.getGeneralThreadPool().schedule(() -> {
+            RemoteServer remoteServer = new RemoteServer("local", proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort());
+            connect(remoteServer);
+        }, 4, TimeUnit.SECONDS);
+    }
+
+    /**
      * Display a form that allows the player to enter their Mojang account credentials.
      * This method is only called if `auth-mode` is set to `online`.
      */
@@ -328,8 +352,8 @@ public class ProxySession implements PlayerSession {
         startGamePacket.setFromWorldTemplate(false);
         startGamePacket.setWorldTemplateOptionLocked(false);
 
-        startGamePacket.setLevelId("DragonProxy " + proxy.getVersion());
-        startGamePacket.setWorldName("world");
+        startGamePacket.setLevelId(UUID.randomUUID().toString());
+        startGamePacket.setWorldName("DragonProxy " + proxy.getVersion());
         startGamePacket.setPremiumWorldTemplateId("00000000-0000-0000-0000-000000000000");
         //startGamePacket.setCurrentTick(0);
         startGamePacket.setEnchantmentSeed(0);

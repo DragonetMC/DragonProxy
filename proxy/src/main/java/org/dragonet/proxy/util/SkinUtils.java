@@ -21,6 +21,8 @@ package org.dragonet.proxy.util;
 import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.auth.exception.property.PropertyException;
 import com.github.steveice10.mc.auth.service.SessionService;
+import com.nukkitx.protocol.bedrock.data.ImageData;
+import com.nukkitx.protocol.bedrock.data.SerializedSkin;
 import it.unimi.dsi.fastutil.io.FastByteArrayOutputStream;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
@@ -31,6 +33,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Collections;
 
 @Log4j2
 public class SkinUtils {

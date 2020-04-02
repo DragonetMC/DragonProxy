@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Represents the connection between the bedrock client and the proxy.
@@ -146,18 +147,7 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
     public boolean handle(ResourcePackClientResponsePacket packet) {
         switch (packet.getStatus()) {
             case COMPLETED:
-                if(proxy.getConfiguration().getRemoteAuthType() == RemoteAuthType.CREDENTIALS) {
-                    session.getDataCache().put("auth_state", AuthState.AUTHENTICATING);
-                    session.sendFakeStartGame();
-                    session.sendLoginForm();
-                    return true;
-                }
-
-                session.sendFakeStartGame();
-
-                // Start connecting to remote server
-                RemoteServer remoteServer = new RemoteServer("local", proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort());
-                session.connect(remoteServer);
+                session.handleJoin();
                 break;
             case HAVE_ALL_PACKS:
                 ResourcePackStackPacket stack = new ResourcePackStackPacket();

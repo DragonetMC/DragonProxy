@@ -12,6 +12,7 @@ package org.dragonet.proxy.data.chunk;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
 import com.google.common.base.Preconditions;
+import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.network.VarInts;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import gnu.trove.TCollections;
@@ -27,7 +28,9 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.Closeable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Log4j2
 @ThreadSafe
@@ -61,6 +64,8 @@ public final class ChunkData implements Closeable {
     private final byte[] biomes;
 
     private final byte[] heightMap;
+
+    public List<CompoundTag> blockEntities = new ArrayList<>();
 
     private final TIntShortMap extraData = new TIntShortHashMap();
 

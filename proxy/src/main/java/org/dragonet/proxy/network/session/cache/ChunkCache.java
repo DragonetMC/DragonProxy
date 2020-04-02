@@ -25,6 +25,7 @@ import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector3i;
+import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -33,9 +34,12 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.chunk.ChunkData;
 import org.dragonet.proxy.data.chunk.ChunkSection;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.translator.types.BlockEntityTranslator;
 import org.dragonet.proxy.network.translator.types.BlockTranslator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Log4j2
 public class ChunkCache implements Cache {
@@ -70,10 +74,21 @@ public class ChunkCache implements Cache {
 
                             ChunkSection section = chunkData.sections[chunkY];
                             section.setFullBlock(x, y, z, 0, bedrockId);
+
+                            // TODO: waterlogging
                         }
                     }
                 }
             }
+
+            List<CompoundTag> bedrockBlockEntities = new ArrayList<>();
+            for(int i = 0; i < column.getTileEntities().length; i++) {
+                CompoundTag tag = BlockEntityTranslator.translateToBedrock(column.getTileEntities()[i]);
+                if(tag != null) {
+                    bedrockBlockEntities.add(tag);
+                }
+            }
+            chunkData.blockEntities = bedrockBlockEntities;
             return chunkData;
         }
         return null;

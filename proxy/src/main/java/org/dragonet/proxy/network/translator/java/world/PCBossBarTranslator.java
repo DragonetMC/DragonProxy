@@ -39,7 +39,6 @@ import java.util.UUID;
 
 @PCPacketTranslator(packetClass = ServerBossBarPacket.class)
 public class PCBossBarTranslator extends PacketTranslator<ServerBossBarPacket> {
-    public static final PCBossBarTranslator INSTANCE = new PCBossBarTranslator();
 
     @Override
     public void translate(ProxySession session, ServerBossBarPacket packet) {

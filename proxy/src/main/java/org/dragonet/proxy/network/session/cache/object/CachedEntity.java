@@ -22,8 +22,11 @@ import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadat
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.*;
 import com.nukkitx.protocol.bedrock.packet.*;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockAttributeType;
@@ -33,7 +36,8 @@ import org.dragonet.proxy.network.translator.types.EntityEffectTranslator;
 
 import java.util.*;
 
-@Data
+@Getter
+@Setter
 @Log4j2
 public class CachedEntity {
     protected EntityType entityType;
@@ -67,6 +71,10 @@ public class CachedEntity {
 
     protected Map<BedrockAttributeType, Attribute> attributes = new HashMap<>();
     protected Set<EntityEffectTranslator.BedrockEffect> effects = new HashSet<>();
+    protected Set<CachedEntity> passengers = new HashSet<>();
+
+
+    protected CachedEntity riding;
 
     @Setter(AccessLevel.PRIVATE)
     private boolean local = false;

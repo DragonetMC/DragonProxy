@@ -21,13 +21,14 @@ package org.dragonet.proxy.network.translator.java.world;
 import com.github.steveice10.mc.protocol.data.game.chunk.Column;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
 import com.nukkitx.math.vector.Vector2f;
+import com.nukkitx.nbt.NbtUtils;
+import com.nukkitx.nbt.stream.NBTOutputStream;
+import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.network.VarInts;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.NetworkChunkPublisherUpdatePacket;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.*;
+import it.unimi.dsi.fastutil.io.FastByteArrayOutputStream;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.chunk.ChunkData;
 import org.dragonet.proxy.data.chunk.ChunkSection;
@@ -35,6 +36,8 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.ChunkCache;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+
+import java.io.IOException;
 
 
 @Log4j2
@@ -74,6 +77,19 @@ public class PCChunkDataTranslator extends PacketTranslator<ServerChunkDataPacke
                 // Extra Data
                 VarInts.writeUnsignedInt(buffer, 0);
 
+                ByteBufOutputStream stream = new ByteBufOutputStream(Unpooled.buffer());
+                NBTOutputStream nbtStream = NbtUtils.createNetworkWriter(stream);
+                for (CompoundTag blockEntity : chunkData.blockEntities) {
+                    nbtStream.write(blockEntity);
+                }
+
+//                FastByteArrayOutputStream fast = new FastByteArrayOutputStream(new byte[256]);
+//                NBTOutputStream nbtStream1 = NbtUtils.createNetworkWriter(stream);
+//                for (CompoundTag blockEntity : chunkData.blockEntities) {
+//                    nbtStream1.write(blockEntity);
+//                }
+                buffer.writeBytes(stream.buffer());
+
                 byte[] payload = new byte[buffer.readableBytes()];
                 buffer.readBytes(payload);
 
@@ -85,6 +101,8 @@ public class PCChunkDataTranslator extends PacketTranslator<ServerChunkDataPacke
                 levelChunkPacket.setData(payload);
 
                 session.sendPacket(levelChunkPacket);
+            } catch (IOException ex) {
+                ex.printStackTrace();
             } finally {
                 buffer.release();
             }

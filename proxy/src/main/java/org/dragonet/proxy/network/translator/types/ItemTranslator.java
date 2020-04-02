@@ -133,7 +133,7 @@ public class ItemTranslator {
                 tag.remove("name");
             }
             if (tag.contains("lore")) {
-                com.nukkitx.nbt.tag.ListTag list = (com.nukkitx.nbt.tag.ListTag) translateRawNBT(tag.get("lore"));
+                com.nukkitx.nbt.tag.ListTag list = (com.nukkitx.nbt.tag.ListTag) translateRawNBT((Tag) tag.get("lore"));
                 display.listTag("Lore", com.nukkitx.nbt.tag.StringTag.class, list.getValue()); // TODO: fix unchecked assignment
                 tag.remove("lore");
             }
@@ -142,13 +142,29 @@ public class ItemTranslator {
 
         if(tag.getValue() != null && !tag.getValue().isEmpty()) {
             for(String tagName : tag.getValue().keySet()) {
-                com.nukkitx.nbt.tag.Tag bedrockTag = translateRawNBT(tag.get(tagName));
+                com.nukkitx.nbt.tag.Tag bedrockTag = translateRawNBT((Tag) tag.get(tagName));
                 if(bedrockTag == null) {
                     continue;
                 }
                 root.tag(bedrockTag);
             }
         }
+        return root.buildRootTag();
+    }
+
+    public static com.nukkitx.nbt.tag.CompoundTag translateRawNBT(CompoundTag tag) {
+        CompoundTagBuilder root = CompoundTagBuilder.builder();
+
+        if(tag.getValue() != null && !tag.getValue().isEmpty()) {
+            for(String tagName : tag.getValue().keySet()) {
+                com.nukkitx.nbt.tag.Tag bedrockTag = translateRawNBT((Tag) tag.get(tagName));
+                if(bedrockTag == null) {
+                    continue;
+                }
+                root.tag(bedrockTag);
+            }
+        }
+
         return root.buildRootTag();
     }
 
@@ -182,7 +198,7 @@ public class ItemTranslator {
 
             if(compound.getValue() != null && !compound.getValue().isEmpty()) {
                 for(String tagName : compound.getValue().keySet()) {
-                    com.nukkitx.nbt.tag.Tag bedrockTag = translateRawNBT(compound.get(tagName));
+                    com.nukkitx.nbt.tag.Tag bedrockTag = translateRawNBT((Tag) compound.get(tagName));
                     if(bedrockTag == null) {
                         continue;
                     }
