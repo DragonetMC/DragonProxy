@@ -40,10 +40,7 @@ public class PCPlayerPositionRotationTranslator extends PacketTranslator<ServerP
         CachedEntity cachedEntity = session.getCachedEntity();
 
         if (!cachedEntity.isSpawned()) {
-            SetEntityDataPacket entityDataPacket = new SetEntityDataPacket();
-            entityDataPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
-            entityDataPacket.getMetadata().putAll(cachedEntity.getMetadata());
-            session.sendPacket(entityDataPacket);
+            cachedEntity.sendMetadata(session);
 
             MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
             movePlayerPacket.setRuntimeEntityId(cachedEntity.getProxyEid());

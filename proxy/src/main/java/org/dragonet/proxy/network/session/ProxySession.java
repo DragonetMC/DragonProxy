@@ -284,10 +284,7 @@ public class ProxySession implements PlayerSession {
 
         bedrockSession.sendPacket(playerListPacket);
 
-        SetEntityDataPacket entityDataPacket = new SetEntityDataPacket();
-        entityDataPacket.setRuntimeEntityId(entityId);
-        entityDataPacket.getMetadata().putAll(cachedEntity.getMetadata());
-        bedrockSession.sendPacket(entityDataPacket);
+        cachedEntity.sendMetadata(this);
 
         log.warn("SPAWN PLAYER");
     }

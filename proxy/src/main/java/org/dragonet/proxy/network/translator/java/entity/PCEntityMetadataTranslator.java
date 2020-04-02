@@ -46,10 +46,6 @@ public class PCEntityMetadataTranslator extends PacketTranslator<ServerEntityMet
         EntityDataMap metadata = EntityMetaTranslator.translateToBedrock(cachedEntity, packet.getMetadata());
         cachedEntity.getMetadata().putAll(metadata);
 
-        SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
-        setEntityDataPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
-        setEntityDataPacket.getMetadata().putAll(cachedEntity.getMetadata());
-
-        session.sendPacket(setEntityDataPacket);
+        cachedEntity.sendMetadata(session);
     }
 }
