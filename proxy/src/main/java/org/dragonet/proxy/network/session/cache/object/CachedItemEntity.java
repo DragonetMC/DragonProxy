@@ -22,37 +22,36 @@ import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.HangingDirection;
 import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.protocol.bedrock.data.EntityData;
+import com.nukkitx.protocol.bedrock.data.EntityDataMap;
 import com.nukkitx.protocol.bedrock.data.ItemData;
-import com.nukkitx.protocol.bedrock.packet.AddPaintingPacket;
-import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket;
-import com.nukkitx.protocol.bedrock.packet.MoveEntityAbsolutePacket;
-import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
+import com.nukkitx.protocol.bedrock.packet.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.dragonet.proxy.data.entity.EntityType;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.translator.types.EntityMetaTranslator;
+import org.dragonet.proxy.network.translator.types.ItemTranslator;
 
 @Getter
 @Setter
-public class CachedPainting extends CachedEntity {
-    private final String name;
-    private HangingDirection hangingDirection;
+public class CachedItemEntity extends CachedEntity {
 
-    public CachedPainting(long proxyEid, int remoteEid, String name) {
-        super(EntityType.PAINTING, proxyEid, remoteEid);
-        this.name = name;
+    public CachedItemEntity(long proxyEid, int remoteEid) {
+        super(EntityType.ITEM, proxyEid, remoteEid);
     }
 
     @Override
     public void spawn(ProxySession session) {
-        AddPaintingPacket addPaintingPacket = new AddPaintingPacket();
-        addPaintingPacket.setRuntimeEntityId(proxyEid);
-        addPaintingPacket.setUniqueEntityId(proxyEid);
-        addPaintingPacket.setPosition(position);
-        addPaintingPacket.setDirection(hangingDirection.ordinal()); // Not sure if this works fully
-        addPaintingPacket.setName(name);
+        EntityDataMap itemMeta = EntityMetaTranslator.translateToBedrock(this, remoteMetadata);
 
-        session.sendPacket(addPaintingPacket);
+        AddItemEntityPacket addItemEntityPacket = new AddItemEntityPacket();
+        addItemEntityPacket.setRuntimeEntityId(proxyEid);
+        addItemEntityPacket.setUniqueEntityId(proxyEid);
+        addItemEntityPacket.setItemInHand(ItemData.AIR); // TODO
+        addItemEntityPacket.setFromFishing(false);
+        addItemEntityPacket.setPosition(position);
+        addItemEntityPacket.setMotion(motion);
         spawned = true;
     }
 }

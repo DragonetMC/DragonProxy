@@ -39,7 +39,7 @@ public class PCEntityMetadataTranslator extends PacketTranslator<ServerEntityMet
     public void translate(ProxySession session, ServerEntityMetadataPacket packet) {
         CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(packet.getEntityId());
         if(cachedEntity == null) {
-            log.info(TextFormat.GRAY + "(debug) EntityMetadataTranslator: Cached entity is null");
+            //log.info(TextFormat.GRAY + "(debug) EntityMetadataTranslator: Cached entity is null");
             return;
         }
 

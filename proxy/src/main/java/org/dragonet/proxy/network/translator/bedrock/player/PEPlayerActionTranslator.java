@@ -89,6 +89,9 @@ public class PEPlayerActionTranslator extends PacketTranslator<PlayerActionPacke
                 session.sendRemotePacket(new ClientPlayerPlaceBlockPacket(new Position(packet.getBlockPosition().getX(), packet.getBlockPosition().getY(),
                     packet.getBlockPosition().getZ()), BlockFace.values()[packet.getFace()], Hand.MAIN_HAND, 0, 0, 0, false));
                 break;
+            case JUMP:
+
+                break;
             default:
                 log.info(TextFormat.GRAY + "(debug) Unhandled player action: " + packet.getAction().name());
                 break;

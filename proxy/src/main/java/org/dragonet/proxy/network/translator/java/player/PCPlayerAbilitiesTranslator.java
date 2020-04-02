@@ -44,11 +44,11 @@ public class PCPlayerAbilitiesTranslator extends PacketTranslator<ServerPlayerAb
         adventureSettingsPacket.setCommandPermission(CommandPermission.NORMAL);
 
         cachedEntity.setFlySpeed(packet.getFlySpeed());
-        cachedEntity.getFlags().setFlag(EntityFlag.CAN_FLY, packet.isCanFly());
-        cachedEntity.sendMetadata(session);
+        //cachedEntity.getFlags().setFlag(EntityFlag.CAN_FLY, packet.isCanFly());
+        //cachedEntity.sendMetadata(session);
 
         if(packet.isCanFly()) {
-            adventureSettingsPacket.getFlags().add(AdventureSettingsPacket.Flag.MAY_FLY);
+            //adventureSettingsPacket.getFlags().add(AdventureSettingsPacket.Flag.MAY_FLY);
         }
         if(packet.isFlying()) {
             adventureSettingsPacket.getFlags().add(AdventureSettingsPacket.Flag.FLYING);

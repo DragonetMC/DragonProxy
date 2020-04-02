@@ -18,6 +18,7 @@
  */
 package org.dragonet.proxy.network.session.cache.object;
 
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.*;
 import com.nukkitx.protocol.bedrock.packet.*;
@@ -40,6 +41,7 @@ public class CachedEntity {
     protected int remoteEid; // will be -1 if its a local entity
     protected UUID javaUuid;
 
+    protected EntityMetadata[] remoteMetadata;
     protected EntityDataMap metadata = new EntityDataMap();
     protected EntityFlags flags = new EntityFlags();
 

@@ -11,27 +11,37 @@ A proxy made to allow **Minecraft: Bedrock Edition** clients to connect to **Min
 Bedrock 1.14 // Java 1.15.2
 ```
 
-### What's been done so far
+## What's been done so far
 See the (almost) full list in [#464](https://github.com/DragonetMC/DragonProxy/issues/464).
 
-### Download
-No updated releases are currently available, however may soon be.
- - [snapshots](https://ci.codemc.org/job/DragonetMC/job/DragonProxy/lastSuccessfulBuild/): developments builds, unstable, latest features (recommended)
-
-### Compiling
-1. `git clone --recursive https://github.com/DragonetMC/DragonProxy`  
-2. `mvn clean install`  
-The output jar can be found at `bootstrap/target/DragonProxy.jar`.
-
-
-### Donating
-Donating helps support the project and its developers.  
   
-You can donate at [OpenCollective](https://opencollective.com/DragonetMC) or [Patreon](https://patreon.com/DragonetMC).<br><br>
-Every donation will be valued, and you will get a role in the Discord server if you ask, and Patreon should do it automatically.
+## Setup
+1. Download the latest build [on jenkins](https://ci.codemc.io/job/DragonetMC/job/DragonProxy/lastSuccessfulBuild/).  
+2. Run DragonProxy with `java -jar DragonProxy.jar`  
+3. Type 'stop' in console and edit the `config.yml` to your liking  
 
-### Libraries used
-* [NukkitX Protocol Library](https://github.com/NukkitX/Protocol)
-* [MCProtocolLib by Steveice10](https://github.com/Steveice10/MCProtocolLib)
+If you are having trouble please refer to our [Discord](https://invite.gg/DragonetMC).
 
+  
+## Compiling
+### Prerequisites
+* [Apache Maven](https://maven.apache.org/download.cgi)  
+* Java 8+  
+* Git bash  
+
+### Instructions 
+1. Clone the repo: `git clone --recursive https://github.com/DragonetMC/DragonProxy`  
+2. Go to the repo folder `cd DragonProxy` (or whatever you called it) 
+3. Execute `mvn clean package`  
+  
+> The output jar can be found at `bootstrap/target/DragonProxy.jar`.  
+
+  
+## Donating
+Donating helps support the project. Read more on the [wiki](https://github.com/DragonetMC/DragonProxy/wiki/Donating).  
+* [OpenCollective](https://opencollective.com/DragonetMC)  
+* [Patreon](https://patreon.com/DragonetMC)  
+* BitCoin (BTC) - `bc1qdd00mpeavhte2lx086z8vvnw959kam5qv0lkfe`
+
+.  
 CircleCI: [![CircleCI](https://circleci.com/gh/DragonetMC/DragonProxy.svg?style=svg)](https://circleci.com/gh/DragonetMC/DragonProxy)
