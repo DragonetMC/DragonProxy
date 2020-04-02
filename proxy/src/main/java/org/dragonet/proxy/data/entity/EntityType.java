@@ -88,7 +88,8 @@ public enum EntityType {
     ENDER_CRYSTAL(71, 0f),
     FIREWORK_ROCKET(72, 0f),
     TRIDENT(73, 0f),
-
+    TURTLE(74, 0, 0), // TODO: find values
+    CAT(75, 0, 0), // TODO: find values
     SHULKER_BULLET(76, 0f),
     FISHING_HOOK(77, 0f),
     CHALKBOARD(78, 0f),
@@ -124,7 +125,9 @@ public enum EntityType {
     SALMON(109, 0.5f, 0.7f),
     TROPICAL_FISH(111, 0.6f, 0.6f),
     COD(112, 0.25f, 0.5f),
-    PANDA(113, 0, 0); // TODO: find values
+    PANDA(113, 0, 0), // TODO: find values
+    BEE(122, 0, 0); // TODO: find values
+
 
     private int type;
     private float height;

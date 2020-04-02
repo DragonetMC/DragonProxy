@@ -37,7 +37,7 @@ public class PCEntityHeadlookTranslator extends PacketTranslator<ServerEntityHea
     public void translate(ProxySession session, ServerEntityHeadLookPacket packet) {
         CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(packet.getEntityId());
         if(cachedEntity == null) {
-            log.info(TextFormat.GRAY + "(debug) EntityHeadLook: Cached entity is null");
+            //log.info(TextFormat.GRAY + "(debug) EntityHeadLook: Cached entity is null");
             return;
         }
 

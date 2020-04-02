@@ -140,7 +140,9 @@ public class EntityTypeTranslator {
         entityMap.put(MobType.SALMON, EntityType.SALMON);
         entityMap.put(MobType.TROPICAL_FISH, EntityType.TROPICAL_FISH);
         entityMap.put(MobType.COD, EntityType.COD);
-        entityMap.put(MobType.CAT, EntityType.OCELOT); // todo: check
+        entityMap.put(MobType.CAT, EntityType.CAT);
+        entityMap.put(MobType.BEE, EntityType.BEE);
+        entityMap.put(MobType.TURTLE, EntityType.TURTLE);
 
 
         // Global entities
