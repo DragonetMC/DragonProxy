@@ -209,6 +209,6 @@ public class DragonProxy {
      */
     public String getVersion() {
         String version = DragonProxy.class.getPackage().getImplementationVersion();
-        return version == null ? "DragonProxy (unpackaged)" : version;
+        return version == null ? "(unpackaged)" : version;
     }
 }

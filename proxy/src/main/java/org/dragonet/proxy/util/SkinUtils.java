@@ -39,11 +39,12 @@ import java.util.Collections;
 public class SkinUtils {
     private static final SessionService service = new SessionService();
 
-    public static byte[] STEVE_SKIN_DATA = new byte[0];
+    public static ImageData STEVE_SKIN;
 
     static {
         try {
-            STEVE_SKIN_DATA = convertToByteArray(ImageIO.read(DragonProxy.class.getClassLoader().getResource("skin_steve.png")));
+            BufferedImage image = ImageIO.read(DragonProxy.class.getClassLoader().getResource("skin_steve.png"));
+            STEVE_SKIN = ImageData.of(image.getWidth(), image.getHeight(), convertToByteArray(image));
         } catch (IOException e) {
             e.printStackTrace();
         }
