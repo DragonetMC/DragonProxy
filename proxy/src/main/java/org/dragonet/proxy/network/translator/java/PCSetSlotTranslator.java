@@ -35,7 +35,6 @@ import org.dragonet.proxy.util.TextFormat;
 @Log4j2
 @PCPacketTranslator(packetClass = ServerSetSlotPacket.class)
 public class PCSetSlotTranslator extends PacketTranslator<ServerSetSlotPacket> {
-    public static final PCSetSlotTranslator INSTANCE = new PCSetSlotTranslator();
 
     @Override
     public void translate(ProxySession session, ServerSetSlotPacket packet) {
@@ -48,6 +47,7 @@ public class PCSetSlotTranslator extends PacketTranslator<ServerSetSlotPacket> {
         if(packet.getWindowId() != 0 && window.getWindowType() == null) {
             return;
         }
+
 
         if(packet.getWindowId() == 0) {
             if(packet.getSlot() >= window.getItems().length) {
