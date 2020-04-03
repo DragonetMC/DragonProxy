@@ -1,28 +1,46 @@
+/*
+ * DragonProxy
+ * Copyright (C) 2016-2020 Dragonet Foundation
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You can view the LICENSE file for more details.
+ *
+ * https://github.com/DragonetMC/DragonProxy
+ */
 package org.dragonet.proxy.configuration.lang;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Load the Minecraft language translations.
  */
+@Log4j2
 public class MinecraftLanguage {
     private static final Map<String, String> language = new HashMap<>();
 
     static {
         // TODO: support for more languages
-        String path = DragonProxy.class.getClassLoader().getResource("en_us.json").getPath();
+        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("en_us.json");
+        if(stream == null) {
+            throw new RuntimeException("Cannot find Minecraft language file: en_us.json");
+        }
 
-        try(JsonReader reader = new JsonReader(new FileReader(path))) {
+        try(JsonReader reader = new JsonReader(new InputStreamReader(stream))) {
             reader.beginObject();
 
             while(reader.hasNext()) {
