@@ -208,6 +208,7 @@ public class DragonProxy {
      * Returns the version of DragonProxy.
      */
     public String getVersion() {
-        return DragonProxy.class.getPackage().getImplementationVersion();
+        String version = DragonProxy.class.getPackage().getImplementationVersion();
+        return version == null ? "DragonProxy (unpackaged)" : version;
     }
 }

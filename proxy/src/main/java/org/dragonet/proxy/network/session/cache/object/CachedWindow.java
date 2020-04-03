@@ -48,6 +48,8 @@ public class CachedWindow {
     private String name;
     private boolean open = false;
 
+    private Vector3i fakeBlockPosition = null;
+
     public CachedWindow(int windowId, BedrockWindowType windowType, int size) {
         this.windowId = windowId;
         this.windowType = windowType;
@@ -67,18 +69,28 @@ public class CachedWindow {
     public void open(ProxySession session) {
         Vector3i position = session.getCachedEntity().getPosition().sub(1, 3, 1).toInt();
 
-        session.getChunkCache().sendFakeBlock(session, windowType.getFakeBlockId(), position);
+        if(session.getLastClickedPosition() != null && session.getChunkCache().getBlockAt(session.getLastClickedPosition()) ==
+            BlockTranslator.bedrockIdToRuntime(windowType.getFakeBlockId())) {
 
-        BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
-        blockEntityDataPacket.setBlockPosition(position);
-        blockEntityDataPacket.setData(CompoundTag.builder()
-            .stringTag("id", BlockEntityTranslator.getBedrockIdentifier(windowType.getFakeBlockId()))
-            .intTag("x", position.getX())
-            .intTag("y", position.getY())
-            .intTag("z", position.getZ())
-            .buildRootTag());
+            position = session.getLastClickedPosition();
+        } else {
+            fakeBlockPosition = position;
+            //log.warn("fake block");
 
-        session.sendPacket(blockEntityDataPacket);
+            session.getChunkCache().sendFakeBlock(session, windowType.getFakeBlockId(), position);
+
+            BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
+            blockEntityDataPacket.setBlockPosition(position);
+            blockEntityDataPacket.setData(CompoundTag.builder()
+                .stringTag("id", BlockEntityTranslator.getBedrockIdentifier(windowType.getFakeBlockId()))
+                .stringTag("CustomName", name)
+                .intTag("x", position.getX())
+                .intTag("y", position.getY())
+                .intTag("z", position.getZ())
+                .buildRootTag());
+
+            session.sendPacket(blockEntityDataPacket);
+        }
 
         ContainerOpenPacket containerOpenPacket = new ContainerOpenPacket();
         containerOpenPacket.setWindowId((byte) windowId);
@@ -90,6 +102,12 @@ public class CachedWindow {
     }
 
     public void close(ProxySession session) {
+        if(fakeBlockPosition != null) {
+            int originalBlockId = session.getChunkCache().getBlockAt(fakeBlockPosition);
+            session.getChunkCache().sendFakeBlock(session, originalBlockId, fakeBlockPosition);
+            fakeBlockPosition = null;
+        }
+
         ContainerClosePacket containerClosePacket = new ContainerClosePacket();
         containerClosePacket.setWindowId((byte) windowId);
 

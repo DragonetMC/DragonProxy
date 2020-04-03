@@ -118,11 +118,15 @@ public class ChunkCache implements Cache {
     }
 
     public void sendFakeBlock(ProxySession session, String identifier, Vector3i position) {
+        sendFakeBlock(session, BlockTranslator.bedrockIdToRuntime(identifier), position);
+    }
+
+    public void sendFakeBlock(ProxySession session, int runtimeId, Vector3i position) {
         UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
         updateBlockPacket.setBlockPosition(position);
         updateBlockPacket.setDataLayer(0);
-        updateBlockPacket.setRuntimeId(BlockTranslator.BEDROCK_TEMP.get(identifier)); // TODO: change the method of retrieving the id
-        updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NEIGHBORS);
+        updateBlockPacket.setRuntimeId(runtimeId);
+        updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.PRIORITY);
 
         session.sendPacket(updateBlockPacket);
     }

@@ -63,7 +63,7 @@ public class BlockEntityTranslator {
         }
 
         // TODO: bed colour
-        //log.info(javaTag.getValue());
+        log.info(javaTag.getValue());
 
         switch(bedrockId) {
             case "Beacon":

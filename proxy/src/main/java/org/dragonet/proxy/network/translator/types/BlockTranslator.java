@@ -55,7 +55,8 @@ public class BlockTranslator {
     private static final AtomicInteger javaIdAllocator = new AtomicInteger();
 
     private static final int BLOCK_STATE_VERSION = 17760256;
-    public static HashMap<String, Integer> BEDROCK_TEMP = new HashMap<>();
+    private static HashMap<String, Integer> bedrockId2RuntimeMap = new HashMap<>();
+    private static HashMap<Integer, String> bedrockRuntime2IdMap = new HashMap<>();
 
     static {
         InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("data/runtime_block_states.dat");
@@ -121,8 +122,10 @@ public class BlockTranslator {
                 }
                 continue;
             }
-            BEDROCK_TEMP.put(entry.getValue().get("bedrock_identifier").textValue(), bedrockRuntimeId);
+            bedrockId2RuntimeMap.put(entry.getValue().get("bedrock_identifier").textValue(), bedrockRuntimeId);
+            bedrockRuntime2IdMap.put(bedrockRuntimeId, entry.getValue().get("bedrock_identifier").textValue());
             java2BedrockMap.put(javaProtocolId, bedrockRuntimeId);
+
             bedrockIdAllocator.incrementAndGet();
         }
 
@@ -171,6 +174,14 @@ public class BlockTranslator {
 
     public static BlockState translateToJava(int bedrockId) {
         return bedrock2JavaMap.get(bedrockId);
+    }
+
+    public static Integer bedrockIdToRuntime(String id) {
+        return bedrockId2RuntimeMap.get(id);
+    }
+
+    public static String bedrockRuntimeToId(int runtimeId) {
+        return bedrockRuntime2IdMap.get(runtimeId);
     }
 
 

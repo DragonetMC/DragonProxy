@@ -59,7 +59,12 @@ public class PCChatTranslator extends PacketTranslator<ServerChatPacket> {
         textPacket.setSourceName("");
         textPacket.setXuid("");
         textPacket.setNeedsTranslation(false);
-        textPacket.setMessage(MessageTranslator.translate(packet.getMessage()));
+
+        if(packet.getMessage() instanceof TranslationMessage) {
+            textPacket.setMessage(MessageTranslator.translate(((TranslationMessage) packet.getMessage())));
+        } else {
+            textPacket.setMessage(MessageTranslator.translate(packet.getMessage()));
+        }
 
         session.sendPacket(textPacket);
     }

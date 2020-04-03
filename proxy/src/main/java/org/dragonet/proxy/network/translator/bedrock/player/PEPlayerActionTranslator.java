@@ -89,12 +89,14 @@ public class PEPlayerActionTranslator extends PacketTranslator<PlayerActionPacke
 
                 break;
             case BLOCK_INTERACT:
+                session.setLastClickedPosition(packet.getBlockPosition());
+
                 // Open command block window, as its handled client side on Java edition
                 // This may be very fragile. For some reason, if i simply retrieve the command block from the identifier,
                 // the runtime id is one higher (1050 vs 1049) than the block at the clicked position in the chunk.
                 // For this reason i take away 1 from the command block runtime id, and i should probably look into this.
                 // The BEDROCK_TEMP variable is a cheap hacky piece of laziness, anyway.
-                if(session.getChunkCache().getBlockAt(packet.getBlockPosition()) == BlockTranslator.BEDROCK_TEMP.get("minecraft:command_block") - 1) {
+                if(session.getChunkCache().getBlockAt(packet.getBlockPosition()) == BlockTranslator.bedrockIdToRuntime("minecraft:command_block") - 1) {
                     CachedWindow cachedWindow = session.getWindowCache().newWindow(BedrockWindowType.COMMAND_BLOCK, session.getWindowCache().getLocalWindowIdAllocator().getAndIncrement());
                     cachedWindow.setName("Command Block");
                     cachedWindow.open(session);
