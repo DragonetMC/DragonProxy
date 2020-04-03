@@ -78,7 +78,8 @@ public class SoundTranslator {
         soundMap.put(BuiltinSound.BLOCK_FIRE_AMBIENT, "fire.fire");
         soundMap.put(BuiltinSound.BLOCK_FIRE_EXTINGUISH, "random.fizz");
 
-        soundMap.put(BuiltinSound.BLOCK_FURNACE_FIRE_CRACKLE, null);
+        soundMap.put(BuiltinSound.BLOCK_FURNACE_FIRE_CRACKLE, "block.furnace.lit");
+        soundMap.put(BuiltinSound.BLOCK_BLASTFURNACE_FIRE_CRACKLE, "block.blastfurnace.fire_crackle");
 
         soundMap.put(BuiltinSound.BLOCK_GLASS_BREAK, "random.glass");
         soundMap.put(BuiltinSound.BLOCK_GLASS_FALL, "step.stone");
@@ -139,7 +140,7 @@ public class SoundTranslator {
         soundMap.put(BuiltinSound.BLOCK_PISTON_EXTEND, "tile.piston.out");
 
         soundMap.put(BuiltinSound.BLOCK_PORTAL_AMBIENT, "portal.portal");
-        soundMap.put(BuiltinSound.BLOCK_PORTAL_TRAVEL, null);
+        soundMap.put(BuiltinSound.BLOCK_PORTAL_TRAVEL, "portal.travel");
         soundMap.put(BuiltinSound.BLOCK_PORTAL_TRIGGER, "portal.trigger");
 
         soundMap.put(BuiltinSound.BLOCK_REDSTONE_TORCH_BURNOUT, "random.fizz");
@@ -708,7 +709,18 @@ public class SoundTranslator {
         soundMap.put(BuiltinSound.WEATHER_RAIN, "ambient.weather.rain");
         soundMap.put(BuiltinSound.WEATHER_RAIN_ABOVE, "ambient.weather.rain");
 
-        // TODO: wandering trader
+        soundMap.put(BuiltinSound.ENTITY_DROWNED_AMBIENT, "mob.drowned.say");
+        soundMap.put(BuiltinSound.ENTITY_DROWNED_AMBIENT_WATER, "mob.drowned.say_water");
+        soundMap.put(BuiltinSound.ENTITY_DROWNED_SWIM, "mob.drowned.swim");
+        // TODO: more drowned sounds
+
+        soundMap.put(BuiltinSound.ENTITY_WANDERING_TRADER_AMBIENT, "mob.wanderingtrader.idle");
+        // TODO: more wandering trader sounds
+
+        soundMap.put(BuiltinSound.BLOCK_BEACON_AMBIENT, "beacon.ambient");
+        soundMap.put(BuiltinSound.BLOCK_BEACON_ACTIVATE, "beacon.activate");
+        soundMap.put(BuiltinSound.BLOCK_BEACON_DEACTIVATE, "beacon.deactivate");
+        soundMap.put(BuiltinSound.BLOCK_BEACON_POWER_SELECT, "beacon.power");
     }
 
     /**

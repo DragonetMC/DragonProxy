@@ -29,6 +29,7 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.command.CommandManager;
 import org.dragonet.proxy.configuration.DragonConfiguration;
+import org.dragonet.proxy.configuration.lang.MinecraftLanguage;
 import org.dragonet.proxy.console.DragonConsole;
 import org.dragonet.proxy.metrics.MetricsManager;
 import org.dragonet.proxy.network.ProxyServerEventListener;
@@ -145,6 +146,7 @@ public class DragonProxy {
         new ItemTranslator();
         new BlockTranslator();
         new SkinUtils();
+        new MinecraftLanguage();
 
         // Initialize metrics
         new MetricsManager(this);

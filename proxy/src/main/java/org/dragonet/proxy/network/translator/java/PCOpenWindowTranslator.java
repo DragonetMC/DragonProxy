@@ -52,7 +52,7 @@ public class PCOpenWindowTranslator extends PacketTranslator<ServerOpenWindowPac
     public void translate(ProxySession session, ServerOpenWindowPacket packet) {
         BedrockWindowType bedrockWindowType = windowMap.get(packet.getType());
         if(bedrockWindowType == null) {
-            log.info(TextFormat.GRAY + "(debug) Unhandled window type: " + packet.getType().name() + TextFormat.AQUA + "It is not supported yet.");
+            log.info(TextFormat.GRAY + "(debug) Unhandled window type: " + packet.getType().name() + TextFormat.AQUA + " It is not supported yet.");
             return;
         }
 

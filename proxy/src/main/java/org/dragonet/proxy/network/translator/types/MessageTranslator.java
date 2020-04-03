@@ -18,192 +18,141 @@
  */
 package org.dragonet.proxy.network.translator.types;
 
-import com.github.steveice10.mc.protocol.data.message.ChatColor;
-import com.github.steveice10.mc.protocol.data.message.ChatFormat;
-import com.github.steveice10.mc.protocol.data.message.Message;
-import com.github.steveice10.mc.protocol.data.message.TranslationMessage;
+import com.github.steveice10.mc.protocol.data.message.*;
 import com.google.gson.*;
+import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.configuration.lang.MinecraftLanguage;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-// This class is from the old version of DragonProxy.
-// It may need cleaning up.
+@Log4j2
 public class MessageTranslator {
+    // Java to Bedrock chat color map
+    private static final Map<ChatColor, String> colorMap = new HashMap<>();
+    // Java to Bedrock chat format map
+    private static final Map<ChatFormat, String> formatMap = new HashMap<>();
+
+    static {
+        // Colours
+        colorMap.put(ChatColor.AQUA, "b");
+        colorMap.put(ChatColor.BLACK, "0");
+        colorMap.put(ChatColor.BLUE, "9");
+        colorMap.put(ChatColor.DARK_AQUA, "3");
+        colorMap.put(ChatColor.DARK_BLUE, "1");
+        colorMap.put(ChatColor.DARK_GRAY, "8");
+        colorMap.put(ChatColor.DARK_GREEN, "2");
+        colorMap.put(ChatColor.DARK_PURPLE, "5");
+        colorMap.put(ChatColor.DARK_RED, "4");
+        colorMap.put(ChatColor.GOLD, "6");
+        colorMap.put(ChatColor.GRAY, "7");
+        colorMap.put(ChatColor.GREEN, "a");
+        colorMap.put(ChatColor.LIGHT_PURPLE, "d");
+        colorMap.put(ChatColor.RED, "c");
+        colorMap.put(ChatColor.WHITE, "f");
+        colorMap.put(ChatColor.YELLOW, "e");
+        colorMap.put(ChatColor.RESET, "r");
+        colorMap.put(ChatColor.NONE, "r");
+
+        // Formats
+        formatMap.put(ChatFormat.BOLD, "l");
+        formatMap.put(ChatFormat.ITALIC, "o");
+        formatMap.put(ChatFormat.OBFUSCATED, "k");
+        formatMap.put(ChatFormat.STRIKETHROUGH, "m");
+        formatMap.put(ChatFormat.UNDERLINED, "n");
+
+    }
 
     // TODO: allow translating to Java text
     public static String translate(Message message) {
-        JsonParser parser = new JsonParser();
-        if (isMessage(message.getText())) {
-            JsonObject object = parser.parse(message.getText()).getAsJsonObject();
-            message = Message.fromJson(editJson(object));
-        }
-        StringBuilder build = new StringBuilder(message.getText());
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(toBedrockFormat(message.getStyle().getFormats()));
+        builder.append(toBedrockColor(message.getStyle().getColor()));
+        builder.append(message.getText());
+        builder.append(toBedrockColor(ChatColor.NONE));
+
         for (Message msg : message.getExtra()) {
-            build.append(toMinecraftFormat(msg.getStyle().getFormats()));
-            build.append(toMinecraftColor(msg.getStyle().getColor()));
-            if (!(msg.getText() == null))
-                build.append(translate(msg));
+            if(msg instanceof TranslationMessage) {
+                builder.append(MinecraftLanguage.translate(((TranslationMessage) msg).getTranslationKey()));
+            }
+            else if (!(msg.getText() == null)) {
+                builder.append(translate(msg));
+            }
         }
-        return build.toString();
+        return builder.toString();
+    }
+
+    public static String translateExtra(Message message) {
+        StringBuilder builder = new StringBuilder(message.getText());
+        for (Message msg : message.getExtra()) {
+            if(msg instanceof TranslationMessage) {
+                builder.append(MinecraftLanguage.translate(((TranslationMessage) msg).getTranslationKey()));
+            }
+            else if (!(msg.getText() == null)) {
+                builder.append(translateExtra(msg));
+            }
+        }
+        return builder.toString();
     }
 
     public static String translate(String message) {
         return translate(Message.fromString(message));
     }
 
-    public static String translationTranslateText(TranslationMessage message) {
-        StringBuilder build = new StringBuilder("");
-        build.append(toMinecraftFormat(message.getStyle().getFormats()));
-        build.append(toMinecraftColor(message.getStyle().getColor()));
-        build.append("%");
-        build.append(message.getTranslationKey());
-        return build.toString();
+    public static String translate(TranslationMessage message) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(toBedrockFormat(message.getStyle().getFormats()));
+        builder.append(toBedrockColor(message.getStyle().getColor()));
+
+        builder.append(MinecraftLanguage.translate(message.getTranslationKey(), translateParams(message.getTranslationParams()).toArray()));
+        return builder.toString();
     }
 
-    public static List<String> translationTranslateParams(Message[] messages) {
+    public static List<String> translateParams(Message[] messages) {
         ArrayList<String> strings = new ArrayList<>();
-        for (int i = 0; i<messages.length;i++) {
+
+        for (int i = 0; i < messages.length; i++) {
             if (messages[i] instanceof TranslationMessage) {
                 TranslationMessage tmsg = (TranslationMessage) messages[i];
-                StringBuilder build = new StringBuilder("");
-                build.append("%");
-                build.append(tmsg.getTranslationKey());
-                strings.add(build.toString());
-                if(tmsg.getTranslationKey().equals("commands.gamemode.success.other"))
-                    strings.add("");
-                for (int j = 0; j < translationTranslateParams(tmsg.getTranslationParams()).size(); j++)
-                    strings.add(translationTranslateParams(tmsg.getTranslationParams()).get(j));
+                strings.add(toBedrockFormat(messages[i].getStyle().getFormats()));
+                strings.add(toBedrockColor(messages[i].getStyle().getColor()));
+
+                strings.add(MinecraftLanguage.translate(tmsg.getTranslationKey()));
+
+                for (int j = 0; j < translateParams(tmsg.getTranslationParams()).size(); j++) {
+                    strings.add(MinecraftLanguage.translate(translateParams(tmsg.getTranslationParams()).get(j)));
+                }
             } else {
-                StringBuilder build = new StringBuilder("");
-                build.append(toMinecraftFormat(messages[i].getStyle().getFormats()));
-                build.append(toMinecraftColor(messages[i].getStyle().getColor()));
-                build.append(translate(messages[i]));
-                strings.add(build.toString());
+                Message message = messages[i];
+                StringBuilder builder = new StringBuilder();
+
+                builder.append(toBedrockFormat(messages[i].getStyle().getFormats()));
+                builder.append(toBedrockColor(messages[i].getStyle().getColor()));
+                builder.append(translateExtra(message));
+                builder.append(toBedrockColor(ChatColor.NONE));
+
+                strings.add(builder.toString());
             }
         }
         return strings;
     }
 
-    public static boolean isMessage(String text) {
-        JsonParser parser = new JsonParser();
-        try {
-            JsonObject object = parser.parse(text).getAsJsonObject();
-            Message.fromJson(editJson(object));
-        } catch (Exception e) {
-            return false;
+    public static String toBedrockColor(ChatColor color) {
+        if(!colorMap.containsKey(color)) {
+            log.warn("Unmapped chat colour: " + color.name());
+            return "";
         }
-        return true;
+        return "\u00a7" + colorMap.get(color);
     }
 
-    public static JsonObject editJson(JsonObject object) {
-        if (object.has("hoverEvent")) {
-            JsonObject sub = (JsonObject) object.get("hoverEvent");
-            JsonElement element = sub.get("value");
-
-            if (element instanceof JsonArray) {
-                JsonObject newobj = new JsonObject();
-                newobj.add("extra", element);
-                newobj.addProperty("text", "");
-                sub.remove("value");
-                sub.add("value", newobj);
-            }
-        }
-
-        if (object.has("extra")) {
-            JsonArray array = object.getAsJsonArray("extra");
-            for (int i = 0; i < array.size(); i++)
-                if (!(array.get(i) instanceof JsonPrimitive))
-                    editJson((JsonObject) array.get(i));
-        }
-
-        return object;
-    }
-
-    public static String toMinecraftColor(ChatColor color) {
-        String base = "\u00a7";
-        switch (color) {
-            case AQUA:
-                base += "b";
-                break;
-            case BLACK:
-                base += "0";
-                break;
-            case BLUE:
-                base += "9";
-                break;
-            case DARK_AQUA:
-                base += "3";
-                break;
-            case DARK_BLUE:
-                base += "1";
-                break;
-            case DARK_GRAY:
-                base += "8";
-                break;
-            case DARK_GREEN:
-                base += "2";
-                break;
-            case DARK_PURPLE:
-                base += "5";
-                break;
-            case DARK_RED:
-                base += "4";
-                break;
-            case GOLD:
-                base += "6";
-                break;
-            case GRAY:
-                base += "7";
-                break;
-            case GREEN:
-                base += "a";
-                break;
-            case LIGHT_PURPLE:
-                base += "d";
-                break;
-            case RED:
-                base += "c";
-                break;
-            case RESET:
-                base += "r";
-                break;
-            case WHITE:
-                base += "f";
-                break;
-            case YELLOW:
-                base += "e";
-                break;
-            default:
-                break;
-        }
-        return base;
-    }
-
-    private static String toMinecraftFormat(List<ChatFormat> formats) {
+    public static String toBedrockFormat(List<ChatFormat> formats) {
         StringBuilder superBase = new StringBuilder();
-        for (ChatFormat cf : formats) {
-            String base = "\u00a7";
-            switch (cf) {
-                case BOLD:
-                    base += "l";
-                    break;
-                case ITALIC:
-                    base += "o";
-                    break;
-                case OBFUSCATED:
-                    base += "k";
-                    break;
-                case STRIKETHROUGH:
-                    base += "m";
-                    break;
-                case UNDERLINED:
-                    base += "n";
-                    break;
-                default:
-                    break;
+        for(ChatFormat format : formats) {
+            if(!formatMap.containsKey(format)) {
+                log.warn("Unmapped chat format: " + format.name());
+                continue;
             }
-            superBase.append(base);
+            superBase.append("\u00a7").append(formatMap.get(format));
         }
         return superBase.toString();
     }

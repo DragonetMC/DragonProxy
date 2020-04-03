@@ -24,6 +24,7 @@ import com.nukkitx.protocol.bedrock.packet.TextPacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.configuration.lang.MinecraftLanguage;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
@@ -38,9 +39,6 @@ public class PCChatTranslator extends PacketTranslator<ServerChatPacket> {
     @Override
     public void translate(ProxySession session, ServerChatPacket packet) {
         TextPacket textPacket = new TextPacket();
-        textPacket.setPlatformChatId("");
-        textPacket.setSourceName("");
-        textPacket.setXuid("");
 
         switch(packet.getType()) {
             case CHAT:
@@ -57,15 +55,11 @@ public class PCChatTranslator extends PacketTranslator<ServerChatPacket> {
                 break;
         }
 
-        if(packet.getMessage() instanceof TranslationMessage) {
-            textPacket.setNeedsTranslation(true);
-            textPacket.setType(TextPacket.Type.TRANSLATION);
-            textPacket.setMessage(MessageTranslator.translationTranslateText((TranslationMessage) packet.getMessage()));
-            textPacket.setParameters(MessageTranslator.translationTranslateParams(((TranslationMessage) packet.getMessage()).getTranslationParams()));
-        } else {
-            textPacket.setNeedsTranslation(false);
-            textPacket.setMessage(MessageTranslator.translate(packet.getMessage()));
-        }
+        textPacket.setPlatformChatId("");
+        textPacket.setSourceName("");
+        textPacket.setXuid("");
+        textPacket.setNeedsTranslation(false);
+        textPacket.setMessage(MessageTranslator.translate(packet.getMessage()));
 
         session.sendPacket(textPacket);
     }
