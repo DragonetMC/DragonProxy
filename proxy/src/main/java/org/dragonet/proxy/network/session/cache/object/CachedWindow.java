@@ -56,19 +56,10 @@ public class CachedWindow {
         this.items = new ItemStack[size];
     }
 
-    /**
-     * TODO: Only send fake blocks if its a virtual inventory. It may be possible to
-     *       measure the time before the last block click and then the inventory that appears.
-     *
-     *       This will fix the fact that command blocks will not save your command, as the bedrock
-     *       client only knows about the fake one and obviously it doesn't exist on the remote server,
-     *       so the command is not set.
-     *
-     *       I could fix the command block issue fairly easily, but it'll just be a hack, so i won't.
-     */
     public void open(ProxySession session) {
         Vector3i position = session.getCachedEntity().getPosition().sub(1, 3, 1).toInt();
 
+        // TODO: check how far away from the players current position
         if(session.getLastClickedPosition() != null && session.getChunkCache().getBlockAt(session.getLastClickedPosition()) ==
             BlockTranslator.bedrockIdToRuntime(windowType.getFakeBlockId())) {
 
