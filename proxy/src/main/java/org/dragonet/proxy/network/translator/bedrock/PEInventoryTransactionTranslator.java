@@ -74,6 +74,8 @@ public class PEInventoryTransactionTranslator extends PacketTranslator<Inventory
                     return;
                 }
 
+                session.setLastClickedEntity(cachedEntity);
+
                 InteractAction interactAction = InteractAction.values()[packet.getActionType()];
                 Vector3f clickPos = packet.getClickPosition();
 

@@ -114,8 +114,8 @@ public class MessageTranslator {
         for (int i = 0; i < messages.length; i++) {
             if (messages[i] instanceof TranslationMessage) {
                 TranslationMessage tmsg = (TranslationMessage) messages[i];
-                strings.add(toBedrockFormat(messages[i].getStyle().getFormats()));
-                strings.add(toBedrockColor(messages[i].getStyle().getColor()));
+//                strings.add(toBedrockFormat(messages[i].getStyle().getFormats()));
+//                strings.add(toBedrockColor(messages[i].getStyle().getColor()));
 
                 strings.add(MinecraftLanguage.translate(tmsg.getTranslationKey()));
 
@@ -138,11 +138,12 @@ public class MessageTranslator {
     }
 
     public static String toBedrockColor(ChatColor color) {
+        String base = "\u00a7";
         if(!colorMap.containsKey(color)) {
             log.warn("Unmapped chat colour: " + color.name());
-            return "";
+            return base;
         }
-        return "\u00a7" + colorMap.get(color);
+        return base + colorMap.get(color);
     }
 
     public static String toBedrockFormat(List<ChatFormat> formats) {

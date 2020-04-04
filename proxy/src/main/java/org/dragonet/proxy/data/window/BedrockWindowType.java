@@ -18,6 +18,7 @@
  */
 package org.dragonet.proxy.data.window;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
  * are the same type of inventory (e.g. chest and ender chest and the exact same)
  */
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
 public enum BedrockWindowType {
     CHEST(0, "minecraft:chest"),
@@ -45,13 +47,18 @@ public enum BedrockWindowType {
     CAULDRON(9, "minecraft:cauldron"),
     //MINECART_CHEST(10, ""),
     //MINECART_HOPPER(11, ""),
-    //HORSE(12, ""),
+    HORSE(12, "minecraft:horse", true),
     BEACON(13, "minecraft:beacon"),
     STRUCTURE_BLOCK(14, "minecraft:structure_block"),
-    //TRADING(15, ""),
+    TRADING(15, "minecraft:villager", true),
     COMMAND_BLOCK(16, "minecraft:command_block"),
-    JUKEBOX(17, "minecraft:jukebox");
+    JUKEBOX(17, "minecraft:jukebox"),
+
+    BLAST_FURNACE(27, "minecraft:blast_furnace"),
+    SMOKER(28, "minecraft:smoker"),
+    STONECUTTER(29, "minecraft:stonecutter_block");
 
     private final int containerId;
-    private final String fakeBlockId;
+    private final String fakeId;
+    private boolean isEntity = false;
 }

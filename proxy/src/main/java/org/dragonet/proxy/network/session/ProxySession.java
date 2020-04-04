@@ -50,6 +50,7 @@ import org.dragonet.proxy.form.CustomForm;
 import org.dragonet.proxy.form.components.InputComponent;
 import org.dragonet.proxy.form.components.LabelComponent;
 import org.dragonet.proxy.network.session.cache.*;
+import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.session.data.AuthData;
 import org.dragonet.proxy.network.session.data.AuthState;
@@ -109,6 +110,7 @@ public class ProxySession implements PlayerSession {
     private int renderDistance = 4;
 
     private Vector3i lastClickedPosition = null;
+    private CachedEntity lastClickedEntity = null;
 
     public ProxySession(DragonProxy proxy, BedrockServerSession bedrockSession) {
         this.proxy = proxy;
@@ -239,14 +241,6 @@ public class ProxySession implements PlayerSession {
         }
 
         sendFakeStartGame();
-
-        // Start connecting to remote server.
-        // There is a slight delay before connection because otherwise the player will join
-        // the server too quikcly and chunks will not show.
-        proxy.getGeneralThreadPool().schedule(() -> {
-            RemoteServer remoteServer = new RemoteServer("local", proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort());
-            connect(remoteServer);
-        }, 4, TimeUnit.SECONDS);
     }
 
     /**
@@ -313,6 +307,19 @@ public class ProxySession implements PlayerSession {
         cachedEntity.sendMetadata(this);
 
         log.warn("SPAWN PLAYER");
+
+        // Start connecting to remote server.
+        // There is a slight delay before connection because otherwise the player will join
+        // the server too quickly and chunks will not show.
+        if(proxy.getConfiguration().getRemoteAuthType() == RemoteAuthType.OFFLINE) {
+            sendMessage(TextFormat.DARK_AQUA + "Waiting 3 seconds before connecting...");
+            sendMessage(" ");
+
+            proxy.getGeneralThreadPool().schedule(() -> {
+                RemoteServer remoteServer = new RemoteServer("local", proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort());
+                connect(remoteServer);
+            }, 3, TimeUnit.SECONDS);
+        }
     }
 
     public void sendFakeStartGame() {

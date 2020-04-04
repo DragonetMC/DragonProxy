@@ -28,7 +28,6 @@ import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
 @Log4j2
 @PEPacketTranslator(packetClass = InteractPacket.class)
 public class PEInteractTranslator extends PacketTranslator<InteractPacket> {
-    public static final PEInteractTranslator INSTANCE = new PEInteractTranslator();
 
     @Override
     public void translate(ProxySession session, InteractPacket packet) {
@@ -37,5 +36,7 @@ public class PEInteractTranslator extends PacketTranslator<InteractPacket> {
             //log.warn("InteractPacket: Cached entity is null");
             return;
         }
+
+        log.info("interact: " + packet.getAction().name());
     }
 }

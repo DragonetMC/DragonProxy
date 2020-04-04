@@ -45,6 +45,10 @@ public class PCOpenWindowTranslator extends PacketTranslator<ServerOpenWindowPac
         windowMap.put(WindowType.FURNACE, BedrockWindowType.FURNACE);
         windowMap.put(WindowType.HOPPER, BedrockWindowType.HOPPER);
         windowMap.put(WindowType.CRAFTING, BedrockWindowType.CRAFTING_TABLE);
+        //windowMap.put(WindowType.MERCHANT, BedrockWindowType.TRADING);
+        windowMap.put(WindowType.BLAST_FURNACE, BedrockWindowType.BLAST_FURNACE);
+        windowMap.put(WindowType.SMOKER, BedrockWindowType.SMOKER);
+        windowMap.put(WindowType.STONECUTTER, BedrockWindowType.STONECUTTER);
         // TODO: chest style inventories
     }
 
@@ -55,6 +59,8 @@ public class PCOpenWindowTranslator extends PacketTranslator<ServerOpenWindowPac
             log.info(TextFormat.GRAY + "(debug) Unhandled window type: " + packet.getType().name() + TextFormat.AQUA + " It is not supported yet.");
             return;
         }
+
+        //log.warn("WINDOW: " + packet.getWindowId() + " - " + packet.getType().name());
 
         CachedWindow cachedWindow = session.getWindowCache().newWindow(bedrockWindowType, packet.getWindowId());
         cachedWindow.setName(MessageTranslator.translate(packet.getName()));

@@ -20,15 +20,15 @@ package org.dragonet.proxy.network.session.cache.object;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.window.WindowType;
+import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.nbt.tag.CompoundTag;
-import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
-import com.nukkitx.protocol.bedrock.packet.ContainerClosePacket;
-import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
-import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
+import com.nukkitx.protocol.bedrock.data.EntityData;
+import com.nukkitx.protocol.bedrock.packet.*;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.data.window.BedrockWindowType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.types.BlockEntityTranslator;
@@ -57,37 +57,30 @@ public class CachedWindow {
     }
 
     public void open(ProxySession session) {
-        Vector3i position = session.getCachedEntity().getPosition().sub(1, 3, 1).toInt();
+        Vector3i position = session.getCachedEntity().getPosition().add(1, 2, 1).toInt();
+        ContainerOpenPacket containerOpenPacket = new ContainerOpenPacket();
 
-        // TODO: check how far away from the players current position
-        if(session.getLastClickedPosition() != null && session.getChunkCache().getBlockAt(session.getLastClickedPosition()) ==
-            BlockTranslator.bedrockIdToRuntime(windowType.getFakeBlockId())) {
-
-            position = session.getLastClickedPosition();
+        if(!windowType.isEntity()) {
+            // TODO: check how far away from the players current position
+            Integer runtimeId = BlockTranslator.bedrockIdToRuntime(windowType.getFakeId());
+            if(runtimeId == null) {
+                log.warn("Unable to get runtime id for block: " + windowType.getFakeId());
+                return;
+            }
+            if(session.getLastClickedPosition() != null && session.getChunkCache().getBlockAt(session.getLastClickedPosition()) == runtimeId) {
+                position = session.getLastClickedPosition();
+            } else {
+                sendFakeBlock(session, position);
+            }
+            containerOpenPacket.setBlockPosition(position);
         } else {
-            fakeBlockPosition = position;
-            //log.warn("fake block");
-
-            session.getChunkCache().sendFakeBlock(session, windowType.getFakeBlockId(), position);
-
-            BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
-            blockEntityDataPacket.setBlockPosition(position);
-            blockEntityDataPacket.setData(CompoundTag.builder()
-                .stringTag("id", BlockEntityTranslator.getBedrockIdentifier(windowType.getFakeBlockId()))
-                .stringTag("CustomName", name)
-                .intTag("x", position.getX())
-                .intTag("y", position.getY())
-                .intTag("z", position.getZ())
-                .buildRootTag());
-
-            session.sendPacket(blockEntityDataPacket);
+            containerOpenPacket.setBlockPosition(Vector3i.ZERO);
+            containerOpenPacket.setUniqueEntityId(session.getLastClickedEntity().getProxyEid());
+            //sendFakeEntity(session, position);
         }
 
-        ContainerOpenPacket containerOpenPacket = new ContainerOpenPacket();
         containerOpenPacket.setWindowId((byte) windowId);
         containerOpenPacket.setType((byte) windowType.getContainerId());
-        containerOpenPacket.setBlockPosition(position);
-
         session.sendPacket(containerOpenPacket);
         open = true;
     }
@@ -106,5 +99,40 @@ public class CachedWindow {
         open = false;
 
         // TODO: should we remove the window from the cache at this point? i'll leave it for now.
+    }
+
+    private void sendFakeEntity(ProxySession session, Vector3i position) {
+        long entityId = session.getEntityCache().getNextClientEntityId().getAndIncrement();
+
+        AddEntityPacket addEntityPacket = new AddEntityPacket();
+        addEntityPacket.setUniqueEntityId(entityId);
+        addEntityPacket.setRuntimeEntityId(entityId);
+        addEntityPacket.setIdentifier(windowType.getFakeId());
+        addEntityPacket.setPosition(position.toFloat());
+        addEntityPacket.setMotion(Vector3f.ZERO);
+        addEntityPacket.setRotation(Vector3f.ZERO);
+        addEntityPacket.setEntityType(BedrockEntityType.VILLAGER.getType());
+        addEntityPacket.getMetadata().put(EntityData.SCALE, 0.01f);
+
+        session.sendPacket(addEntityPacket);
+    }
+
+    private void sendFakeBlock(ProxySession session, Vector3i position) {
+        fakeBlockPosition = position;
+        //log.warn("fake block");
+
+        session.getChunkCache().sendFakeBlock(session, windowType.getFakeId(), position);
+
+        BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
+        blockEntityDataPacket.setBlockPosition(position);
+        blockEntityDataPacket.setData(CompoundTag.builder()
+            .stringTag("id", BlockEntityTranslator.getBedrockIdentifier(windowType.getFakeId()))
+            .stringTag("CustomName", name)
+            .intTag("x", position.getX())
+            .intTag("y", position.getY())
+            .intTag("z", position.getZ())
+            .buildRootTag());
+
+        session.sendPacket(blockEntityDataPacket);
     }
 }
