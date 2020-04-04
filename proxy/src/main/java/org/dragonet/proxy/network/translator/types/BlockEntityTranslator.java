@@ -62,6 +62,8 @@ public class BlockEntityTranslator {
         // Not sure about these ones
         blockEntityMap.put("minecraft:beehive", "Beehive");
         blockEntityMap.put("minecraft:bell", "Bell");
+        blockEntityMap.put("minecraft:smoker", "Smoker");
+        blockEntityMap.put("minecraft:blast_furnace", "BlastFurnace");
     }
 
     public static CompoundTag translateToBedrock(com.github.steveice10.opennbt.tag.builtin.CompoundTag javaTag) {

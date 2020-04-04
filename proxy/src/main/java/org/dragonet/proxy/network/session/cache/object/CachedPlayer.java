@@ -19,6 +19,7 @@
 package org.dragonet.proxy.network.session.cache.object;
 
 import com.github.steveice10.mc.auth.data.GameProfile;
+import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.CommandPermission;
 import com.nukkitx.protocol.bedrock.data.ItemData;
@@ -34,6 +35,8 @@ import org.dragonet.proxy.network.session.ProxySession;
 @Setter
 public class CachedPlayer extends CachedEntity {
     private final GameProfile profile;
+
+    private GameMode gameMode;
 
     private float flySpeed = 0.05f;
     private int selectedHotbarSlot = 0;

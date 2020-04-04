@@ -31,6 +31,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlaye
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerInteractEntityPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPlaceBlockPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerUseItemPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientCreativeInventoryActionPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientWindowActionPacket;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.InventoryActionData;
@@ -55,10 +56,19 @@ public class PEInventoryTransactionTranslator extends PacketTranslator<Inventory
         switch(packet.getTransactionType()) {
             case NORMAL:
                 for(InventoryActionData action : packet.getActions()) {
-                    //log.info("ACTION: " + action.getSource().getType().name());
-                    switch(action.getSource().getType()) {
+                    InventorySource source = action.getSource();
+
+                    switch(source.getType()) {
                         case WORLD_INTERACTION:
                             session.sendRemotePacket(new ClientPlayerActionPacket(PlayerAction.DROP_ITEM, new Position(0, 0, 0), BlockFace.UP));
+                            break;
+                        case CREATIVE:
+                            switch(action.getSlot()) {
+                                case 0: // Delete item
+                                case 1: // Create item
+                                    session.sendRemotePacket(new ClientCreativeInventoryActionPacket(action.getSlot(), ItemTranslator.translateToJava(action.getToItem())));
+                                    break;
+                            }
                             break;
                     }
                 }

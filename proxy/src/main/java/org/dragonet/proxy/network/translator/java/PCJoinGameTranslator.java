@@ -19,6 +19,7 @@
 package org.dragonet.proxy.network.translator.java;
 
 import com.github.steveice10.mc.auth.data.GameProfile;
+import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector3f;
@@ -80,6 +81,12 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
         SetPlayerGameTypePacket setPlayerGameTypePacket = new SetPlayerGameTypePacket();
         setPlayerGameTypePacket.setGamemode(packet.getGameMode().ordinal());
         session.sendPacket(setPlayerGameTypePacket);
+
+        session.getCachedEntity().setGameMode(packet.getGameMode());
+
+        if(packet.getGameMode() == GameMode.CREATIVE) {
+            session.sendCreativeInventory();
+        }
 
             Vector3f pos = Vector3f.from(-23, 70, 0);
             int chunkX = pos.getFloorX() >> 4;
