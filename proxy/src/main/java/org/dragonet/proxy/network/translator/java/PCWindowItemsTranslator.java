@@ -42,6 +42,7 @@ public class PCWindowItemsTranslator extends PacketTranslator<ServerWindowItemsP
             log.info("(debug) WindowItemsTranslator: Window not in cache, id: " + packet.getWindowId());
             return;
         }
+//        log.warn("Window items translator: " + packet.getWindowId() + " - " + windowCache.getById(packet.getWindowId()).getWindowType().name());
         CachedWindow window = windowCache.getWindows().get(packet.getWindowId());
         if(packet.getWindowId() != 0 && window.getWindowType() == null) {
             return;
@@ -49,7 +50,7 @@ public class PCWindowItemsTranslator extends PacketTranslator<ServerWindowItemsP
 
         if(packet.getWindowId() == 0) {
             if(packet.getItems().length < 40) {
-                return;
+                return; // TODO: check this?
             }
             window.setItems(packet.getItems());
             InventoryTranslator.sendPlayerInventory(session);

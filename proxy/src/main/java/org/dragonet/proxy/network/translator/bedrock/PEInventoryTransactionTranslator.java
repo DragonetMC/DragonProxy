@@ -65,8 +65,10 @@ public class PEInventoryTransactionTranslator extends PacketTranslator<Inventory
                         case CREATIVE:
                             switch(action.getSlot()) {
                                 case 0: // Delete item
+                                    session.sendRemotePacket(new ClientCreativeInventoryActionPacket(-1, ItemTranslator.translateToJava(action.getToItem())));
+                                    break;
                                 case 1: // Create item
-                                    session.sendRemotePacket(new ClientCreativeInventoryActionPacket(action.getSlot(), ItemTranslator.translateToJava(action.getToItem())));
+                                    session.sendRemotePacket(new ClientCreativeInventoryActionPacket(36 + session.getCachedEntity().getSelectedHotbarSlot(), ItemTranslator.translateToJava(action.getFromItem())));
                                     break;
                             }
                             break;
