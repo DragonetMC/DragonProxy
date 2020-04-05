@@ -71,6 +71,8 @@ public class PCNotifyClientTranslator extends PacketTranslator<ServerNotifyClien
                         // fall through
                     case CREATIVE:
                         playerFlags.add(AdventureSettingsPacket.Flag.MAY_FLY);
+
+                        session.sendCreativeInventory();
                         break;
                 }
 

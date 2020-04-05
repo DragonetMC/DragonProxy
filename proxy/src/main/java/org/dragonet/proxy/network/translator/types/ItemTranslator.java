@@ -30,6 +30,7 @@ import com.nukkitx.nbt.NbtUtils;
 import com.nukkitx.nbt.stream.NBTInputStream;
 import com.nukkitx.protocol.bedrock.data.ItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
+import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
@@ -43,30 +44,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Log4j2
 public class ItemTranslator {
-    public static final List<StartGamePacket.ItemEntry> ITEM_PALETTE = new ArrayList<>();
     public static final Int2ObjectMap<ItemEntry> ITEM_ENTRIES = new Int2ObjectOpenHashMap<>();
+    public static final Int2ObjectMap<ItemEntry> bedrockToJavaMap = new Int2ObjectOpenHashMap<>();
 
     private static final AtomicInteger javaIdAllocator = new AtomicInteger(0);
 
     static {
-        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("data/runtime_item_states.json");
-        if (stream == null) {
-            throw new AssertionError("Static item state table not found");
-        }
-
-        ArrayList<PaletteManager.RuntimeEntry> entries;
-        CollectionType type = DragonProxy.JSON_MAPPER.getTypeFactory().constructCollectionType(ArrayList.class, PaletteManager.RuntimeEntry.class);
-        try {
-            entries = DragonProxy.JSON_MAPPER.readValue(stream, type);
-        } catch (Exception e) {
-            throw new AssertionError(e);
-        }
-
-        for (PaletteManager.RuntimeEntry entry : entries) {
-            ITEM_PALETTE.add(new StartGamePacket.ItemEntry(entry.getName(), (short) entry.getId()));
-        }
-
-        stream = DragonProxy.class.getClassLoader().getResourceAsStream("item_mappings.json");
+        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("item_mappings.json");
         if (stream == null) {
             throw new AssertionError("Item mapping table not found");
         }
@@ -89,11 +73,12 @@ public class ItemTranslator {
             Map.Entry<String, JsonNode> entry = iterator.next();
 
             ITEM_ENTRIES.put(javaId, new ItemEntry(entry.getKey(), javaId, entry.getValue().get("bedrock_id").intValue(), entry.getValue().get("bedrock_data").intValue()));
+            bedrockToJavaMap.put(entry.getValue().get("bedrock_id").intValue(), new ItemEntry(entry.getKey(), javaId, entry.getValue().get("bedrock_id").intValue(), entry.getValue().get("bedrock_data").intValue()));
         }
     }
 
     public static ItemData translateToBedrock(ItemStack item) {
-        if(item == null) {
+        if(item == null || !ITEM_ENTRIES.containsKey(item.getId())) {
             return ItemData.AIR;
         }
         ItemEntry bedrockItem = ITEM_ENTRIES.get(item.getId());
@@ -114,12 +99,13 @@ public class ItemTranslator {
     }
 
     public static ItemStack translateToJava(ItemData item) {
-        for(ItemEntry entry : ITEM_ENTRIES.values()) {
-            if(entry.getBedrockRuntimeId() == item.getId()) {
-                return new ItemStack(entry.getJavaProtocolId(), item.getCount());
-            }
+        if(item == null || !bedrockToJavaMap.containsKey(item.getId())) {
+            return new ItemStack(0);
         }
-        return new ItemStack(0);
+
+        ItemEntry javaItem = bedrockToJavaMap.get(item.getId());
+//        log.warn("ITEM NAME: " + javaItem.getJavaIdentifier());
+        return new ItemStack(javaItem.getJavaProtocolId(), item.getCount());
     }
 
     public static com.nukkitx.nbt.tag.CompoundTag translateItemNBT(CompoundTag tag) {

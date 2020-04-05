@@ -18,8 +18,8 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
-import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowPropertyPacket;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -29,42 +29,26 @@ import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.types.InventoryTranslator;
-import org.dragonet.proxy.network.translator.types.ItemTranslator;
-import org.dragonet.proxy.util.TextFormat;
 
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerSetSlotPacket.class)
-public class PCSetSlotTranslator extends PacketTranslator<ServerSetSlotPacket> {
+@PCPacketTranslator(packetClass = ServerWindowPropertyPacket.class)
+public class PCWindowPropertyTranslator extends PacketTranslator<ServerWindowPropertyPacket> {
 
     @Override
-    public void translate(ProxySession session, ServerSetSlotPacket packet) {
+    public void translate(ProxySession session, ServerWindowPropertyPacket packet) {
         WindowCache windowCache = session.getWindowCache();
         if(!windowCache.getWindows().containsKey(packet.getWindowId())) {
-            log.info(TextFormat.GRAY + "(debug) SetSlotTranslator: Window not in cache, id: " + packet.getWindowId());
+            //log.info("(debug) WindowPropertyTranslator: Window not in cache, id: " + packet.getWindowId());
             return;
         }
+
         CachedWindow window = windowCache.getWindows().get(packet.getWindowId());
-        log.warn("Set slot translator: " + packet.getWindowId());
-        if(packet.getWindowId() != 0 && window.getWindowType() == null) {
-            return;
-        }
 
-        if(packet.getWindowId() == 0) {
-            if(packet.getSlot() >= window.getItems().length) {
-                return;
-            }
-            ItemStack[] items = window.getItems();
-            items[packet.getSlot()] = packet.getItem();
-            window.setItems(items);
+        switch(window.getWindowType()) {
+            case FURNACE:
 
-            InventoryTranslator.sendPlayerInventory(session);
-        }
-
-        if(window.isOpen()) {
-            // update slot
-        } else {
-            // cache packet
+                break;
         }
     }
 }

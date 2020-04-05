@@ -20,6 +20,7 @@ package org.dragonet.proxy.network.translator.bedrock;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
+import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
 import com.github.steveice10.mc.protocol.data.game.entity.player.InteractAction;
 import com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction;
@@ -31,6 +32,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlaye
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerInteractEntityPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPlaceBlockPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerUseItemPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientCreativeInventoryActionPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientWindowActionPacket;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.InventoryActionData;
@@ -55,17 +57,37 @@ public class PEInventoryTransactionTranslator extends PacketTranslator<Inventory
         switch(packet.getTransactionType()) {
             case NORMAL:
                 for(InventoryActionData action : packet.getActions()) {
-                    //log.info("ACTION: " + action.getSource().getType().name());
-                    switch(action.getSource().getType()) {
+                    InventorySource source = action.getSource();
+
+                    switch(source.getType()) {
                         case WORLD_INTERACTION:
                             session.sendRemotePacket(new ClientPlayerActionPacket(PlayerAction.DROP_ITEM, new Position(0, 0, 0), BlockFace.UP));
+                            break;
+                        case CREATIVE:
+                            switch(action.getSlot()) {
+                                case 0: // Delete item
+                                    session.sendRemotePacket(new ClientCreativeInventoryActionPacket(-1, ItemTranslator.translateToJava(action.getToItem())));
+                                    break;
+                                case 1: // Create item
+                                    session.sendRemotePacket(new ClientCreativeInventoryActionPacket(36 + session.getCachedEntity().getSelectedHotbarSlot(),
+                                        ItemTranslator.translateToJava(action.getFromItem())));
+                                    break;
+                            }
                             break;
                     }
                 }
                 break;
             case ITEM_USE:
-                // TODO: different action types
-                session.sendRemotePacket(new ClientPlayerUseItemPacket(Hand.MAIN_HAND));
+                switch(packet.getActionType()) {
+                    case 1: // Interact block
+                        session.sendRemotePacket(new ClientPlayerUseItemPacket(Hand.MAIN_HAND));
+                        break;
+                    case 2: // Break block
+                        GameMode gameMode = session.getCachedEntity().getGameMode();
+                        session.sendRemotePacket(new ClientPlayerActionPacket(gameMode == GameMode.CREATIVE ? PlayerAction.START_DIGGING : PlayerAction.FINISH_DIGGING,
+                            new Position(packet.getBlockPosition().getX(), packet.getBlockPosition().getY(), packet.getBlockPosition().getZ()), BlockFace.values()[packet.getFace()]));
+                        break;
+                }
                 break;
             case ITEM_USE_ON_ENTITY:
                 CachedEntity cachedEntity = session.getEntityCache().getByProxyId(packet.getRuntimeEntityId());

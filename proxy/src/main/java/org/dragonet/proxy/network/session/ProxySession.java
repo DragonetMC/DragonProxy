@@ -46,6 +46,7 @@ import com.nukkitx.protocol.bedrock.packet.*;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.data.window.BedrockWindowType;
 import org.dragonet.proxy.form.CustomForm;
 import org.dragonet.proxy.form.components.InputComponent;
 import org.dragonet.proxy.form.components.LabelComponent;
@@ -72,6 +73,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static org.dragonet.proxy.network.translator.java.PCJoinGameTranslator.EMPTY_LEVEL_CHUNK_DATA;
 
@@ -372,7 +374,7 @@ public class ProxySession implements PlayerSession {
         startGamePacket.setVanillaVersion(DragonProxy.BEDROCK_CODEC.getMinecraftVersion());
 
         startGamePacket.setBlockPalette(BlockTranslator.BLOCK_PALETTE);
-        startGamePacket.setItemEntries(ItemTranslator.ITEM_PALETTE);
+        startGamePacket.setItemEntries(PaletteManager.ITEM_PALETTE);
         bedrockSession.sendPacketImmediately(startGamePacket);
 
         BiomeDefinitionListPacket biomeDefinitionListPacket = new BiomeDefinitionListPacket();
@@ -475,6 +477,21 @@ public class ProxySession implements PlayerSession {
         packet.setMessage(text);
 
         bedrockSession.sendPacket(packet);
+    }
+
+    public void sendCreativeInventory() {
+        // TODO: make this mess into some Java 8 lambda magic
+        ItemData[] creativeItems = new ItemData[PaletteManager.CREATIVE_ITEMS.size()];
+        for (int i = 0; i < PaletteManager.CREATIVE_ITEMS.size(); i++) {
+            PaletteManager.RuntimeCreativeItemEntry entry = PaletteManager.CREATIVE_ITEMS.get(i);
+
+            creativeItems[i] = ItemData.of(entry.getId(), (short) entry.getDamage(), 1);
+        }
+
+        InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
+        inventoryContentPacket.setContainerId(ContainerId.CREATIVE);
+        inventoryContentPacket.setContents(creativeItems);
+        sendPacket(inventoryContentPacket);
     }
 
     public RemoteServer getRemoteServer() {
