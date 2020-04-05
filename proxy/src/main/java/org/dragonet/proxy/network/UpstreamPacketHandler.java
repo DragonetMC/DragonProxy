@@ -56,9 +56,9 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
     private DragonProxy proxy;
     private ProxySession session;
 
-    public UpstreamPacketHandler(DragonProxy proxy, BedrockServerSession bedrockSession) {
+    public UpstreamPacketHandler(DragonProxy proxy, ProxySession session) {
         this.proxy = proxy;
-        this.session = new ProxySession(proxy, bedrockSession);
+        this.session = session;
     }
 
     @Override

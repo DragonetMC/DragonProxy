@@ -26,6 +26,7 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.DragonConfiguration;
+import org.dragonet.proxy.network.session.ProxySession;
 
 import javax.annotation.Nonnull;
 import java.net.InetSocketAddress;
@@ -35,7 +36,18 @@ import java.net.InetSocketAddress;
  */
 @RequiredArgsConstructor
 public class ProxyServerEventListener implements BedrockServerEventHandler {
-    public final DragonProxy proxy;
+    private static final BedrockPong pong = new BedrockPong();
+
+    private final DragonProxy proxy;
+
+    static {
+        pong.setEdition("MCPE");
+        pong.setGameType("Default");
+        pong.setNintendoLimited(false);
+        pong.setProtocolVersion(DragonProxy.BEDROCK_CODEC.getProtocolVersion());
+        pong.setVersion(DragonProxy.BEDROCK_CODEC.getMinecraftVersion());
+        pong.setIpv4Port(DragonProxy.INSTANCE.getConfiguration().getBindPort());
+    }
 
     @Override
     public boolean onConnectionRequest(@Nonnull InetSocketAddress address) {
@@ -45,14 +57,6 @@ public class ProxyServerEventListener implements BedrockServerEventHandler {
     @Override
     public BedrockPong onQuery(@Nonnull InetSocketAddress address) {
         DragonConfiguration config = proxy.getConfiguration();
-
-        BedrockPong pong = new BedrockPong();
-        pong.setEdition("MCPE");
-        pong.setGameType("Default");
-        pong.setNintendoLimited(false);
-        pong.setProtocolVersion(DragonProxy.BEDROCK_CODEC.getProtocolVersion());
-        pong.setVersion(DragonProxy.BEDROCK_CODEC.getMinecraftVersion());
-        pong.setIpv4Port(config.getBindPort());
 
         if (config.isPingPassthrough()) {
             ServerStatusInfo serverInfo = proxy.getPingPassthroughThread().getStatusInfo();
@@ -66,7 +70,7 @@ public class ProxyServerEventListener implements BedrockServerEventHandler {
                 pong.setMaximumPlayerCount(serverInfo.getPlayerInfo().getMaxPlayers());
             }
         } else {
-            pong.setPlayerCount(0);
+            pong.setPlayerCount(proxy.getSessionManager().getPlayerCount());
             pong.setMaximumPlayerCount(config.getMaxPlayers());
             pong.setMotd(config.getMotd());
             pong.setSubMotd(config.getMotd2());
@@ -78,6 +82,6 @@ public class ProxyServerEventListener implements BedrockServerEventHandler {
     @Override
     public void onSessionCreation(BedrockServerSession session) {
         session.setLogging(true);
-        session.setPacketHandler(new UpstreamPacketHandler(proxy, session));
+        session.setPacketHandler(new UpstreamPacketHandler(proxy, proxy.getSessionManager().newSession(proxy, session)));
     }
 }

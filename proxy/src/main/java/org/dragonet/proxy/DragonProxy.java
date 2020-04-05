@@ -33,6 +33,7 @@ import org.dragonet.proxy.configuration.lang.MinecraftLanguage;
 import org.dragonet.proxy.console.DragonConsole;
 import org.dragonet.proxy.metrics.MetricsManager;
 import org.dragonet.proxy.network.ProxyServerEventListener;
+import org.dragonet.proxy.network.SessionManager;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.dragonet.proxy.network.translator.types.BlockTranslator;
 import org.dragonet.proxy.network.translator.types.ItemTranslator;
@@ -91,6 +92,11 @@ public class DragonProxy {
     private ScheduledExecutorService generalThreadPool;
 
     @Getter
+    private SessionManager sessionManager;
+
+    private TickerThread tickerThread;
+
+    @Getter
     private volatile boolean running = true;
 
     private long startTime;
@@ -134,13 +140,13 @@ public class DragonProxy {
             log.error("Failed to copy config file: " + ex.getMessage());
         }
 
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        mapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
-        configuration = mapper.readValue(new FileInputStream("config.yml"), DragonConfiguration.class);;
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory()).enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
+        configuration = mapper.readValue(new FileInputStream("config.yml"), DragonConfiguration.class);
 
         generalThreadPool = Executors.newScheduledThreadPool(configuration.getThreadPoolSize());
 
         paletteManager = new PaletteManager();
+        sessionManager = new SessionManager();
 
         new PacketTranslatorRegistry();
         new ItemTranslator();
@@ -170,6 +176,10 @@ public class DragonProxy {
                 log.error("RakNet server failed to bind to {}, {}", configuration.getBindAddress(), throwable.getMessage());
             }
         }).join();
+
+        tickerThread = new TickerThread(this);
+        tickerThread.setDaemon(true);
+        tickerThread.start();
 
         double bootTime = (System.currentTimeMillis() - startTime) / 1000d;
         log.info("Done ({}s)!", new DecimalFormat("#.##").format(bootTime));

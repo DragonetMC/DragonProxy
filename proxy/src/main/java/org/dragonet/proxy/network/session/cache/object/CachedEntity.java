@@ -26,6 +26,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.data.entity.BedrockAttributeType;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
@@ -203,6 +204,13 @@ public class CachedEntity {
         session.sendPacket(setEntityDataPacket);
     }
 
+    public void onTick(ProxySession session) {
+        if(System.currentTimeMillis() - lastBurnStatusTime > 1200 && flags.getFlag(EntityFlag.ON_FIRE)) {
+            flags.setFlag(EntityFlag.ON_FIRE, false);
+            sendMetadata(session);
+        }
+    }
+
     private void addDefaultMetadata() {
         flags.setFlag(EntityFlag.HAS_GRAVITY, true);
         flags.setFlag(EntityFlag.HAS_COLLISION, true);
@@ -210,7 +218,7 @@ public class CachedEntity {
         flags.setFlag(EntityFlag.CAN_CLIMB, true);
 
         scale = 1f;
-        metadata.put(EntityData.SCALE, 1f);
+//        metadata.put(EntityData.SCALE, 1f);
         metadata.put(EntityData.AIR, (short) 0);
         metadata.put(EntityData.MAX_AIR, (short) 400);
         metadata.put(EntityData.BOUNDING_BOX_HEIGHT, entityType.getHeight());

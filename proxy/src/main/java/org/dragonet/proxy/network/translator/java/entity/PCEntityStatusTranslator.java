@@ -67,9 +67,13 @@ public class PCEntityStatusTranslator extends PacketTranslator<ServerEntityStatu
 
         switch(packet.getStatus()) {
             case LIVING_BURN:
-                //cachedEntity.getFlags().setFlag(EntityFlag.ON_FIRE, true);
-                //cachedEntity.sendMetadata(session);
-                break;
+                cachedEntity.setLastBurnStatusTime(System.currentTimeMillis()); // TODO: make this use ticks?
+
+                cachedEntity.getFlags().setFlag(EntityFlag.ON_FIRE, true);
+                cachedEntity.sendMetadata(session);
+                return;
+            case SQUID_RESET_ROTATION:
+                return; // TODO
         }
 
         EntityEventPacket entityEventPacket = new EntityEventPacket();

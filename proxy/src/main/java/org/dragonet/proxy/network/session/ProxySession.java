@@ -494,6 +494,10 @@ public class ProxySession implements PlayerSession {
         sendPacket(inventoryContentPacket);
     }
 
+    public void onTick() {
+        entityCache.getEntities().values().forEach(entity -> entity.onTick(this));
+    }
+
     public RemoteServer getRemoteServer() {
         return remoteServer;
     }
