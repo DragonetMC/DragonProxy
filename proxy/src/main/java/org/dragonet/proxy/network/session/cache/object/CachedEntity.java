@@ -67,9 +67,6 @@ public class CachedEntity {
 
     protected int dimension = 0; // -1 = nether, 0 = overworld, 1 = end
 
-    // HACK for the LIVING_BURN entity status
-    protected long lastBurnStatusTime = 0;
-
     protected Map<BedrockAttributeType, Attribute> attributes = new HashMap<>();
     protected Set<EntityEffectTranslator.BedrockEffect> effects = new HashSet<>();
     protected Set<CachedEntity> passengers = new HashSet<>();
@@ -205,10 +202,7 @@ public class CachedEntity {
     }
 
     public void onTick(ProxySession session) {
-        if(System.currentTimeMillis() - lastBurnStatusTime > 1200 && flags.getFlag(EntityFlag.ON_FIRE)) {
-            flags.setFlag(EntityFlag.ON_FIRE, false);
-            sendMetadata(session);
-        }
+
     }
 
     private void addDefaultMetadata() {
@@ -218,9 +212,10 @@ public class CachedEntity {
         flags.setFlag(EntityFlag.CAN_CLIMB, true);
 
         scale = 1f;
-//        metadata.put(EntityData.SCALE, 1f);
-        metadata.put(EntityData.AIR, (short) 0);
+        metadata.put(EntityData.SCALE, 1f);
+        metadata.put(EntityData.AIR, (short) 400);
         metadata.put(EntityData.MAX_AIR, (short) 400);
+        metadata.put(EntityData.NAMETAG, "");
         metadata.put(EntityData.BOUNDING_BOX_HEIGHT, entityType.getHeight());
         metadata.put(EntityData.BOUNDING_BOX_WIDTH, entityType.getWidth());
         metadata.putFlags(flags);

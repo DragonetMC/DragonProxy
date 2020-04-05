@@ -34,8 +34,8 @@ public class EntityMetaTranslator {
      * This method translates Java entity metadata to Bedrock.
      */
     public static EntityDataMap translateToBedrock(CachedEntity entity, EntityMetadata[] metadata) {
-        EntityDataMap dictionary = new EntityDataMap();
-        EntityFlags flags = new EntityFlags();
+        EntityDataMap dictionary = entity.getMetadata();
+        EntityFlags flags = entity.getFlags();
 
         for(EntityMetadata meta : metadata) {
             switch(meta.getId()) {
@@ -76,7 +76,6 @@ public class EntityMetaTranslator {
             }
         }
 
-        dictionary.putFlags(flags);
         return dictionary;
     }
 }

@@ -495,7 +495,7 @@ public class ProxySession implements PlayerSession {
     }
 
     public void onTick() {
-        entityCache.getEntities().values().forEach(entity -> entity.onTick(this));
+        //entityCache.getEntities().values().forEach(entity -> entity.onTick(this));
     }
 
     public RemoteServer getRemoteServer() {
