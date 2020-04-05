@@ -22,6 +22,7 @@ import com.github.steveice10.mc.protocol.data.game.entity.EntityStatus;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityMetadataPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityStatusPacket;
 import com.nukkitx.protocol.bedrock.data.EntityEventType;
+import com.nukkitx.protocol.bedrock.data.EntityFlag;
 import com.nukkitx.protocol.bedrock.packet.EntityEventPacket;
 import com.nukkitx.protocol.bedrock.packet.SetEntityDataPacket;
 import lombok.extern.log4j.Log4j2;
@@ -34,6 +35,7 @@ import org.dragonet.proxy.util.TextFormat;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
 @PCPacketTranslator(packetClass = ServerEntityStatusPacket.class)
@@ -61,6 +63,13 @@ public class PCEntityStatusTranslator extends PacketTranslator<ServerEntityStatu
         if(cachedEntity == null) {
             //log.info("(debug) Cached entity is null");
             return;
+        }
+
+        switch(packet.getStatus()) {
+            case LIVING_BURN:
+                //cachedEntity.getFlags().setFlag(EntityFlag.ON_FIRE, true);
+                //cachedEntity.sendMetadata(session);
+                break;
         }
 
         EntityEventPacket entityEventPacket = new EntityEventPacket();

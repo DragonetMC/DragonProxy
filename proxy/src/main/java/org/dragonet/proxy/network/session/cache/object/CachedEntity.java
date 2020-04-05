@@ -66,10 +66,12 @@ public class CachedEntity {
 
     protected int dimension = 0; // -1 = nether, 0 = overworld, 1 = end
 
+    // HACK for the LIVING_BURN entity status
+    protected long lastBurnStatusTime = 0;
+
     protected Map<BedrockAttributeType, Attribute> attributes = new HashMap<>();
     protected Set<EntityEffectTranslator.BedrockEffect> effects = new HashSet<>();
     protected Set<CachedEntity> passengers = new HashSet<>();
-
 
     protected CachedEntity riding;
 

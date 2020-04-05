@@ -721,6 +721,12 @@ public class SoundTranslator {
         soundMap.put(BuiltinSound.BLOCK_BEACON_ACTIVATE, "beacon.activate");
         soundMap.put(BuiltinSound.BLOCK_BEACON_DEACTIVATE, "beacon.deactivate");
         soundMap.put(BuiltinSound.BLOCK_BEACON_POWER_SELECT, "beacon.power");
+
+        soundMap.put(BuiltinSound.ENTITY_PHANTOM_AMBIENT, "mob.phantom.idle");
+        soundMap.put(BuiltinSound.ENTITY_PHANTOM_BITE, "mob.phantom.bite");
+        soundMap.put(BuiltinSound.ENTITY_PHANTOM_HURT, "mob.phantom.hurt");
+        soundMap.put(BuiltinSound.ENTITY_PHANTOM_DEATH, "mob.phantom.death");
+        soundMap.put(BuiltinSound.ENTITY_PHANTOM_SWOOP, "mob.phantom.swoop");
     }
 
     /**

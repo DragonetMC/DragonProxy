@@ -20,6 +20,7 @@ package org.dragonet.proxy.network.translator.bedrock;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
+import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
 import com.github.steveice10.mc.protocol.data.game.entity.player.InteractAction;
 import com.github.steveice10.mc.protocol.data.game.entity.player.PlayerAction;
@@ -68,7 +69,8 @@ public class PEInventoryTransactionTranslator extends PacketTranslator<Inventory
                                     session.sendRemotePacket(new ClientCreativeInventoryActionPacket(-1, ItemTranslator.translateToJava(action.getToItem())));
                                     break;
                                 case 1: // Create item
-                                    session.sendRemotePacket(new ClientCreativeInventoryActionPacket(36 + session.getCachedEntity().getSelectedHotbarSlot(), ItemTranslator.translateToJava(action.getFromItem())));
+                                    session.sendRemotePacket(new ClientCreativeInventoryActionPacket(36 + session.getCachedEntity().getSelectedHotbarSlot(),
+                                        ItemTranslator.translateToJava(action.getFromItem())));
                                     break;
                             }
                             break;
@@ -76,8 +78,16 @@ public class PEInventoryTransactionTranslator extends PacketTranslator<Inventory
                 }
                 break;
             case ITEM_USE:
-                // TODO: different action types
-                session.sendRemotePacket(new ClientPlayerUseItemPacket(Hand.MAIN_HAND));
+                switch(packet.getActionType()) {
+                    case 1: // Interact block
+                        session.sendRemotePacket(new ClientPlayerUseItemPacket(Hand.MAIN_HAND));
+                        break;
+                    case 2: // Break block
+                        GameMode gameMode = session.getCachedEntity().getGameMode();
+                        session.sendRemotePacket(new ClientPlayerActionPacket(gameMode == GameMode.CREATIVE ? PlayerAction.START_DIGGING : PlayerAction.FINISH_DIGGING,
+                            new Position(packet.getBlockPosition().getX(), packet.getBlockPosition().getY(), packet.getBlockPosition().getZ()), BlockFace.values()[packet.getFace()]));
+                        break;
+                }
                 break;
             case ITEM_USE_ON_ENTITY:
                 CachedEntity cachedEntity = session.getEntityCache().getByProxyId(packet.getRuntimeEntityId());

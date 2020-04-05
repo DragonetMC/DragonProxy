@@ -30,6 +30,8 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlaye
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPlaceBlockPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerStatePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerUseItemPacket;
+import com.nukkitx.protocol.bedrock.data.LevelEventType;
+import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayerActionPacket;
 import com.nukkitx.protocol.bedrock.packet.RespawnPacket;
 import lombok.extern.log4j.Log4j2;
@@ -84,6 +86,13 @@ public class PEPlayerActionTranslator extends PacketTranslator<PlayerActionPacke
             case ABORT_BREAK:
                 session.sendRemotePacket(new ClientPlayerActionPacket(PlayerAction.CANCEL_DIGGING, new Position(packet.getBlockPosition().getX(),
                     packet.getBlockPosition().getY(), packet.getBlockPosition().getZ()), BlockFace.DOWN));
+                break;
+            case STOP_BREAK:
+                LevelEventPacket levelEventPacket = new LevelEventPacket();
+                levelEventPacket.setType(LevelEventType.BLOCK_STOP_BREAK);
+                levelEventPacket.setPosition(packet.getBlockPosition().toFloat());
+                levelEventPacket.setData(0);
+                session.sendPacket(levelEventPacket);
                 break;
             case CONTINUE_BREAK:
 
