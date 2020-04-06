@@ -40,12 +40,11 @@ public class PCBossBarTranslator extends PacketTranslator<ServerBossBarPacket> {
 
     @Override
     public void translate(ProxySession session, ServerBossBarPacket packet) {
-        // NOTE: see https://github.com/DragonetMC/DragonProxy/issues/424
         BossEventPacket bossEventPacket = new BossEventPacket();
         bossEventPacket.setColor(1);
         bossEventPacket.setOverlay(1);
         bossEventPacket.setDarkenSky(1);
-        bossEventPacket.setPlayerUniqueEntityId(1); // player eid
+        bossEventPacket.setPlayerUniqueEntityId(session.getCachedEntity().getProxyEid());
 
         switch(packet.getAction()) {
             case ADD:

@@ -56,7 +56,7 @@ public class PCSpawnObjectTranslator extends PacketTranslator<ServerSpawnObjectP
             FallingBlockData fallingBlockData = (FallingBlockData) packet.getData();
             cachedEntity.getMetadata().put(EntityData.VARIANT, BlockTranslator.translateToBedrock(new BlockState(fallingBlockData.getId())));
         }
-        
+
         cachedEntity.setJavaUuid(packet.getUuid());
         cachedEntity.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
         cachedEntity.setMotion(Vector3f.from(packet.getMotionX(), packet.getMotionY(), packet.getMotionZ()));
