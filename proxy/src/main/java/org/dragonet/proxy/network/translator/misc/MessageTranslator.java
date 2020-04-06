@@ -61,8 +61,10 @@ public class MessageTranslator {
 
     }
 
-    // TODO: allow translating to Java text
     public static String translate(Message message) {
+        if(message instanceof TranslationMessage) {
+            return translate((TranslationMessage) message);
+        }
         StringBuilder builder = new StringBuilder();
 
         builder.append(toBedrockFormat(message.getStyle().getFormats()));

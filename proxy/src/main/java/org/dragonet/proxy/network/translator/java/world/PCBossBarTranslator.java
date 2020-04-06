@@ -51,7 +51,7 @@ public class PCBossBarTranslator extends PacketTranslator<ServerBossBarPacket> {
                 // See the documentation for addFakeEntity() below
                 addFakeEntity(session, packet.getUuid());
 
-                bossEventPacket.setTitle(MessageTranslator.translate(packet.getTitle().getFullText()));
+                bossEventPacket.setTitle(MessageTranslator.translate(packet.getTitle()));
                 bossEventPacket.setAction(BossEventPacket.Action.SHOW);
                 bossEventPacket.setHealthPercentage(packet.getHealth());
                 break;
