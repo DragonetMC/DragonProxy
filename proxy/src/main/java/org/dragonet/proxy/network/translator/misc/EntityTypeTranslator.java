@@ -112,7 +112,6 @@ public class EntityTypeTranslator {
         entityMap.put(MobType.ARROW, BedrockEntityType.ARROW);
         entityMap.put(MobType.SNOWBALL, BedrockEntityType.SNOWBALL);
         entityMap.put(MobType.THROWN_EGG, BedrockEntityType.EGG);
-        //entityMap.put(MobType.PAINING, BedrockEntityType.PAINTING);
         entityMap.put(MobType.MINECART, BedrockEntityType.MINECART);
         entityMap.put(MobType.FIREBALL, BedrockEntityType.LARGE_FIREBALL);
         entityMap.put(MobType.THROWN_POTION, BedrockEntityType.SPLASH_POTION);

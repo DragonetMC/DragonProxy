@@ -12,7 +12,7 @@ public abstract class AbstractInsentientMetaTranslator extends AbstractLivingMet
         if(metadata.getId() == 16) {
             // 0x01 is no ai
             // 0x02 is left handed
-            dictionary.getFlags().setFlag(EntityFlag.NO_AI, ((byte) metadata.getValue() & 0x01) > 0);
+            //dictionary.getFlags().setFlag(EntityFlag.NO_AI, ((byte) metadata.getValue() & 0x01) > 0);
         }
         super.translateToBedrock(session, dictionary, metadata);
     }

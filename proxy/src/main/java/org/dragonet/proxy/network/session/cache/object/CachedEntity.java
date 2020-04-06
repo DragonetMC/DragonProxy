@@ -70,6 +70,9 @@ public class CachedEntity {
     protected Set<EntityEffectTranslator.BedrockEffect> effects = new HashSet<>();
     protected Set<CachedEntity> passengers = new HashSet<>();
 
+    // This feels like an ugly way to do it, but here it is
+    protected Map<String, Object> extraData = new HashMap<>();
+
     protected CachedEntity riding;
 
     @Setter(AccessLevel.PRIVATE)
@@ -215,6 +218,7 @@ public class CachedEntity {
         flags.setFlag(EntityFlag.HAS_COLLISION, true);
         flags.setFlag(EntityFlag.CAN_SHOW_NAME, true);
         flags.setFlag(EntityFlag.CAN_CLIMB, true);
+        flags.setFlag(EntityFlag.BREATHING, true);
 
         scale = 1f;
         metadata.put(EntityData.SCALE, 1f);
@@ -223,6 +227,7 @@ public class CachedEntity {
         metadata.put(EntityData.NAMETAG, "");
         metadata.put(EntityData.BOUNDING_BOX_HEIGHT, entityType.getHeight());
         metadata.put(EntityData.BOUNDING_BOX_WIDTH, entityType.getWidth());
+        metadata.put(EntityData.LEAD_HOLDER_EID, (long) -1);
         metadata.putFlags(flags);
     }
 

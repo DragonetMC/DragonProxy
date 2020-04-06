@@ -18,14 +18,18 @@
  */
 package org.dragonet.proxy.network.translator.java.entity.spawn;
 
+import com.github.steveice10.mc.protocol.data.game.entity.type.object.FallingBlockData;
+import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnObjectPacket;
 import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.protocol.bedrock.data.EntityData;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.BlockTranslator;
 import org.dragonet.proxy.network.translator.misc.EntityTypeTranslator;
 
 @Log4j2
@@ -47,6 +51,11 @@ public class PCSpawnObjectTranslator extends PacketTranslator<ServerSpawnObjectP
         }
 
         cachedEntity = session.getEntityCache().newEntity(entityType, packet.getEntityId());
+
+        if(packet.getData() instanceof FallingBlockData) {
+            FallingBlockData fallingBlockData = (FallingBlockData) packet.getData();
+            cachedEntity.getMetadata().put(EntityData.VARIANT, BlockTranslator.translateToBedrock(new BlockState(fallingBlockData.getId())));
+        }
         
         cachedEntity.setJavaUuid(packet.getUuid());
         cachedEntity.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));

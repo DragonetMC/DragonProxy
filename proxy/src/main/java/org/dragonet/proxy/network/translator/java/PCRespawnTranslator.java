@@ -37,7 +37,6 @@ import java.util.concurrent.TimeUnit;
 @Log4j2
 @PCPacketTranslator(packetClass = ServerRespawnPacket.class)
 public class PCRespawnTranslator extends PacketTranslator<ServerRespawnPacket> {
-    public static final PCRespawnTranslator INSTANCE = new PCRespawnTranslator();
 
     @Override
     public void translate(ProxySession session, ServerRespawnPacket packet) {

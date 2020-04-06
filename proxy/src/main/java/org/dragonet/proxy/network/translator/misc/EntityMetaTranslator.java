@@ -19,7 +19,6 @@
 package org.dragonet.proxy.network.translator.misc;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.message.Message;
 import com.nukkitx.protocol.bedrock.data.*;
 import lombok.extern.log4j.Log4j2;
@@ -27,7 +26,6 @@ import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.misc.entity.living.*;
-import org.dragonet.proxy.network.translator.misc.entity.object.FallingBlockMetaTranslator;
 import org.dragonet.proxy.network.translator.misc.entity.IMetaTranslator;
 import org.dragonet.proxy.network.translator.misc.entity.object.ItemEntityMetaTranslator;
 
@@ -39,7 +37,6 @@ public class EntityMetaTranslator {
     private static final Map<BedrockEntityType, IMetaTranslator> translatorMap = new HashMap<>();
 
     static {
-        translatorMap.put(BedrockEntityType.FALLING_BLOCK, new FallingBlockMetaTranslator());
         translatorMap.put(BedrockEntityType.ITEM, new ItemEntityMetaTranslator());
         translatorMap.put(BedrockEntityType.CREEPER, new CreeperMetaTranslator());
         translatorMap.put(BedrockEntityType.WOLF, new WolfMetaTranslator());

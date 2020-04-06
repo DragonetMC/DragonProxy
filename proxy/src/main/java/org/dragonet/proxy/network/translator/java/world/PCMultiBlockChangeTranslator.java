@@ -34,15 +34,8 @@ public class PCMultiBlockChangeTranslator extends PacketTranslator<ServerMultiBl
     @Override
     public void translate(ProxySession session, ServerMultiBlockChangePacket packet) {
         for(BlockChangeRecord record : packet.getRecords()) {
-            UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-            updateBlockPacket.setRuntimeId(BlockTranslator.translateToBedrock(record.getBlock()));
-            updateBlockPacket.setBlockPosition(Vector3i.from(record.getPosition().getX(), record.getPosition().getY(), record.getPosition().getZ()));
-            updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NEIGHBORS);
-            updateBlockPacket.setDataLayer(0);
-
-            session.sendPacket(updateBlockPacket);
-
-            // TODO: waterlogged, update in chunk cache?
+            Vector3i position = Vector3i.from(record.getPosition().getX(), record.getPosition().getY(), record.getPosition().getZ());
+            session.getChunkCache().updateBlock(session, position, record.getBlock());
         }
     }
 }

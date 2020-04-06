@@ -107,12 +107,14 @@ public class ChunkCache implements Cache {
         return 0;
     }
 
-    public void updateBlock(Position position, BlockState block) {
-        Vector2f chunkPosition = Vector2f.from(position.getX() >> 4, position.getY() >> 4);
-        if(javaChunks.containsKey(chunkPosition)) {
-            Column column = javaChunks.get(chunkPosition);
+    public void updateBlock(ProxySession session, Vector3i position, BlockState state) {
+        UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
+        updateBlockPacket.setBlockPosition(position);
+        updateBlockPacket.setDataLayer(0);
+        updateBlockPacket.setRuntimeId(BlockTranslator.translateToBedrock(state));
+        updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NEIGHBORS);
 
-        }
+        session.sendPacket(updateBlockPacket);
     }
 
     public void sendFakeBlock(ProxySession session, String identifier, Vector3i position) {

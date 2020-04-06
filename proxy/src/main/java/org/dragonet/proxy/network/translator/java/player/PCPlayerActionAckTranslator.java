@@ -59,15 +59,7 @@ public class PCPlayerActionAckTranslator extends PacketTranslator<ServerPlayerAc
                 session.sendPacket(levelEventPacket);
                 break;
             case FINISH_DIGGING:
-                session.getChunkCache().updateBlock(packet.getPosition(), packet.getNewState());
-
-                UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-                updateBlockPacket.setRuntimeId(BlockTranslator.translateToBedrock(packet.getNewState()));
-                updateBlockPacket.setBlockPosition(position.toInt());
-                updateBlockPacket.setDataLayer(0);
-                updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NEIGHBORS);
-
-                session.sendPacket(updateBlockPacket);
+                session.getChunkCache().updateBlock(session, position.toInt(), packet.getNewState());
                 break;
         }
     }

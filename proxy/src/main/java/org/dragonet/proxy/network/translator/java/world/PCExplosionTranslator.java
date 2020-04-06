@@ -18,6 +18,7 @@
  */
 package org.dragonet.proxy.network.translator.java.world;
 
+import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.github.steveice10.mc.protocol.data.game.world.block.ExplodedBlockRecord;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerExplosionPacket;
 import com.nukkitx.math.vector.Vector3f;
@@ -38,12 +39,8 @@ public class PCExplosionTranslator extends PacketTranslator<ServerExplosionPacke
     @Override
     public void translate(ProxySession session, ServerExplosionPacket packet) {
         for(ExplodedBlockRecord record : packet.getExploded()) {
-            UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-            updateBlockPacket.setBlockPosition(Vector3i.from(record.getX(), record.getY(), record.getZ()));
-            updateBlockPacket.setDataLayer(0);
-            updateBlockPacket.setRuntimeId(0);
-
-            session.sendPacket(updateBlockPacket);
+            Vector3i position = Vector3i.from(record.getX(), record.getY(), record.getZ());
+            session.getChunkCache().updateBlock(session, position, new BlockState(0));
         }
 
         LevelEventPacket levelEventPacket = new LevelEventPacket();
