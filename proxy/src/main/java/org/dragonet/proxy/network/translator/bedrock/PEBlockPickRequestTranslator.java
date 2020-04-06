@@ -18,17 +18,13 @@
  */
 package org.dragonet.proxy.network.translator.bedrock;
 
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
-import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
-import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerSwingArmPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientCreativeInventoryActionPacket;
 import com.nukkitx.protocol.bedrock.data.ItemData;
-import com.nukkitx.protocol.bedrock.packet.AnimatePacket;
 import com.nukkitx.protocol.bedrock.packet.BlockPickRequestPacket;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
-import org.dragonet.proxy.network.translator.types.ItemTranslator;
+import org.dragonet.proxy.network.translator.misc.ItemTranslator;
 
 @PEPacketTranslator(packetClass = BlockPickRequestPacket.class)
 public class PEBlockPickRequestTranslator extends PacketTranslator<BlockPickRequestPacket> {

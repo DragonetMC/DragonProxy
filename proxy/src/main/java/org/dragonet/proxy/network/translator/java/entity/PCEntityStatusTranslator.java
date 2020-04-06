@@ -19,23 +19,18 @@
 package org.dragonet.proxy.network.translator.java.entity;
 
 import com.github.steveice10.mc.protocol.data.game.entity.EntityStatus;
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityMetadataPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityStatusPacket;
 import com.nukkitx.protocol.bedrock.data.EntityEventType;
-import com.nukkitx.protocol.bedrock.data.EntityFlag;
 import com.nukkitx.protocol.bedrock.packet.EntityEventPacket;
-import com.nukkitx.protocol.bedrock.packet.SetEntityDataPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.network.translator.types.EntityMetaTranslator;
 import org.dragonet.proxy.util.TextFormat;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @Log4j2
 @PCPacketTranslator(packetClass = ServerEntityStatusPacket.class)

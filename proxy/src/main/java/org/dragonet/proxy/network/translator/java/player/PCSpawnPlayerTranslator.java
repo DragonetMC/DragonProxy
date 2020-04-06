@@ -27,7 +27,6 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.network.translator.types.EntityMetaTranslator;
 import org.dragonet.proxy.util.SkinUtils;
 
 @Log4j2
@@ -37,15 +36,17 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
     @Override
     public void translate(ProxySession session, ServerSpawnPlayerPacket packet) {
         PlayerListEntry playerListEntry = session.getPlayerListCache().getPlayerInfo().get(packet.getUuid());
+        long cachedEntityId = session.getPlayerListCache().getPlayerEntityIds().getLong(packet.getUuid());
 
-        CachedPlayer cachedPlayer = session.getEntityCache().newPlayer(packet.getEntityId(), playerListEntry.getProfile());
+        CachedPlayer cachedPlayer = session.getEntityCache().newPlayer(packet.getEntityId(), cachedEntityId, playerListEntry.getProfile());
+        cachedPlayer.setJavaUuid(packet.getUuid());
         cachedPlayer.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
         cachedPlayer.setRotation(Vector3f.from(packet.getYaw(), packet.getPitch(), 0));
         cachedPlayer.spawn(session);
 
         if(session.getProxy().getConfiguration().isFetchPlayerSkins()) {
             session.getProxy().getGeneralThreadPool().execute(() -> {
-                GameProfile profile = session.getPlayerListCache().getPlayerInfo().get(packet.getUuid()).getProfile();
+                GameProfile profile = playerListEntry.getProfile();
 
                 byte[] skinData = SkinUtils.fetchSkin(profile);
                 if (skinData == null) {
@@ -57,7 +58,7 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
 //                    capeData = clientData.getCapeData();
 //                }
 
-                session.setPlayerSkin(profile.getId(), skinData);
+                session.setPlayerSkin(profile.getId(), cachedEntityId, skinData);
             });
         }
     }

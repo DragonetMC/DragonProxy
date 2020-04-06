@@ -19,10 +19,8 @@
 package org.dragonet.proxy.network.session.cache.object;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
-import com.github.steveice10.mc.protocol.data.game.window.WindowType;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.data.EntityData;
 import com.nukkitx.protocol.bedrock.packet.*;
@@ -31,11 +29,8 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.data.window.BedrockWindowType;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.types.BlockEntityTranslator;
-import org.dragonet.proxy.network.translator.types.BlockTranslator;
-import org.dragonet.proxy.util.TextFormat;
-
-import java.util.concurrent.TimeUnit;
+import org.dragonet.proxy.network.translator.misc.BlockEntityTranslator;
+import org.dragonet.proxy.network.translator.misc.BlockTranslator;
 
 @Data
 @Log4j2

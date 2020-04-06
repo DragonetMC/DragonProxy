@@ -26,7 +26,7 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.network.translator.types.EntityTypeTranslator;
+import org.dragonet.proxy.network.translator.misc.EntityTypeTranslator;
 
 @Log4j2
 @PCPacketTranslator(packetClass = ServerSpawnGlobalEntityPacket.class)

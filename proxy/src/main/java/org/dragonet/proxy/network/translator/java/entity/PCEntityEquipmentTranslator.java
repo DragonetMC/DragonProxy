@@ -18,16 +18,14 @@
  */
 package org.dragonet.proxy.network.translator.java.entity;
 
-import com.github.steveice10.mc.protocol.data.game.entity.EquipmentSlot;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityEquipmentPacket;
-import com.nukkitx.protocol.bedrock.packet.MobArmorEquipmentPacket;
 import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.network.translator.types.ItemTranslator;
+import org.dragonet.proxy.network.translator.misc.ItemTranslator;
 
 @Log4j2
 @PCPacketTranslator(packetClass = ServerEntityEquipmentPacket.class)

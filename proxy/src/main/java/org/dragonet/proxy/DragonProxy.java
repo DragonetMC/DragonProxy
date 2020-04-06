@@ -35,8 +35,8 @@ import org.dragonet.proxy.metrics.MetricsManager;
 import org.dragonet.proxy.network.ProxyServerEventListener;
 import org.dragonet.proxy.network.SessionManager;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
-import org.dragonet.proxy.network.translator.types.BlockTranslator;
-import org.dragonet.proxy.network.translator.types.ItemTranslator;
+import org.dragonet.proxy.network.translator.misc.BlockTranslator;
+import org.dragonet.proxy.network.translator.misc.ItemTranslator;
 import org.dragonet.proxy.util.PaletteManager;
 import org.dragonet.proxy.util.SkinUtils;
 
@@ -44,7 +44,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.DecimalFormat;

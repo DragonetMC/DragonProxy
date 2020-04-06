@@ -18,12 +18,9 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
-import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
-import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.nbt.NbtUtils;
 import com.nukkitx.nbt.stream.NBTOutputStream;
@@ -31,18 +28,10 @@ import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
 import com.nukkitx.protocol.bedrock.packet.SetPlayerGameTypePacket;
-import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
-import org.dragonet.proxy.network.session.data.AuthState;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.network.translator.types.BlockTranslator;
-import org.dragonet.proxy.network.translator.types.ItemTranslator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -19,33 +19,20 @@
 package org.dragonet.proxy.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.nukkitx.nbt.NbtUtils;
 import com.nukkitx.nbt.stream.NBTInputStream;
 import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.nbt.tag.ListTag;
-import com.nukkitx.network.VarInts;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
-import com.nukkitx.protocol.bedrock.v388.BedrockUtils;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.network.translator.types.ItemTranslator;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
 @Log4j2

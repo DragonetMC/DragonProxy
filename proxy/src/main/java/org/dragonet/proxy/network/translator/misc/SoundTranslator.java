@@ -16,9 +16,8 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.types;
+package org.dragonet.proxy.network.translator.misc;
 
-import com.github.steveice10.mc.protocol.data.game.entity.Effect;
 import com.github.steveice10.mc.protocol.data.game.world.sound.BuiltinSound;
 import lombok.extern.log4j.Log4j2;
 
@@ -476,7 +475,7 @@ public class SoundTranslator {
         soundMap.put(BuiltinSound.ENTITY_PLAYER_ATTACK_CRIT, null);
         soundMap.put(BuiltinSound.ENTITY_PLAYER_ATTACK_KNOCKBACK, null);
         soundMap.put(BuiltinSound.ENTITY_PLAYER_ATTACK_NODAMAGE, "game.player.attack.nodamage");
-        soundMap.put(BuiltinSound.ENTITY_PLAYER_ATTACK_STRONG, null);
+        soundMap.put(BuiltinSound.ENTITY_PLAYER_ATTACK_STRONG, "game.player.attack.strong");
         soundMap.put(BuiltinSound.ENTITY_PLAYER_ATTACK_SWEEP, null);
         soundMap.put(BuiltinSound.ENTITY_PLAYER_ATTACK_WEAK, "game.player.attack.nodamage");
         soundMap.put(BuiltinSound.ENTITY_PLAYER_BIG_FALL, "damage.fallbig");
@@ -525,6 +524,15 @@ public class SoundTranslator {
         soundMap.put(BuiltinSound.ENTITY_SILVERFISH_DEATH, "mob.silverfish.kill");
         soundMap.put(BuiltinSound.ENTITY_SILVERFISH_HURT, "mob.silverfish.hit");
         soundMap.put(BuiltinSound.ENTITY_SILVERFISH_STEP, "mob.silverfish.step");
+
+        soundMap.put(BuiltinSound.ENTITY_FISH_SWIM, "mob.fish.step");
+        soundMap.put(BuiltinSound.ENTITY_PUFFER_FISH_HURT, "mob.fish.hurt");
+        soundMap.put(BuiltinSound.ENTITY_TROPICAL_FISH_HURT, "mob.fish.hurt");
+        soundMap.put(BuiltinSound.ENTITY_COD_FLOP, "mob.fish.flop");
+        soundMap.put(BuiltinSound.ENTITY_PUFFER_FISH_FLOP, "mob.fish.flop");
+        soundMap.put(BuiltinSound.ENTITY_SALMON_FLOP, "mob.fish.flop");
+        soundMap.put(BuiltinSound.ENTITY_TROPICAL_FISH_FLOP, "mob.fish.flop");
+        soundMap.put(BuiltinSound.ENTITY_GUARDIAN_FLOP, "mob.guardian.flop");
 
         soundMap.put(BuiltinSound.ENTITY_SKELETON_AMBIENT, "mob.skeleton.say");
         soundMap.put(BuiltinSound.ENTITY_SKELETON_DEATH, "mob.skeleton.death");
@@ -712,7 +720,10 @@ public class SoundTranslator {
         soundMap.put(BuiltinSound.ENTITY_DROWNED_AMBIENT, "mob.drowned.say");
         soundMap.put(BuiltinSound.ENTITY_DROWNED_AMBIENT_WATER, "mob.drowned.say_water");
         soundMap.put(BuiltinSound.ENTITY_DROWNED_SWIM, "mob.drowned.swim");
-        // TODO: more drowned sounds
+        soundMap.put(BuiltinSound.ENTITY_DROWNED_STEP, "mob.drowned.step");
+        soundMap.put(BuiltinSound.ENTITY_DROWNED_HURT, "mob.drowned.hurt");
+        soundMap.put(BuiltinSound.ENTITY_DROWNED_DEATH, "mob.drowned.death");
+        soundMap.put(BuiltinSound.ENTITY_DROWNED_DEATH_WATER, "mob.drowned.death_water");
 
         soundMap.put(BuiltinSound.ENTITY_WANDERING_TRADER_AMBIENT, "mob.wanderingtrader.idle");
         // TODO: more wandering trader sounds

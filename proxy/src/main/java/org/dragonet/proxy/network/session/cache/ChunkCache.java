@@ -20,7 +20,6 @@ package org.dragonet.proxy.network.session.cache;
 
 import com.github.steveice10.mc.protocol.data.game.chunk.Chunk;
 import com.github.steveice10.mc.protocol.data.game.chunk.Column;
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.nukkitx.math.vector.Vector2f;
@@ -34,11 +33,10 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.chunk.ChunkData;
 import org.dragonet.proxy.data.chunk.ChunkSection;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.types.BlockEntityTranslator;
-import org.dragonet.proxy.network.translator.types.BlockTranslator;
+import org.dragonet.proxy.network.translator.misc.BlockEntityTranslator;
+import org.dragonet.proxy.network.translator.misc.BlockTranslator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Log4j2

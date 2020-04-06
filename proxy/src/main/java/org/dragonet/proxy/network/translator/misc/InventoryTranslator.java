@@ -16,7 +16,7 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.types;
+package org.dragonet.proxy.network.translator.misc;
 
 import com.github.steveice10.mc.protocol.data.game.window.WindowType;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
@@ -25,7 +25,7 @@ import com.nukkitx.protocol.bedrock.data.ItemData;
 import com.nukkitx.protocol.bedrock.packet.InventoryContentPacket;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
-import org.dragonet.proxy.network.translator.types.inventory.GenericInventoryTranslator;
+import org.dragonet.proxy.network.translator.misc.inventory.GenericInventoryTranslator;
 
 import java.util.HashMap;
 import java.util.Map;

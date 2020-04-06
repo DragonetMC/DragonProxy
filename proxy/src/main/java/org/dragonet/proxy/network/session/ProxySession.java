@@ -32,7 +32,6 @@ import com.github.steveice10.packetlib.event.session.PacketReceivedEvent;
 import com.github.steveice10.packetlib.event.session.SessionAdapter;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
-import com.google.gson.JsonObject;
 import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
@@ -46,7 +45,6 @@ import com.nukkitx.protocol.bedrock.packet.*;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.data.window.BedrockWindowType;
 import org.dragonet.proxy.form.CustomForm;
 import org.dragonet.proxy.form.components.InputComponent;
 import org.dragonet.proxy.form.components.LabelComponent;
@@ -57,8 +55,7 @@ import org.dragonet.proxy.network.session.data.AuthData;
 import org.dragonet.proxy.network.session.data.AuthState;
 import org.dragonet.proxy.network.session.data.ClientData;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
-import org.dragonet.proxy.network.translator.types.BlockTranslator;
-import org.dragonet.proxy.network.translator.types.ItemTranslator;
+import org.dragonet.proxy.network.translator.misc.BlockTranslator;
 import org.dragonet.proxy.remote.RemoteAuthType;
 import org.dragonet.proxy.remote.RemoteServer;
 import org.dragonet.proxy.util.PaletteManager;
@@ -73,9 +70,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
-import static org.dragonet.proxy.network.translator.java.PCJoinGameTranslator.EMPTY_LEVEL_CHUNK_DATA;
 
 /**
  * Represents a bedrock player session.
@@ -397,9 +391,10 @@ public class ProxySession implements PlayerSession {
      * Set a skin for the specified player.
      *
      * @param playerId the target player uuid
+     * @param entityId
      * @param skinData the skin data, an rgba byte array
      */
-    public void setPlayerSkin(UUID playerId, byte[] skinData) {
+    public void setPlayerSkin(UUID playerId, long entityId, byte[] skinData) {
         GameProfile profile = playerListCache.getPlayerInfo().get(playerId).getProfile();
 
         // Remove the player from the player list
@@ -421,7 +416,7 @@ public class ProxySession implements PlayerSession {
             false);
 
         PlayerListPacket.Entry entry = new PlayerListPacket.Entry(playerId);
-        entry.setEntityId(1); // TODO
+        entry.setEntityId(entityId);
         entry.setName(profile.getName());
         entry.setSkin(skin);
         entry.setXuid("");

@@ -20,17 +20,17 @@ package org.dragonet.proxy.network.session.cache.object;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.*;
 import com.nukkitx.protocol.bedrock.packet.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.data.entity.BedrockAttributeType;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.types.EntityEffectTranslator;
+import org.dragonet.proxy.network.translator.misc.EntityEffectTranslator;
 
 import java.util.*;
 
@@ -45,7 +45,6 @@ public class CachedEntity {
 
     protected EntityMetadata[] remoteMetadata;
     protected EntityDataMap metadata = new EntityDataMap();
-    protected EntityFlags flags = new EntityFlags();
 
     protected boolean spawned = false;
 
@@ -101,10 +100,11 @@ public class CachedEntity {
         addEntityPacket.setRuntimeEntityId(proxyEid);
         addEntityPacket.setUniqueEntityId(proxyEid);
         addEntityPacket.setIdentifier("minecraft:" + entityType.name().toLowerCase()); // TODO: this may need mapping
-        addEntityPacket.setEntityType(entityType.getType());
+        addEntityPacket.setEntityType(0);
         addEntityPacket.setRotation(rotation);
         addEntityPacket.setMotion(Vector3f.ZERO);
         addEntityPacket.setPosition(getOffsetPosition());
+
         addEntityPacket.getMetadata().putAll(getMetadata());
 
         //log.info(getMetadata());
@@ -196,9 +196,13 @@ public class CachedEntity {
     public void sendMetadata(ProxySession session) {
         SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
         setEntityDataPacket.setRuntimeEntityId(proxyEid);
-        setEntityDataPacket.getMetadata().putAll(metadata.putFlags(flags));
+        setEntityDataPacket.getMetadata().putAll(metadata);
 
         session.sendPacket(setEntityDataPacket);
+    }
+
+    public boolean setEntityFlag(EntityFlag flag, boolean value) {
+        return metadata.getFlags().setFlag(flag, value);
     }
 
     public void onTick(ProxySession session) {
@@ -206,6 +210,7 @@ public class CachedEntity {
     }
 
     private void addDefaultMetadata() {
+        EntityFlags flags = new EntityFlags();
         flags.setFlag(EntityFlag.HAS_GRAVITY, true);
         flags.setFlag(EntityFlag.HAS_COLLISION, true);
         flags.setFlag(EntityFlag.CAN_SHOW_NAME, true);

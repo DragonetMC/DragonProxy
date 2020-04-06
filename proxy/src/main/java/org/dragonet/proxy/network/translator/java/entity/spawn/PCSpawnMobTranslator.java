@@ -26,7 +26,7 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.network.translator.types.EntityTypeTranslator;
+import org.dragonet.proxy.network.translator.misc.EntityTypeTranslator;
 
 @Log4j2
 @PCPacketTranslator(packetClass = ServerSpawnMobPacket.class)
@@ -48,6 +48,7 @@ public class PCSpawnMobTranslator extends PacketTranslator<ServerSpawnMobPacket>
 
         cachedEntity = session.getEntityCache().newEntity(entityType, packet.getEntityId());
 
+        cachedEntity.setJavaUuid(packet.getUuid());
         cachedEntity.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
         cachedEntity.setMotion(Vector3f.from(packet.getMotionX(), packet.getMotionY(), packet.getMotionZ()));
         cachedEntity.setRotation(Vector3f.from(packet.getPitch(), packet.getHeadYaw(), packet.getYaw()));

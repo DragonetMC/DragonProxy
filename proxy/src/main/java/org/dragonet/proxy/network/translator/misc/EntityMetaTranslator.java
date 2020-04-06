@@ -16,26 +16,44 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.types;
+package org.dragonet.proxy.network.translator.misc;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.message.Message;
-import com.nukkitx.protocol.bedrock.data.EntityData;
-import com.nukkitx.protocol.bedrock.data.EntityDataMap;
-import com.nukkitx.protocol.bedrock.data.EntityFlag;
-import com.nukkitx.protocol.bedrock.data.EntityFlags;
+import com.nukkitx.protocol.bedrock.data.*;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.data.entity.BedrockEntityType;
+import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
+import org.dragonet.proxy.network.translator.misc.entity.living.*;
+import org.dragonet.proxy.network.translator.misc.entity.object.FallingBlockMetaTranslator;
+import org.dragonet.proxy.network.translator.misc.entity.IMetaTranslator;
+import org.dragonet.proxy.network.translator.misc.entity.object.ItemEntityMetaTranslator;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Log4j2
 public class EntityMetaTranslator {
+    private static final Map<BedrockEntityType, IMetaTranslator> translatorMap = new HashMap<>();
+
+    static {
+        translatorMap.put(BedrockEntityType.FALLING_BLOCK, new FallingBlockMetaTranslator());
+        translatorMap.put(BedrockEntityType.ITEM, new ItemEntityMetaTranslator());
+        translatorMap.put(BedrockEntityType.CREEPER, new CreeperMetaTranslator());
+        translatorMap.put(BedrockEntityType.WOLF, new WolfMetaTranslator());
+        translatorMap.put(BedrockEntityType.HORSE, new HorseMetaTranslator());
+        translatorMap.put(BedrockEntityType.OCELOT, new OcelotMetaTranslator());
+        translatorMap.put(BedrockEntityType.PIG, new PigMetaTranslator());
+    }
 
     /**
      * This method translates Java entity metadata to Bedrock.
      */
-    public static EntityDataMap translateToBedrock(CachedEntity entity, EntityMetadata[] metadata) {
+    public static EntityDataMap translateToBedrock(ProxySession session, CachedEntity entity, EntityMetadata[] metadata) {
         EntityDataMap dictionary = entity.getMetadata();
-        EntityFlags flags = entity.getFlags();
+        EntityFlags flags = dictionary.getFlags();
 
         for(EntityMetadata meta : metadata) {
             switch(meta.getId()) {
@@ -57,7 +75,7 @@ public class EntityMetaTranslator {
 //                    }
                     break;
                 case 1: // Air
-                    dictionary.put(EntityData.AIR, meta.getValue());
+                    dictionary.put(EntityData.AIR, (int) meta.getValue());
                     break;
                 case 2: // Custom name
                     if(meta.getValue() != null) {
@@ -72,6 +90,15 @@ public class EntityMetaTranslator {
                     break;
                 case 5: // No gravity
                     flags.setFlag(EntityFlag.HAS_GRAVITY, !(boolean) meta.getValue()); // flipped intentionally
+                    break;
+                case 6: // Pose
+                    break;
+                default:
+                    if(translatorMap.containsKey(entity.getEntityType())) {
+                        translatorMap.get(entity.getEntityType()).translateToBedrock(session, dictionary, meta);
+                        break;
+                    }
+                    //log.info("No meta translator for " + entity.getEntityType().name());
                     break;
             }
         }

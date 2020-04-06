@@ -24,13 +24,11 @@ import com.nukkitx.protocol.bedrock.data.EntityData;
 import com.nukkitx.protocol.bedrock.packet.AddEntityPacket;
 import com.nukkitx.protocol.bedrock.packet.BossEventPacket;
 import com.nukkitx.protocol.bedrock.packet.RemoveEntityPacket;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.network.translator.types.MessageTranslator;
+import org.dragonet.proxy.network.translator.misc.MessageTranslator;
 import org.dragonet.proxy.util.TextFormat;
 
 import java.util.UUID;

@@ -45,19 +45,25 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
 
             switch(packet.getAction()) {
                 case ADD_PLAYER:
-                    // Fetch our own skin
-                    if(entry.getProfile().getName().equals(session.getUsername()) && session.getProxy().getConfiguration().isFetchPlayerSkins()) {
-                        session.getProxy().getGeneralThreadPool().execute(() -> {
-                            byte[] skinData = SkinUtils.fetchSkin(entry.getProfile());
-                            if (skinData == null) {
-                                return;
-                            }
-                            session.setPlayerSkin2(session.getAuthData().getIdentity(), skinData);
-                        });
-                        return;
+                    if(entry.getProfile().getName().equals(session.getUsername())) {
+                        // Fetch our own skin
+                        if(session.getProxy().getConfiguration().isFetchPlayerSkins()) {
+                            session.getProxy().getGeneralThreadPool().execute(() -> {
+                                byte[] skinData = SkinUtils.fetchSkin(entry.getProfile());
+                                if (skinData == null) {
+                                    return;
+                                }
+                                session.setPlayerSkin2(session.getAuthData().getIdentity(), skinData);
+                            });
+                            return;
+                        }
+
+                        // Set our own remote uuid
+                        session.getCachedEntity().setJavaUuid(entry.getProfile().getId());
                     }
 
                     long proxyEid = session.getEntityCache().getNextClientEntityId().getAndIncrement();
+                    session.getPlayerListCache().getPlayerEntityIds().put(entry.getProfile().getId(), proxyEid);
 
                     playerListPacket.setAction(PlayerListPacket.Action.ADD);
 
@@ -91,6 +97,7 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
                     session.sendPacket(playerListPacket);
 
                     session.getPlayerListCache().getPlayerInfo().remove(entry.getProfile().getId());
+                    session.getPlayerListCache().getPlayerEntityIds().removeLong(entry.getProfile().getId());
                     break;
             }
         }

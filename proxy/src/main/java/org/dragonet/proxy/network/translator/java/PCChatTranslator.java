@@ -21,14 +21,11 @@ package org.dragonet.proxy.network.translator.java;
 import com.github.steveice10.mc.protocol.data.message.TranslationMessage;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerChatPacket;
 import com.nukkitx.protocol.bedrock.packet.TextPacket;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.configuration.lang.MinecraftLanguage;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.network.translator.types.MessageTranslator;
+import org.dragonet.proxy.network.translator.misc.MessageTranslator;
 
 
 @Log4j2

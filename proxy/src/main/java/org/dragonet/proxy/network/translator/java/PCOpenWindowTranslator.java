@@ -26,7 +26,7 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.network.translator.types.MessageTranslator;
+import org.dragonet.proxy.network.translator.misc.MessageTranslator;
 import org.dragonet.proxy.util.TextFormat;
 
 import java.util.HashMap;

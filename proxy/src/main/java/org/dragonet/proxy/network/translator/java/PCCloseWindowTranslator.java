@@ -18,20 +18,13 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
-import com.github.steveice10.mc.protocol.data.game.window.WindowType;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerCloseWindowPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.data.window.BedrockWindowType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.network.translator.types.MessageTranslator;
 import org.dragonet.proxy.util.TextFormat;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Log4j2
 @PCPacketTranslator(packetClass = ServerCloseWindowPacket.class)

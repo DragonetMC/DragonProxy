@@ -67,6 +67,15 @@ public class EntityCache implements Cache {
         return null;
     }
 
+    public CachedEntity getByRemoteUUID(UUID remoteId) {
+        for (CachedEntity entity : entities.values()) {
+            if(entity.getJavaUuid() != null && entity.getJavaUuid().equals(remoteId)) {
+                return entity;
+            }
+        }
+        return null;
+    }
+
     /**
      * Constructs a new cached entity.
      */
@@ -114,7 +123,11 @@ public class EntityCache implements Cache {
      * Constructs a new cached player.
      */
     public CachedPlayer newPlayer(int entityId, GameProfile profile) {
-        CachedPlayer entity = new CachedPlayer(nextClientEntityId.getAndIncrement(), entityId, profile);
+        return newPlayer(entityId, nextClientEntityId.getAndIncrement(), profile);
+    }
+
+    public CachedPlayer newPlayer(int entityId, long proxyId, GameProfile profile) {
+        CachedPlayer entity = new CachedPlayer(proxyId, entityId, profile);
 
         entities.put(entity.getProxyEid(), entity);
         clientToRemoteMap.put(entity.getProxyEid(), entity.getRemoteEid());

@@ -91,7 +91,7 @@ public class PCNotifyClientTranslator extends PacketTranslator<ServerNotifyClien
                 session.sendPacket(setGameTypePacket);
 
                 // Set the CAN_FLY flag and send to the client
-                cachedPlayer.getFlags().setFlag(EntityFlag.CAN_FLY, gameMode == GameMode.CREATIVE || gameMode == GameMode.SPECTATOR);
+                cachedPlayer.setEntityFlag(EntityFlag.CAN_FLY, gameMode == GameMode.CREATIVE || gameMode == GameMode.SPECTATOR);
                 cachedPlayer.sendMetadata(session);
                 break;
             case START_RAIN:

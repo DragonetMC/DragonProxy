@@ -16,7 +16,7 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.types;
+package org.dragonet.proxy.network.translator.misc;
 
 import com.github.steveice10.mc.protocol.data.game.entity.Effect;
 import lombok.extern.log4j.Log4j2;

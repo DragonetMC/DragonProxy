@@ -18,21 +18,14 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
-import com.github.steveice10.mc.protocol.data.game.world.sound.BuiltinSound;
-import com.github.steveice10.mc.protocol.packet.ingame.client.ClientKeepAlivePacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.ServerKeepAlivePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerPlayBuiltinSoundPacket;
 import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.data.SoundEvent;
-import com.nukkitx.protocol.bedrock.packet.LevelEventGenericPacket;
-import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
-import com.nukkitx.protocol.bedrock.packet.LevelSoundEventPacket;
 import com.nukkitx.protocol.bedrock.packet.PlaySoundPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.network.translator.types.SoundTranslator;
+import org.dragonet.proxy.network.translator.misc.SoundTranslator;
 import org.dragonet.proxy.util.TextFormat;
 
 @Log4j2

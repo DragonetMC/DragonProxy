@@ -37,6 +37,8 @@ public class PCSpawnPaintingTranslator extends PacketTranslator<ServerSpawnPaint
         String name = BedrockPaintingType.valueOf(packet.getPaintingType().name()).getTitle();
 
         CachedPainting cachedEntity = session.getEntityCache().newPainting(packet.getEntityId(), name);
+
+        cachedEntity.setJavaUuid(packet.getUuid());
         cachedEntity.setHangingDirection(packet.getDirection());
         cachedEntity.setPosition(Vector3f.from(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ()));
 

@@ -23,7 +23,7 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.network.translator.types.MessageTranslator;
+import org.dragonet.proxy.network.translator.misc.MessageTranslator;
 
 @Log4j2
 @PCPacketTranslator(packetClass = ServerPlayerListDataPacket.class)

@@ -16,12 +16,10 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.types;
+package org.dragonet.proxy.network.translator.misc;
 
-import com.github.steveice10.mc.protocol.data.game.Identifier;
 import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.nbt.tag.CompoundTag;
-import com.nukkitx.nbt.tag.Tag;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.HashMap;
@@ -58,6 +56,7 @@ public class BlockEntityTranslator {
         blockEntityMap.put("minecraft:noteblock", "Noteblock");
         blockEntityMap.put("minecraft:enchanting_table", "EnchantTable");
         blockEntityMap.put("minecraft:brewing_stand", "BrewingStand");
+        //blockEntityMap.put("minecraft:falling_block", "FallingSand");
 
         // Not sure about these ones
         blockEntityMap.put("minecraft:beehive", "Beehive");

@@ -57,7 +57,7 @@ public class PCEntitySetPassengersTranslator extends PacketTranslator<ServerEnti
             session.sendPacket(setEntityLinkPacket);
 
             // Update metadata and calculate offset
-            passenger.getFlags().setFlag(EntityFlag.RIDING, true); // TODO?
+            passenger.setEntityFlag(EntityFlag.RIDING, true); // TODO?
             passenger.getMetadata().put(EntityData.RIDER_SEAT_POSITION, 0); // TODO?
             passenger.sendMetadata(session);
 

@@ -16,7 +16,7 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.types.item;
+package org.dragonet.proxy.network.translator.misc.inventory;
 
-public class BedrockBlockState {
+public class GenericInventoryTranslator {
 }

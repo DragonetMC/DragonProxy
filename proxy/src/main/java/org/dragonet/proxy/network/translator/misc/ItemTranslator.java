@@ -16,27 +16,19 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.types;
+package org.dragonet.proxy.network.translator.misc;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.message.Message;
 import com.github.steveice10.opennbt.tag.builtin.*;
 import com.nukkitx.nbt.CompoundTagBuilder;
-import com.nukkitx.nbt.NbtUtils;
-import com.nukkitx.nbt.stream.NBTInputStream;
 import com.nukkitx.protocol.bedrock.data.ItemData;
-import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
-import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.network.translator.types.item.ItemEntry;
-import org.dragonet.proxy.util.PaletteManager;
+import org.dragonet.proxy.network.translator.misc.item.ItemEntry;
 
 import java.io.InputStream;
 import java.util.*;

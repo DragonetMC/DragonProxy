@@ -16,25 +16,7 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.types.item;
+package org.dragonet.proxy.network.translator.misc.item;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-@Getter
-@AllArgsConstructor
-public class ItemEntry {
-    @JsonProperty
-    private String javaIdentifier;
-    @JsonProperty("javaId")
-    private int javaProtocolId;
-
-    // TODO: add back support for bedrock identifier, as the geyser mappings dont include it
-    //private String bedrockIdentifier;
-    @JsonProperty("bedrockId")
-    private int bedrockRuntimeId;
-    @JsonProperty
-    private int bedrockData;
+public class BedrockBlockState {
 }
