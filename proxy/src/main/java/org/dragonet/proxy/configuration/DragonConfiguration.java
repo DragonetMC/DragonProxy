@@ -20,9 +20,18 @@ package org.dragonet.proxy.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.Getter;
 import lombok.Setter;
+import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.remote.RemoteAuthType;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -65,6 +74,21 @@ public class DragonConfiguration {
     @JsonProperty("enable-commands")
     private boolean commandsEnabled;
 
+    @JsonProperty("metrics")
+    private MetricsConfiguration metrics;
+
     @JsonProperty("thread-pool-size")
     private int threadPoolSize;
+
+    @Getter
+    public static class MetricsConfiguration {
+        private boolean enabled;
+        @JsonProperty("server-uuid")
+        private String serverId;
+
+        @JsonSetter("server-uuid")
+        public void setServerId(String uuid) {
+            this.serverId = uuid;
+        }
+    }
 }

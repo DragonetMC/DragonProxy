@@ -20,8 +20,10 @@ package org.dragonet.proxy.metrics;
 
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.configuration.DragonConfiguration;
 import org.dragonet.proxy.util.TextFormat;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,30 +40,21 @@ public class MetricsManager {
     public MetricsManager(DragonProxy proxy) {
         this.proxy = proxy;
 
-        // Load configuration
-        try {
-            if(!Files.exists(Paths.get("metrics.properties"))) {
-                Files.copy(getClass().getResourceAsStream("/metrics.properties"), Paths.get("metrics.properties"), StandardCopyOption.REPLACE_EXISTING);
-            }
+        DragonConfiguration.MetricsConfiguration metricsConfig = proxy.getConfiguration().getMetrics();
 
-            FileInputStream input = new FileInputStream("metrics.properties");
-            Properties config = new Properties();
-            config.load(input);
+        fixOldConfig(metricsConfig);
 
-            if(config.getProperty("server-uuid").equalsIgnoreCase("placeholder")) {
-                config.setProperty("server-uuid", UUID.randomUUID().toString());
-                config.store(new FileOutputStream("metrics.properties"), "DO NOT EDIT server-uuid OR IT WILL BREAK METRICS");
-            }
+        if(metricsConfig.getServerId() == null || metricsConfig.getServerId().equalsIgnoreCase("donotchange_serveruuid")) {
+            metricsConfig.setServerId(UUID.randomUUID().toString());
+        }
 
-            UUID serverId = UUID.fromString(config.getProperty("server-uuid"));
-            if(config.getProperty("enable").equalsIgnoreCase("true")) {
-                log.info(TextFormat.DARK_AQUA + "Metrics enabled: " + TextFormat.GRAY + serverId.toString());
-                initMetrics(serverId);
-            }
+        if(metricsConfig.isEnabled()) {
+            UUID serverId = UUID.fromString(metricsConfig.getServerId());
 
-            input.close();
-        } catch (IOException ex) {
-            log.error("Failed to copy metrics config file: " + ex.getMessage());
+            log.info(TextFormat.DARK_AQUA + "Metrics enabled: " + TextFormat.GRAY + serverId.toString());
+            initMetrics(serverId);
+        } else {
+            log.info(TextFormat.GRAY + "Metrics disabled. Please consider enabling it in the config");
         }
     }
 
@@ -77,5 +70,37 @@ public class MetricsManager {
         }));
 
         metrics.addCustomChart(new Metrics.SimplePie("proxy_version", () -> proxy.getVersion()));
+    }
+
+    private void fixOldConfig(DragonConfiguration.MetricsConfiguration metricsConfig) {
+        try {
+            File oldConfig = new File("metrics.properties");
+            if(!oldConfig.exists()) {
+                return;
+            }
+
+            FileInputStream input = new FileInputStream(oldConfig);
+            Properties config = new Properties();
+            config.load(input);
+
+            if(config.getProperty("server-uuid").equalsIgnoreCase("placeholder")) {
+                if(oldConfig.delete()) {
+                    log.info(TextFormat.GRAY + "Deleted old metrics configuration file");
+                } else {
+                    log.info(TextFormat.GRAY + "Failed to delete old metrics configuration file");
+                }
+                return;
+            }
+
+            UUID serverId = UUID.fromString(config.getProperty("server-uuid"));
+
+            if(metricsConfig.getServerId() == null || metricsConfig.getServerId().equalsIgnoreCase("donotchange_serveruuid")) {
+                metricsConfig.setServerId(serverId.toString());
+            }
+            oldConfig.delete();
+            input.close();
+        } catch (IOException ex) {
+
+        }
     }
 }

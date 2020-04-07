@@ -20,7 +20,6 @@ package org.dragonet.proxy.network.translator.misc;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.nbt.NbtUtils;
@@ -33,7 +32,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
-import org.dragonet.proxy.util.PaletteManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -76,7 +74,7 @@ public class BlockTranslator {
             }
         }
 
-        stream = DragonProxy.class.getClassLoader().getResourceAsStream("block_mappings.json");
+        stream = DragonProxy.class.getClassLoader().getResourceAsStream("mappings/1.15/block_mappings.json");
         if(stream == null) {
             throw new AssertionError("Block mapping table not found");
         }
@@ -175,6 +173,7 @@ public class BlockTranslator {
         @JsonProperty("bedrock_identifier")
         private String bedrockIdentifier;
 
+        private double hardness;
         private List<BlockStateEntry> bedrockStates = new ArrayList<>();
 
         @JsonProperty("bedrock_states")

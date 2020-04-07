@@ -3,10 +3,14 @@
 #   https://github.com/DragonetMC/DragonProxy
 # -----------------------------------------------
 # DO NOT CHANGE THIS VARIABLE!!!!!!
-config-version: 1
+config-version: 2
 # DO NOT CHANGE THIS VARIABLE!!!!!!
 
-locale: 'EN'
+
+# Language used for messages sent from the remote server.
+# Currently accepted values:
+#  - en_us
+locale: 'en_us'
 
 # The IP and port the proxy will listen for connections on
 # '0.0.0.0' will bind to all IP addresses available on your device

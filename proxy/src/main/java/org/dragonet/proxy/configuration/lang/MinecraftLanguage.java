@@ -35,7 +35,7 @@ public class MinecraftLanguage {
 
     static {
         // TODO: support for more languages
-        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("en_us.json");
+        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("lang/en_us.json");
         if(stream == null) {
             throw new RuntimeException("Cannot find Minecraft language file: en_us.json");
         }
