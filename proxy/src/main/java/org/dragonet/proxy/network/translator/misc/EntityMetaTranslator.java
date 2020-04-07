@@ -19,9 +19,11 @@
 package org.dragonet.proxy.network.translator.misc;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.Pose;
 import com.github.steveice10.mc.protocol.data.message.Message;
 import com.nukkitx.protocol.bedrock.data.*;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
@@ -72,7 +74,7 @@ public class EntityMetaTranslator {
 //                    }
                     break;
                 case 1: // Air
-                    dictionary.put(EntityData.AIR, (int) meta.getValue());
+                    dictionary.put(EntityData.AIR, (short) (int) meta.getValue());
                     break;
                 case 2: // Custom name
                     if(meta.getValue() != null) {

@@ -18,6 +18,8 @@
  */
 package org.dragonet.proxy.network.translator.misc;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.message.Message;
@@ -26,18 +28,20 @@ import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.protocol.bedrock.data.ItemData;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.translator.misc.item.ItemEntry;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Log4j2
 public class ItemTranslator {
-    public static final Int2ObjectMap<ItemEntry> ITEM_ENTRIES = new Int2ObjectOpenHashMap<>();
-    public static final Int2ObjectMap<ItemEntry> bedrockToJavaMap = new Int2ObjectOpenHashMap<>();
+    private static final Int2ObjectMap<ItemEntry> javaToBedrockMap = new Int2ObjectOpenHashMap<>();
+    private static final Int2ObjectMap<ItemEntry> bedrockToJavaMap = new Int2ObjectOpenHashMap<>();
 
     private static final AtomicInteger javaIdAllocator = new AtomicInteger(0);
 
@@ -47,33 +51,26 @@ public class ItemTranslator {
             throw new AssertionError("Item mapping table not found");
         }
 
-        // TODO: This is currently using code devrived from Geyser, as i am not entirely sure how to
-        //       use jackson to auto fill the class properties while also including the json keys
-        //       .
-        //       I also need to somehow retrieve the java item id auto increment the `javaIdAllocator`, then
-        //       assign that to `ItemEntry.javaProtocolId`. fuck knows.
-        JsonNode items;
+        Map<String, ItemMappingEntry> itemEntries;
         try {
-            items = DragonProxy.JSON_MAPPER.readTree(stream);
-        } catch (Exception e) {
-            throw new AssertionError(e);
+            itemEntries = DragonProxy.JSON_MAPPER.readValue(stream, new TypeReference<Map<String, ItemMappingEntry>>(){});
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to parse item mappings", e);
         }
 
-        Iterator<Map.Entry<String, JsonNode>> iterator = items.fields();
-        while (iterator.hasNext()) {
-            int javaId = javaIdAllocator.getAndIncrement();
-            Map.Entry<String, JsonNode> entry = iterator.next();
+        itemEntries.forEach((javaIdentifier, itemMappingEntry) -> {
+            int javaProtocolId = javaIdAllocator.getAndIncrement(); // Entries are loaded sequentially in the mapping file
 
-            ITEM_ENTRIES.put(javaId, new ItemEntry(entry.getKey(), javaId, entry.getValue().get("bedrock_id").intValue(), entry.getValue().get("bedrock_data").intValue()));
-            bedrockToJavaMap.put(entry.getValue().get("bedrock_id").intValue(), new ItemEntry(entry.getKey(), javaId, entry.getValue().get("bedrock_id").intValue(), entry.getValue().get("bedrock_data").intValue()));
-        }
+            javaToBedrockMap.put(javaProtocolId, new ItemEntry(javaIdentifier, javaProtocolId, itemMappingEntry.getBedrockId(), itemMappingEntry.getBedrockData()));
+            bedrockToJavaMap.put(itemMappingEntry.getBedrockId(), new ItemEntry(javaIdentifier, javaProtocolId, itemMappingEntry.getBedrockId(), itemMappingEntry.getBedrockData()));
+        });
     }
 
     public static ItemData translateToBedrock(ItemStack item) {
-        if(item == null || !ITEM_ENTRIES.containsKey(item.getId())) {
+        if(item == null || !javaToBedrockMap.containsKey(item.getId())) {
             return ItemData.AIR;
         }
-        ItemEntry bedrockItem = ITEM_ENTRIES.get(item.getId());
+        ItemEntry bedrockItem = javaToBedrockMap.get(item.getId());
 
         if (item.getNbt() == null) {
             return ItemData.of(bedrockItem.getBedrockRuntimeId(), (short) bedrockItem.getBedrockData(), item.getAmount());
@@ -187,5 +184,14 @@ public class ItemTranslator {
         }
 
         return null;
+    }
+
+    @Getter
+    private static class ItemMappingEntry {
+        @JsonProperty("bedrock_id")
+        private int bedrockId;
+
+        @JsonProperty("bedrock_data")
+        private int bedrockData;
     }
 }

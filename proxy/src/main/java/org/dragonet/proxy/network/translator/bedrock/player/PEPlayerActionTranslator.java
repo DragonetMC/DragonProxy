@@ -27,6 +27,8 @@ import com.github.steveice10.mc.protocol.data.game.world.block.BlockFace;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerActionPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPlaceBlockPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerStatePacket;
+import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.LevelEventType;
 import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayerActionPacket;
@@ -73,7 +75,7 @@ public class PEPlayerActionTranslator extends PacketTranslator<PlayerActionPacke
                 break;
             case START_GLIDE:
             case STOP_GLIDE:
-                session.sendRemotePacket(new ClientPlayerStatePacket(cachedEntity.getRemoteEid(), PlayerState.START_ELYTRA_FLYING));
+                //session.sendRemotePacket(new ClientPlayerStatePacket(cachedEntity.getRemoteEid(), PlayerState.START_ELYTRA_FLYING));
                 break;
             case START_BREAK:
                 session.sendRemotePacket(new ClientPlayerActionPacket(PlayerAction.START_DIGGING, new Position(packet.getBlockPosition().getX(),
@@ -84,14 +86,11 @@ public class PEPlayerActionTranslator extends PacketTranslator<PlayerActionPacke
                     packet.getBlockPosition().getY(), packet.getBlockPosition().getZ()), BlockFace.DOWN));
                 break;
             case STOP_BREAK:
-                LevelEventPacket levelEventPacket = new LevelEventPacket();
-                levelEventPacket.setType(LevelEventType.BLOCK_STOP_BREAK);
-                levelEventPacket.setPosition(packet.getBlockPosition().toFloat());
-                levelEventPacket.setData(0);
-                session.sendPacket(levelEventPacket);
+                session.sendPacket(createLevelEvent(packet.getBlockPosition(), LevelEventType.BLOCK_STOP_BREAK, 0));
                 break;
             case CONTINUE_BREAK:
-
+                int runtimeId = session.getChunkCache().getBlockAt(packet.getBlockPosition());
+                session.sendPacket(createLevelEvent(packet.getBlockPosition(), LevelEventType.PUNCH_BLOCK, runtimeId | (packet.getFace() << 24)));
                 break;
             case BLOCK_INTERACT:
                 session.setLastClickedPosition(packet.getBlockPosition());
@@ -118,5 +117,13 @@ public class PEPlayerActionTranslator extends PacketTranslator<PlayerActionPacke
                 log.info(TextFormat.GRAY + "(debug) Unhandled player action: " + packet.getAction().name());
                 break;
         }
+    }
+
+    private LevelEventPacket createLevelEvent(Vector3i position, LevelEventType event, int data) {
+        LevelEventPacket packet = new LevelEventPacket();
+        packet.setType(event);
+        packet.setData(data);
+        packet.setPosition(position.toFloat());
+        return packet;
     }
 }

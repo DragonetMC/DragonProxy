@@ -218,6 +218,7 @@ public class CachedEntity {
         flags.setFlag(EntityFlag.HAS_COLLISION, true);
         flags.setFlag(EntityFlag.CAN_SHOW_NAME, true);
         flags.setFlag(EntityFlag.CAN_CLIMB, true);
+        flags.setFlag(EntityFlag.CAN_WALK, true);
         flags.setFlag(EntityFlag.BREATHING, true);
 
         scale = 1f;

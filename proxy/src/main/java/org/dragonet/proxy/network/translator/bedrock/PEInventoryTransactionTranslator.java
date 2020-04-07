@@ -74,6 +74,7 @@ public class PEInventoryTransactionTranslator extends PacketTranslator<Inventory
             case ITEM_USE:
                 switch(packet.getActionType()) {
                     case 1: // Interact block
+                    case 3: // Interact air
                         session.sendRemotePacket(new ClientPlayerUseItemPacket(Hand.MAIN_HAND));
                         break;
                     case 2: // Break block

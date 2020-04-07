@@ -21,6 +21,7 @@ package org.dragonet.proxy.network.translator.misc;
 import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.nbt.tag.CompoundTag;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.util.TextFormat;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,13 +57,14 @@ public class BlockEntityTranslator {
         blockEntityMap.put("minecraft:noteblock", "Noteblock");
         blockEntityMap.put("minecraft:enchanting_table", "EnchantTable");
         blockEntityMap.put("minecraft:brewing_stand", "BrewingStand");
-        //blockEntityMap.put("minecraft:falling_block", "FallingSand");
 
         // Not sure about these ones
         blockEntityMap.put("minecraft:beehive", "Beehive");
         blockEntityMap.put("minecraft:bell", "Bell");
         blockEntityMap.put("minecraft:smoker", "Smoker");
         blockEntityMap.put("minecraft:blast_furnace", "BlastFurnace");
+        blockEntityMap.put("minecraft:barrel", "Barrel");
+        blockEntityMap.put("minecraft:campfire", "Campfire");
     }
 
     public static CompoundTag translateToBedrock(com.github.steveice10.opennbt.tag.builtin.CompoundTag javaTag) {
@@ -77,7 +79,7 @@ public class BlockEntityTranslator {
         String bedrockId = getBedrockIdentifier(javaId);
 
         if(bedrockId == null) {
-            log.warn("Unhandled block entity: " + javaId);
+            log.info(TextFormat.GRAY + "(debug) Unhandled block entity: " + javaId);
             bedrockId = javaId; // Fall back
         }
 

@@ -18,6 +18,8 @@
  */
 package org.dragonet.proxy.network.translator.misc;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.nukkitx.nbt.CompoundTagBuilder;
@@ -27,9 +29,13 @@ import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.nbt.tag.ListTag;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.util.PaletteManager;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -75,12 +81,13 @@ public class BlockTranslator {
             throw new AssertionError("Block mapping table not found");
         }
 
-        JsonNode blocks;
+        Map<String, BlockMappingEntry> blockEntries;
         try {
-            blocks = DragonProxy.JSON_MAPPER.readTree(stream);
-        } catch (Exception e) {
-            throw new AssertionError("Unable to load Java block mappings", e);
+             blockEntries = DragonProxy.JSON_MAPPER.readValue(stream, new TypeReference<Map<String, BlockMappingEntry>>(){});
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+
         Object2IntMap<CompoundTag> addedStatesMap = new Object2IntOpenHashMap<>();
         addedStatesMap.defaultReturnValue(-1);
         List<CompoundTag> paletteList = new ArrayList<>();
@@ -88,73 +95,62 @@ public class BlockTranslator {
         // I broke my old code, so here's some code borrowed from Geyser until i get the time
         // to change it, sorry guys
         // https://github.com/GeyserMC/Geyser
-        Iterator<Map.Entry<String, JsonNode>> blocksIterator = blocks.fields();
-        while (blocksIterator.hasNext()) {
+        blockEntries.forEach((javaIdentifier, blockMappingEntry) -> {
             int javaProtocolId = javaIdAllocator.getAndIncrement();
             int bedrockRuntimeId = bedrockIdAllocator.get();
 
-            Map.Entry<String, JsonNode> entry = blocksIterator.next();
-            CompoundTag blockTag = buildBedrockState(entry.getValue());
+            String bedrockIdentifier = blockMappingEntry.getBedrockIdentifier();
+            CompoundTag blockTag = buildBedrockState(bedrockIdentifier, blockMappingEntry.getBedrockStates());
 
             bedrock2JavaMap.putIfAbsent(bedrockRuntimeId, new BlockState(javaProtocolId));
-            //BEDROCK_TEMP.putIfAbsent(entry.getValue().get("bedrock_identifier").textValue(), bedrockRuntimeId);
 
             CompoundTag runtimeTag = blockStateMap.remove(blockTag);
-            if (runtimeTag != null) {
+            if(runtimeTag != null) {
                 addedStatesMap.put(blockTag, bedrockRuntimeId);
                 paletteList.add(runtimeTag);
             } else {
                 int duplicateRuntimeId = addedStatesMap.get(blockTag);
                 if (duplicateRuntimeId == -1) {
-                    log.warn("Mapping " + entry.getKey() + " was not found for bedrock edition!");
+                    log.warn("Mapping " + javaIdentifier + " was not found for bedrock edition!");
                 } else {
                     java2BedrockMap.put(javaProtocolId, duplicateRuntimeId);
                 }
-                continue;
+                return; // continue
             }
-            bedrockId2RuntimeMap.put(entry.getValue().get("bedrock_identifier").textValue(), bedrockRuntimeId);
-            bedrockRuntime2IdMap.put(bedrockRuntimeId, entry.getValue().get("bedrock_identifier").textValue());
+
+            bedrockId2RuntimeMap.put(bedrockIdentifier, bedrockRuntimeId);
+            bedrockRuntime2IdMap.put(bedrockRuntimeId, bedrockIdentifier);
             java2BedrockMap.put(javaProtocolId, bedrockRuntimeId);
 
             bedrockIdAllocator.incrementAndGet();
-        }
+        });
 
         paletteList.addAll(blockStateMap.values()); // Add any missing mappings that could crash the client
-
-        //log.warn(paletteList);
 
         BLOCK_PALETTE = new ListTag<>("", CompoundTag.class, paletteList);
     }
 
-    public BlockTranslator() {
-    }
+    public static CompoundTag buildBedrockState(String identifier, List<BlockStateEntry> states) {
+        CompoundTagBuilder root = CompoundTagBuilder.builder();
+        root.stringTag("name", identifier);
+        root.intTag("version", BLOCK_STATE_VERSION);
 
-    private static CompoundTag buildBedrockState(JsonNode node) {
-        CompoundTagBuilder tagBuilder = CompoundTag.builder();
-        tagBuilder.stringTag("name", node.get("bedrock_identifier").textValue())
-            .intTag("version", BlockTranslator.BLOCK_STATE_VERSION);
+        CompoundTagBuilder statesTag = CompoundTagBuilder.builder();
 
-        CompoundTagBuilder statesBuilder = CompoundTag.builder();
-
-        if (node.has("bedrock_states")) {
-            Iterator<Map.Entry<String, JsonNode>> statesIterator = node.get("bedrock_states").fields();
-
-            while (statesIterator.hasNext()) {
-                Map.Entry<String, JsonNode> stateEntry = statesIterator.next();
-                JsonNode stateValue = stateEntry.getValue();
-                switch (stateValue.getNodeType()) {
-                    case BOOLEAN:
-                        statesBuilder.booleanTag(stateEntry.getKey(), stateValue.booleanValue());
-                        continue;
-                    case STRING:
-                        statesBuilder.stringTag(stateEntry.getKey(), stateValue.textValue());
-                        continue;
-                    case NUMBER:
-                        statesBuilder.intTag(stateEntry.getKey(), stateValue.intValue());
+        if(!states.isEmpty()) {
+            for(BlockStateEntry state : states) {
+                if(state.getValue() instanceof Boolean) {
+                    statesTag.booleanTag(state.getName(), (boolean) state.getValue());
+                }
+                else if(state.getValue() instanceof Integer) {
+                    statesTag.intTag(state.getName(), (int) state.getValue());
+                }
+                else if(state.getValue() instanceof String) {
+                    statesTag.stringTag(state.getName(), state.getValue().toString());
                 }
             }
         }
-        return tagBuilder.tag(statesBuilder.build("states")).build("block");
+        return root.tag(statesTag.build("states")).build("block");
     }
 
     public static int translateToBedrock(BlockState state) {
@@ -174,68 +170,23 @@ public class BlockTranslator {
         return bedrockRuntime2IdMap.get(runtimeId);
     }
 
+    @Getter
+    private static class BlockMappingEntry {
+        @JsonProperty("bedrock_identifier")
+        private String bedrockIdentifier;
 
-//    {
-//        stream = DragonProxy.class.getClassLoader().getResourceAsStream("block_mappings.json");
-//        if (stream == null) {
-//            throw new AssertionError("Block mapping table not found");
-//        }
-//
-//        ObjectMapper mapper = new ObjectMapper();
-//        CollectionType type = mapper.getTypeFactory().constructCollectionType(ArrayList.class, ItemEntry.ItemMap.class);
-//
-//        ArrayList<ItemEntry.ItemMap> entries = new ArrayList<>();
-//        try {
-//            entries = mapper.readValue(stream,  type);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        for(ItemEntry.ItemMap entry : entries) {
-//            JAVA_BLOCKS.put(entry.getJavaIdentifier(), new ItemEntry.JavaItem(entry.getJavaIdentifier(), entry.getJavaProtocolId()));
-//            BEDROCK_BLOCKS.put(entry.getBedrockIdentifier(), new ItemEntry.BedrockItem(entry.getBedrockIdentifier(), entry.getBedrockRuntimeId(), entry.getBedrockData()));
-//
-//            JAVA_TO_BEDROCK_MAP.computeIfAbsent(entry.getJavaIdentifier(), (x) -> new HashMap<>());
-//            BEDROCK_TO_JAVA_MAP.computeIfAbsent(entry.getBedrockIdentifier(), (x) -> new HashMap<>());
-//
-//            // Better solution for these maps
-//            Map<String, Object> map = JAVA_TO_BEDROCK_MAP.get(entry.getJavaIdentifier());
-//
-//            map.put("name", entry.getBedrockIdentifier());
-//            map.put("id", entry.getBedrockRuntimeId());
-//            map.put("data", entry.getBedrockData());
-//
-//            BEDROCK_TO_JAVA_MAP.get(entry.getBedrockIdentifier()).put(0, entry.getJavaIdentifier());
-//        }
-//    }
-//
-//    public static ItemData translateToBedrock(ItemStack item) {
-//        for(Map.Entry<String, ItemEntry.JavaItem> javaItems : JAVA_BLOCKS.entrySet()) {
-//            if(javaItems.getValue().getRuntimeId() != item.getId()){
-//                continue;
-//            }
-//            ItemEntry.JavaItem javaItem = javaItems.getValue();
-//            String identifier = getBedrockIdentifier(javaItem.getIdentifier());
-//
-//            if(!BEDROCK_BLOCKS.containsKey(identifier)) {
-//                continue;
-//            }
-//            ItemEntry.BedrockItem bedrockItem = BEDROCK_BLOCKS.get(identifier);
-//
-//            return ItemData.of(bedrockItem.getRuntimeId(), (short) getBedrockData(javaItem.getIdentifier()), item.getAmount());
-//        }
-//
-//        return ItemData.of(BEDROCK_BLOCKS.get("minecraft:bedrock").getRuntimeId(), (short) 0, item.getAmount());
-//    }
-//
-//    private static String getBedrockIdentifier(String javaIdentifier) {
-//        if (!JAVA_TO_BEDROCK_MAP.containsKey(javaIdentifier)) {
-//            return javaIdentifier;
-//        }
-//        return (String) JAVA_TO_BEDROCK_MAP.get(javaIdentifier).get("name");
-//    }
-//
-//    private static int getBedrockData(String javaIdentifier) {
-//        return (int) JAVA_TO_BEDROCK_MAP.get(javaIdentifier).get("data");
-//    }
+        private List<BlockStateEntry> bedrockStates = new ArrayList<>();
+
+        @JsonProperty("bedrock_states")
+        private void loadBedrockStates(Map<String, Object> map) {
+            map.forEach((key, value) -> bedrockStates.add(new BlockStateEntry(key, value)));
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    private static class BlockStateEntry {
+        private String name;
+        private Object value;
+    }
 }
