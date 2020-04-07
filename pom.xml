@@ -7,7 +7,7 @@
     <groupId>org.dragonet.proxy</groupId>
     <artifactId>dragonproxy-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.4-SNAPSHOT</version>
+    <version>0.4-SNAPSHOT-20w14a</version>
     <modules>
         <module>bootstrap</module>
         <module>proxy</module>

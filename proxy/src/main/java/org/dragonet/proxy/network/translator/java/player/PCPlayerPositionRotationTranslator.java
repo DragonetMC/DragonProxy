@@ -22,6 +22,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientTelepo
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
+import com.nukkitx.protocol.bedrock.packet.RespawnPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
@@ -38,13 +39,26 @@ public class PCPlayerPositionRotationTranslator extends PacketTranslator<ServerP
     public void translate(ProxySession session, ServerPlayerPositionRotationPacket packet) {
         CachedEntity cachedEntity = session.getCachedEntity();
 
+        // This packet closes the "Downloading Terrain" screen on Java Edition
         if (!cachedEntity.isSpawned()) {
+            cachedEntity.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
+            cachedEntity.setRotation(Vector3f.from(packet.getPitch(), packet.getYaw(), 0));
+
+            // Tell the client we are ready to spawn
+            RespawnPacket respawnPacket = new RespawnPacket();
+            respawnPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
+            respawnPacket.setPosition(cachedEntity.getOffsetPosition());
+            respawnPacket.setState(RespawnPacket.State.SERVER_READY);
+            session.sendPacket(respawnPacket);
+
+            // Send entity metadata
             cachedEntity.sendMetadata(session);
 
+            // Reset our position
             MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
             movePlayerPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
-            movePlayerPacket.setPosition(Vector3f.from(packet.getX(), packet.getY() + BedrockEntityType.PLAYER.getOffset() + 0.1f, packet.getZ()));
-            movePlayerPacket.setRotation(Vector3f.from(packet.getPitch(), packet.getYaw(), 0));
+            movePlayerPacket.setPosition(cachedEntity.getOffsetPosition());
+            movePlayerPacket.setRotation(cachedEntity.getRotation());
             movePlayerPacket.setMode(MovePlayerPacket.Mode.RESET);
             movePlayerPacket.setOnGround(true);
 

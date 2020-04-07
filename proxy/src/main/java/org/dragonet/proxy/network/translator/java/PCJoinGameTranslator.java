@@ -77,22 +77,9 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
             session.sendCreativeInventory();
         }
 
-            Vector3f pos = Vector3f.from(-23, 70, 0);
-            int chunkX = pos.getFloorX() >> 4;
-            int chunkZ = pos.getFloorX() >> 4;
-
-            for (int x = -3; x < 3; x++) {
-                for (int z = -3; z < 3; z++) {
-                    LevelChunkPacket data = new LevelChunkPacket();
-                    data.setChunkX(chunkX + x);
-                    data.setChunkZ(chunkZ + z);
-                    data.setSubChunksLength(0);
-                    data.setData(EMPTY_LEVEL_CHUNK_DATA);
-                    data.setCachingEnabled(false);
-                    session.sendPacket(data);
-                }
-            }
-        //}
+        if(packet.getDimension() != 0) {
+            session.switchDimension(packet.getDimension());
+        }
 
         PlayStatusPacket playStatus = new PlayStatusPacket();
         playStatus.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
