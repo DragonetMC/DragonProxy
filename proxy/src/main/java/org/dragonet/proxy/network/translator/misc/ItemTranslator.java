@@ -20,7 +20,6 @@ package org.dragonet.proxy.network.translator.misc;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.message.Message;
 import com.github.steveice10.opennbt.tag.builtin.*;
@@ -46,7 +45,7 @@ public class ItemTranslator {
     private static final AtomicInteger javaIdAllocator = new AtomicInteger(0);
 
     static {
-        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("item_mappings.json");
+        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("mappings/1.15/item_mappings.json");
         if (stream == null) {
             throw new AssertionError("Item mapping table not found");
         }
