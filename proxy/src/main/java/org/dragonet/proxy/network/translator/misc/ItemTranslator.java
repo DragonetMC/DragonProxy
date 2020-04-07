@@ -45,7 +45,7 @@ public class ItemTranslator {
     private static final AtomicInteger javaIdAllocator = new AtomicInteger(0);
 
     static {
-        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("mappings/1.15/item_mappings.json");
+        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("mappings/20w14a/item_mappings.json");
         if (stream == null) {
             throw new AssertionError("Item mapping table not found");
         }

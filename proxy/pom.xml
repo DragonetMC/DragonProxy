@@ -62,7 +62,7 @@
         <dependency>
             <groupId>com.github.steveice10</groupId>
             <artifactId>mcprotocollib</artifactId>
-            <version>1.15.2-1-SNAPSHOT</version>
+            <version>20w14a-1-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.github.steveice10</groupId>

@@ -51,6 +51,7 @@ public class BlockTranslator {
     private static final int BLOCK_STATE_VERSION = 17760256;
     private static HashMap<String, Integer> bedrockId2RuntimeMap = new HashMap<>();
     private static HashMap<Integer, String> bedrockRuntime2IdMap = new HashMap<>();
+    private static HashMap<Integer, String> javaRuntime2IdMap = new HashMap<>();
 
     static {
         InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("data/runtime_block_states.dat");
@@ -74,7 +75,7 @@ public class BlockTranslator {
             }
         }
 
-        stream = DragonProxy.class.getClassLoader().getResourceAsStream("mappings/1.15/block_mappings.json");
+        stream = DragonProxy.class.getClassLoader().getResourceAsStream("mappings/20w14a/block_mappings.json");
         if(stream == null) {
             throw new AssertionError("Block mapping table not found");
         }
@@ -103,21 +104,22 @@ public class BlockTranslator {
             bedrock2JavaMap.putIfAbsent(bedrockRuntimeId, new BlockState(javaProtocolId));
 
             CompoundTag runtimeTag = blockStateMap.remove(blockTag);
+
             if(runtimeTag != null) {
                 addedStatesMap.put(blockTag, bedrockRuntimeId);
                 paletteList.add(runtimeTag);
             } else {
-                int duplicateRuntimeId = addedStatesMap.get(blockTag);
-                if (duplicateRuntimeId == -1) {
+                if (!addedStatesMap.containsKey(blockTag)) {
                     log.warn("Mapping " + javaIdentifier + " was not found for bedrock edition!");
                 } else {
-                    java2BedrockMap.put(javaProtocolId, duplicateRuntimeId);
+                    java2BedrockMap.put(javaProtocolId, addedStatesMap.get(blockTag));
                 }
                 return; // continue
             }
 
             bedrockId2RuntimeMap.put(bedrockIdentifier, bedrockRuntimeId);
             bedrockRuntime2IdMap.put(bedrockRuntimeId, bedrockIdentifier);
+            javaRuntime2IdMap.put(javaProtocolId, javaIdentifier);
             java2BedrockMap.put(javaProtocolId, bedrockRuntimeId);
 
             bedrockIdAllocator.incrementAndGet();
@@ -152,11 +154,19 @@ public class BlockTranslator {
     }
 
     public static int translateToBedrock(BlockState state) {
+        if(!java2BedrockMap.containsKey(state.getId())) {
+            //log.info("Tried to translate unmapped bedrock block: " + state.getId());
+            return 0; // Air
+        }
         //return ItemData.of(bedrockItem.getRuntimeId(), (short) getBedrockData(javaItem.getIdentifier()), item.getAmount());
         return java2BedrockMap.get(state.getId());
     }
 
     public static BlockState translateToJava(int bedrockId) {
+        if(!bedrock2JavaMap.containsKey(bedrockId)) {
+            //log.info("Tried to translate unmapped java block: " + bedrockRuntimeToId(bedrockId));
+            return new BlockState(0);
+        }
         return bedrock2JavaMap.get(bedrockId);
     }
 
@@ -166,6 +176,10 @@ public class BlockTranslator {
 
     public static String bedrockRuntimeToId(int runtimeId) {
         return bedrockRuntime2IdMap.get(runtimeId);
+    }
+
+    public static String javaRuntimeToId(int runtimeId) {
+        return javaRuntime2IdMap.get(runtimeId);
     }
 
     @Getter
