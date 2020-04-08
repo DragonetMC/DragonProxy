@@ -20,6 +20,8 @@ package org.dragonet.proxy.network.translator.java.world;
 
 import com.github.steveice10.mc.protocol.data.game.chunk.Column;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
+import com.nukkitx.math.GenericMath;
+import com.nukkitx.math.TrigMath;
 import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector2i;
 import com.nukkitx.nbt.NbtUtils;

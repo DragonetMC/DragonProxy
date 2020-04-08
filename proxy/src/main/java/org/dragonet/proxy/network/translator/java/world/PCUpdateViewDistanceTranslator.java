@@ -23,17 +23,20 @@ import com.nukkitx.math.GenericMath;
 import com.nukkitx.math.TrigMath;
 import com.nukkitx.protocol.bedrock.packet.ChunkRadiusUpdatedPacket;
 import com.nukkitx.protocol.bedrock.packet.NetworkChunkPublisherUpdatePacket;
+import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.util.TextFormat;
 
+@Log4j2
 @PCPacketTranslator(packetClass = ServerUpdateViewDistancePacket.class)
 public class PCUpdateViewDistanceTranslator extends PacketTranslator<ServerUpdateViewDistancePacket> {
 
     @Override
     public void translate(ProxySession session, ServerUpdateViewDistancePacket packet) {
-        session.setRenderDistance(GenericMath.ceil(Math.min(packet.getViewDistance(), 30) * TrigMath.SQRT_OF_TWO));
-
+        session.setRenderDistance(Math.max(2, Math.min(packet.getViewDistance(), 30)));
+        
         ChunkRadiusUpdatedPacket chunkRadiusUpdatedPacket = new ChunkRadiusUpdatedPacket();
         chunkRadiusUpdatedPacket.setRadius(session.getRenderDistance());
         session.sendPacket(chunkRadiusUpdatedPacket);

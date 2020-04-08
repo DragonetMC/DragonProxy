@@ -101,7 +101,7 @@ public class ProxySession implements PlayerSession {
     private AuthData authData;
     private ClientData clientData;
 
-    private int renderDistance = 4;
+    private int renderDistance = 8;
 
     private Vector3i lastClickedPosition = null;
     private CachedEntity lastClickedEntity = null;
@@ -307,6 +307,11 @@ public class ProxySession implements PlayerSession {
         bedrockSession.sendPacket(playerListPacket);
 
         cachedEntity.sendMetadata(this);
+
+        // Set the render distance
+        ChunkRadiusUpdatedPacket chunkRadiusUpdatedPacket = new ChunkRadiusUpdatedPacket();
+        chunkRadiusUpdatedPacket.setRadius(renderDistance);
+        sendPacket(chunkRadiusUpdatedPacket);
 
         log.warn("SPAWN PLAYER");
 
