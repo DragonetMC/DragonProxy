@@ -59,12 +59,21 @@ public class DragonConfiguration {
     @JsonProperty("ping-passthrough")
     private boolean pingPassthrough;
 
-    @JsonProperty("fetch-player-skins")
-    private boolean fetchPlayerSkins;
-
-    @JsonProperty("enable-commands")
-    private boolean commandsEnabled;
+    @JsonProperty("player-settings")
+    private PlayerConfig playerConfig;
 
     @JsonProperty("thread-pool-size")
     private int threadPoolSize;
+
+    @Getter
+    public static class PlayerConfig {
+        @JsonProperty("enable-commands")
+        private boolean commandsEnabled;
+
+        @JsonProperty("auto-jump")
+        private boolean autoJump;
+
+        @JsonProperty("fetch-skins")
+        private boolean fetchSkin;
+    }
 }

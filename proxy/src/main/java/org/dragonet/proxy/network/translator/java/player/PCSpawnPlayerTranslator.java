@@ -45,7 +45,7 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
         cachedPlayer.setRotation(Vector3f.from(packet.getYaw(), packet.getPitch(), 0));
         cachedPlayer.spawn(session);
 
-        if(session.getProxy().getConfiguration().isFetchPlayerSkins()) {
+        if(session.getProxy().getConfiguration().getPlayerConfig().isFetchSkin()) {
             session.getProxy().getGeneralThreadPool().execute(() -> {
                 GameProfile profile = playerListEntry.getProfile();
 

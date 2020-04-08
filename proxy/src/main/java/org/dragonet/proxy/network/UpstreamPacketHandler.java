@@ -148,6 +148,8 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
         switch (packet.getStatus()) {
             case COMPLETED:
                 session.handleJoin();
+
+                log.info("{} connected", session.getAuthData().getDisplayName());
                 break;
             case HAVE_ALL_PACKS:
                 ResourcePackStackPacket stack = new ResourcePackStackPacket();
@@ -162,7 +164,6 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
                 return false;
         }
 
-        log.info("{} connected", session.getAuthData().getDisplayName());
         return true;
     }
 

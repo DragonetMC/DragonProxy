@@ -21,7 +21,9 @@ package org.dragonet.proxy.network.translator.java.entity;
 import com.github.steveice10.mc.protocol.data.game.entity.EntityStatus;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityStatusPacket;
 import com.nukkitx.protocol.bedrock.data.EntityEventType;
+import com.nukkitx.protocol.bedrock.data.LevelEventType;
 import com.nukkitx.protocol.bedrock.packet.EntityEventPacket;
+import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
@@ -35,21 +37,21 @@ import java.util.Map;
 @Log4j2
 @PCPacketTranslator(packetClass = ServerEntityStatusPacket.class)
 public class PCEntityStatusTranslator extends PacketTranslator<ServerEntityStatusPacket> {
-    private static Map<EntityStatus, EntityEventType> eventMap = new HashMap<>();
+    private static Map<EntityStatus, EntityEventType> entityEventMap = new HashMap<>();
 
     static {
-        eventMap.put(EntityStatus.LIVING_HURT, EntityEventType.HURT_ANIMATION);
-        eventMap.put(EntityStatus.LIVING_HURT_SWEET_BERRY_BUSH, EntityEventType.HURT_ANIMATION);
-        eventMap.put(EntityStatus.LIVING_HURT_THORNS, EntityEventType.HURT_ANIMATION);
-        eventMap.put(EntityStatus.LIVING_DEATH, EntityEventType.DEATH_ANIMATION);
-        eventMap.put(EntityStatus.FIREWORK_EXPLODE, EntityEventType.FIREWORK_PARTICLES);
-        eventMap.put(EntityStatus.WITCH_EMIT_PARTICLES, EntityEventType.WITCH_SPELL_PARTICLES);
-        eventMap.put(EntityStatus.WOLF_SHAKE_WATER, EntityEventType.SHAKE_WET);
-        eventMap.put(EntityStatus.TAMEABLE_TAMING_SUCCEEDED, EntityEventType.TAME_SUCCESS);
-        eventMap.put(EntityStatus.TAMEABLE_TAMING_FAILED, EntityEventType.TAME_FAIL);
-        eventMap.put(EntityStatus.OCELOT_TAMING_SUCCEEDED, EntityEventType.TAME_SUCCESS);
-        eventMap.put(EntityStatus.OCELOT_TAMING_FAILED, EntityEventType.TAME_FAIL);
-        eventMap.put(EntityStatus.VILLAGER_ANGRY, EntityEventType.VILLAGER_HURT); // TODO: check
+        entityEventMap.put(EntityStatus.LIVING_HURT, EntityEventType.HURT_ANIMATION);
+        entityEventMap.put(EntityStatus.LIVING_HURT_SWEET_BERRY_BUSH, EntityEventType.HURT_ANIMATION);
+        entityEventMap.put(EntityStatus.LIVING_HURT_THORNS, EntityEventType.HURT_ANIMATION);
+        entityEventMap.put(EntityStatus.LIVING_DEATH, EntityEventType.DEATH_ANIMATION);
+        entityEventMap.put(EntityStatus.FIREWORK_EXPLODE, EntityEventType.FIREWORK_PARTICLES);
+        entityEventMap.put(EntityStatus.WITCH_EMIT_PARTICLES, EntityEventType.WITCH_SPELL_PARTICLES);
+        entityEventMap.put(EntityStatus.WOLF_SHAKE_WATER, EntityEventType.SHAKE_WET);
+        entityEventMap.put(EntityStatus.TAMEABLE_TAMING_SUCCEEDED, EntityEventType.TAME_SUCCESS);
+        entityEventMap.put(EntityStatus.TAMEABLE_TAMING_FAILED, EntityEventType.TAME_FAIL);
+        entityEventMap.put(EntityStatus.OCELOT_TAMING_SUCCEEDED, EntityEventType.TAME_SUCCESS);
+        entityEventMap.put(EntityStatus.OCELOT_TAMING_FAILED, EntityEventType.TAME_FAIL);
+        entityEventMap.put(EntityStatus.VILLAGER_ANGRY, EntityEventType.VILLAGER_HURT); // TODO: check
     }
 
     @Override
@@ -62,15 +64,16 @@ public class PCEntityStatusTranslator extends PacketTranslator<ServerEntityStatu
 
         switch(packet.getStatus()) {
             case LIVING_BURN:
+            case SHEEP_GRAZE_OR_TNT_CART_EXPLODE:
+            case SQUID_RESET_ROTATION: // TODO
+            case LIVING_TELEPORT: // TODO
                 return;
-            case SQUID_RESET_ROTATION:
-                return; // TODO
         }
 
         EntityEventPacket entityEventPacket = new EntityEventPacket();
         entityEventPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
 
-        EntityEventType bedrockEvent = eventMap.get(packet.getStatus());
+        EntityEventType bedrockEvent = entityEventMap.get(packet.getStatus());
         if(bedrockEvent == null) {
             log.info(TextFormat.GRAY + "(debug) Unhandled entity status: " + packet.getStatus().name());
             return;

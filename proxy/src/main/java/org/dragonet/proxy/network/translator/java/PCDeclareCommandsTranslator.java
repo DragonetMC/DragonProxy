@@ -79,7 +79,7 @@ public class PCDeclareCommandsTranslator extends PacketTranslator<ServerDeclareC
 
     @Override
     public void translate(ProxySession session, ServerDeclareCommandsPacket packet) {
-        if(!session.getProxy().getConfiguration().isCommandsEnabled()) {
+        if(!session.getProxy().getConfiguration().getPlayerConfig().isCommandsEnabled()) {
             log.debug("Declare commands packet received, but command translation is not enabled in the config.");
             return;
         }

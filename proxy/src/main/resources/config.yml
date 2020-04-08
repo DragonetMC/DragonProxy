@@ -3,7 +3,7 @@
 #   https://github.com/DragonetMC/DragonProxy
 # -----------------------------------------------
 # DO NOT CHANGE THIS VARIABLE!!!!!!
-config-version: 1
+config-version: 2
 # DO NOT CHANGE THIS VARIABLE!!!!!!
 
 locale: 'EN'
@@ -36,12 +36,17 @@ xbox-auth: false
 # Whether or not to use the motd and player count of the primary remote server
 ping-passthrough: true
 
-# Whether or not to fetch skins from Mojang's servers
-fetch-player-skins: true
+# Player gameplay related settings
+player-settings:
+  # Whether or not to translate commands sent from the remote server and display
+  # them on the Bedrock client. This is currently experimental.
+  enable-commands: false
 
-# Whether or not to translate commands sent from the remote server and display
-# them on the Bedrock client. This is currently experimental.
-enable-commands: false
+  # Whether or not to enable auto jump
+  auto-jump: true
+
+  # Whether or not to fetch skins from Mojang's servers
+  fetch-skins: true
 
 metrics:
   enabled: true

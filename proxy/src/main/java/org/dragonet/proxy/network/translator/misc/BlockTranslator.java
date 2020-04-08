@@ -40,17 +40,32 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Log4j2
 public class BlockTranslator {
+    // The block pallete for the StartGamePacket
     public static final ListTag<CompoundTag> BLOCK_PALETTE;
 
+    // Constants
+    private static final int BLOCK_STATE_VERSION = 17760256;
+    // TODO: i don't like hardcoding these ids, but its fine for now
+    public static final int BEDROCK_WATER_ID = 32;
+    public static final int BEDROCK_COMMAND_BLOCK_ID = 1049;
+
+    // Java to bedrock map
     private static final Map<Integer, Integer> java2BedrockMap = new HashMap<>();
+    // Bedrock to java map
     private static final Map<Integer, BlockState> bedrock2JavaMap = new HashMap<>();
 
+    // Waterlogged blocks
+    private static final Set<Integer> waterlogged = new HashSet<>();
+
+    // Unique ID allocators
     private static final AtomicInteger bedrockIdAllocator = new AtomicInteger();
     private static final AtomicInteger javaIdAllocator = new AtomicInteger();
 
-    private static final int BLOCK_STATE_VERSION = 17760256;
     private static HashMap<String, Integer> bedrockId2RuntimeMap = new HashMap<>();
     private static HashMap<Integer, String> bedrockRuntime2IdMap = new HashMap<>();
+
+    @Getter
+    private static int waterRuntimeId;
 
     static {
         InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("data/runtime_block_states.dat");
@@ -99,6 +114,10 @@ public class BlockTranslator {
 
             String bedrockIdentifier = blockMappingEntry.getBedrockIdentifier();
             CompoundTag blockTag = buildBedrockState(bedrockIdentifier, blockMappingEntry.getBedrockStates());
+
+            if(blockMappingEntry.isWaterlogged()) {
+                waterlogged.add(javaProtocolId);
+            }
 
             bedrock2JavaMap.putIfAbsent(bedrockRuntimeId, new BlockState(javaProtocolId));
 
@@ -168,12 +187,17 @@ public class BlockTranslator {
         return bedrockRuntime2IdMap.get(runtimeId);
     }
 
+    public static boolean isWaterlogged(BlockState state) {
+        return waterlogged.contains(state.getId());
+    }
+
     @Getter
     private static class BlockMappingEntry {
         @JsonProperty("bedrock_identifier")
         private String bedrockIdentifier;
 
         private double hardness;
+        private boolean waterlogged;
         private List<BlockStateEntry> bedrockStates = new ArrayList<>();
 
         @JsonProperty("bedrock_states")

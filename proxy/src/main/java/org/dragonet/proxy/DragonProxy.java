@@ -39,6 +39,7 @@ import org.dragonet.proxy.network.translator.misc.BlockTranslator;
 import org.dragonet.proxy.network.translator.misc.ItemTranslator;
 import org.dragonet.proxy.util.PaletteManager;
 import org.dragonet.proxy.util.SkinUtils;
+import org.dragonet.proxy.util.TextFormat;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -67,6 +68,7 @@ public class DragonProxy {
 
     public static final ObjectMapper JSON_MAPPER = new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
+    private static final int CONFIG_VERSION = 2;
     private static final boolean RELEASE = false;
     public static DragonProxy INSTANCE = null;
 
@@ -126,10 +128,6 @@ public class DragonProxy {
     }
 
     private void initialize() throws IOException {
-        if(!RELEASE) {
-            log.warn("This is a development build. It may contain bugs. Do not use in production.");
-        }
-
         // Load configuration
         try {
             if(!Files.exists(Paths.get("config.yml"))) {
@@ -141,6 +139,18 @@ public class DragonProxy {
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory()).enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
         configuration = mapper.readValue(new FileInputStream("config.yml"), DragonConfiguration.class);
+
+        if(configuration.getConfigVersion() < CONFIG_VERSION) {
+            log.error("Outdated config.yml file. Please delete the file to allow it to regenerate.");
+            log.error("Join the discord for support: https://invite.gg/DragonetMC");
+
+            System.exit(0);
+            return;
+        }
+
+        if(!RELEASE) {
+            log.warn("This is a development build. It may contain bugs. Do not use in production.");
+        }
 
         generalThreadPool = Executors.newScheduledThreadPool(configuration.getThreadPoolSize());
 

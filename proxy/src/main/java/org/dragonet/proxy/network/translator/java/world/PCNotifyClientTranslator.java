@@ -58,32 +58,18 @@ public class PCNotifyClientTranslator extends PacketTranslator<ServerNotifyClien
 
         switch(packet.getNotification()) {
             case CHANGE_GAMEMODE:
-                Set<AdventureSettingsPacket.Flag> playerFlags = new HashSet<>();
                 GameMode gameMode = (GameMode) packet.getValue();
 
-                switch(gameMode) {
-                    case ADVENTURE:
-                        playerFlags.add(AdventureSettingsPacket.Flag.IMMUTABLE_WORLD);
-                        break;
-                    case SPECTATOR:
-                        playerFlags.add(AdventureSettingsPacket.Flag.NO_CLIP);
-                        playerFlags.add(AdventureSettingsPacket.Flag.FLYING);
-                        // fall through
-                    case CREATIVE:
-                        playerFlags.add(AdventureSettingsPacket.Flag.MAY_FLY);
+                cachedPlayer.setNoClip(gameMode == GameMode.SPECTATOR);
+                cachedPlayer.setWorldImmutable(gameMode == GameMode.ADVENTURE);
+                cachedPlayer.setFlying(gameMode == GameMode.SPECTATOR);
+                cachedPlayer.setCanFly(gameMode == GameMode.CREATIVE || gameMode == GameMode.SPECTATOR);
 
-                        session.sendCreativeInventory();
-                        break;
+                if(gameMode == GameMode.CREATIVE) {
+                    session.sendCreativeInventory();
                 }
 
-                // TODO: MOVE THIS TO CACHEDENTITY?
-                AdventureSettingsPacket adventureSettingsPacket = new AdventureSettingsPacket();
-                adventureSettingsPacket.setPlayerPermission(PlayerPermission.MEMBER);
-                adventureSettingsPacket.setCommandPermission(CommandPermission.NORMAL);
-                adventureSettingsPacket.setUniqueEntityId(cachedPlayer.getProxyEid());
-                adventureSettingsPacket.getFlags().addAll(playerFlags);
-
-                session.sendPacket(adventureSettingsPacket);
+                cachedPlayer.sendAdventureSettings(session);
 
                 // Tell the client to change the game mode
                 SetPlayerGameTypePacket setGameTypePacket = new SetPlayerGameTypePacket();
@@ -99,6 +85,7 @@ public class PCNotifyClientTranslator extends PacketTranslator<ServerNotifyClien
                 break;
             case RAIN_STRENGTH:
                 double rainStrength = ((RainStrengthValue) packet.getValue()).getStrength();
+
                 if(rainStrength > 0.0) {
                     session.sendPacket(createLevelEvent(START_RAIN, (int) rainStrength * 65535));
                     break;
@@ -109,9 +96,7 @@ public class PCNotifyClientTranslator extends PacketTranslator<ServerNotifyClien
             case THUNDER_STRENGTH:
                 double thunderStrength = ((ThunderStrengthValue) packet.getValue()).getStrength();
 
-                //log.info(TextFormat.DARK_AQUA + "Thunder strength: " + thunderStrength);
                 if(thunderStrength > 0.0) {
-                    // TODO: this doesnt work?
                     session.sendPacket(createLevelEvent(START_THUNDER, (int) thunderStrength * 65535));
                 } else {
                     session.sendPacket(createLevelEvent(STOP_THUNDER, 0));

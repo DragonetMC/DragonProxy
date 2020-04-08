@@ -23,6 +23,7 @@ import com.github.steveice10.mc.protocol.data.game.chunk.Column;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.nukkitx.math.vector.Vector2f;
+import com.nukkitx.math.vector.Vector2i;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
@@ -42,13 +43,13 @@ import java.util.List;
 @Log4j2
 public class ChunkCache implements Cache {
     @Getter
-    private Object2ObjectMap<Vector2f, Column> javaChunks = new Object2ObjectOpenHashMap<>();
+    private Object2ObjectMap<Vector2i, Column> javaChunks = new Object2ObjectOpenHashMap<>();
 
     /**
      * Translates a chunk from Java Edition to Bedrock Edition.
      */
     public ChunkData translateChunk(int columnX, int columnZ) {
-        Vector2f columnPos = Vector2f.from(columnX, columnZ);
+        Vector2i columnPos = Vector2i.from(columnX, columnZ);
 
         if (javaChunks.containsKey(columnPos)) {
             Column column = javaChunks.get(columnPos);
@@ -68,12 +69,12 @@ public class ChunkCache implements Cache {
                             BlockState block = javaChunk.get(x, y, z);
                             int bedrockId = BlockTranslator.translateToBedrock(block);
 
-                            //log.warn("setting id: " + BlockTranslator.BEDROCK_TEMP.get(bedrockId));
-
                             ChunkSection section = chunkData.sections[chunkY];
                             section.setFullBlock(x, y, z, 0, bedrockId);
 
-                            // TODO: waterlogging
+                            if(BlockTranslator.isWaterlogged(block)) {
+                                section.setFullBlock(x, y, z, 1, BlockTranslator.BEDROCK_WATER_ID);
+                            }
                         }
                     }
                 }
@@ -93,7 +94,7 @@ public class ChunkCache implements Cache {
     }
 
     public int getBlockAt(Vector3i position) {
-        Vector2f chunkPosition = Vector2f.from(position.getX() >> 4, position.getZ() >> 4);
+        Vector2i chunkPosition = Vector2i.from(position.getX() >> 4, position.getZ() >> 4);
         if(!javaChunks.containsKey(chunkPosition)) {
             return 0; // Air
         }

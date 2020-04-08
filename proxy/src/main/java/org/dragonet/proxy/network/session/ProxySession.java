@@ -315,9 +315,10 @@ public class ProxySession implements PlayerSession {
         // the server too quickly and chunks will not show.
         if(proxy.getConfiguration().getRemoteAuthType() == RemoteAuthType.OFFLINE) {
             sendMessage(TextFormat.DARK_AQUA + "Waiting 3 seconds before connecting...");
-            sendMessage(" ");
 
             proxy.getGeneralThreadPool().schedule(() -> {
+                sendMessage(" ");
+
                 RemoteServer remoteServer = new RemoteServer("local", proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort());
                 connect(remoteServer);
             }, 3, TimeUnit.SECONDS);

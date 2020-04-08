@@ -48,7 +48,7 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
                 case ADD_PLAYER:
                     if(entry.getProfile().getName().equals(session.getUsername())) {
                         // Fetch our own skin
-                        if(session.getProxy().getConfiguration().isFetchPlayerSkins()) {
+                        if(session.getProxy().getConfiguration().getPlayerConfig().isFetchSkin()) {
                             session.getProxy().getGeneralThreadPool().execute(() -> {
                                 ImageData skinData = SkinUtils.fetchSkin(entry.getProfile());
                                 if (skinData == null) {

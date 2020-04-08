@@ -21,14 +21,15 @@ package org.dragonet.proxy.command;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
 
 @Data
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor
 public abstract class ProxyCommand {
-    private String name;
-    private String description;
-    private String usage;
+    private final String name;
+    private final String description;
+    private final String usage;
 
     // TOOD: support for executing commands from console, but for now we will just keep DragonConsole
     public abstract void execute(ProxySession session, String[] arguments);

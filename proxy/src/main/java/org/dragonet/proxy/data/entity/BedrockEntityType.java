@@ -123,6 +123,7 @@ public enum BedrockEntityType {
     BALLOON(107, 0f), //TODO
     PUFFERFISH(108, 0.7f, 0.7f),
     SALMON(109, 0.5f, 0.7f),
+    DROWNED(110, 0, 0), // TODO: find values
     TROPICAL_FISH(111, 0.6f, 0.6f),
     COD(112, 0.25f, 0.5f),
     PANDA(113, 0, 0), // TODO: find values

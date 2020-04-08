@@ -21,6 +21,7 @@ package org.dragonet.proxy.network.translator.java.world;
 import com.github.steveice10.mc.protocol.data.game.chunk.Column;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
 import com.nukkitx.math.vector.Vector2f;
+import com.nukkitx.math.vector.Vector2i;
 import com.nukkitx.nbt.NbtUtils;
 import com.nukkitx.nbt.stream.NBTOutputStream;
 import com.nukkitx.nbt.tag.CompoundTag;
@@ -47,7 +48,7 @@ public class PCChunkDataTranslator extends PacketTranslator<ServerChunkDataPacke
     @Override
     public void translate(ProxySession session, ServerChunkDataPacket packet) {
         Column column = packet.getColumn();
-        session.getChunkCache().getJavaChunks().put(Vector2f.from(column.getX(), column.getZ()), column);
+        session.getChunkCache().getJavaChunks().put(Vector2i.from(column.getX(), column.getZ()), column);
 
         ChunkData chunkData = session.getChunkCache().translateChunk(column.getX(), column.getZ());
 

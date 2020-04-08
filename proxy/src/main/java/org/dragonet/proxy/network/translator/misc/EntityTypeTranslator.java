@@ -142,6 +142,7 @@ public class EntityTypeTranslator {
         entityMap.put(MobType.CAT, BedrockEntityType.CAT);
         entityMap.put(MobType.BEE, BedrockEntityType.BEE);
         entityMap.put(MobType.TURTLE, BedrockEntityType.TURTLE);
+        entityMap.put(MobType.DROWNED, BedrockEntityType.DROWNED);
 
         // Giant zombie!
         entityMap.put(MobType.GIANT, BedrockEntityType.ZOMBIE);

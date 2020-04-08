@@ -23,11 +23,16 @@ import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.*;
 import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket;
+import com.nukkitx.protocol.bedrock.packet.AdventureSettingsPacket;
 import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
 import lombok.Getter;
 import lombok.Setter;
+import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -39,11 +44,16 @@ public class CachedPlayer extends CachedEntity {
     private float flySpeed = 0.05f;
     private int selectedHotbarSlot = 0;
 
+    private boolean canFly, flying, noClip, autoJump, worldImmutable = false;
+
     public CachedPlayer(long proxyEid, int remoteEid, GameProfile profile) {
         super(BedrockEntityType.PLAYER, proxyEid, remoteEid);
         this.profile = profile;
-        metadata.put(EntityData.ALWAYS_SHOW_NAMETAG, (byte) 1);
-        metadata.getFlags().setFlag(EntityFlag.ALWAYS_SHOW_NAME, true);
+
+        // Enable auto jump if its enabled in the config
+        if(DragonProxy.INSTANCE.getConfiguration().getPlayerConfig().isAutoJump()) {
+            autoJump = true;
+        }
     }
 
     @Override
@@ -64,6 +74,33 @@ public class CachedPlayer extends CachedEntity {
 
         session.sendPacket(addPlayerPacket);
         spawned = true;
+    }
+
+    public void sendAdventureSettings(ProxySession session) {
+        AdventureSettingsPacket adventureSettingsPacket = new AdventureSettingsPacket();
+        adventureSettingsPacket.setUniqueEntityId(proxyEid);
+        adventureSettingsPacket.setPlayerPermission(PlayerPermission.MEMBER);
+        adventureSettingsPacket.setCommandPermission(CommandPermission.NORMAL);
+
+        Set<AdventureSettingsPacket.Flag> flags = new HashSet<>();
+        if(canFly) {
+            flags.add(AdventureSettingsPacket.Flag.MAY_FLY);
+        }
+        if(flying) {
+            flags.add(AdventureSettingsPacket.Flag.FLYING);
+        }
+        if(autoJump) {
+            flags.add(AdventureSettingsPacket.Flag.AUTO_JUMP);
+        }
+        if(worldImmutable) {
+            flags.add(AdventureSettingsPacket.Flag.IMMUTABLE_WORLD);
+        }
+        if(noClip) {
+            flags.add(AdventureSettingsPacket.Flag.NO_CLIP);
+        }
+
+        adventureSettingsPacket.getFlags().addAll(flags);
+        session.sendPacket(adventureSettingsPacket);
     }
 
     @Override

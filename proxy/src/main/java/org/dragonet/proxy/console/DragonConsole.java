@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.minecrell.terminalconsole.SimpleTerminalConsole;
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.util.TextFormat;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 
@@ -48,11 +49,19 @@ public class DragonConsole extends SimpleTerminalConsole {
                 break;
             }
             case ("help"): {
-                log.info("\nCommands:\nstop: stop the DragonProxy server\nhelp: show this page");
+                log.info("\nCommands:\nstop: stop the DragonProxy server\nviewcache\nhelp: show this page");
                 break;
             }
             case "kill":
                 System.exit(0);
+                break;
+            case "viewcache":
+                proxy.getSessionManager().getSessions().forEach(session -> {
+                    log.info(TextFormat.AQUA + "> Username: " + session.getUsername());
+                    log.info("Entities: " + session.getEntityCache().getEntities().size());
+                    log.info("Bossbars: " + session.getEntityCache().getBossbars().size());
+                    log.info("Chunks: " + session.getChunkCache().getJavaChunks().size());
+                });
                 break;
             default: {
                 log.info("Unknown command: " + command);
