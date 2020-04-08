@@ -28,6 +28,7 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.util.SkinUtils;
+import org.dragonet.proxy.util.TextFormat;
 
 import java.nio.charset.StandardCharsets;
 

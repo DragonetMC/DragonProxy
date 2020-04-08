@@ -62,7 +62,7 @@ public class SkinUtils {
             skinImage,
             Collections.emptyList(),
             ImageData.EMPTY,
-            new String(session.getClientData().getSkinGeometry(), StandardCharsets.UTF_8),
+            "",
             "",
             false,
             false,
@@ -78,7 +78,8 @@ public class SkinUtils {
         try {
             service.fillProfileTextures(profile, false);
         } catch (PropertyException e) {
-            log.trace("Failed to fill profile with textures: " + e.getMessage());
+            log.warn("Failed to fill profile with textures: " + e.getMessage());
+            return null;
         }
 
         GameProfile.Texture texture = profile.getTexture(GameProfile.TextureType.SKIN);
