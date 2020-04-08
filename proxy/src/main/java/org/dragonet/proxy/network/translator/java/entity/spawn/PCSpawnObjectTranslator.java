@@ -50,7 +50,11 @@ public class PCSpawnObjectTranslator extends PacketTranslator<ServerSpawnObjectP
             return;
         }
 
-        cachedEntity = session.getEntityCache().newEntity(entityType, packet.getEntityId());
+        if(entityType == BedrockEntityType.ITEM) {
+            cachedEntity = session.getEntityCache().newItemEntity(packet.getEntityId());
+        } else {
+            cachedEntity = session.getEntityCache().newEntity(entityType, packet.getEntityId());
+        }
 
         if(packet.getData() instanceof FallingBlockData) {
             FallingBlockData fallingBlockData = (FallingBlockData) packet.getData();

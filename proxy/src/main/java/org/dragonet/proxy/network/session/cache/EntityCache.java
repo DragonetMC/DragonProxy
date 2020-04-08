@@ -27,6 +27,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
+import org.dragonet.proxy.network.session.cache.object.CachedItemEntity;
 import org.dragonet.proxy.network.session.cache.object.CachedPainting;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 
@@ -81,6 +82,18 @@ public class EntityCache implements Cache {
      */
     public CachedEntity newEntity(BedrockEntityType type, int entityId) {
         CachedEntity entity = new CachedEntity(type, nextClientEntityId.getAndIncrement(), entityId);
+
+        entities.put(entity.getProxyEid(), entity);
+        clientToRemoteMap.put(entity.getProxyEid(), entity.getRemoteEid());
+        remoteToClientMap.put(entity.getRemoteEid(), entity.getProxyEid());
+        return entity;
+    }
+
+    /**
+     * Constructs a new cached item entity.
+     */
+    public CachedItemEntity newItemEntity(int entityId) {
+        CachedItemEntity entity = new CachedItemEntity(nextClientEntityId.getAndIncrement(), entityId);
 
         entities.put(entity.getProxyEid(), entity);
         clientToRemoteMap.put(entity.getProxyEid(), entity.getRemoteEid());

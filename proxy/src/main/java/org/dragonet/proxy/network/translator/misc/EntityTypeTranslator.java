@@ -94,7 +94,7 @@ public class EntityTypeTranslator {
         entityMap.put(MobType.ARMOR_STAND, BedrockEntityType.ARMOR_STAND);
         //entityMap.put(MobType.TRIPOD_CAMERA, BedrockEntityType.TRIPOD_CAMERA);
         entityMap.put(MobType.PLAYER, BedrockEntityType.PLAYER);
-        entityMap.put(MobType.ITEM, BedrockEntityType.ITEM);
+        //entityMap.put(MobType.ITEM, BedrockEntityType.ITEM);
         entityMap.put(MobType.PRIMED_TNT, BedrockEntityType.PRIMED_TNT);
         entityMap.put(MobType.FALLING_BLOCK, BedrockEntityType.FALLING_BLOCK);
         //entityMap.put(MobType.MOVING_BLOCK, BedrockEntityType.MOVING_BLOCK);

@@ -27,6 +27,7 @@ import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
+import org.dragonet.proxy.network.session.cache.object.CachedItemEntity;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.misc.entity.living.*;
 import org.dragonet.proxy.network.translator.misc.entity.IMetaTranslator;
@@ -98,6 +99,10 @@ public class EntityMetaTranslator {
                     break;
                 default:
                     if(translatorMap.containsKey(entity.getEntityType())) {
+                        // Kinda a hack because im too lazy to change the parameters, but oh well
+                        if(entity.getEntityType() == BedrockEntityType.ITEM) {
+                            ((ItemEntityMetaTranslator) translatorMap.get(entity.getEntityType())).setEntity((CachedItemEntity) entity);
+                        }
                         translatorMap.get(entity.getEntityType()).translateToBedrock(session, dictionary, meta);
                         break;
                     }
