@@ -143,6 +143,9 @@ public class EntityTypeTranslator {
         entityMap.put(MobType.BEE, BedrockEntityType.BEE);
         entityMap.put(MobType.TURTLE, BedrockEntityType.TURTLE);
 
+        // Giant zombie!
+        entityMap.put(MobType.GIANT, BedrockEntityType.ZOMBIE);
+
 
         // Global entities
         globalEntityMap.put(GlobalEntityType.LIGHTNING_BOLT, BedrockEntityType.LIGHTNING_BOLT);

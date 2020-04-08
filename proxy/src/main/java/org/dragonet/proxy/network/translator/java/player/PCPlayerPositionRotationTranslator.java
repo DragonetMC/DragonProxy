@@ -26,6 +26,7 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
+import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
@@ -36,7 +37,7 @@ public class PCPlayerPositionRotationTranslator extends PacketTranslator<ServerP
 
     @Override
     public void translate(ProxySession session, ServerPlayerPositionRotationPacket packet) {
-        CachedEntity cachedEntity = session.getCachedEntity();
+        CachedPlayer cachedEntity = session.getCachedEntity();
 
         if (!cachedEntity.isSpawned()) {
             cachedEntity.sendMetadata(session);

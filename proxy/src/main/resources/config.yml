@@ -21,16 +21,8 @@ motd2: 'https://github.com/DragonetMC/DragonProxy'
 max-players: 1
 
 # The IP and port of the remote server to connect to
-# TODO: Add support for multiple servers
 remote-address: '127.0.0.1'
 remote-port: 25565
-
-# TODO
-#remote-servers:
-#  local:
-#    address: '127.0.0.1'
-#    port: 25566
-#    default: true
 
 # The authentication method used for connecting to the remote server.
 # Accepted values:

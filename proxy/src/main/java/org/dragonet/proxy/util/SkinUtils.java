@@ -26,14 +26,19 @@ import com.nukkitx.protocol.bedrock.data.SerializedSkin;
 import it.unimi.dsi.fastutil.io.FastByteArrayOutputStream;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.network.session.ProxySession;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collections;
+import java.util.UUID;
 
 @Log4j2
 public class SkinUtils {
@@ -43,17 +48,33 @@ public class SkinUtils {
 
     static {
         try {
-            BufferedImage image = ImageIO.read(DragonProxy.class.getClassLoader().getResource("skin_steve.png"));
-            STEVE_SKIN = ImageData.of(image.getWidth(), image.getHeight(), convertToByteArray(image));
+            STEVE_SKIN = parseBufferedImage(ImageIO.read(DragonProxy.class.getClassLoader().getResource("skin_steve.png")));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    public static SerializedSkin createSkinEntry(ProxySession session, ImageData skinImage) {
+        String randomId = UUID.randomUUID().toString();
+        return SerializedSkin.of(
+            randomId,
+            new String(Base64.getDecoder().decode(session.getClientData().getSkinGeometryName())),
+            skinImage,
+            Collections.emptyList(),
+            ImageData.EMPTY,
+            new String(session.getClientData().getSkinGeometry(), StandardCharsets.UTF_8),
+            "",
+            false,
+            false,
+            false,
+            "",
+            randomId);
+    }
+
     /**
      * Fetches a skin from the Mojang session server
      */
-    public static byte[] fetchSkin(GameProfile profile) {
+    public static ImageData fetchSkin(GameProfile profile) {
         try {
             service.fillProfileTextures(profile, false);
         } catch (PropertyException e) {
@@ -63,8 +84,7 @@ public class SkinUtils {
         GameProfile.Texture texture = profile.getTexture(GameProfile.TextureType.SKIN);
         if(texture != null) {
             try {
-                BufferedImage image = ImageIO.read(new URL(texture.getURL()));
-                return convertToByteArray(image);
+                return parseBufferedImage(ImageIO.read(new URL(texture.getURL())));
             } catch (IOException e) {
                 log.warn("Failed to fetch skin for player " + profile.getName() + ": " + e.getMessage());
             }
@@ -76,7 +96,7 @@ public class SkinUtils {
      * Checks if a player has an optifine cape and if so downloads it from
      * optifine's servers
      */
-    public static byte[] fetchOptifineCape(GameProfile profile) {
+    public static ImageData fetchOptifineCape(GameProfile profile) {
         try {
             URL url = new URL("http://s.optifine.net/capes/" + profile.getName() + ".png");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -87,30 +107,27 @@ public class SkinUtils {
             }
             log.warn("Player " + profile.getName() + " does have an optifine cape");
 
-            BufferedImage image = ImageIO.read(connection.getInputStream());
-            return convertToByteArray(image);
+            return parseBufferedImage(ImageIO.read(connection.getInputStream()));
         } catch (IOException e) {
             log.warn("Failed to fetch optifine cape for player " + profile.getName() + ": " + e.getMessage());
         }
         return null;
     }
 
-    public static String getLegacyGeometryName(String geometryName) {
-        return "{\"geometry\" :{\"default\" :\"" + geometryName + "\"}}";
-    }
+    private static ImageData parseBufferedImage(BufferedImage image) {
+        FastByteArrayOutputStream outputStream = new FastByteArrayOutputStream();
 
-    private static byte[] convertToByteArray(BufferedImage image) {
-        FastByteArrayOutputStream output = new FastByteArrayOutputStream();
-        for (int y = 0; y < image.getHeight(); y++) {
-            for (int x = 0; x < image.getWidth(); x++) {
+        for(int y = 0; y < image.getHeight(); ++y) {
+            for(int x = 0; x < image.getWidth(); ++x) {
                 Color color = new Color(image.getRGB(x, y), true);
-                output.write(color.getRed());
-                output.write(color.getGreen());
-                output.write(color.getBlue());
-                output.write(color.getAlpha());
+                outputStream.write(color.getRed());
+                outputStream.write(color.getGreen());
+                outputStream.write(color.getBlue());
+                outputStream.write(color.getAlpha());
             }
         }
+
         image.flush();
-        return output.array;
+        return ImageData.of(image.getWidth(), image.getHeight(), outputStream.array);
     }
 }

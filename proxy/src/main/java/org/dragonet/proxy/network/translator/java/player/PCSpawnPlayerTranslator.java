@@ -22,6 +22,7 @@ import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
 import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.protocol.bedrock.data.ImageData;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
@@ -48,7 +49,7 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
             session.getProxy().getGeneralThreadPool().execute(() -> {
                 GameProfile profile = playerListEntry.getProfile();
 
-                byte[] skinData = SkinUtils.fetchSkin(profile);
+                ImageData skinData = SkinUtils.fetchSkin(profile);
                 if (skinData == null) {
                     return;
                 }

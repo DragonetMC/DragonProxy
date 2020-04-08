@@ -49,7 +49,7 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
                         // Fetch our own skin
                         if(session.getProxy().getConfiguration().isFetchPlayerSkins()) {
                             session.getProxy().getGeneralThreadPool().execute(() -> {
-                                byte[] skinData = SkinUtils.fetchSkin(entry.getProfile());
+                                ImageData skinData = SkinUtils.fetchSkin(entry.getProfile());
                                 if (skinData == null) {
                                     return;
                                 }
@@ -67,17 +67,9 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
 
                     playerListPacket.setAction(PlayerListPacket.Action.ADD);
 
-                    SerializedSkin skin = SerializedSkin.of(
-                        entry.getProfile().getIdAsString(),
-                        SkinUtils.STEVE_SKIN,
-                        ImageData.EMPTY,
-                        SkinUtils.getLegacyGeometryName("geometry.humanoid"),
-                        new String(session.getClientData().getSkinGeometry(), StandardCharsets.UTF_8),
-                        false);
-
                     bedrockEntry.setEntityId(proxyEid);
                     bedrockEntry.setName(entry.getProfile().getName());
-                    bedrockEntry.setSkin(skin);
+                    bedrockEntry.setSkin(SkinUtils.createSkinEntry(session, SkinUtils.STEVE_SKIN));
                     bedrockEntry.setXuid("");
                     bedrockEntry.setPlatformChatId("");
 

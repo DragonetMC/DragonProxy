@@ -18,7 +18,10 @@
  */
 package org.dragonet.proxy.remote;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 public enum RemoteAuthType {
+    @JsonAlias("online")
     CREDENTIALS,
     OFFLINE
 }

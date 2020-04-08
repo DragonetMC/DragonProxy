@@ -18,8 +18,10 @@
  */
 package org.dragonet.proxy.network.translator.java.entity.spawn;
 
+import com.github.steveice10.mc.protocol.data.game.entity.type.MobType;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnMobPacket;
 import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.protocol.bedrock.data.EntityData;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
@@ -47,6 +49,10 @@ public class PCSpawnMobTranslator extends PacketTranslator<ServerSpawnMobPacket>
         }
 
         cachedEntity = session.getEntityCache().newEntity(entityType, packet.getEntityId());
+
+        if(packet.getType() == MobType.GIANT) {
+            cachedEntity.getMetadata().put(EntityData.SCALE, 5f);
+        }
 
         cachedEntity.setJavaUuid(packet.getUuid());
         cachedEntity.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));

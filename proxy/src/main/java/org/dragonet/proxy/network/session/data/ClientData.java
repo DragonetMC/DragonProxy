@@ -73,4 +73,14 @@ public final class ClientData {
     private String thirdPartyName;
     @JsonProperty("UIProfile")
     private UIProfile uiProfile;
+    @JsonProperty("CapeOnClassicSkin")
+    private boolean capeOnClassicSkin;
+    @JsonProperty("PersonaSkin")
+    private boolean personaSkin;
+    @JsonProperty("CapeImageHeight")
+    private int capeImageHeight;
+    @JsonProperty("CapeImageWidth")
+    private int capeImageWidth;
+    @JsonProperty("CapeId")
+    private String capeId;
 }

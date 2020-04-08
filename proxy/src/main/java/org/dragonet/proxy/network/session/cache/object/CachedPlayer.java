@@ -21,9 +21,7 @@ package org.dragonet.proxy.network.session.cache.object;
 import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.data.CommandPermission;
-import com.nukkitx.protocol.bedrock.data.ItemData;
-import com.nukkitx.protocol.bedrock.data.PlayerPermission;
+import com.nukkitx.protocol.bedrock.data.*;
 import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket;
 import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
 import lombok.Getter;
@@ -44,6 +42,8 @@ public class CachedPlayer extends CachedEntity {
     public CachedPlayer(long proxyEid, int remoteEid, GameProfile profile) {
         super(BedrockEntityType.PLAYER, proxyEid, remoteEid);
         this.profile = profile;
+        metadata.put(EntityData.ALWAYS_SHOW_NAMETAG, (byte) 1);
+        metadata.getFlags().setFlag(EntityFlag.ALWAYS_SHOW_NAME, true);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class CachedPlayer extends CachedEntity {
         addPlayerPacket.setRuntimeEntityId(proxyEid);
         addPlayerPacket.setUniqueEntityId(proxyEid);
         addPlayerPacket.setPlatformChatId("");
-        addPlayerPacket.setPosition(getOffsetPosition());
+        addPlayerPacket.setPosition(position);
         addPlayerPacket.setMotion(Vector3f.ZERO);
         addPlayerPacket.setRotation(rotation);
         addPlayerPacket.setHand(ItemData.AIR);
@@ -79,7 +79,7 @@ public class CachedPlayer extends CachedEntity {
         movePlayerPacket.setEntityType(entityType.getType());
         movePlayerPacket.setMode(teleported ? MovePlayerPacket.Mode.TELEPORT : MovePlayerPacket.Mode.NORMAL);
         movePlayerPacket.setOnGround(onGround);
-        movePlayerPacket.setPosition(getOffsetPosition());
+        movePlayerPacket.setPosition(position);
         movePlayerPacket.setRotation(rotation);
 
         session.sendPacket(movePlayerPacket);
@@ -98,7 +98,7 @@ public class CachedPlayer extends CachedEntity {
         movePlayerPacket.setEntityType(entityType.getType());
         movePlayerPacket.setMode(teleported ? MovePlayerPacket.Mode.TELEPORT : MovePlayerPacket.Mode.NORMAL);
         movePlayerPacket.setOnGround(onGround);
-        movePlayerPacket.setPosition(getOffsetPosition());
+        movePlayerPacket.setPosition(position);
         movePlayerPacket.setRotation(rotation);
 
         session.sendPacket(movePlayerPacket);
@@ -110,7 +110,7 @@ public class CachedPlayer extends CachedEntity {
 
         MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
         movePlayerPacket.setRuntimeEntityId(proxyEid);
-        movePlayerPacket.setPosition(getOffsetPosition());
+        movePlayerPacket.setPosition(position);
         movePlayerPacket.setRotation(rotation);
         movePlayerPacket.setMode(MovePlayerPacket.Mode.ROTATION);
 

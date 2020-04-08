@@ -106,7 +106,7 @@ public class CachedEntity {
         addEntityPacket.setEntityType(0);
         addEntityPacket.setRotation(rotation);
         addEntityPacket.setMotion(Vector3f.ZERO);
-        addEntityPacket.setPosition(getOffsetPosition());
+        addEntityPacket.setPosition(position);
 
         addEntityPacket.getMetadata().putAll(getMetadata());
 
@@ -140,7 +140,7 @@ public class CachedEntity {
 
         MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
         moveEntityPacket.setRuntimeEntityId(proxyEid);
-        moveEntityPacket.setPosition(getOffsetPosition());
+        moveEntityPacket.setPosition(position);
         moveEntityPacket.setRotation(rotation);
         moveEntityPacket.setTeleported(teleported);
         moveEntityPacket.setOnGround(onGround);
@@ -157,7 +157,7 @@ public class CachedEntity {
 
         MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
         moveEntityPacket.setRuntimeEntityId(proxyEid);
-        moveEntityPacket.setPosition(getOffsetPosition());
+        moveEntityPacket.setPosition(position);
         moveEntityPacket.setRotation(rotation);
         moveEntityPacket.setTeleported(teleported);
         moveEntityPacket.setOnGround(onGround);
@@ -170,7 +170,7 @@ public class CachedEntity {
 
         MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
         moveEntityPacket.setRuntimeEntityId(proxyEid);
-        moveEntityPacket.setPosition(getOffsetPosition());
+        moveEntityPacket.setPosition(position);
         moveEntityPacket.setRotation(rotation);
         moveEntityPacket.setTeleported(false);
 

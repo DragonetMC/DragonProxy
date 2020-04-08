@@ -27,6 +27,7 @@ import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
+import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.misc.entity.living.*;
 import org.dragonet.proxy.network.translator.misc.entity.IMetaTranslator;
 import org.dragonet.proxy.network.translator.misc.entity.object.ItemEntityMetaTranslator;
@@ -82,7 +83,10 @@ public class EntityMetaTranslator {
                     }
                     break;
                 case 3: // Is custom name visible
-                    dictionary.put(EntityData.ALWAYS_SHOW_NAMETAG, (boolean) meta.getValue() ? (byte) 1 : (byte) 0);
+                    if(!(entity instanceof CachedPlayer)) {
+                        // Should this be CAN_SHOW_NAME?
+                        dictionary.put(EntityData.ALWAYS_SHOW_NAMETAG, (boolean) meta.getValue() ? (byte) 1 : (byte) 0);
+                    }
                     break;
                 case 4: // Is silent
                     flags.setFlag(EntityFlag.SILENT, (boolean) meta.getValue());
