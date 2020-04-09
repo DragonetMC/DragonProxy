@@ -38,9 +38,11 @@ import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.dragonet.proxy.network.translator.misc.BlockTranslator;
 import org.dragonet.proxy.network.translator.misc.ItemTranslator;
 import org.dragonet.proxy.util.PaletteManager;
+import org.dragonet.proxy.util.PlatformType;
 import org.dragonet.proxy.util.SkinUtils;
 import org.dragonet.proxy.util.TextFormat;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -102,6 +104,10 @@ public class DragonProxy {
 
     private long startTime;
     private int bindPort;
+    @Getter
+    private File dataFolder;
+    @Getter
+    private PlatformType platformType;
 
     /**
      * Constructs a new instance of the DragonProxy class.
@@ -110,10 +116,12 @@ public class DragonProxy {
      * @param bedrockPort a custom port provided from a command line option
      *                    to override the bind port in the config
      */
-    public DragonProxy(int bedrockPort) {
+    public DragonProxy(PlatformType type, File dataPath, int bedrockPort) {
         INSTANCE = this;
 
         startTime = System.currentTimeMillis();
+        platformType = type;
+        dataFolder = dataPath;
         bindPort = bedrockPort;
 
         log.info("Welcome to DragonProxy version " + getVersion());
@@ -130,8 +138,8 @@ public class DragonProxy {
     private void initialize() throws IOException {
         // Load configuration
         try {
-            if(!Files.exists(Paths.get("config.yml"))) {
-                Files.copy(getClass().getResourceAsStream("/config.yml"), Paths.get("config.yml"), StandardCopyOption.REPLACE_EXISTING);
+            if(!new File(dataFolder, "config.yml").exists()) {
+                Files.copy(getClass().getResourceAsStream("/config.yml"), new File(dataFolder, "config.yml").toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException ex) {
             log.error("Failed to copy config file: " + ex.getMessage());
@@ -193,8 +201,10 @@ public class DragonProxy {
         double bootTime = (System.currentTimeMillis() - startTime) / 1000d;
         log.info("Done ({}s)!", new DecimalFormat("#.##").format(bootTime));
 
-        console = new DragonConsole(this);
-        console.start();
+        if(platformType == PlatformType.STANDALONE) {
+            console = new DragonConsole(this);
+            console.start();
+        }
 
         while (this.running) {
             try {
@@ -216,10 +226,12 @@ public class DragonProxy {
 
         this.running = false;
 
-        System.exit(0); // Fix hanging
+        if(platformType == PlatformType.STANDALONE) {
+            System.exit(0); // Fix hanging
 
-        synchronized (this) {
-            this.notify();
+            synchronized (this) {
+                this.notify();
+            }
         }
     }
 

@@ -1,0 +1,7 @@
+name: DragonProxy-Bukkit
+version: ${project.version}
+description: DragonProxy Bukkit plugin.
+author: Luke (@lukeeey)
+authors: ["Dragonet Foundation"]
+website: https://github.com/DragonetMC/DragonProxy
+main: org.dragonet.proxy.init.bukkit.ProxyBukkitPlugin

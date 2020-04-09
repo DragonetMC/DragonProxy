@@ -16,13 +16,9 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.misc.entity;
+package org.dragonet.proxy.util;
 
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
-import com.nukkitx.protocol.bedrock.data.EntityDataMap;
-import org.dragonet.proxy.network.session.ProxySession;
-
-public interface IMetaTranslator {
-
-    void translateToBedrock(ProxySession session, EntityDataMap dictionary, EntityMetadata metadata);
+public enum PlatformType {
+    STANDALONE,
+    BUKKIT
 }

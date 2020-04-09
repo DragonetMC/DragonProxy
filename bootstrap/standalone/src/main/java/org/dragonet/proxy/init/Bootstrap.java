@@ -16,12 +16,16 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy;
+package org.dragonet.proxy.init;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.util.PlatformType;
+
+import java.io.File;
 
 @Log4j2
 public class Bootstrap {
@@ -50,7 +54,7 @@ public class Bootstrap {
 
         int bedrockPort = options.has(bedrockPortOption) ? Integer.parseInt(options.valueOf(bedrockPortOption)) : -1;
 
-        DragonProxy proxy = new DragonProxy(bedrockPort);
+        DragonProxy proxy = new DragonProxy(PlatformType.STANDALONE, new File("."), bedrockPort);
 
         Runtime.getRuntime().addShutdownHook(new Thread(proxy::shutdown, "Shutdown thread"));
     }

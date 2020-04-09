@@ -36,24 +36,14 @@ public class PCPlayerAbilitiesTranslator extends PacketTranslator<ServerPlayerAb
 
     @Override
     public void translate(ProxySession session, ServerPlayerAbilitiesPacket packet) {
-        CachedPlayer cachedEntity = session.getCachedEntity();
+        CachedPlayer player = session.getCachedEntity();
 
-        AdventureSettingsPacket adventureSettingsPacket = new AdventureSettingsPacket();
-        adventureSettingsPacket.setUniqueEntityId(cachedEntity.getProxyEid());
-        adventureSettingsPacket.setPlayerPermission(PlayerPermission.MEMBER);
-        adventureSettingsPacket.setCommandPermission(CommandPermission.NORMAL);
+        player.setFlySpeed(packet.getFlySpeed());
 
-        cachedEntity.setFlySpeed(packet.getFlySpeed());
-        //cachedEntity.getFlags().setFlag(EntityFlag.CAN_FLY, packet.isCanFly());
-        //cachedEntity.sendMetadata(session);
+        // mcprotocollib got them the wrong way around
+        player.setCanFly(packet.isFlying());
+        player.setFlying(packet.isCanFly());
 
-        if(packet.isCanFly()) {
-            adventureSettingsPacket.getFlags().add(AdventureSettingsPacket.Flag.MAY_FLY);
-        }
-        if(packet.isFlying()) {
-            adventureSettingsPacket.getFlags().add(AdventureSettingsPacket.Flag.FLYING);
-        }
-
-        //session.sendPacket(adventureSettingsPacket);
+        player.sendAdventureSettings(session);
     }
 }

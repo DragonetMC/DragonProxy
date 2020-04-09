@@ -22,6 +22,7 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.util.TextFormat;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -40,8 +41,8 @@ public class MetricsManager {
 
         // Load configuration
         try {
-            if(!Files.exists(Paths.get("metrics.properties"))) {
-                Files.copy(getClass().getResourceAsStream("/metrics.properties"), Paths.get("metrics.properties"), StandardCopyOption.REPLACE_EXISTING);
+            if(!new File(proxy.getDataFolder(), "metrics.properties").exists()) {
+                Files.copy(getClass().getResourceAsStream("/metrics.properties"), new File(proxy.getDataFolder(), "metrics.properties").toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
 
             FileInputStream input = new FileInputStream("metrics.properties");

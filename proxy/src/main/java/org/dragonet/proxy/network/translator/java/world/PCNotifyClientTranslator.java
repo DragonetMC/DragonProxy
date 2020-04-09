@@ -62,8 +62,8 @@ public class PCNotifyClientTranslator extends PacketTranslator<ServerNotifyClien
 
                 cachedPlayer.setNoClip(gameMode == GameMode.SPECTATOR);
                 cachedPlayer.setWorldImmutable(gameMode == GameMode.ADVENTURE);
-                cachedPlayer.setFlying(gameMode == GameMode.SPECTATOR);
-                cachedPlayer.setCanFly(gameMode == GameMode.CREATIVE || gameMode == GameMode.SPECTATOR);
+                //cachedPlayer.setFlying(gameMode == GameMode.SPECTATOR);
+                //cachedPlayer.setCanFly(gameMode == GameMode.CREATIVE || gameMode == GameMode.SPECTATOR);
 
                 if(gameMode == GameMode.CREATIVE) {
                     session.sendCreativeInventory();

@@ -16,19 +16,31 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.misc.entity;
+package org.dragonet.proxy.init.bukkit;
 
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
-import com.nukkitx.protocol.bedrock.data.EntityDataMap;
-import com.nukkitx.protocol.bedrock.data.EntityFlag;
-import org.dragonet.proxy.network.session.ProxySession;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.util.PlatformType;
+import org.dragonet.proxy.util.TextFormat;
 
-public abstract class AbstractAgeableMetaTranslator extends AbstractInsentientMetaTranslator {
+import java.io.File;
+
+public class ProxyBukkitPlugin extends JavaPlugin {
+    private DragonProxy proxy;
 
     @Override
-    public void translateToBedrock(ProxySession session, EntityDataMap dictionary, EntityMetadata metadata) {
-        if(metadata.getId() == 15) { // Is baby
-            dictionary.getFlags().setFlag(EntityFlag.BABY, (boolean) metadata.getValue());
-        }
+    public void onEnable() {
+        getLogger().info(TextFormat.AQUA + "Starting DragonProxy Bukkit...");
+
+        // Create data folder
+        getDataFolder().mkdir();
+
+        // Initialize the main proxy class
+        proxy = new DragonProxy(PlatformType.BUKKIT, getDataFolder(), -1);
+    }
+
+    @Override
+    public void onDisable() {
+        proxy.shutdown();
     }
 }

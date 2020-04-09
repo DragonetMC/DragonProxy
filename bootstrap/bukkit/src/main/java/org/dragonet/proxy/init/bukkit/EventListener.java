@@ -16,13 +16,14 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.misc.entity;
+package org.dragonet.proxy.init.bukkit;
 
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
-import com.nukkitx.protocol.bedrock.data.EntityDataMap;
-import org.dragonet.proxy.network.session.ProxySession;
+import lombok.RequiredArgsConstructor;
+import org.bukkit.event.Listener;
 
-public interface IMetaTranslator {
+@RequiredArgsConstructor
+public class EventListener implements Listener {
+    private final ProxyBukkitPlugin plugin;
 
-    void translateToBedrock(ProxySession session, EntityDataMap dictionary, EntityMetadata metadata);
+
 }
