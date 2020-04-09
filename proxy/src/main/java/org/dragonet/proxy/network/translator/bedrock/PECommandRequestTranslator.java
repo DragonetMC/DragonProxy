@@ -41,7 +41,6 @@ public class PECommandRequestTranslator extends PacketTranslator<CommandRequestP
             return;
         }
 
-        ClientChatPacket chatPacket = new ClientChatPacket(packet.getCommand());
-        session.sendRemotePacket(chatPacket);
+        session.sendRemotePacket(new ClientChatPacket(packet.getCommand()));
     }
 }

@@ -109,6 +109,9 @@ public class PEPlayerActionTranslator extends PacketTranslator<PlayerActionPacke
             case JUMP:
 
                 break;
+            case CHANGE_SKIN:
+
+                break;
             default:
                 log.info(TextFormat.GRAY + "(debug) Unhandled player action: " + packet.getAction().name());
                 break;

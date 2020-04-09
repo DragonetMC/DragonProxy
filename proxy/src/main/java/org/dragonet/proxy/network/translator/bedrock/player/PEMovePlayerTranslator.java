@@ -20,6 +20,7 @@ package org.dragonet.proxy.network.translator.bedrock.player;
 
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientVehicleMovePacket;
+import com.nukkitx.math.GenericMath;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
 import lombok.extern.log4j.Log4j2;
@@ -52,12 +53,17 @@ public class PEMovePlayerTranslator extends PacketTranslator<MovePlayerPacket> {
         }
 
         // Update the cached position and rotation
-        cachedEntity.setPosition(packet.getPosition());
+        cachedEntity.setPosition(packet.getPosition().sub(0, BedrockEntityType.PLAYER.getOffset(), 0));
         cachedEntity.setRotation(Vector3f.from(packet.getRotation().getY(), packet.getRotation().getX(), packet.getRotation().getY()));
 
         // Tell the remote server that we have moved
+        double y = cachedEntity.getPosition().getY();
+        if (packet.isOnGround()) {
+            y = Math.ceil(y * 2) / 2; // If we only do this when on ground then movement isn't so buggy
+        }
+
         ClientPlayerPositionRotationPacket playerPositionRotationPacket = new ClientPlayerPositionRotationPacket(packet.isOnGround(), packet.getPosition().getX(),
-            Math.ceil(packet.getPosition().getY() - BedrockEntityType.PLAYER.getOffset()), packet.getPosition().getZ(), packet.getRotation().getY(), packet.getRotation().getX());
+           y, packet.getPosition().getZ(), packet.getRotation().getY(), packet.getRotation().getX());
 
         session.sendRemotePacket(playerPositionRotationPacket);
     }
