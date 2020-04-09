@@ -23,6 +23,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientTelepo
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
+import com.nukkitx.protocol.bedrock.packet.RespawnPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
@@ -38,28 +39,39 @@ public class PCPlayerPositionRotationTranslator extends PacketTranslator<ServerP
 
     @Override
     public void translate(ProxySession session, ServerPlayerPositionRotationPacket packet) {
-        CachedPlayer cachedEntity = session.getCachedEntity();
+        CachedPlayer player = session.getCachedEntity();
 
-        if (!cachedEntity.isSpawned()) {
-            cachedEntity.sendMetadata(session);
+        if (!player.isSpawned()) {
+            player.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
+            player.setRotation(Vector3f.from(packet.getPitch(), packet.getYaw(), 0));
+
+            // Tell the client we are ready to spawn
+            RespawnPacket respawnPacket = new RespawnPacket();
+            respawnPacket.setRuntimeEntityId(player.getProxyEid());
+            respawnPacket.setPosition(player.getOffsetPosition());
+            respawnPacket.setState(RespawnPacket.State.SERVER_READY);
+            session.sendPacket(respawnPacket);
+
+            // Send entity metadata
+            player.sendMetadata(session);
 
             MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
-            movePlayerPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
-            movePlayerPacket.setPosition(Vector3f.from(packet.getX(), packet.getY() + BedrockEntityType.PLAYER.getOffset() + 0.1f, packet.getZ()));
-            movePlayerPacket.setRotation(Vector3f.from(packet.getPitch(), packet.getYaw(), 0));
+            movePlayerPacket.setRuntimeEntityId(player.getProxyEid());
+            movePlayerPacket.setPosition(player.getOffsetPosition().add(0, 0.1f, 0));
+            movePlayerPacket.setRotation(player.getRotation());
             movePlayerPacket.setMode(MovePlayerPacket.Mode.RESET);
             movePlayerPacket.setOnGround(true);
 
             session.sendPacket(movePlayerPacket);
-            cachedEntity.setSpawned(true);
+            player.setSpawned(true);
 
             log.info("Spawned player " + session.getUsername() + " at " + packet.getX() + " " + packet.getY() + " " + packet.getZ());
             return;
         }
 
-        cachedEntity.setSpawned(true);
+        player.setSpawned(true);
 
-        cachedEntity.moveAbsolute(session, Vector3f.from(packet.getX(), packet.getY() + BedrockEntityType.PLAYER.getOffset() + 0.1f, packet.getZ()),
+        player.moveAbsolute(session, Vector3f.from(packet.getX(), packet.getY() + BedrockEntityType.PLAYER.getOffset() + 0.1f, packet.getZ()),
             Vector3f.from(packet.getPitch(), packet.getYaw(), 0), true, false);
 
         session.sendRemotePacket(new ClientTeleportConfirmPacket(packet.getTeleportId()));

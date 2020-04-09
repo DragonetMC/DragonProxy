@@ -26,6 +26,7 @@ import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector2i;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.tag.CompoundTag;
+import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -39,6 +40,8 @@ import org.dragonet.proxy.network.translator.misc.BlockTranslator;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.dragonet.proxy.network.translator.java.PCJoinGameTranslator.EMPTY_LEVEL_CHUNK_DATA;
 
 @Log4j2
 public class ChunkCache implements Cache {
@@ -130,6 +133,23 @@ public class ChunkCache implements Cache {
         updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.PRIORITY);
 
         session.sendPacket(updateBlockPacket);
+    }
+
+    public void sendEmptyChunks(ProxySession session, Vector3i position, int radius) {
+        int chunkX = position.getX() >> 4;
+        int chunkZ = position.getZ() >> 4;
+
+        for (int x = -radius; x < radius; x++) {
+            for (int z = -radius; z < radius; z++) {
+                LevelChunkPacket data = new LevelChunkPacket();
+                data.setChunkX(chunkX + x);
+                data.setChunkZ(chunkZ + z);
+                data.setSubChunksLength(0);
+                data.setData(EMPTY_LEVEL_CHUNK_DATA);
+                data.setCachingEnabled(false);
+                session.sendPacket(data);
+            }
+        }
     }
 
     @Override

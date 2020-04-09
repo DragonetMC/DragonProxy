@@ -47,11 +47,11 @@ public class PCRespawnTranslator extends PacketTranslator<ServerRespawnPacket> {
         setPlayerGameTypePacket.setGamemode(packet.getGamemode().ordinal());
         session.sendPacket(setPlayerGameTypePacket);
 
-        // Respawn the player
-        RespawnPacket respawnPacket = new RespawnPacket();
-        respawnPacket.setRuntimeEntityId(cachedPlayer.getProxyEid());
-        respawnPacket.setPosition(cachedPlayer.getSpawnPosition());
-        respawnPacket.setState(RespawnPacket.State.SERVER_READY);
-        session.sendPacket(respawnPacket);
+        cachedPlayer.setGameMode(packet.getGamemode());
+
+        // Handle dimension change
+        if(cachedPlayer.getDimension() != packet.getDimension()) {
+            session.switchDimension(packet.getDimension());
+        }
     }
 }

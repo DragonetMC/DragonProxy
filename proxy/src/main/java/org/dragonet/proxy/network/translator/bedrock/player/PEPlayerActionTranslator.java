@@ -31,6 +31,7 @@ import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.LevelEventType;
 import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
+import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayerActionPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.window.BedrockWindowType;
@@ -108,6 +109,11 @@ public class PEPlayerActionTranslator extends PacketTranslator<PlayerActionPacke
                 break;
             case JUMP:
 
+                break;
+            case DIMENSION_CHANGE_SUCCESS:
+                PlayStatusPacket spawnPacket = new PlayStatusPacket();
+                spawnPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
+                session.sendPacket(spawnPacket);
                 break;
             default:
                 log.info(TextFormat.GRAY + "(debug) Unhandled player action: " + packet.getAction().name());

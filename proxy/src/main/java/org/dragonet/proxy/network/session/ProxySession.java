@@ -401,6 +401,26 @@ public class ProxySession implements PlayerSession {
         cachedEntity = entityCache.newPlayer(1, entityId, new GameProfile(getAuthData().getIdentity(), getAuthData().getDisplayName()));
     }
 
+    public void switchDimension(int javaId) {
+        int bedrockId = 0;
+
+        if(javaId == -1) bedrockId = 1;
+        else if(javaId == 1) bedrockId = 2;
+
+        chunkCache.sendEmptyChunks(this, cachedEntity.getPosition().toInt(), 3);
+
+        ChangeDimensionPacket changeDimensionPacket = new ChangeDimensionPacket();
+        changeDimensionPacket.setPosition(cachedEntity.getPosition());
+        changeDimensionPacket.setRespawn(true);
+        changeDimensionPacket.setDimension(bedrockId);
+
+        log.warn("change dimension: " + javaId + "  (" + bedrockId + ")");
+
+        sendPacket(changeDimensionPacket);
+
+        cachedEntity.setDimension(javaId);
+    }
+
     /**
      * Set a skin for the specified player.
      *
