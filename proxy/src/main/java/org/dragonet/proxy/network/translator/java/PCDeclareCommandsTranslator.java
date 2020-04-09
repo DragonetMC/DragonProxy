@@ -145,9 +145,9 @@ public class PCDeclareCommandsTranslator extends PacketTranslator<ServerDeclareC
                     (byte) 0, aliases, overloads));
         }
 
-        for(CommandData d : availableCommandsPacket.getCommands()) {
-            log.info(d.getName() + " " + d.getOverloads().length + " // " + Arrays.deepToString(d.getOverloads()));
-        }
+//        for(CommandData d : availableCommandsPacket.getCommands()) {
+//            log.info(d.getName() + " " + d.getOverloads().length + " // " + Arrays.deepToString(d.getOverloads()));
+//        }
 
         session.sendPacket(availableCommandsPacket);
     }

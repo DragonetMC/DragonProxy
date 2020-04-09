@@ -41,6 +41,6 @@ public class PCEntityTeleportTranslator extends PacketTranslator<ServerEntityTel
         }
 
         cachedEntity.moveAbsolute(session, Vector3f.from(packet.getX(), packet.getY(), packet.getZ()),
-            Vector3f.from(packet.getPitch(), packet.getYaw(), packet.getYaw()), packet.isOnGround(), true);
+            Vector3f.from(packet.getPitch(), packet.getYaw(), packet.getYaw()), packet.isOnGround(), false);
     }
 }

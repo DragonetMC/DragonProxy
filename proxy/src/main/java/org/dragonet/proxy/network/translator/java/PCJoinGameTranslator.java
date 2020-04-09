@@ -19,6 +19,7 @@
 package org.dragonet.proxy.network.translator.java;
 
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
+import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.nbt.CompoundTagBuilder;
@@ -97,6 +98,8 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
         PlayStatusPacket playStatus = new PlayStatusPacket();
         playStatus.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
         session.sendPacket(playStatus);
+
+        session.sendRemotePacket(new ClientPluginMessagePacket("minecraft:brand", "DragonProxy".getBytes()));
     }
 
 }

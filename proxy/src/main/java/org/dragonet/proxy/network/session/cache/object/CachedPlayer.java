@@ -116,7 +116,7 @@ public class CachedPlayer extends CachedEntity {
         movePlayerPacket.setEntityType(entityType.getType());
         movePlayerPacket.setMode(teleported ? MovePlayerPacket.Mode.TELEPORT : MovePlayerPacket.Mode.NORMAL);
         movePlayerPacket.setOnGround(onGround);
-        movePlayerPacket.setPosition(position);
+        movePlayerPacket.setPosition(getOffsetPosition());
         movePlayerPacket.setRotation(rotation);
 
         session.sendPacket(movePlayerPacket);
@@ -135,7 +135,7 @@ public class CachedPlayer extends CachedEntity {
         movePlayerPacket.setEntityType(entityType.getType());
         movePlayerPacket.setMode(teleported ? MovePlayerPacket.Mode.TELEPORT : MovePlayerPacket.Mode.NORMAL);
         movePlayerPacket.setOnGround(onGround);
-        movePlayerPacket.setPosition(position);
+        movePlayerPacket.setPosition(getOffsetPosition());
         movePlayerPacket.setRotation(rotation);
 
         session.sendPacket(movePlayerPacket);
