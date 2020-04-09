@@ -47,6 +47,15 @@ public class EntityMetaTranslator {
         translatorMap.put(BedrockEntityType.HORSE, new HorseMetaTranslator());
         translatorMap.put(BedrockEntityType.OCELOT, new OcelotMetaTranslator());
         translatorMap.put(BedrockEntityType.PIG, new PigMetaTranslator());
+        translatorMap.put(BedrockEntityType.ZOMBIE, new ZombieMetaTranslator());
+        translatorMap.put(BedrockEntityType.ZOMBIE_VILLAGER, new ZombieVillagerMetaTranslator());
+        translatorMap.put(BedrockEntityType.WITHER, new WitherMetaTranslator());
+        translatorMap.put(BedrockEntityType.SHEEP, new SheepMetaTranslator());
+        translatorMap.put(BedrockEntityType.BLAZE, new BlazeMetaTranslator());
+        translatorMap.put(BedrockEntityType.ENDERMAN, new EndermanMetaTranslator());
+        translatorMap.put(BedrockEntityType.CAT, new CatMetaTranslator());
+        translatorMap.put(BedrockEntityType.SNOW_GOLEM, new SnowGolemMetaTranslator());
+        translatorMap.put(BedrockEntityType.IRON_GOLEM, new IronGolemMetaTranslator());
     }
 
     /**
@@ -65,28 +74,26 @@ public class EntityMetaTranslator {
                     flags.setFlag(EntityFlag.SPRINTING, (javaFlags & 0x08) > 0);
                     flags.setFlag(EntityFlag.SWIMMING, (javaFlags & 0x10) > 0);
                     flags.setFlag(EntityFlag.GLIDING, (javaFlags & 0x80) > 0);
-                    flags.setFlag(EntityFlag.INVISIBLE, false);
 
-//                    if((javaFlags & 0x20) > 0) { // Invisible
-//                        // HACK! Setting the invisible flag will also hide the nametag on bedrock,
-//                        // so this hack is needed to simulate invisibility.
-//                        dictionary.put(EntityData.SCALE, 0.01f);
-//                    } else {
-//                        dictionary.put(EntityData.SCALE, entity.getScale());
-//                    }
+                    if((javaFlags & 0x20) > 0) { // Invisible
+                        // HACK! Setting the invisible flag will also hide the nametag on bedrock,
+                        // so this hack is needed to simulate invisibility.
+                        dictionary.put(EntityData.SCALE, 0.01f);
+                    } else {
+                        dictionary.put(EntityData.SCALE, entity.getScale());
+                    }
                     break;
                 case 1: // Air
-                    dictionary.put(EntityData.AIR, (short) (int) meta.getValue());
+                    dictionary.putShort(EntityData.AIR, (short) (int) meta.getValue());
                     break;
                 case 2: // Custom name
                     if(meta.getValue() != null) {
-                        dictionary.put(EntityData.NAMETAG, MessageTranslator.translate((Message) meta.getValue()));
+                        dictionary.putString(EntityData.NAMETAG, meta.getValue().toString());
                     }
                     break;
                 case 3: // Is custom name visible
                     if(!(entity instanceof CachedPlayer)) {
-                        // Should this be CAN_SHOW_NAME?
-                        dictionary.put(EntityData.ALWAYS_SHOW_NAMETAG, (boolean) meta.getValue() ? (byte) 1 : (byte) 0);
+                        dictionary.putByte(EntityData.ALWAYS_SHOW_NAMETAG, (boolean) meta.getValue() ? (byte) 1 : (byte) 0);
                     }
                     break;
                 case 4: // Is silent

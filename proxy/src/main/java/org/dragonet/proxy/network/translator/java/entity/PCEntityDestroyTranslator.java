@@ -40,7 +40,7 @@ public class PCEntityDestroyTranslator extends PacketTranslator<ServerEntityDest
             }
 
             log.trace("Destroying entity with proxy eid: " + cachedEntity.getProxyEid());
-            cachedEntity.despawn(session);
+            cachedEntity.destroy(session);
         }
     }
 }
