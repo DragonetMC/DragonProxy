@@ -146,7 +146,7 @@ public class DragonProxy {
         }
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory()).enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
-        configuration = mapper.readValue(new FileInputStream("config.yml"), DragonConfiguration.class);
+        configuration = mapper.readValue(new FileInputStream(new File(dataFolder, "config.yml")), DragonConfiguration.class);
 
         if(configuration.getConfigVersion() < CONFIG_VERSION) {
             log.error("Outdated config.yml file. Please delete the file to allow it to regenerate.");
