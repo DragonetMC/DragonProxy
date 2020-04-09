@@ -23,6 +23,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSl
 import com.nukkitx.protocol.bedrock.data.ContainerId;
 import com.nukkitx.protocol.bedrock.data.ItemData;
 import com.nukkitx.protocol.bedrock.packet.InventoryContentPacket;
+import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.translator.misc.inventory.GenericInventoryTranslator;
@@ -30,6 +31,7 @@ import org.dragonet.proxy.network.translator.misc.inventory.GenericInventoryTran
 import java.util.HashMap;
 import java.util.Map;
 
+@Log4j2
 public class InventoryTranslator {
     public static final Map<WindowType, GenericInventoryTranslator> TRANSLATORS = new HashMap<>();
 
@@ -69,7 +71,6 @@ public class InventoryTranslator {
         }
 
         inventoryContentPacket.setContents(contents);
-        // TODO: fixes issues on cubecraft and hypixel with crashing clients. Need to investate.
         session.sendPacket(inventoryContentPacket);
     }
 

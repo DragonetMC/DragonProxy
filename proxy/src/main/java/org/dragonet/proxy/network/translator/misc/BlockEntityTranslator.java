@@ -71,7 +71,7 @@ public class BlockEntityTranslator {
         CompoundTagBuilder root = CompoundTagBuilder.builder(); //ItemTranslate.translateRawNBT(javaTag).toBuilder()
 
         if(!javaTag.contains("id")) {
-            log.warn("Tag does not contain id");
+            //log.warn("Tag does not contain id");
             return null;
         }
 
@@ -79,7 +79,7 @@ public class BlockEntityTranslator {
         String bedrockId = getBedrockIdentifier(javaId);
 
         if(bedrockId == null) {
-            log.info(TextFormat.GRAY + "(debug) Unhandled block entity: " + javaId);
+            //log.info(TextFormat.GRAY + "(debug) Unhandled block entity: " + javaId);
             bedrockId = javaId; // Fall back
         }
 

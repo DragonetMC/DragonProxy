@@ -38,7 +38,7 @@ public class PCSpawnMobTranslator extends PacketTranslator<ServerSpawnMobPacket>
     public void translate(ProxySession session, ServerSpawnMobPacket packet) {
         CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(packet.getEntityId());
         if(cachedEntity != null) {
-            log.trace("Cached entity already exists, cant spawn a new one");
+            log.info("Cached entity already exists, cant spawn a new one");
             return;
         }
 

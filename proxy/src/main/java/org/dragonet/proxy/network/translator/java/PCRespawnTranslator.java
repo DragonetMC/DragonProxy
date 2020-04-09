@@ -45,13 +45,26 @@ public class PCRespawnTranslator extends PacketTranslator<ServerRespawnPacket> {
         // Set the players gamemode
         SetPlayerGameTypePacket setPlayerGameTypePacket = new SetPlayerGameTypePacket();
         setPlayerGameTypePacket.setGamemode(packet.getGamemode().ordinal());
-        session.sendPacket(setPlayerGameTypePacket);
+        //session.sendPacket(setPlayerGameTypePacket);
 
-        cachedPlayer.setGameMode(packet.getGamemode());
+        //cachedPlayer.setGameMode(packet.getGamemode());
+
+        if(session.isHasReceivedDimensionPacket()) {
+
+        }
 
         // Handle dimension change
         if(cachedPlayer.getDimension() != packet.getDimension()) {
             session.switchDimension(packet.getDimension());
+        } else {
+            if (session.isManyDimPackets()) { //reloading world
+                int fakeDim = cachedPlayer.getDimension() == 0 ? -1 : 0;
+                session.switchDimension(fakeDim);
+                session.switchDimension(packet.getDimension());
+            } else {
+                // Handled in JavaPlayerPositionRotationTranslator
+                cachedPlayer.setSpawned(false);
+            }
         }
     }
 }

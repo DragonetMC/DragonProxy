@@ -19,6 +19,7 @@
 package org.dragonet.proxy.network.translator.misc.entity.living;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.MetadataType;
 import com.nukkitx.protocol.bedrock.data.EntityData;
 import com.nukkitx.protocol.bedrock.data.EntityDataMap;
 import org.dragonet.proxy.network.session.ProxySession;
@@ -32,7 +33,9 @@ public class WolfMetaTranslator extends AbstractTameableMetaTranslator {
             case 18: // Is begging
                 break;
             case 19: // Collar color
-                dictionary.putByte(EntityData.COLOR, (byte) (int) metadata.getValue());
+                if(metadata.getType() == MetadataType.INT) {
+                    dictionary.putByte(EntityData.COLOR, (byte) (int) metadata.getValue());
+                }
                 break;
         }
         super.translateToBedrock(session, dictionary, metadata);

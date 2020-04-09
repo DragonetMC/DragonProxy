@@ -39,6 +39,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Log4j2
 public class ItemTranslator {
+    private static final int BEDROCK_SKULL_ID = 397;
+
     private static final Int2ObjectMap<ItemEntry> javaToBedrockMap = new Int2ObjectOpenHashMap<>();
     private static final Int2ObjectMap<ItemEntry> bedrockToJavaMap = new Int2ObjectOpenHashMap<>();
 
@@ -71,7 +73,8 @@ public class ItemTranslator {
         }
         ItemEntry bedrockItem = javaToBedrockMap.get(item.getId());
 
-        if (item.getNbt() == null) {
+        // Skull NBT will crash a Bedrock client. This is a quick fix but more should be done.
+        if (item.getNbt() == null || bedrockItem.getBedrockRuntimeId() == BEDROCK_SKULL_ID) {
             return ItemData.of(bedrockItem.getBedrockRuntimeId(), (short) bedrockItem.getBedrockData(), item.getAmount());
         }
         return ItemData.of(bedrockItem.getBedrockRuntimeId(), (short) bedrockItem.getBedrockData(), item.getAmount(), translateItemNBT(item.getNbt()));

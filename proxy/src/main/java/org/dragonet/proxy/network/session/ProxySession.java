@@ -25,6 +25,7 @@ import com.github.steveice10.mc.protocol.data.SubProtocol;
 import com.github.steveice10.mc.protocol.data.game.ClientRequest;
 import com.github.steveice10.mc.protocol.data.game.statistic.Statistic;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientRequestPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.ServerRespawnPacket;
 import com.github.steveice10.packetlib.Client;
 import com.github.steveice10.packetlib.event.session.ConnectedEvent;
 import com.github.steveice10.packetlib.event.session.DisconnectedEvent;
@@ -105,6 +106,8 @@ public class ProxySession implements PlayerSession {
 
     private Vector3i lastClickedPosition = null;
     private CachedEntity lastClickedEntity = null;
+
+    private boolean hasReceivedDimensionPacket = false;
 
     public ProxySession(DragonProxy proxy, BedrockServerSession bedrockSession) {
         this.proxy = proxy;
@@ -407,8 +410,6 @@ public class ProxySession implements PlayerSession {
         if(javaId == -1) bedrockId = 1;
         else if(javaId == 1) bedrockId = 2;
 
-        chunkCache.sendEmptyChunks(this, cachedEntity.getPosition().toInt(), 3);
-
         ChangeDimensionPacket changeDimensionPacket = new ChangeDimensionPacket();
         changeDimensionPacket.setPosition(cachedEntity.getPosition());
         changeDimensionPacket.setRespawn(true);
@@ -417,6 +418,8 @@ public class ProxySession implements PlayerSession {
         log.warn("change dimension: " + javaId + "  (" + bedrockId + ")");
 
         sendPacket(changeDimensionPacket);
+
+        //chunkCache.sendEmptyChunks(this, cachedEntity.getPosition().toInt(), 3);
 
         cachedEntity.setDimension(javaId);
     }

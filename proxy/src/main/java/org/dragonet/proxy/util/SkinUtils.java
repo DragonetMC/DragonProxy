@@ -78,7 +78,7 @@ public class SkinUtils {
         try {
             service.fillProfileTextures(profile, false);
         } catch (PropertyException e) {
-            log.warn("Failed to fill profile with textures: " + e.getMessage());
+            log.debug("Failed to fill profile with textures: " + e.getMessage());
             return null;
         }
 
