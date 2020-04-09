@@ -16,28 +16,22 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.java;
+package org.dragonet.proxy.network.translator.java.window;
 
-import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerCloseWindowPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientConfirmTransactionPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerConfirmTransactionPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.util.TextFormat;
+
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerCloseWindowPacket.class)
-public class PCCloseWindowTranslator extends PacketTranslator<ServerCloseWindowPacket> {
+@PCPacketTranslator(packetClass = ServerConfirmTransactionPacket.class)
+public class PCConfirmTransactionTranslator extends PacketTranslator<ServerConfirmTransactionPacket> {
 
     @Override
-    public void translate(ProxySession session, ServerCloseWindowPacket packet) {
-        CachedWindow cachedWindow = session.getWindowCache().getById(packet.getWindowId());
-        if(cachedWindow == null) {
-            log.info(TextFormat.GRAY + "(debug) PCCloseWindowTranslator: cached window is null");
-            return;
-        }
-
-        cachedWindow.close(session);
+    public void translate(ProxySession session, ServerConfirmTransactionPacket packet) {
+        session.sendRemotePacket(new ClientConfirmTransactionPacket(packet.getWindowId(), packet.getActionId(), packet.isAccepted()));
     }
 }

@@ -16,42 +16,35 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.java;
+package org.dragonet.proxy.network.translator.java.window;
 
-import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowPropertyPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.WindowCache;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.network.translator.misc.InventoryTranslator;
 
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerWindowItemsPacket.class)
-public class PCWindowItemsTranslator extends PacketTranslator<ServerWindowItemsPacket> {
-    public static final PCWindowItemsTranslator INSTANCE = new PCWindowItemsTranslator();
+@PCPacketTranslator(packetClass = ServerWindowPropertyPacket.class)
+public class PCWindowPropertyTranslator extends PacketTranslator<ServerWindowPropertyPacket> {
 
     @Override
-    public void translate(ProxySession session, ServerWindowItemsPacket packet) {
+    public void translate(ProxySession session, ServerWindowPropertyPacket packet) {
         WindowCache windowCache = session.getWindowCache();
         if(!windowCache.getWindows().containsKey(packet.getWindowId())) {
-            log.info("(debug) WindowItemsTranslator: Window not in cache, id: " + packet.getWindowId());
-            return;
-        }
-//        log.warn("Window items translator: " + packet.getWindowId() + " - " + windowCache.getById(packet.getWindowId()).getWindowType().name());
-        CachedWindow window = windowCache.getWindows().get(packet.getWindowId());
-        if(packet.getWindowId() != 0 && window.getWindowType() == null) {
+            //log.info("(debug) WindowPropertyTranslator: Window not in cache, id: " + packet.getWindowId());
             return;
         }
 
-        if(packet.getWindowId() == 0) {
-            if(packet.getItems().length < 40) {
-                return; // TODO: check this?
-            }
-            window.setItems(packet.getItems());
-            InventoryTranslator.sendPlayerInventory(session);
+        CachedWindow window = windowCache.getWindows().get(packet.getWindowId());
+
+        switch(window.getWindowType()) {
+            case FURNACE:
+
+                break;
         }
     }
 }

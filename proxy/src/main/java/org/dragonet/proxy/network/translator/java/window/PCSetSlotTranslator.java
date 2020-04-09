@@ -16,7 +16,7 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.java;
+package org.dragonet.proxy.network.translator.java.window;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
@@ -38,7 +38,7 @@ public class PCSetSlotTranslator extends PacketTranslator<ServerSetSlotPacket> {
     public void translate(ProxySession session, ServerSetSlotPacket packet) {
         WindowCache windowCache = session.getWindowCache();
         if(!windowCache.getWindows().containsKey(packet.getWindowId())) {
-            log.info(TextFormat.GRAY + "(debug) SetSlotTranslator: Window not in cache, id: " + packet.getWindowId());
+            //log.info(TextFormat.GRAY + "(debug) SetSlotTranslator: Window not in cache, id: " + packet.getWindowId());
             return;
         }
         CachedWindow window = windowCache.getWindows().get(packet.getWindowId());

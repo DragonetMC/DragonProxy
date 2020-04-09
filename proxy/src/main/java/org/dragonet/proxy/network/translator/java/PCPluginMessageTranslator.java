@@ -34,9 +34,6 @@ public class PCPluginMessageTranslator extends PacketTranslator<ServerPluginMess
             case "minecraft:brand":
 
                 break;
-            case "dragonproxy:brand":
-
-                break;
         }
     }
 }

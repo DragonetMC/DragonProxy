@@ -16,35 +16,28 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.java;
+package org.dragonet.proxy.network.translator.java.window;
 
-import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowPropertyPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerCloseWindowPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.session.cache.WindowCache;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-
+import org.dragonet.proxy.util.TextFormat;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerWindowPropertyPacket.class)
-public class PCWindowPropertyTranslator extends PacketTranslator<ServerWindowPropertyPacket> {
+@PCPacketTranslator(packetClass = ServerCloseWindowPacket.class)
+public class PCCloseWindowTranslator extends PacketTranslator<ServerCloseWindowPacket> {
 
     @Override
-    public void translate(ProxySession session, ServerWindowPropertyPacket packet) {
-        WindowCache windowCache = session.getWindowCache();
-        if(!windowCache.getWindows().containsKey(packet.getWindowId())) {
-            //log.info("(debug) WindowPropertyTranslator: Window not in cache, id: " + packet.getWindowId());
+    public void translate(ProxySession session, ServerCloseWindowPacket packet) {
+        CachedWindow cachedWindow = session.getWindowCache().getById(packet.getWindowId());
+        if(cachedWindow == null) {
+            log.info(TextFormat.GRAY + "(debug) PCCloseWindowTranslator: cached window is null");
             return;
         }
 
-        CachedWindow window = windowCache.getWindows().get(packet.getWindowId());
-
-        switch(window.getWindowType()) {
-            case FURNACE:
-
-                break;
-        }
+        cachedWindow.close(session);
     }
 }
