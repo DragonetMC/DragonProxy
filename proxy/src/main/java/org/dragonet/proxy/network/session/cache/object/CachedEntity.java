@@ -83,7 +83,7 @@ public class CachedEntity {
         this.proxyEid = proxyEid;
         this.remoteEid = remoteEid;
 
-        addDefaultMetadata();
+        addDefaultData();
     }
 
     public CachedEntity(BedrockEntityType entityType, long proxyEid) {
@@ -91,7 +91,7 @@ public class CachedEntity {
         this.proxyEid = proxyEid;
         this.local = true;
 
-        addDefaultMetadata();
+        addDefaultData();
     }
 
     public void spawn(ProxySession session) {
@@ -108,7 +108,8 @@ public class CachedEntity {
         addEntityPacket.setMotion(Vector3f.ZERO);
         addEntityPacket.setPosition(position);
 
-        addEntityPacket.getMetadata().putAll(getMetadata());
+        addEntityPacket.getMetadata().putAll(metadata);
+        addEntityPacket.getAttributes().addAll(attributes.values());
 
         //log.info(getMetadata());
 
@@ -212,7 +213,19 @@ public class CachedEntity {
 
     }
 
-    private void addDefaultMetadata() {
+    private void addDefaultData() {
+        scale = 1f;
+
+        // Metadata
+        metadata.put(EntityData.SCALE, 1f);
+        metadata.put(EntityData.AIR, (short) 400);
+        metadata.put(EntityData.MAX_AIR, (short) 400);
+        metadata.put(EntityData.NAMETAG, "");
+        metadata.put(EntityData.BOUNDING_BOX_HEIGHT, entityType.getHeight());
+        metadata.put(EntityData.BOUNDING_BOX_WIDTH, entityType.getWidth());
+        metadata.put(EntityData.LEAD_HOLDER_EID, (long) -1);
+
+        // Metadata flags
         EntityFlags flags = new EntityFlags();
         flags.setFlag(EntityFlag.HAS_GRAVITY, true);
         flags.setFlag(EntityFlag.HAS_COLLISION, true);
@@ -221,15 +234,11 @@ public class CachedEntity {
         flags.setFlag(EntityFlag.CAN_WALK, true);
         flags.setFlag(EntityFlag.BREATHING, true);
 
-        scale = 1f;
-        metadata.put(EntityData.SCALE, 1f);
-        metadata.put(EntityData.AIR, (short) 400);
-        metadata.put(EntityData.MAX_AIR, (short) 400);
-        metadata.put(EntityData.NAMETAG, "");
-        metadata.put(EntityData.BOUNDING_BOX_HEIGHT, entityType.getHeight());
-        metadata.put(EntityData.BOUNDING_BOX_WIDTH, entityType.getWidth());
-        metadata.put(EntityData.LEAD_HOLDER_EID, (long) -1);
+        // Add the flags to the metadata
         metadata.putFlags(flags);
+
+        // Attributes
+        attributes.put(BedrockAttributeType.MOVEMENT_SPEED, BedrockAttributeType.MOVEMENT_SPEED.createDefault());
     }
 
     public Vector3f getOffsetPosition() {

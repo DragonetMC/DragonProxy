@@ -307,6 +307,7 @@ public class ProxySession implements PlayerSession {
         bedrockSession.sendPacket(playerListPacket);
 
         cachedEntity.sendMetadata(this);
+        cachedEntity.sendAttributes(this);
 
         // Set the render distance
         ChunkRadiusUpdatedPacket chunkRadiusUpdatedPacket = new ChunkRadiusUpdatedPacket();
