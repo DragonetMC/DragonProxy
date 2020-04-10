@@ -70,7 +70,7 @@ public class MetricsManager {
         Metrics metrics = new Metrics("DragonProxy", serverId.toString(), 2094);
         metrics.addCustomChart(new Metrics.SingleLineChart("servers", () -> 1));
         metrics.addCustomChart(new Metrics.SimplePie("bedrock_versions", DragonProxy.BEDROCK_CODEC::getMinecraftVersion));
-        //metrics.addCustomChart(new Metrics.SingleLineChart("players", () -> 1));
+        metrics.addCustomChart(new Metrics.SingleLineChart("players", () -> proxy.getSessionManager().getSessions().size()));
 
         metrics.addCustomChart(new Metrics.SimplePie("auth_type", () -> {
             String authType = proxy.getConfiguration().getRemoteAuthType().name().toLowerCase();
