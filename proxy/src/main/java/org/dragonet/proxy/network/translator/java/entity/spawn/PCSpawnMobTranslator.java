@@ -51,6 +51,7 @@ public class PCSpawnMobTranslator extends PacketTranslator<ServerSpawnMobPacket>
         cachedEntity = session.getEntityCache().newEntity(entityType, packet.getEntityId());
 
         if(packet.getType() == MobType.GIANT) {
+            cachedEntity.setScale(5f);
             cachedEntity.getMetadata().put(EntityData.SCALE, 5f);
         }
 

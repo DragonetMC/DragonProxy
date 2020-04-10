@@ -11,6 +11,10 @@ A proxy made to allow **Minecraft: Bedrock Edition** clients to connect to **Min
 Bedrock 1.14.x // Java 1.15.2
 ```
 
+## Stats
+See live stats on BStats
+[![Bstats](https://bstats.org/signatures/server-implementation/DragonProxy.svg)](https://bstats.org/plugin/server-implementation/DragonProxy/)
+
 ## What's been done so far
 See the (almost) full list in [#464](https://github.com/DragonetMC/DragonProxy/issues/464).
 
