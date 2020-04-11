@@ -31,6 +31,7 @@ import org.dragonet.proxy.network.session.cache.object.CachedItemEntity;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.misc.entity.living.*;
 import org.dragonet.proxy.network.translator.misc.entity.IMetaTranslator;
+import org.dragonet.proxy.network.translator.misc.entity.object.FishHookMetaTranslator;
 import org.dragonet.proxy.network.translator.misc.entity.object.ItemEntityMetaTranslator;
 
 import java.util.HashMap;
@@ -42,6 +43,7 @@ public class EntityMetaTranslator {
 
     static {
         translatorMap.put(BedrockEntityType.ITEM, new ItemEntityMetaTranslator());
+        translatorMap.put(BedrockEntityType.FISHING_HOOK, new FishHookMetaTranslator());
         translatorMap.put(BedrockEntityType.CREEPER, new CreeperMetaTranslator());
         translatorMap.put(BedrockEntityType.WOLF, new WolfMetaTranslator());
         translatorMap.put(BedrockEntityType.HORSE, new HorseMetaTranslator());
