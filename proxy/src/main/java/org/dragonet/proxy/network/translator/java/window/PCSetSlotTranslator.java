@@ -20,14 +20,13 @@ package org.dragonet.proxy.network.translator.java.window;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerSetSlotPacket;
+import com.nukkitx.protocol.bedrock.data.ContainerId;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.WindowCache;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.network.translator.misc.InventoryTranslator;
-import org.dragonet.proxy.util.TextFormat;
 
 
 @Log4j2
@@ -42,7 +41,6 @@ public class PCSetSlotTranslator extends PacketTranslator<ServerSetSlotPacket> {
             return;
         }
         CachedWindow window = windowCache.getWindows().get(packet.getWindowId());
-//        log.warn("Set slot translator: " + packet.getWindowId());
         if(packet.getWindowId() != 0 && window.getWindowType() == null) {
             return;
         }
@@ -55,13 +53,14 @@ public class PCSetSlotTranslator extends PacketTranslator<ServerSetSlotPacket> {
             items[packet.getSlot()] = packet.getItem();
             window.setItems(items);
 
-            InventoryTranslator.sendPlayerInventory(session);
+            //InventoryTranslator.sendPlayerInventory(session);
         }
 
-        if(window.isOpen()) {
-            // update slot
+        if(window.isOpen() || window.getWindowId() == ContainerId.INVENTORY) {
+            window.getItems()[packet.getSlot()] = packet.getItem();
+            window.sendSlot(session, packet.getSlot());
         } else {
-            // cache packet
+            log.warn("tried to set slot of closed inventory");
         }
     }
 }

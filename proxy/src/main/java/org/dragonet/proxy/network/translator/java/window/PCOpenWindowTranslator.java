@@ -19,6 +19,7 @@
 package org.dragonet.proxy.network.translator.java.window;
 
 import com.github.steveice10.mc.protocol.data.game.window.WindowType;
+import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientCloseWindowPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.window.BedrockWindowType;
@@ -26,7 +27,10 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.InventoryTranslator;
 import org.dragonet.proxy.network.translator.misc.MessageTranslator;
+import org.dragonet.proxy.network.translator.misc.inventory.IInventoryTranslator;
+import org.dragonet.proxy.network.translator.misc.inventory.SingleChestInventoryTranslator;
 import org.dragonet.proxy.util.TextFormat;
 
 import java.util.HashMap;
@@ -35,34 +39,26 @@ import java.util.Map;
 @Log4j2
 @PCPacketTranslator(packetClass = ServerOpenWindowPacket.class)
 public class PCOpenWindowTranslator extends PacketTranslator<ServerOpenWindowPacket> {
-    private static final Map<WindowType, BedrockWindowType> windowMap = new HashMap<>();
+    private static final Map<WindowType, IInventoryTranslator> windowMap = new HashMap<>();
 
     static {
-        windowMap.put(WindowType.ANVIL, BedrockWindowType.ANVIL);
-        windowMap.put(WindowType.BEACON, BedrockWindowType.BEACON);
-        windowMap.put(WindowType.ENCHANTMENT, BedrockWindowType.ENCHANT_TABLE);
-        windowMap.put(WindowType.BREWING_STAND, BedrockWindowType.BREWING_STAND);
-        windowMap.put(WindowType.FURNACE, BedrockWindowType.FURNACE);
-        windowMap.put(WindowType.HOPPER, BedrockWindowType.HOPPER);
-        windowMap.put(WindowType.CRAFTING, BedrockWindowType.CRAFTING_TABLE);
-        //windowMap.put(WindowType.MERCHANT, BedrockWindowType.TRADING);
-        windowMap.put(WindowType.BLAST_FURNACE, BedrockWindowType.BLAST_FURNACE);
-        windowMap.put(WindowType.SMOKER, BedrockWindowType.SMOKER);
-        windowMap.put(WindowType.STONECUTTER, BedrockWindowType.STONECUTTER);
-        // TODO: chest style inventories
+        windowMap.put(WindowType.GENERIC_9X1, new SingleChestInventoryTranslator(9));
+        windowMap.put(WindowType.GENERIC_9X2, new SingleChestInventoryTranslator(18));
+        windowMap.put(WindowType.GENERIC_9X3, new SingleChestInventoryTranslator(27));
     }
 
     @Override
     public void translate(ProxySession session, ServerOpenWindowPacket packet) {
-        BedrockWindowType bedrockWindowType = windowMap.get(packet.getType());
-        if(bedrockWindowType == null) {
-            log.info(TextFormat.GRAY + "(debug) Unhandled window type: " + packet.getType().name() + TextFormat.AQUA + " It is not supported yet.");
+        IInventoryTranslator bedrockWindowTranslator = windowMap.get(packet.getType());
+        if(bedrockWindowTranslator == null) {
+            log.info(TextFormat.GRAY + "(debug) Unhandled window type: " + packet.getType().name() + ". It is not supported yet.");
+
+            // Close the window
+            session.sendRemotePacket(new ClientCloseWindowPacket(packet.getWindowId()));
             return;
         }
 
-        //log.warn("WINDOW: " + packet.getWindowId() + " - " + packet.getType().name());
-
-        CachedWindow cachedWindow = session.getWindowCache().newWindow(bedrockWindowType, packet.getWindowId());
+        CachedWindow cachedWindow = session.getWindowCache().newWindow(bedrockWindowTranslator, packet.getWindowId());
         cachedWindow.setName(MessageTranslator.translate(packet.getName()));
         cachedWindow.open(session);
 

@@ -25,6 +25,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import org.dragonet.proxy.data.window.BedrockWindowType;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
+import org.dragonet.proxy.network.translator.misc.inventory.IInventoryTranslator;
+import org.dragonet.proxy.network.translator.misc.inventory.PlayerInventoryTranslator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,9 +38,10 @@ public class WindowCache implements Cache {
     private AtomicInteger javaActionIdAllocator = new AtomicInteger(1);
 
     private AtomicInteger localWindowIdAllocator = new AtomicInteger(1000);
+    private AtomicInteger transactionIdCounter = new AtomicInteger(0);
 
     public WindowCache() {
-        windows.put(0, new CachedWindow(0, null, 45));
+        windows.put(0, new CachedWindow(0, new PlayerInventoryTranslator(45)));
     }
 
     public CachedWindow getPlayerInventory() {
@@ -52,8 +55,8 @@ public class WindowCache implements Cache {
         return null;
     }
 
-    public CachedWindow newWindow(BedrockWindowType windowType, int windowId) {
-        CachedWindow window = new CachedWindow(windowId, windowType, 50);
+    public CachedWindow newWindow(IInventoryTranslator inventoryTranslator, int windowId) {
+        CachedWindow window = new CachedWindow(windowId, inventoryTranslator);
         windows.put(window.getWindowId(), window);
         return window;
     }

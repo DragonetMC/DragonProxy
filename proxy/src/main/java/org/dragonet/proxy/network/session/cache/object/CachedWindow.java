@@ -31,6 +31,7 @@ import org.dragonet.proxy.data.window.BedrockWindowType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.misc.BlockEntityTranslator;
 import org.dragonet.proxy.network.translator.misc.BlockTranslator;
+import org.dragonet.proxy.network.translator.misc.inventory.IInventoryTranslator;
 
 @Data
 @Log4j2
@@ -38,6 +39,7 @@ public class CachedWindow {
     private final int windowId;
 
     private ItemStack[] items;
+    private IInventoryTranslator inventoryTranslator;
     private BedrockWindowType windowType;
 
     private String name;
@@ -45,10 +47,11 @@ public class CachedWindow {
 
     private Vector3i fakeBlockPosition = null;
 
-    public CachedWindow(int windowId, BedrockWindowType windowType, int size) {
+    public CachedWindow(int windowId, IInventoryTranslator inventoryTranslator) {
         this.windowId = windowId;
-        this.windowType = windowType;
-        this.items = new ItemStack[size];
+        this.inventoryTranslator = inventoryTranslator;
+        this.items = new ItemStack[inventoryTranslator.getSize()];
+        this.windowType = inventoryTranslator.getBedrockWindowType();
     }
 
     public void open(ProxySession session) {
@@ -94,6 +97,14 @@ public class CachedWindow {
         open = false;
 
         // TODO: should we remove the window from the cache at this point? i'll leave it for now.
+    }
+
+    public void sendInventory(ProxySession session) {
+        inventoryTranslator.updateInventory(session, this);
+    }
+
+    public void sendSlot(ProxySession session, int slot) {
+        inventoryTranslator.updateSlot(session, this, slot);
     }
 
     private void sendFakeEntity(ProxySession session, Vector3i position) {

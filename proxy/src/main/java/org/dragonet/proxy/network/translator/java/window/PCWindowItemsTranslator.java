@@ -19,13 +19,13 @@
 package org.dragonet.proxy.network.translator.java.window;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerWindowItemsPacket;
+import com.nukkitx.protocol.bedrock.data.ContainerId;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.WindowCache;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.network.translator.misc.InventoryTranslator;
 
 
 @Log4j2
@@ -46,12 +46,11 @@ public class PCWindowItemsTranslator extends PacketTranslator<ServerWindowItemsP
             return;
         }
 
-        if(packet.getWindowId() == 0) {
-            if(packet.getItems().length < 40) {
-                return; // TODO: check this?
-            }
+        if(window.isOpen() || window.getWindowId() == ContainerId.INVENTORY) {
             window.setItems(packet.getItems());
-            InventoryTranslator.sendPlayerInventory(session);
+            window.sendInventory(session);
+        } else {
+            log.warn("tried to set items of closed inventory");
         }
     }
 }

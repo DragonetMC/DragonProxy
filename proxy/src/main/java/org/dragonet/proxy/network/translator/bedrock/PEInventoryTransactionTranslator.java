@@ -18,6 +18,7 @@
  */
 package org.dragonet.proxy.network.translator.bedrock;
 
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
@@ -35,6 +36,7 @@ import com.nukkitx.protocol.bedrock.packet.InventoryTransactionPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
+import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
 import org.dragonet.proxy.network.translator.misc.ItemTranslator;
@@ -55,7 +57,10 @@ public class PEInventoryTransactionTranslator extends PacketTranslator<Inventory
 
                     switch(source.getType()) {
                         case WORLD_INTERACTION:
-                            session.sendRemotePacket(new ClientPlayerActionPacket(PlayerAction.DROP_ITEM, new Position(0, 0, 0), BlockFace.UP));
+                            session.sendRemotePacket(new ClientPlayerActionPacket(action.getToItem().getCount() == 0 ?
+                                PlayerAction.DROP_ITEM_STACK : PlayerAction.DROP_ITEM, new Position(0, 0, 0), BlockFace.UP));
+
+                            // TODO: remove from inventory
                             break;
                         case CREATIVE:
                             switch(action.getSlot()) {
@@ -67,6 +72,9 @@ public class PEInventoryTransactionTranslator extends PacketTranslator<Inventory
                                         ItemTranslator.translateToJava(action.getFromItem())));
                                     break;
                             }
+                            break;
+                        case CONTAINER:
+                            //log.warn("CONTAINER: " + source);
                             break;
                     }
                 }
