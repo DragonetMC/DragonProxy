@@ -36,10 +36,11 @@ public class PCSpawnExpOrbTranslator extends PacketTranslator<ServerSpawnExpOrbP
     public void translate(ProxySession session, ServerSpawnExpOrbPacket packet) {
         SpawnExperienceOrbPacket spawnExperienceOrbPacket = new SpawnExperienceOrbPacket();
         spawnExperienceOrbPacket.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
-        spawnExperienceOrbPacket.setAmount(packet.getEntityId());
+        spawnExperienceOrbPacket.setAmount(packet.getExp());
 
         session.sendPacket(spawnExperienceOrbPacket);
 
+        // Cache it so the server can remove them if it chooses
         CachedEntity cachedEntity = session.getEntityCache().newEntity(BedrockEntityType.EXPERIENCE_ORB, packet.getEntityId());
         cachedEntity.setSpawned(true);
     }
