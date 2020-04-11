@@ -43,7 +43,6 @@ public class PlayerInventoryTranslator extends IInventoryTranslator {
 
     @Override
     public void updateSlot(ProxySession session, CachedWindow window, int slot) {
-        InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
-        inventorySlotPacket.setContainerId(ContainerId.INVENTORY);
+        updateInventory(session, window); // TODO: Dont send entire inventory
     }
 }

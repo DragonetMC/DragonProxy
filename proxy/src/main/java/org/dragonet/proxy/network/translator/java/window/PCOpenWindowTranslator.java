@@ -29,6 +29,7 @@ import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.misc.InventoryTranslator;
 import org.dragonet.proxy.network.translator.misc.MessageTranslator;
+import org.dragonet.proxy.network.translator.misc.inventory.AnvilInventoryTranslator;
 import org.dragonet.proxy.network.translator.misc.inventory.IInventoryTranslator;
 import org.dragonet.proxy.network.translator.misc.inventory.SingleChestInventoryTranslator;
 import org.dragonet.proxy.util.TextFormat;
@@ -45,6 +46,7 @@ public class PCOpenWindowTranslator extends PacketTranslator<ServerOpenWindowPac
         windowMap.put(WindowType.GENERIC_9X1, new SingleChestInventoryTranslator(9));
         windowMap.put(WindowType.GENERIC_9X2, new SingleChestInventoryTranslator(18));
         windowMap.put(WindowType.GENERIC_9X3, new SingleChestInventoryTranslator(27));
+        windowMap.put(WindowType.ANVIL, new AnvilInventoryTranslator(38));
     }
 
     @Override

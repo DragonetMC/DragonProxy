@@ -23,6 +23,7 @@ import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.data.EntityData;
+import com.nukkitx.protocol.bedrock.data.ItemData;
 import com.nukkitx.protocol.bedrock.packet.*;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
@@ -31,6 +32,7 @@ import org.dragonet.proxy.data.window.BedrockWindowType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.misc.BlockEntityTranslator;
 import org.dragonet.proxy.network.translator.misc.BlockTranslator;
+import org.dragonet.proxy.network.translator.misc.ItemTranslator;
 import org.dragonet.proxy.network.translator.misc.inventory.IInventoryTranslator;
 
 @Data
@@ -105,6 +107,21 @@ public class CachedWindow {
 
     public void sendSlot(ProxySession session, int slot) {
         inventoryTranslator.updateSlot(session, this, slot);
+    }
+
+    public boolean setItem(int slot, ItemData item) {
+        if(slot > items.length) {
+            return false;
+        }
+        this.items[slot] = ItemTranslator.translateToJava(item);
+        return true;
+    }
+
+    public ItemData getItem(int slot) {
+        if(items[slot] == null) {
+            return null;
+        }
+        return ItemTranslator.translateToBedrock(items[slot]);
     }
 
     private void sendFakeEntity(ProxySession session, Vector3i position) {
