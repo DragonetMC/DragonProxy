@@ -75,7 +75,7 @@ public class PEPlayerActionTranslator extends PacketTranslator<PlayerActionPacke
                 break;
             case START_GLIDE:
             case STOP_GLIDE:
-                //session.sendRemotePacket(new ClientPlayerStatePacket(cachedEntity.getRemoteEid(), PlayerState.START_ELYTRA_FLYING));
+                session.sendRemotePacket(new ClientPlayerStatePacket(cachedEntity.getRemoteEid(), PlayerState.START_ELYTRA_FLYING));
                 break;
             case START_BREAK:
                 session.sendRemotePacket(new ClientPlayerActionPacket(PlayerAction.START_DIGGING, new Position(packet.getBlockPosition().getX(),
@@ -107,10 +107,11 @@ public class PEPlayerActionTranslator extends PacketTranslator<PlayerActionPacke
                     packet.getBlockPosition().getZ()), BlockFace.values()[packet.getFace()], Hand.MAIN_HAND, 0, 0, 0, false));
                 break;
             case JUMP:
-
                 break;
             case CHANGE_SKIN:
-
+                break;
+            case START_SWIMMING:
+            case STOP_SWIMMING:
                 break;
             default:
                 log.info(TextFormat.GRAY + "(debug) Unhandled player action: " + packet.getAction().name());
