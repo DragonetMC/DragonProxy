@@ -66,8 +66,8 @@ public class ProxyServerEventListener implements BedrockServerEventHandler {
                 pong.setSubMotd(config.getMotd2());
 
                 // Add 1 to prevent the bedrock client for disallowing the player to join the server
-                pong.setPlayerCount(serverInfo.getPlayerInfo().getOnlinePlayers() + 1);
-                pong.setMaximumPlayerCount(serverInfo.getPlayerInfo().getMaxPlayers());
+                pong.setMaximumPlayerCount(serverInfo.getPlayerInfo().getMaxPlayers() + 1);
+                pong.setPlayerCount(serverInfo.getPlayerInfo().getOnlinePlayers());
             }
         } else {
             pong.setPlayerCount(proxy.getSessionManager().getPlayerCount());

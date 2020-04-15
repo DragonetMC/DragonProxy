@@ -8,7 +8,7 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.misc.entity.IMetaTranslator;
 
 @Log4j2
-public class FishHookMetaTranslator implements IMetaTranslator {
+public class FishHookMetaTranslator extends IMetaTranslator {
 
     @Override
     public void translateToBedrock(ProxySession session, EntityDataMap dictionary, EntityMetadata metadata) {

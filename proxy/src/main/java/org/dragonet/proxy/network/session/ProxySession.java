@@ -106,6 +106,8 @@ public class ProxySession implements PlayerSession {
     private Vector3i lastClickedPosition = null;
     private CachedEntity lastClickedEntity = null;
 
+    private boolean firstTimePacket = true;
+
     public ProxySession(DragonProxy proxy, BedrockServerSession bedrockSession) {
         this.proxy = proxy;
         this.bedrockSession = bedrockSession;

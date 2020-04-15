@@ -19,10 +19,13 @@
 package org.dragonet.proxy.network.session.cache;
 
 import com.github.steveice10.mc.protocol.data.game.setting.Difficulty;
+import com.nukkitx.protocol.bedrock.data.GameRuleData;
+import com.nukkitx.protocol.bedrock.packet.GameRulesChangedPacket;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import lombok.*;
 import org.dragonet.proxy.data.stats.StatInfo;
+import org.dragonet.proxy.network.session.ProxySession;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +37,18 @@ public class WorldCache implements Cache {
     private double rainLevel = 0.0;
 
     private Difficulty difficulty = Difficulty.EASY;
+
+    @Setter(value = AccessLevel.NONE)
+    private boolean timeStopped = false;
+
+    public void setTimeStopped(ProxySession session, boolean value) {
+        timeStopped = value;
+
+        GameRulesChangedPacket gameRulesChangedPacket = new GameRulesChangedPacket();
+        gameRulesChangedPacket.getGameRules().add(new GameRuleData<>("dodaylightcycle", !value));
+
+        session.sendPacket(gameRulesChangedPacket);
+    }
 
 
     @Override

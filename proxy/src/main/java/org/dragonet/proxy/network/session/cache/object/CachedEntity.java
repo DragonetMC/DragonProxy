@@ -233,12 +233,18 @@ public class CachedEntity {
         flags.setFlag(EntityFlag.CAN_CLIMB, true);
         flags.setFlag(EntityFlag.CAN_WALK, true);
         flags.setFlag(EntityFlag.BREATHING, true);
+        flags.setFlag(EntityFlag.WALL_CLIMBING, false);
 
         // Add the flags to the metadata
         metadata.putFlags(flags);
 
         // Attributes
         attributes.put(BedrockAttributeType.MOVEMENT_SPEED, BedrockAttributeType.MOVEMENT_SPEED.createDefault());
+
+        // TODO: move this out of here
+        if(entityType == BedrockEntityType.ENDER_DRAGON) {
+            attributes.put(BedrockAttributeType.HEALTH, BedrockAttributeType.HEALTH.create(200f, 200f));
+        }
     }
 
     public Vector3f getOffsetPosition() {

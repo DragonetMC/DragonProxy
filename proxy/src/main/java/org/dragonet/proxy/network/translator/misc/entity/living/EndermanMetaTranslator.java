@@ -23,9 +23,9 @@ public class EndermanMetaTranslator extends AbstractInsentientMetaTranslator {
                 }
                 break;
             case 16: // Is screaming
+                dictionary.getFlags().setFlag(EntityFlag.ANGRY, (boolean) metadata.getValue()); // TODO: this is just a guess
                 break;
             case 17: // Is stared at
-                dictionary.getFlags().setFlag(EntityFlag.ANGRY, (boolean) metadata.getValue()); // TODO: this is just a guess
                 break;
         }
         super.translateToBedrock(session, dictionary, metadata);

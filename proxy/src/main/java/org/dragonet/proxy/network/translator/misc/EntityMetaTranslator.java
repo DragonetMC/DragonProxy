@@ -58,6 +58,8 @@ public class EntityMetaTranslator {
         translatorMap.put(BedrockEntityType.CAT, new CatMetaTranslator());
         translatorMap.put(BedrockEntityType.SNOW_GOLEM, new SnowGolemMetaTranslator());
         translatorMap.put(BedrockEntityType.IRON_GOLEM, new IronGolemMetaTranslator());
+        translatorMap.put(BedrockEntityType.ENDER_DRAGON, new EnderDragonMetaTranslator());
+        translatorMap.put(BedrockEntityType.SPIDER, new SpiderMetaTranslator());
     }
 
     /**
@@ -109,9 +111,7 @@ public class EntityMetaTranslator {
                 default:
                     if(translatorMap.containsKey(entity.getEntityType())) {
                         // Kinda a hack because im too lazy to change the parameters, but oh well
-                        if(entity.getEntityType() == BedrockEntityType.ITEM) {
-                            ((ItemEntityMetaTranslator) translatorMap.get(entity.getEntityType())).setEntity((CachedItemEntity) entity);
-                        }
+                        translatorMap.get(entity.getEntityType()).setEntity(entity);
                         translatorMap.get(entity.getEntityType()).translateToBedrock(session, dictionary, meta);
                         break;
                     }

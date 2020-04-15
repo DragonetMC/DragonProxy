@@ -66,7 +66,7 @@ public class PCBossBarTranslator extends PacketTranslator<ServerBossBarPacket> {
                 break;
             case UPDATE_TITLE:
                 bossEventPacket.setAction(BossEventPacket.Action.TITLE);
-                bossEventPacket.setTitle(MessageTranslator.translate(packet.getTitle().getFullText()));
+                bossEventPacket.setTitle(MessageTranslator.translate(packet.getTitle()));
                 break;
             case UPDATE_STYLE:
                 //bossEventPacket.setType(BossEventPacket.Type.OVERLAY);

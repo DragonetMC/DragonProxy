@@ -25,7 +25,7 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 
 @Log4j2
-public abstract class AbstractLivingMetaTranslator implements IMetaTranslator {
+public abstract class AbstractLivingMetaTranslator extends IMetaTranslator {
 
     @Override
     public void translateToBedrock(ProxySession session, EntityDataMap dictionary, EntityMetadata metadata) {

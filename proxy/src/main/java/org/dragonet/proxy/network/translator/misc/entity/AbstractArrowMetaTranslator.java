@@ -23,7 +23,7 @@ import com.nukkitx.protocol.bedrock.data.EntityDataMap;
 import com.nukkitx.protocol.bedrock.data.EntityFlag;
 import org.dragonet.proxy.network.session.ProxySession;
 
-public abstract class AbstractArrowMetaTranslator implements IMetaTranslator {
+public abstract class AbstractArrowMetaTranslator extends IMetaTranslator {
 
     @Override
     public void translateToBedrock(ProxySession session, EntityDataMap dictionary, EntityMetadata metadata) {

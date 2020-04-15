@@ -29,13 +29,12 @@ import org.dragonet.proxy.network.session.cache.object.CachedItemEntity;
 import org.dragonet.proxy.network.translator.misc.ItemTranslator;
 import org.dragonet.proxy.network.translator.misc.entity.IMetaTranslator;
 
-public class ItemEntityMetaTranslator implements IMetaTranslator {
-    @Setter
-    private CachedItemEntity entity;
+public class ItemEntityMetaTranslator extends IMetaTranslator {
 
     @Override
     public void translateToBedrock(ProxySession session, EntityDataMap dictionary, EntityMetadata metadata) {
         if(metadata.getId() == 7) { // Item
+            CachedItemEntity entity = (CachedItemEntity) this.entity;
             entity.setItem(ItemTranslator.translateSlotToBedrock((ItemStack) metadata.getValue()));
             entity.spawn(session);
         }
