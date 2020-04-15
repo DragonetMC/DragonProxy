@@ -37,10 +37,7 @@ import org.dragonet.proxy.network.SessionManager;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.dragonet.proxy.network.translator.misc.BlockTranslator;
 import org.dragonet.proxy.network.translator.misc.ItemTranslator;
-import org.dragonet.proxy.util.PaletteManager;
-import org.dragonet.proxy.util.PlatformType;
-import org.dragonet.proxy.util.SkinUtils;
-import org.dragonet.proxy.util.TextFormat;
+import org.dragonet.proxy.util.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -170,6 +167,7 @@ public class DragonProxy {
         new BlockTranslator();
         new SkinUtils();
         new MinecraftLanguage();
+        new MapDataUtils();
 
         // Initialize metrics
         new MetricsManager(this);
