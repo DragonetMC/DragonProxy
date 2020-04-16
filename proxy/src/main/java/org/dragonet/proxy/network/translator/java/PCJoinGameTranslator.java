@@ -21,6 +21,8 @@ package org.dragonet.proxy.network.translator.java;
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.nbt.NbtUtils;
@@ -99,7 +101,22 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
         playStatus.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
         session.sendPacket(playStatus);
 
+        // Send brand
         session.sendRemotePacket(new ClientPluginMessagePacket("minecraft:brand", "DragonProxy".getBytes()));
+
+        // Send player data
+        ByteArrayDataOutput output = ByteStreams.newDataOutput();
+        output.writeUTF("PlayerLogin");
+        output.writeUTF(session.getAuthData().getDisplayName()); // Display name
+        output.writeUTF(session.getAuthData().getXuid()); // XUID
+        output.writeUTF(session.getAuthData().getIdentity().toString()); // UUID
+        output.writeInt(session.getClientData().getDeviceOs().ordinal());
+        output.writeInt(session.getClientData().getUiProfile().ordinal());
+        output.writeUTF(session.getClientData().getDeviceModel());
+        output.writeUTF(session.getClientData().getGameVersion());
+        output.writeUTF(session.getClientData().getLanguageCode());
+
+        session.sendRemotePacket(new ClientPluginMessagePacket("dragonproxy:main", output.toByteArray()));
     }
 
 }

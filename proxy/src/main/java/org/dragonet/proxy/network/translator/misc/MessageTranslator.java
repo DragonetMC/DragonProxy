@@ -19,10 +19,16 @@
 package org.dragonet.proxy.network.translator.misc;
 
 import com.github.steveice10.mc.protocol.data.message.*;
+import io.netty.buffer.ByteBufAllocator;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.configuration.lang.MinecraftLanguage;
 
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Log4j2
 public class MessageTranslator {
@@ -80,6 +86,7 @@ public class MessageTranslator {
                 builder.append(translate(msg));
             }
         }
+        //log.warn(clean(builder.toString()));
         return builder.toString();
     }
 

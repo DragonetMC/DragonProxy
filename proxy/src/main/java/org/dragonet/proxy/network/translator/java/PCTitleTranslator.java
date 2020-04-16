@@ -42,15 +42,15 @@ public class PCTitleTranslator extends PacketTranslator<ServerTitlePacket> {
         switch(packet.getAction()) {
             case ACTION_BAR:
                 bedrockPacket.setType(SetTitlePacket.Type.SET_ACTIONBAR_MESSAGE);
-                bedrockPacket.setText(MessageTranslator.translate(packet.getTitle().getText()));
+                bedrockPacket.setText(MessageTranslator.translate(packet.getTitle()));
                 break;
             case TITLE:
                 bedrockPacket.setType(SetTitlePacket.Type.SET_TITLE);
-                bedrockPacket.setText(MessageTranslator.translate(packet.getTitle().getText()));
+                bedrockPacket.setText(MessageTranslator.translate(packet.getTitle()));
                 break;
             case SUBTITLE:
                 bedrockPacket.setType(SetTitlePacket.Type.SET_SUBTITLE);
-                bedrockPacket.setText(MessageTranslator.translate(packet.getTitle().getText()));
+                bedrockPacket.setText(MessageTranslator.translate(packet.getTitle()));
                 break;
             case RESET:
                 bedrockPacket.setType(SetTitlePacket.Type.RESET_TITLE);
@@ -60,6 +60,6 @@ public class PCTitleTranslator extends PacketTranslator<ServerTitlePacket> {
                 break;
         }
 
-        session.sendPacketImmediately(bedrockPacket);
+        session.sendPacket(bedrockPacket);
     }
 }

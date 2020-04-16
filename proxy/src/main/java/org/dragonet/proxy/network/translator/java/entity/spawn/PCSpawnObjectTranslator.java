@@ -19,6 +19,7 @@
 package org.dragonet.proxy.network.translator.java.entity.spawn;
 
 import com.github.steveice10.mc.protocol.data.game.entity.type.object.FallingBlockData;
+import com.github.steveice10.mc.protocol.data.game.entity.type.object.ObjectType;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnObjectPacket;
 import com.nukkitx.math.vector.Vector3f;
@@ -41,6 +42,10 @@ public class PCSpawnObjectTranslator extends PacketTranslator<ServerSpawnObjectP
         CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(packet.getEntityId());
         if(cachedEntity != null) {
             log.trace("Cached entity already exists, cant spawn a new one");
+            return;
+        }
+
+        if(packet.getType() == ObjectType.ITEM_FRAME) {
             return;
         }
 

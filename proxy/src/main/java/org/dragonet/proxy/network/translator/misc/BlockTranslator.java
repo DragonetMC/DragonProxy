@@ -48,6 +48,8 @@ public class BlockTranslator {
     // TODO: i don't like hardcoding these ids, but its fine for now
     public static final int BEDROCK_WATER_ID = 32;
     public static final int BEDROCK_COMMAND_BLOCK_ID = 1049;
+    public static final int BEDROCK_PISTON_ID = 234;
+    public static final int BEDROCK_STICKY_PISTON_ID = 221;
 
     // Java to bedrock map
     private static final Map<Integer, Integer> java2BedrockMap = new HashMap<>();

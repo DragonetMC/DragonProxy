@@ -48,7 +48,7 @@ public class ChunkCache implements Cache {
     /**
      * Translates a chunk from Java Edition to Bedrock Edition.
      */
-    public ChunkData translateChunk(int columnX, int columnZ) {
+    public ChunkData translateChunk(ProxySession session, int columnX, int columnZ) {
         Vector2i columnPos = Vector2i.from(columnX, columnZ);
 
         if (javaChunks.containsKey(columnPos)) {

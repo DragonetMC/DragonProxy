@@ -18,9 +18,12 @@
  */
 package org.dragonet.proxy.network.translator.misc;
 
+import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.nbt.tag.CompoundTag;
+import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.util.TextFormat;
 
 import java.util.HashMap;
@@ -71,7 +74,7 @@ public class BlockEntityTranslator {
         CompoundTagBuilder root = CompoundTagBuilder.builder(); //ItemTranslate.translateRawNBT(javaTag).toBuilder()
 
         if(!javaTag.contains("id")) {
-            log.warn("Tag does not contain id");
+            log.debug("Tag does not contain id");
             return null;
         }
 
@@ -101,6 +104,23 @@ public class BlockEntityTranslator {
         root.intTag("y", (int) javaTag.get("y").getValue());
         root.intTag("z", (int) javaTag.get("z").getValue());
         return root.buildRootTag();
+    }
+
+    public static void createPistonArm(ProxySession session, Vector3i position, boolean sticky) {
+        CompoundTagBuilder root = CompoundTagBuilder.builder();
+        root.stringTag("id", "PistonArm")
+            .floatTag("Progress", 1f)
+            .byteTag("State", (byte) 1)
+            .booleanTag("Sticky", sticky)
+            .intTag("x", position.getX())
+            .intTag("y", position.getY())
+            .intTag("z", position.getZ());
+
+        BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
+        blockEntityDataPacket.setBlockPosition(position);
+        blockEntityDataPacket.setData(root.buildRootTag());
+
+        session.sendPacket(blockEntityDataPacket);
     }
 
     public static String getBedrockIdentifier(String javaIdentifier) {

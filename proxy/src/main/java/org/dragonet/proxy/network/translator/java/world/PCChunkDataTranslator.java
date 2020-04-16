@@ -52,7 +52,7 @@ public class PCChunkDataTranslator extends PacketTranslator<ServerChunkDataPacke
         Column column = packet.getColumn();
         session.getChunkCache().getJavaChunks().put(Vector2i.from(column.getX(), column.getZ()), column);
 
-        ChunkData chunkData = session.getChunkCache().translateChunk(column.getX(), column.getZ());
+        ChunkData chunkData = session.getChunkCache().translateChunk(session, column.getX(), column.getZ());
 
         NetworkChunkPublisherUpdatePacket chunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
         chunkPublisherUpdatePacket.setPosition(session.getCachedEntity().getPosition().toInt());

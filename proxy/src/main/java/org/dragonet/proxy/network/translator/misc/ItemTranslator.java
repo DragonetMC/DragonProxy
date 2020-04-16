@@ -71,9 +71,14 @@ public class ItemTranslator {
         }
         ItemEntry bedrockItem = javaToBedrockMap.get(item.getId());
 
-        if (item.getNbt() == null) {
+        if(item.getNbt() != null) {
+            translateItemNBT(item.getNbt());
+        }
+
+        if (item.getNbt() == null && bedrockItem.getBedrockRuntimeId() == 397) { // Fix skull NBT crashing the client
             return ItemData.of(bedrockItem.getBedrockRuntimeId(), (short) bedrockItem.getBedrockData(), item.getAmount());
         }
+
         return ItemData.of(bedrockItem.getBedrockRuntimeId(), (short) bedrockItem.getBedrockData(), item.getAmount(), translateItemNBT(item.getNbt()));
     }
 
