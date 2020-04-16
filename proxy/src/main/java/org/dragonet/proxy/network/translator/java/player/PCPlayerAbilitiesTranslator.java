@@ -40,9 +40,8 @@ public class PCPlayerAbilitiesTranslator extends PacketTranslator<ServerPlayerAb
 
         player.setFlySpeed(packet.getFlySpeed());
 
-        // mcprotocollib got them the wrong way around
-        player.setCanFly(packet.isFlying());
-        player.setFlying(packet.isCanFly());
+        player.setCanFly(packet.isCanFly());
+        player.setFlying(packet.isFlying());
 
         player.sendAdventureSettings(session);
     }
