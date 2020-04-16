@@ -37,8 +37,8 @@ public class PCEntityPropertiesTranslator extends PacketTranslator<ServerEntityP
     private static Map<AttributeType, BedrockAttributeType> attributeMap = new HashMap<>();
 
     static {
-        attributeMap.put(AttributeType.GENERIC_FLYING_SPEED, BedrockAttributeType.MOVEMENT_SPEED);
-        attributeMap.put(AttributeType.GENERIC_MOVEMENT_SPEED, BedrockAttributeType.MOVEMENT_SPEED);
+        //attributeMap.put(AttributeType.GENERIC_FLYING_SPEED, BedrockAttributeType.MOVEMENT_SPEED); Causes issue with sprinting
+        //attributeMap.put(AttributeType.GENERIC_MOVEMENT_SPEED, BedrockAttributeType.MOVEMENT_SPEED); Causes issue with sprinting
         attributeMap.put(AttributeType.GENERIC_ATTACK_DAMAGE, BedrockAttributeType.ATTACK_DAMAGE);
         attributeMap.put(AttributeType.GENERIC_FOLLOW_RANGE, BedrockAttributeType.FOLLOW_RANGE);
         attributeMap.put(AttributeType.GENERIC_KNOCKBACK_RESISTANCE, BedrockAttributeType.KNOCKBACK_RESISTANCE);
