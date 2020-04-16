@@ -15,4 +15,8 @@ public abstract class IInventoryTranslator {
     public abstract void updateInventory(ProxySession session, CachedWindow window);
 
     public abstract void updateSlot(ProxySession session, CachedWindow window, int slot);
+
+    public boolean isSlotValid(int slot) {
+        return true;
+    }
 }

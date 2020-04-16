@@ -25,6 +25,10 @@ import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.data.EntityData;
 import com.nukkitx.protocol.bedrock.data.ItemData;
 import com.nukkitx.protocol.bedrock.packet.*;
+import it.unimi.dsi.fastutil.ints.Int2BooleanMap;
+import it.unimi.dsi.fastutil.ints.Int2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
@@ -34,6 +38,9 @@ import org.dragonet.proxy.network.translator.misc.BlockEntityTranslator;
 import org.dragonet.proxy.network.translator.misc.BlockTranslator;
 import org.dragonet.proxy.network.translator.misc.ItemTranslator;
 import org.dragonet.proxy.network.translator.misc.inventory.IInventoryTranslator;
+import org.dragonet.proxy.network.translator.misc.inventory.action.SlotChangeAction;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
 @Log4j2
@@ -48,6 +55,9 @@ public class CachedWindow {
     private boolean open = false;
 
     private Vector3i fakeBlockPosition = null;
+
+    private AtomicInteger transactionIdCounter = new AtomicInteger(1);
+    private Int2BooleanMap transactions = new Int2BooleanOpenHashMap();
 
     public CachedWindow(int windowId, IInventoryTranslator inventoryTranslator) {
         this.windowId = windowId;
@@ -111,6 +121,7 @@ public class CachedWindow {
 
     public boolean setItem(int slot, ItemData item) {
         if(slot > items.length) {
+            log.warn("set item");
             return false;
         }
         this.items[slot] = ItemTranslator.translateToJava(item);
@@ -118,10 +129,7 @@ public class CachedWindow {
     }
 
     public ItemData getItem(int slot) {
-        if(items[slot] == null) {
-            return null;
-        }
-        return ItemTranslator.translateToBedrock(items[slot]);
+        return ItemTranslator.translateSlotToBedrock(items[slot]);
     }
 
     private void sendFakeEntity(ProxySession session, Vector3i position) {

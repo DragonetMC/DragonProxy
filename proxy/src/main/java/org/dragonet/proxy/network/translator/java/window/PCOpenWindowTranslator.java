@@ -21,6 +21,7 @@ package org.dragonet.proxy.network.translator.java.window;
 import com.github.steveice10.mc.protocol.data.game.window.WindowType;
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientCloseWindowPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerOpenWindowPacket;
+import com.nukkitx.protocol.bedrock.data.ItemData;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.window.BedrockWindowType;
 import org.dragonet.proxy.network.session.ProxySession;
@@ -28,6 +29,7 @@ import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.misc.InventoryTranslator;
+import org.dragonet.proxy.network.translator.misc.ItemTranslator;
 import org.dragonet.proxy.network.translator.misc.MessageTranslator;
 import org.dragonet.proxy.network.translator.misc.inventory.AnvilInventoryTranslator;
 import org.dragonet.proxy.network.translator.misc.inventory.IInventoryTranslator;
@@ -43,10 +45,10 @@ public class PCOpenWindowTranslator extends PacketTranslator<ServerOpenWindowPac
     private static final Map<WindowType, IInventoryTranslator> windowMap = new HashMap<>();
 
     static {
-        windowMap.put(WindowType.GENERIC_9X1, new SingleChestInventoryTranslator(9));
-        windowMap.put(WindowType.GENERIC_9X2, new SingleChestInventoryTranslator(18));
-        windowMap.put(WindowType.GENERIC_9X3, new SingleChestInventoryTranslator(27));
-        windowMap.put(WindowType.ANVIL, new AnvilInventoryTranslator(38));
+        windowMap.put(WindowType.GENERIC_9X1, new SingleChestInventoryTranslator(27, 1));
+        windowMap.put(WindowType.GENERIC_9X2, new SingleChestInventoryTranslator(27, 2));
+        windowMap.put(WindowType.GENERIC_9X3, new SingleChestInventoryTranslator(27, 3));
+        windowMap.put(WindowType.ANVIL, new AnvilInventoryTranslator(3));
     }
 
     @Override
