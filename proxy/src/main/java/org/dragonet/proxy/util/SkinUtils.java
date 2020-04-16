@@ -94,25 +94,46 @@ public class SkinUtils {
     }
 
     /**
-     * Checks if a player has an optifine cape and if so downloads it from
-     * optifine's servers
+     * Checks if a player has an unofficial cape and if so downloads it from
+     * their servers
      */
-    public static ImageData fetchOptifineCape(GameProfile profile) {
-        try {
-            URL url = new URL("http://s.optifine.net/capes/" + profile.getName() + ".png");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    public static ImageData fetchUnofficialCape(GameProfile profile) {
+        for(CapeServers server : CapeServers.servers) {
+            try {
+                URL url = new URL(server.url);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            if(connection.getResponseCode() == 404) {
-                log.info("Player " + profile.getName() + " does not have an optifine cape");
-                return null;
+                if (connection.getResponseCode() == 404) {
+                    log.info("Player " + profile.getName() + " does not have a " + server.name() + " cape");
+                    return null;
+                }
+                log.warn("Player " + profile.getName() + " does have a " + server.name() + " cape");
+
+                return parseBufferedImage(ImageIO.read(connection.getInputStream()));
+            } catch (IOException e) {
+                log.warn("Failed to fetch " + server.name() + " cape for player " + profile.getName() + ": " + e.getMessage());
             }
-            log.warn("Player " + profile.getName() + " does have an optifine cape");
-
-            return parseBufferedImage(ImageIO.read(connection.getInputStream()));
-        } catch (IOException e) {
-            log.warn("Failed to fetch optifine cape for player " + profile.getName() + ": " + e.getMessage());
         }
         return null;
+    }
+
+    private enum CapeServers {
+        MINECRAFTCAPES("https://minecraftcapes.co.uk/getCape/%s", CapeUrlType.UUID),
+        OPTIFINE("http://s.optifine.net/capes/%s.png", CapeUrlType.USERNAME);
+
+        public static final CapeServers[] servers = values();
+        private String url;
+        private CapeUrlType type;
+
+        private CapeServers(String url, CapeUrlType type) {
+            this.url = url;
+            this.type = type;
+        }
+    }
+
+    private enum CapeUrlType {
+        UUID,
+        USERNAME
     }
 
     private static ImageData parseBufferedImage(BufferedImage image) {
