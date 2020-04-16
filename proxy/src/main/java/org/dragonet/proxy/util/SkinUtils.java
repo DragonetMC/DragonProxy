@@ -54,14 +54,15 @@ public class SkinUtils {
         }
     }
 
-    public static SerializedSkin createSkinEntry(ProxySession session, ImageData skinImage) {
+    public static SerializedSkin createSkinEntry(ProxySession session, ImageData skinImage, ImageData capeImage) {
+        //Skin Geometry is hard coded otherwise players will turn invisible if joining with custom models
         String randomId = UUID.randomUUID().toString();
         return SerializedSkin.of(
             randomId,
-            new String(Base64.getDecoder().decode(session.getClientData().getSkinGeometryName())),
+            new String(Base64.getDecoder().decode("ewogICAiZ2VvbWV0cnkiIDogewogICAgICAiZGVmYXVsdCIgOiAiZ2VvbWV0cnkuaHVtYW5vaWQuY3VzdG9tIgogICB9Cn0K")),
             skinImage,
             Collections.emptyList(),
-            ImageData.EMPTY,
+            capeImage,
             "",
             "",
             false,
@@ -100,7 +101,7 @@ public class SkinUtils {
     public static ImageData fetchUnofficialCape(GameProfile profile) {
         for(CapeServers server : CapeServers.servers) {
             try {
-                URL url = new URL(server.url);
+                URL url = new URL(server.getUrl(profile));
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
                 if (connection.getResponseCode() == 404) {
@@ -128,6 +129,16 @@ public class SkinUtils {
         private CapeServers(String url, CapeUrlType type) {
             this.url = url;
             this.type = type;
+        }
+
+        private String getUrl(GameProfile profile) {
+            switch(type) {
+                case UUID:
+                    return String.format(url, profile.getId().toString().replace("-", ""));
+                case USERNAME:
+                    return String.format(url, profile.getName());
+            }
+            return null;
         }
     }
 
