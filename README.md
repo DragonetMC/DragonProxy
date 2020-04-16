@@ -45,7 +45,5 @@ If you are having trouble please refer to our [Discord](https://invite.gg/Dragon
 Donating helps support the project. Read more on the [wiki](https://github.com/DragonetMC/DragonProxy/wiki/Donating).  
 * [OpenCollective](https://opencollective.com/DragonetMC)  
 * [Patreon](https://patreon.com/DragonetMC)  
-* BitCoin (BTC) - `bc1qdd00mpeavhte2lx086z8vvnw959kam5qv0lkfe`
-
 .  
 CircleCI: [![CircleCI](https://circleci.com/gh/DragonetMC/DragonProxy.svg?style=svg)](https://circleci.com/gh/DragonetMC/DragonProxy)
