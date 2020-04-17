@@ -18,6 +18,7 @@
  */
 package org.dragonet.proxy.network.translator.java.player;
 
+import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPlayerListEntryPacket;
 import com.nukkitx.protocol.bedrock.data.ImageData;
@@ -57,7 +58,8 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
                                 ImageData capeData = SkinUtils.fetchUnofficialCape(entry.getProfile());
                                 if(capeData == null) capeData = ImageData.EMPTY;
 
-                                session.setPlayerSkin2(session.getAuthData().getIdentity(), skinData, capeData);
+                                GameProfile.TextureModel model = entry.getProfile().getTexture(GameProfile.TextureType.SKIN).getModel();
+                                session.setPlayerSkin2(session.getAuthData().getIdentity(), skinData, model, capeData);
                             });
                             return;
                         }
@@ -73,7 +75,7 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
 
                     bedrockEntry.setEntityId(proxyEid);
                     bedrockEntry.setName(entry.getProfile().getName());
-                    bedrockEntry.setSkin(SkinUtils.createSkinEntry(session, SkinUtils.STEVE_SKIN, ImageData.EMPTY));
+                    bedrockEntry.setSkin(SkinUtils.createSkinEntry(session, SkinUtils.STEVE_SKIN, GameProfile.TextureModel.NORMAL, ImageData.EMPTY));
                     bedrockEntry.setXuid("");
                     bedrockEntry.setPlatformChatId("");
 

@@ -54,12 +54,17 @@ public class SkinUtils {
         }
     }
 
-    public static SerializedSkin createSkinEntry(ProxySession session, ImageData skinImage, ImageData capeImage) {
+    public static SerializedSkin createSkinEntry(ProxySession session, ImageData skinImage, GameProfile.TextureModel model, ImageData capeImage) {
         //Skin Geometry is hard coded otherwise players will turn invisible if joining with custom models
+        String skinResourcePatch = "ewogICAiZ2VvbWV0cnkiIDogewogICAgICAiZGVmYXVsdCIgOiAiZ2VvbWV0cnkuaHVtYW5vaWQuY3VzdG9tIgogICB9Cn0K";
+        if(model == GameProfile.TextureModel.SLIM) {
+            skinResourcePatch = "ewogICAiZ2VvbWV0cnkiIDogewogICAgICAiZGVmYXVsdCIgOiAiZ2VvbWV0cnkuaHVtYW5vaWQuY3VzdG9tU2xpbSIKICAgfQp9";
+        }
+
         String randomId = UUID.randomUUID().toString();
         return SerializedSkin.of(
             randomId,
-            new String(Base64.getDecoder().decode("ewogICAiZ2VvbWV0cnkiIDogewogICAgICAiZGVmYXVsdCIgOiAiZ2VvbWV0cnkuaHVtYW5vaWQuY3VzdG9tIgogICB9Cn0K")),
+            new String(Base64.getDecoder().decode(skinResourcePatch)),
             skinImage,
             Collections.emptyList(),
             capeImage,
@@ -105,15 +110,11 @@ public class SkinUtils {
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
                 if (connection.getResponseCode() == 404) {
-                    log.info("Player " + profile.getName() + " does not have a " + server.name() + " cape");
                     return null;
                 }
-                log.warn("Player " + profile.getName() + " does have a " + server.name() + " cape");
 
                 return parseBufferedImage(ImageIO.read(connection.getInputStream()));
-            } catch (IOException e) {
-                log.warn("Failed to fetch " + server.name() + " cape for player " + profile.getName() + ": " + e.getMessage());
-            }
+            } catch (IOException e) {}
         }
         return null;
     }
