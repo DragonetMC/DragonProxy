@@ -433,7 +433,7 @@ public class ProxySession implements PlayerSession {
         PlayerListPacket.Entry entry = new PlayerListPacket.Entry(playerId);
         entry.setEntityId(entityId);
         entry.setName(profile.getName());
-        entry.setSkin(SkinUtils.createSkinEntry(this, skinData, model, capeData));
+        entry.setSkin(SkinUtils.createSkinEntry(skinData, model, capeData));
         entry.setXuid("");
         entry.setPlatformChatId("");
 
@@ -455,7 +455,7 @@ public class ProxySession implements PlayerSession {
         PlayerSkinPacket playerSkinPacket = new PlayerSkinPacket();
         playerSkinPacket.setUuid(playerId);
 
-        playerSkinPacket.setSkin(SkinUtils.createSkinEntry(this, skinData, model, capeData));
+        playerSkinPacket.setSkin(SkinUtils.createSkinEntry(skinData, model, capeData));
         sendPacket(playerSkinPacket);
     }
 

@@ -49,7 +49,7 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
             session.getProxy().getGeneralThreadPool().execute(() -> {
                 GameProfile profile = playerListEntry.getProfile();
 
-                ImageData skinData = SkinUtils.fetchSkin(profile);
+                ImageData skinData = SkinUtils.fetchSkin(session, profile);
                 if (skinData == null) return;
 
                 ImageData capeData = SkinUtils.fetchUnofficialCape(profile);

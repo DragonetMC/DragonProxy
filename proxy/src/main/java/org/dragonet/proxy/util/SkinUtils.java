@@ -27,6 +27,7 @@ import it.unimi.dsi.fastutil.io.FastByteArrayOutputStream;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.PlayerListCache;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -42,6 +43,9 @@ import java.util.UUID;
 
 @Log4j2
 public class SkinUtils {
+    private static final String NORMAL_RESOURCE_PATCH = "ewogICAiZ2VvbWV0cnkiIDogewogICAgICAiZGVmYXVsdCIgOiAiZ2VvbWV0cnkuaHVtYW5vaWQuY3VzdG9tIgogICB9Cn0K";
+    private static final String SLIM_RESOURCE_PATCH = "ewogICAiZ2VvbWV0cnkiIDogewogICAgICAiZGVmYXVsdCIgOiAiZ2VvbWV0cnkuaHVtYW5vaWQuY3VzdG9tU2xpbSIKICAgfQp9";
+
     private static final SessionService service = new SessionService();
 
     public static ImageData STEVE_SKIN;
@@ -54,11 +58,11 @@ public class SkinUtils {
         }
     }
 
-    public static SerializedSkin createSkinEntry(ProxySession session, ImageData skinImage, GameProfile.TextureModel model, ImageData capeImage) {
-        //Skin Geometry is hard coded otherwise players will turn invisible if joining with custom models
-        String skinResourcePatch = "ewogICAiZ2VvbWV0cnkiIDogewogICAgICAiZGVmYXVsdCIgOiAiZ2VvbWV0cnkuaHVtYW5vaWQuY3VzdG9tIgogICB9Cn0K";
+    public static SerializedSkin createSkinEntry(ImageData skinImage, GameProfile.TextureModel model, ImageData capeImage) {
+        // Skin Geometry is hard coded otherwise players will turn invisible if joining with custom models
+        String skinResourcePatch = NORMAL_RESOURCE_PATCH;
         if(model == GameProfile.TextureModel.SLIM) {
-            skinResourcePatch = "ewogICAiZ2VvbWV0cnkiIDogewogICAgICAiZGVmYXVsdCIgOiAiZ2VvbWV0cnkuaHVtYW5vaWQuY3VzdG9tU2xpbSIKICAgfQp9";
+            skinResourcePatch = SLIM_RESOURCE_PATCH;
         }
 
         String randomId = UUID.randomUUID().toString();
@@ -80,7 +84,15 @@ public class SkinUtils {
     /**
      * Fetches a skin from the Mojang session server
      */
-    public static ImageData fetchSkin(GameProfile profile) {
+    public static ImageData fetchSkin(ProxySession session, GameProfile profile) {
+        PlayerListCache playerListCache = session.getPlayerListCache();
+
+        // Check if the skin is already cached
+        if(playerListCache.getRemoteSkinCache().containsKey(profile.getId())) {
+            //log.warn("Retrieving from cache: " + profile.getName());
+            return playerListCache.getRemoteSkinCache().get(profile.getId());
+        }
+
         try {
             service.fillProfileTextures(profile, false);
         } catch (PropertyException e) {
@@ -91,7 +103,9 @@ public class SkinUtils {
         GameProfile.Texture texture = profile.getTexture(GameProfile.TextureType.SKIN);
         if(texture != null) {
             try {
-                return parseBufferedImage(ImageIO.read(new URL(texture.getURL())));
+                ImageData skin = parseBufferedImage(ImageIO.read(new URL(texture.getURL())));
+                playerListCache.getRemoteSkinCache().put(profile.getId(), skin); // Cache the skin
+                return skin;
             } catch (IOException e) {
                 log.warn("Failed to fetch skin for player " + profile.getName() + ": " + e.getMessage());
             }

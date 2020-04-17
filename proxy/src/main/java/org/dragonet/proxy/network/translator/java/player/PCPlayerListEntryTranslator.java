@@ -48,11 +48,14 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
             switch(packet.getAction()) {
                 case ADD_PLAYER:
                     if(entry.getProfile().getName().equals(session.getUsername())) {
+                        // Set our own remote uuid
+                        session.getCachedEntity().setJavaUuid(entry.getProfile().getId());
+
                         // Fetch our own skin
                         if(session.getProxy().getConfiguration().getPlayerConfig().isFetchSkin()) {
                             session.getProxy().getGeneralThreadPool().execute(() -> {
 
-                                ImageData skinData = SkinUtils.fetchSkin(entry.getProfile());
+                                ImageData skinData = SkinUtils.fetchSkin(session, entry.getProfile());
                                 if (skinData == null) return;
 
                                 ImageData capeData = SkinUtils.fetchUnofficialCape(entry.getProfile());
@@ -61,11 +64,8 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
                                 GameProfile.TextureModel model = entry.getProfile().getTexture(GameProfile.TextureType.SKIN).getModel();
                                 session.setPlayerSkin2(session.getAuthData().getIdentity(), skinData, model, capeData);
                             });
-                            return;
                         }
-
-                        // Set our own remote uuid
-                        session.getCachedEntity().setJavaUuid(entry.getProfile().getId());
+                        return;
                     }
 
                     long proxyEid = session.getEntityCache().getNextClientEntityId().getAndIncrement();
@@ -75,7 +75,7 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
 
                     bedrockEntry.setEntityId(proxyEid);
                     bedrockEntry.setName(entry.getProfile().getName());
-                    bedrockEntry.setSkin(SkinUtils.createSkinEntry(session, SkinUtils.STEVE_SKIN, GameProfile.TextureModel.NORMAL, ImageData.EMPTY));
+                    bedrockEntry.setSkin(SkinUtils.createSkinEntry(SkinUtils.STEVE_SKIN, GameProfile.TextureModel.NORMAL, ImageData.EMPTY));
                     bedrockEntry.setXuid("");
                     bedrockEntry.setPlatformChatId("");
 
