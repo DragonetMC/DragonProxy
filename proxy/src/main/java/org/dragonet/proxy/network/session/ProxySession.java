@@ -182,6 +182,15 @@ public class ProxySession implements PlayerSession {
             } catch (RequestException e) {
                 log.warn("Failed to authenticate player: " + e.getMessage());
                 sendMessage(TextFormat.RED + e.getMessage());
+                return;
+            }
+
+            // Set our own remote uuid
+            cachedEntity.setJavaUuid(protocol.getProfile().getId());
+
+            // Fetch our skin
+            if(proxy.getConfiguration().getPlayerConfig().isFetchSkin()) {
+                fetchOurSkin();
             }
 
             sendMessage(TextFormat.GREEN + "Login successful! Joining server...");
@@ -206,6 +215,24 @@ public class ProxySession implements PlayerSession {
             dataCache.put("auth_state", AuthState.AUTHENTICATED);
 
             log.info("Player " + authData.getDisplayName() + " has been authenticated");
+        });
+    }
+
+    /**
+     * Fetch our own skin.
+     */
+    private void fetchOurSkin() {
+        GameProfile profile = protocol.getProfile();
+
+        proxy.getGeneralThreadPool().execute(() -> {
+            ImageData skinData = SkinUtils.fetchSkin(this, profile);
+            if (skinData == null) return;
+
+            ImageData capeData = SkinUtils.fetchUnofficialCape(profile);
+            if(capeData == null) capeData = ImageData.EMPTY;
+
+            GameProfile.TextureModel model = profile.getTexture(GameProfile.TextureType.SKIN).getModel();
+            setPlayerSkin2(authData.getIdentity(), skinData, model, capeData);
         });
     }
 

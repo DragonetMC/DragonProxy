@@ -24,6 +24,7 @@ import com.github.steveice10.mc.auth.service.SessionService;
 import com.nukkitx.protocol.bedrock.data.ImageData;
 import com.nukkitx.protocol.bedrock.data.SerializedSkin;
 import it.unimi.dsi.fastutil.io.FastByteArrayOutputStream;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.session.ProxySession;
@@ -85,6 +86,7 @@ public class SkinUtils {
      * Fetches a skin from the Mojang session server
      */
     public static ImageData fetchSkin(ProxySession session, GameProfile profile) {
+        // TODO: HANDLE RATE LIMITING
         PlayerListCache playerListCache = session.getPlayerListCache();
 
         // Check if the skin is already cached
@@ -103,6 +105,9 @@ public class SkinUtils {
         GameProfile.Texture texture = profile.getTexture(GameProfile.TextureType.SKIN);
         if(texture != null) {
             try {
+                log.warn(texture.getURL());
+                log.warn(ImageIO.read(new URL(texture.getURL())).getHeight());
+                log.warn(parseBufferedImage(ImageIO.read(new URL(texture.getURL()))).getHeight());
                 ImageData skin = parseBufferedImage(ImageIO.read(new URL(texture.getURL())));
                 playerListCache.getRemoteSkinCache().put(profile.getId(), skin); // Cache the skin
                 return skin;
@@ -118,7 +123,7 @@ public class SkinUtils {
      * their servers
      */
     public static ImageData fetchUnofficialCape(GameProfile profile) {
-        for(CapeServers server : CapeServers.servers) {
+        for(CapeServers server : CapeServers.values()) {
             try {
                 URL url = new URL(server.getUrl(profile));
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -133,18 +138,13 @@ public class SkinUtils {
         return null;
     }
 
+    @RequiredArgsConstructor
     private enum CapeServers {
-        MINECRAFTCAPES("https://minecraftcapes.co.uk/getCape/%s", CapeUrlType.UUID),
-        OPTIFINE("http://s.optifine.net/capes/%s.png", CapeUrlType.USERNAME);
+        OPTIFINE("http://s.optifine.net/capes/%s.png", CapeUrlType.USERNAME),
+        MINECRAFTCAPES("https://minecraftcapes.co.uk/getCape/%s", CapeUrlType.UUID);
 
-        public static final CapeServers[] servers = values();
-        private String url;
-        private CapeUrlType type;
-
-        private CapeServers(String url, CapeUrlType type) {
-            this.url = url;
-            this.type = type;
-        }
+        private final String url;
+        private final CapeUrlType type;
 
         private String getUrl(GameProfile profile) {
             switch(type) {
