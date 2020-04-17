@@ -50,16 +50,13 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
                 GameProfile profile = playerListEntry.getProfile();
 
                 ImageData skinData = SkinUtils.fetchSkin(profile);
-                if (skinData == null) {
-                    return;
-                }
+                if (skinData == null) return;
 
-//                byte[] capeData = SkinUtils.fetchUnofficialCape(profile).getImage();
-//                if(capeData == null) {
-//                    return;
-//                }
+                ImageData capeData = SkinUtils.fetchUnofficialCape(profile);
+                if(capeData == null) capeData = ImageData.EMPTY;
 
-                session.setPlayerSkin(profile.getId(), cachedEntityId, skinData);
+                GameProfile.TextureModel model = playerListEntry.getProfile().getTexture(GameProfile.TextureType.SKIN).getModel();
+                session.setPlayerSkin(profile.getId(), cachedEntityId, skinData, model, capeData);
             });
         }
     }

@@ -63,6 +63,7 @@ import org.dragonet.proxy.util.SkinUtils;
 import org.dragonet.proxy.util.TextFormat;
 
 import javax.annotation.Nonnull;
+import java.awt.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -416,7 +417,7 @@ public class ProxySession implements PlayerSession {
      * @param entityId
      * @param skinData the skin data
      */
-    public void setPlayerSkin(UUID playerId, long entityId, ImageData skinData) {
+    public void setPlayerSkin(UUID playerId, long entityId, ImageData skinData, GameProfile.TextureModel model, ImageData capeData) {
         GameProfile profile = playerListCache.getPlayerInfo().get(playerId).getProfile();
 
         // Remove the player from the player list
@@ -432,7 +433,7 @@ public class ProxySession implements PlayerSession {
         PlayerListPacket.Entry entry = new PlayerListPacket.Entry(playerId);
         entry.setEntityId(entityId);
         entry.setName(profile.getName());
-        entry.setSkin(SkinUtils.createSkinEntry(this, skinData));
+        entry.setSkin(SkinUtils.createSkinEntry(this, skinData, model, capeData));
         entry.setXuid("");
         entry.setPlatformChatId("");
 
@@ -450,11 +451,11 @@ public class ProxySession implements PlayerSession {
      * @param playerId the target player uuid
      * @param skinData the skin data
      */
-    public void setPlayerSkin2(UUID playerId, ImageData skinData) {
+    public void setPlayerSkin2(UUID playerId, ImageData skinData, GameProfile.TextureModel model, ImageData capeData) {
         PlayerSkinPacket playerSkinPacket = new PlayerSkinPacket();
         playerSkinPacket.setUuid(playerId);
 
-        playerSkinPacket.setSkin(SkinUtils.createSkinEntry(this, skinData));
+        playerSkinPacket.setSkin(SkinUtils.createSkinEntry(this, skinData, model, capeData));
         sendPacket(playerSkinPacket);
     }
 
