@@ -92,3 +92,4 @@ nb-configuration.xml
 logs/
 /config.yml
 /metrics.properties
+/run
