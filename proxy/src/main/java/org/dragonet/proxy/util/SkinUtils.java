@@ -106,6 +106,7 @@ public class SkinUtils {
     public static ImageData fetchUnofficialCape(GameProfile profile) {
         for(CapeServers server : CapeServers.servers) {
             try {
+<<<<<<< HEAD
                 URL url = new URL(server.getUrl(profile));
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -115,6 +116,21 @@ public class SkinUtils {
 
                 return parseBufferedImage(ImageIO.read(connection.getInputStream()));
             } catch (IOException e) {}
+=======
+                URL url = new URL(server.url);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+                if (connection.getResponseCode() == 404) {
+                    log.info("Player " + profile.getName() + " does not have a " + server.name() + " cape");
+                    return null;
+                }
+                log.warn("Player " + profile.getName() + " does have a " + server.name() + " cape");
+
+                return parseBufferedImage(ImageIO.read(connection.getInputStream()));
+            } catch (IOException e) {
+                log.warn("Failed to fetch " + server.name() + " cape for player " + profile.getName() + ": " + e.getMessage());
+            }
+>>>>>>> upstream/rewrite
         }
         return null;
     }
@@ -131,6 +147,7 @@ public class SkinUtils {
             this.url = url;
             this.type = type;
         }
+<<<<<<< HEAD
 
         private String getUrl(GameProfile profile) {
             switch(type) {
@@ -141,6 +158,8 @@ public class SkinUtils {
             }
             return null;
         }
+=======
+>>>>>>> upstream/rewrite
     }
 
     private enum CapeUrlType {

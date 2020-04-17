@@ -34,33 +34,32 @@ import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 @Log4j2
 @PCPacketTranslator(packetClass = ServerPlayerPositionRotationPacket.class)
 public class PCPlayerPositionRotationTranslator extends PacketTranslator<ServerPlayerPositionRotationPacket> {
-    public static final PCPlayerPositionRotationTranslator INSTANCE = new PCPlayerPositionRotationTranslator();
 
     @Override
     public void translate(ProxySession session, ServerPlayerPositionRotationPacket packet) {
-        CachedPlayer cachedEntity = session.getCachedEntity();
+        CachedPlayer entity = session.getCachedEntity();
 
-        if (!cachedEntity.isSpawned()) {
-            cachedEntity.sendMetadata(session);
+        if (!entity.isSpawned()) {
+            entity.sendMetadata(session);
 
             MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
-            movePlayerPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
+            movePlayerPacket.setRuntimeEntityId(entity.getProxyEid());
             movePlayerPacket.setPosition(Vector3f.from(packet.getX(), packet.getY() + BedrockEntityType.PLAYER.getOffset() + 0.1f, packet.getZ()));
             movePlayerPacket.setRotation(Vector3f.from(packet.getPitch(), packet.getYaw(), 0));
             movePlayerPacket.setMode(MovePlayerPacket.Mode.RESET);
             movePlayerPacket.setOnGround(true);
 
             session.sendPacket(movePlayerPacket);
-            cachedEntity.setSpawned(true);
+            entity.setSpawned(true);
 
             log.info("Spawned player " + session.getUsername() + " at " + packet.getX() + " " + packet.getY() + " " + packet.getZ());
             return;
         }
 
-        cachedEntity.setSpawned(true);
+        entity.setSpawned(true);
 
-        cachedEntity.moveAbsolute(session, Vector3f.from(packet.getX(), packet.getY() + BedrockEntityType.PLAYER.getOffset() + 0.1f, packet.getZ()),
-            Vector3f.from(packet.getPitch(), packet.getYaw(), 0), true, false);
+        entity.moveAbsolute(session, Vector3f.from(packet.getX(), packet.getY() + BedrockEntityType.PLAYER.getOffset(), packet.getZ()), Vector3f.from(packet.getPitch(),
+            packet.getYaw(), 0), true, false);
 
         session.sendRemotePacket(new ClientTeleportConfirmPacket(packet.getTeleportId()));
     }

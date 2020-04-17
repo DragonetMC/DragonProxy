@@ -29,12 +29,11 @@ import org.dragonet.proxy.network.translator.misc.MessageTranslator;
 @PCPacketTranslator(packetClass = LoginDisconnectPacket.class)
 @Log4j2
 public class PCLoginDisconnectTranslator extends PacketTranslator<LoginDisconnectPacket> {
-    public static final PCLoginDisconnectTranslator INSTANCE = new PCLoginDisconnectTranslator();
 
     @Override
     public void translate(ProxySession session, LoginDisconnectPacket packet) {
         if(session.getCachedEntity() == null) {
-            session.sendFakeStartGame();
+            session.sendFakeStartGame(true);
         }
         session.disconnect(MessageTranslator.translate(packet.getReason()));
     }
