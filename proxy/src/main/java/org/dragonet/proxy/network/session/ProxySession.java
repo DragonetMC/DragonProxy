@@ -231,12 +231,12 @@ public class ProxySession implements PlayerSession {
     public void handleJoin() {
         if(proxy.getConfiguration().getRemoteAuthType() == RemoteAuthType.CREDENTIALS) {
             dataCache.put("auth_state", AuthState.AUTHENTICATING);
-            sendFakeStartGame();
+            sendFakeStartGame(false);
             sendLoginForm();
             return;
         }
 
-        sendFakeStartGame();
+        sendFakeStartGame(false);
     }
 
     /**
@@ -333,8 +333,11 @@ public class ProxySession implements PlayerSession {
         }
     }
 
-    public void sendFakeStartGame() {
-        long entityId = entityCache.getNextClientEntityId().getAndIncrement();
+    public void sendFakeStartGame(boolean disconnect) {
+        long entityId = 1;
+        if(!disconnect) {
+            entityId = entityCache.getNextClientEntityId().getAndIncrement();
+        }
 
         StartGamePacket startGamePacket = new StartGamePacket();
         startGamePacket.setUniqueEntityId(entityId);
@@ -401,7 +404,9 @@ public class ProxySession implements PlayerSession {
         playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
         sendPacket(playStatusPacket);
 
-        cachedEntity = entityCache.newPlayer(1, entityId, new GameProfile(getAuthData().getIdentity(), getAuthData().getDisplayName()));
+        if(!disconnect) {
+            cachedEntity = entityCache.newPlayer(1, entityId, new GameProfile(getAuthData().getIdentity(), getAuthData().getDisplayName()));
+        }
     }
 
     /**
