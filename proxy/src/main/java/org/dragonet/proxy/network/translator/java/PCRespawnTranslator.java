@@ -21,6 +21,7 @@ package org.dragonet.proxy.network.translator.java;
 import com.github.steveice10.mc.protocol.data.game.scoreboard.ScoreboardAction;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerRespawnPacket;
 import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.protocol.bedrock.data.LevelEventType;
 import com.nukkitx.protocol.bedrock.packet.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -41,6 +42,13 @@ public class PCRespawnTranslator extends PacketTranslator<ServerRespawnPacket> {
     @Override
     public void translate(ProxySession session, ServerRespawnPacket packet) {
         CachedPlayer cachedPlayer = session.getCachedEntity();
+
+        // Stop the rain
+        LevelEventPacket levelEventPacket = new LevelEventPacket();
+        levelEventPacket.setType(LevelEventType.STOP_RAIN);
+        levelEventPacket.setPosition(Vector3f.ZERO);
+        levelEventPacket.setData(0);
+        session.sendPacket(levelEventPacket);
 
         // Set the players gamemode
         SetPlayerGameTypePacket setPlayerGameTypePacket = new SetPlayerGameTypePacket();
