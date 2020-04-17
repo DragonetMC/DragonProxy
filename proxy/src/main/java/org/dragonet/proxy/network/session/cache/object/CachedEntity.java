@@ -221,7 +221,6 @@ public class CachedEntity {
         metadata.put(EntityData.SCALE, 1f);
         metadata.put(EntityData.AIR, (short) 300);
         metadata.put(EntityData.MAX_AIR, (short) 300);
-        metadata.put(EntityData.NAMETAG, "");
         metadata.put(EntityData.BOUNDING_BOX_HEIGHT, entityType.getHeight());
         metadata.put(EntityData.BOUNDING_BOX_WIDTH, entityType.getWidth());
         metadata.put(EntityData.LEAD_HOLDER_EID, (long) -1);

@@ -105,9 +105,6 @@ public class SkinUtils {
         GameProfile.Texture texture = profile.getTexture(GameProfile.TextureType.SKIN);
         if(texture != null) {
             try {
-                log.warn(texture.getURL());
-                log.warn(ImageIO.read(new URL(texture.getURL())).getHeight());
-                log.warn(parseBufferedImage(ImageIO.read(new URL(texture.getURL()))).getHeight());
                 ImageData skin = parseBufferedImage(ImageIO.read(new URL(texture.getURL())));
                 playerListCache.getRemoteSkinCache().put(profile.getId(), skin); // Cache the skin
                 return skin;
