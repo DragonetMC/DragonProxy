@@ -21,6 +21,7 @@ package org.dragonet.proxy.network.translator.java;
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
+import com.github.steveice10.packetlib.io.buffer.ByteBufferNetOutput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.nukkitx.math.vector.Vector3f;
@@ -38,6 +39,7 @@ import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 
 @Log4j2
@@ -102,7 +104,7 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
         session.sendPacket(playStatus);
 
         // Send brand
-        session.sendRemotePacket(new ClientPluginMessagePacket("minecraft:brand", "DragonProxy".getBytes()));
+        sendClientBrand(session);
 
         // Send player data
         ByteArrayDataOutput output = ByteStreams.newDataOutput();
@@ -119,4 +121,17 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
         session.sendRemotePacket(new ClientPluginMessagePacket("dragonproxy:main", output.toByteArray()));
     }
 
+    /**
+     * Send the brand name to the server.
+     * This is a way to identify a DragonProxy client vs a vanilla client.
+     */
+    private void sendClientBrand(ProxySession session) {
+        ByteBufferNetOutput brandOutput = new ByteBufferNetOutput(ByteBuffer.allocate(20));
+        try {
+            brandOutput.writeString("DragonProxy");
+        } catch (IOException e) {
+            log.warn("Failed to send client brand: " + e.getMessage());
+        }
+        session.sendRemotePacket(new ClientPluginMessagePacket("minecraft:brand", brandOutput.getByteBuffer().array()));
+    }
 }
