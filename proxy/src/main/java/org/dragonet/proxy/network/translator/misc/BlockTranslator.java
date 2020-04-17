@@ -26,8 +26,14 @@ import com.nukkitx.nbt.NbtUtils;
 import com.nukkitx.nbt.stream.NBTInputStream;
 import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.nbt.tag.ListTag;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -52,19 +58,19 @@ public class BlockTranslator {
     public static final int BEDROCK_STICKY_PISTON_ID = 221;
 
     // Java to bedrock map
-    private static final Map<Integer, Integer> java2BedrockMap = new HashMap<>();
+    private static final Int2IntMap java2BedrockMap = new Int2IntOpenHashMap();
     // Bedrock to java map
-    private static final Map<Integer, BlockState> bedrock2JavaMap = new HashMap<>();
+    private static final Int2ObjectMap<BlockState> bedrock2JavaMap = new Int2ObjectOpenHashMap<>();
 
     // Waterlogged blocks
-    private static final Set<Integer> waterlogged = new HashSet<>();
+    private static final Set<Integer> waterlogged = new ObjectOpenHashSet<>();
 
     // Unique ID allocators
     private static final AtomicInteger bedrockIdAllocator = new AtomicInteger();
     private static final AtomicInteger javaIdAllocator = new AtomicInteger();
 
-    private static HashMap<String, Integer> bedrockId2RuntimeMap = new HashMap<>();
-    private static HashMap<Integer, String> bedrockRuntime2IdMap = new HashMap<>();
+    private static Object2IntMap<String> bedrockId2RuntimeMap = new Object2IntOpenHashMap<>();
+    private static Int2ObjectMap<String> bedrockRuntime2IdMap = new Int2ObjectOpenHashMap<>();
 
     @Getter
     private static int waterRuntimeId;

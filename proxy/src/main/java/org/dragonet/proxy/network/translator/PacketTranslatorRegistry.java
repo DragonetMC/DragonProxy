@@ -21,6 +21,8 @@ package org.dragonet.proxy.network.translator;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.google.common.base.Preconditions;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
@@ -64,7 +66,7 @@ public class PacketTranslatorRegistry<P> {
         }
     }
 
-    private final Map<Class<?>, PacketTranslator<P>> translators = new HashMap<>();
+    private final Object2ObjectMap<Class<?>, PacketTranslator<P>> translators = new Object2ObjectOpenHashMap<>();
 
     public void translate(ProxySession session, P packet) {
         Class<?> packetClass = packet.getClass();

@@ -23,6 +23,7 @@ import com.nukkitx.protocol.bedrock.data.GameRuleData;
 import com.nukkitx.protocol.bedrock.packet.GameRulesChangedPacket;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.*;
 import org.dragonet.proxy.data.stats.StatInfo;
 import org.dragonet.proxy.network.session.ProxySession;
@@ -33,7 +34,7 @@ import java.util.Map;
 @Data
 public class WorldCache implements Cache {
     @Setter(value = AccessLevel.NONE)
-    private Object2IntMap<StatInfo> statistics = new Object2IntArrayMap<>();
+    private Object2IntMap<StatInfo> statistics = new Object2IntOpenHashMap<>();
     private double rainLevel = 0.0;
 
     private Difficulty difficulty = Difficulty.EASY;

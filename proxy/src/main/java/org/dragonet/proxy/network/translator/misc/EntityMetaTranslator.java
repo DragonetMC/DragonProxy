@@ -22,6 +22,8 @@ import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadat
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Pose;
 import com.github.steveice10.mc.protocol.data.message.Message;
 import com.nukkitx.protocol.bedrock.data.*;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
@@ -39,7 +41,7 @@ import java.util.Map;
 
 @Log4j2
 public class EntityMetaTranslator {
-    private static final Map<BedrockEntityType, IMetaTranslator> translatorMap = new HashMap<>();
+    private static final Object2ObjectMap<BedrockEntityType, IMetaTranslator> translatorMap = new Object2ObjectOpenHashMap<>();
 
     static {
         translatorMap.put(BedrockEntityType.ITEM, new ItemEntityMetaTranslator());

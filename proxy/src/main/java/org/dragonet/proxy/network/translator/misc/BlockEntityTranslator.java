@@ -22,6 +22,8 @@ import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.util.TextFormat;
@@ -32,7 +34,7 @@ import java.util.Map;
 @Log4j2
 public class BlockEntityTranslator {
     // Java to Bedrock block entity name map
-    private static final Map<String, String> blockEntityMap = new HashMap<>();
+    private static final Object2ObjectMap<String, String> blockEntityMap = new Object2ObjectOpenHashMap<>();
 
     static {
         blockEntityMap.put("minecraft:bed", "Bed");

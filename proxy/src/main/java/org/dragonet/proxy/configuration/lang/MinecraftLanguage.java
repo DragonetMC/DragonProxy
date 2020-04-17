@@ -19,6 +19,8 @@
 package org.dragonet.proxy.configuration.lang;
 
 import com.google.gson.stream.JsonReader;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
 
@@ -31,7 +33,7 @@ import java.util.Map;
  */
 @Log4j2
 public class MinecraftLanguage {
-    private static final Map<String, String> language = new HashMap<>();
+    private static final Object2ObjectMap<String, String> language = new Object2ObjectOpenHashMap<>();
 
     static {
         // TODO: support for more languages
