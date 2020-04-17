@@ -28,6 +28,7 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.remote.RemoteAuthType;
 import org.dragonet.proxy.util.SkinUtils;
 
 @Log4j2
@@ -45,6 +46,9 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
         cachedPlayer.setRotation(Vector3f.from(packet.getYaw(), packet.getPitch(), 0));
         cachedPlayer.spawn(session);
 
+        if(session.getProxy().getConfiguration().getRemoteAuthType() == RemoteAuthType.OFFLINE) {
+            return;
+        }
         if(session.getProxy().getConfiguration().getPlayerConfig().isFetchSkin()) {
             session.getProxy().getGeneralThreadPool().execute(() -> {
                 GameProfile profile = playerListEntry.getProfile();
