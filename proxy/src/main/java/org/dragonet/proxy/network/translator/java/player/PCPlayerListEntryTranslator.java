@@ -22,7 +22,6 @@ import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPlayerListEntryPacket;
 import com.nukkitx.protocol.bedrock.data.ImageData;
-import com.nukkitx.protocol.bedrock.data.SerializedSkin;
 import com.nukkitx.protocol.bedrock.packet.PlayerListPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.PlayerListInfo;
@@ -32,10 +31,6 @@ import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.misc.MessageTranslator;
 import org.dragonet.proxy.util.SkinUtils;
-import org.dragonet.proxy.util.TextFormat;
-import sun.plugin2.message.Message;
-
-import java.nio.charset.StandardCharsets;
 
 @Log4j2
 @PCPacketTranslator(packetClass = ServerPlayerListEntryPacket.class)
