@@ -25,11 +25,15 @@ import com.nukkitx.protocol.bedrock.data.ImageData;
 import com.nukkitx.protocol.bedrock.data.SerializedSkin;
 import com.nukkitx.protocol.bedrock.packet.PlayerListPacket;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.data.PlayerListInfo;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.PlayerListCache;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.MessageTranslator;
 import org.dragonet.proxy.util.SkinUtils;
 import org.dragonet.proxy.util.TextFormat;
+import sun.plugin2.message.Message;
 
 import java.nio.charset.StandardCharsets;
 
@@ -39,25 +43,28 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
 
     @Override
     public void translate(ProxySession session, ServerPlayerListEntryPacket packet) {
+        PlayerListCache playerListCache = session.getPlayerListCache();
         PlayerListPacket playerListPacket = new PlayerListPacket();
 
         for(PlayerListEntry entry : packet.getEntries()) {
             PlayerListPacket.Entry bedrockEntry = new PlayerListPacket.Entry(entry.getProfile().getId());
-            session.getPlayerListCache().getPlayerInfo().put(entry.getProfile().getId(), entry);
+            String displayName = entry.getDisplayName() != null ? MessageTranslator.translate(entry.getDisplayName()) : entry.getProfile().getName();
+
+            playerListCache.getPlayerInfo().put(entry.getProfile().getId(), new PlayerListInfo(entry, displayName));
 
             switch(packet.getAction()) {
                 case ADD_PLAYER:
-                    if(entry.getProfile().getName().equals(session.getUsername())) {
+                    if(entry.getProfile().getId().equals(session.getCachedEntity().getJavaUuid())) {
                         return;
                     }
 
                     long proxyEid = session.getEntityCache().getNextClientEntityId().getAndIncrement();
-                    session.getPlayerListCache().getPlayerEntityIds().put(entry.getProfile().getId(), proxyEid);
+                    playerListCache.getPlayerEntityIds().put(entry.getProfile().getId(), proxyEid);
 
                     playerListPacket.setAction(PlayerListPacket.Action.ADD);
 
                     bedrockEntry.setEntityId(proxyEid);
-                    bedrockEntry.setName(entry.getProfile().getName());
+                    bedrockEntry.setName(displayName);
                     bedrockEntry.setSkin(SkinUtils.createSkinEntry(SkinUtils.STEVE_SKIN, GameProfile.TextureModel.NORMAL, ImageData.EMPTY));
                     bedrockEntry.setXuid("");
                     bedrockEntry.setPlatformChatId("");
@@ -65,6 +72,11 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
                     playerListPacket.getEntries().add(bedrockEntry);
 
                     session.sendPacket(playerListPacket);
+                    break;
+
+                case UPDATE_DISPLAY_NAME:
+                    // TODO: sync the player list
+                    playerListCache.updateDisplayName(entry.getProfile(), displayName);
                     break;
 
                 case UPDATE_LATENCY:
@@ -77,8 +89,8 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
 
                     session.sendPacket(playerListPacket);
 
-                    session.getPlayerListCache().getPlayerInfo().remove(entry.getProfile().getId());
-                    session.getPlayerListCache().getPlayerEntityIds().removeLong(entry.getProfile().getId());
+                    playerListCache.getPlayerInfo().remove(entry.getProfile().getId());
+                    playerListCache.getPlayerEntityIds().removeLong(entry.getProfile().getId());
                     break;
             }
         }

@@ -445,7 +445,7 @@ public class ProxySession implements PlayerSession {
      * @param skinData the skin data
      */
     public void setPlayerSkin(UUID playerId, long entityId, ImageData skinData, GameProfile.TextureModel model, ImageData capeData) {
-        GameProfile profile = playerListCache.getPlayerInfo().get(playerId).getProfile();
+        GameProfile profile = playerListCache.getPlayerInfo().get(playerId).getEntry().getProfile();
 
         // Remove the player from the player list
         PlayerListPacket removePacket = new PlayerListPacket();

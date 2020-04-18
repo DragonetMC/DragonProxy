@@ -23,7 +23,9 @@ import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.ImageData;
+import com.nukkitx.protocol.bedrock.packet.PlayerListPacket;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.data.PlayerListInfo;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.PacketTranslator;
@@ -37,7 +39,9 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
 
     @Override
     public void translate(ProxySession session, ServerSpawnPlayerPacket packet) {
-        PlayerListEntry playerListEntry = session.getPlayerListCache().getPlayerInfo().get(packet.getUuid());
+        PlayerListInfo playerListInfo = session.getPlayerListCache().getPlayerInfo().get(packet.getUuid());
+        PlayerListEntry playerListEntry = playerListInfo.getEntry();
+
         long cachedEntityId = session.getPlayerListCache().getPlayerEntityIds().getLong(packet.getUuid());
 
         CachedPlayer cachedPlayer = session.getEntityCache().newPlayer(packet.getEntityId(), cachedEntityId, playerListEntry.getProfile());

@@ -86,6 +86,7 @@ public class BlockEntityTranslator {
         if(bedrockId == null) {
             log.info(TextFormat.GRAY + "(debug) Unhandled block entity: " + javaId);
             bedrockId = javaId; // Fall back
+            return null;
         }
 
         // TODO: bed colour
