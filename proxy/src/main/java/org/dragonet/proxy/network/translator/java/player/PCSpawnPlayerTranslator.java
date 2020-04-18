@@ -40,11 +40,20 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
     @Override
     public void translate(ProxySession session, ServerSpawnPlayerPacket packet) {
         PlayerListInfo playerListInfo = session.getPlayerListCache().getPlayerInfo().get(packet.getUuid());
+        if(playerListInfo == null) {
+            log.warn("Received spawn player before player list. Ignoring...");
+            return;
+        }
         PlayerListEntry playerListEntry = playerListInfo.getEntry();
-
         long cachedEntityId = session.getPlayerListCache().getPlayerEntityIds().getLong(packet.getUuid());
+        CachedPlayer cachedPlayer;
 
-        CachedPlayer cachedPlayer = session.getEntityCache().newPlayer(packet.getEntityId(), cachedEntityId, playerListEntry.getProfile());
+        if(session.getEntityCache().getByRemoteId(packet.getEntityId()) != null) {
+            cachedPlayer = (CachedPlayer) session.getEntityCache().getByRemoteId(packet.getEntityId());
+        } else {
+            cachedPlayer = session.getEntityCache().newPlayer(packet.getEntityId(), cachedEntityId, playerListEntry.getProfile());
+        }
+
         cachedPlayer.setJavaUuid(packet.getUuid());
         cachedPlayer.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
         cachedPlayer.setRotation(Vector3f.from(packet.getYaw(), packet.getPitch(), 0));
@@ -64,7 +73,7 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
                 if(capeData == null) capeData = ImageData.EMPTY;
 
                 GameProfile.TextureModel model = playerListEntry.getProfile().getTexture(GameProfile.TextureType.SKIN).getModel();
-                session.setPlayerSkin(profile.getId(), cachedEntityId, skinData, model, capeData);
+                session.setPlayerSkin(profile.getId(), cachedPlayer.getProxyEid(), skinData, model, capeData);
             });
         }
     }
