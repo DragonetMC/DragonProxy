@@ -101,7 +101,7 @@
         </dependency>
         <dependency>
             <groupId>com.nukkitx.protocol</groupId>
-            <artifactId>bedrock-v390</artifactId>
+            <artifactId>bedrock-v402</artifactId>
             <version>2.5.5-SNAPSHOT</version>
         </dependency>
         <dependency>

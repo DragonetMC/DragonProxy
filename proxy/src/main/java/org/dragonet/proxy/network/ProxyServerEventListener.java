@@ -44,8 +44,8 @@ public class ProxyServerEventListener implements BedrockServerEventHandler {
         pong.setEdition("MCPE");
         pong.setGameType("Default");
         pong.setNintendoLimited(false);
-        pong.setProtocolVersion(DragonProxy.BEDROCK_CODEC.getProtocolVersion());
-        pong.setVersion(DragonProxy.BEDROCK_CODEC.getMinecraftVersion());
+        pong.setProtocolVersion(391);//DragonProxy.BEDROCK_CODEC.getProtocolVersion());
+        pong.setVersion("1.15.0.8");//DragonProxy.BEDROCK_CODEC.getMinecraftVersion());
         pong.setIpv4Port(DragonProxy.INSTANCE.getConfiguration().getBindPort());
     }
 

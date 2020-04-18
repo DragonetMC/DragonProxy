@@ -384,6 +384,7 @@ public class ProxySession implements PlayerSession {
         startGamePacket.setTime(0);
         startGamePacket.setEduEditionOffers(0);
         startGamePacket.setEduFeaturesEnabled(false);
+        startGamePacket.setUnknownString0("");
         startGamePacket.setRainLevel(0);
         startGamePacket.setLightningLevel(0);
         startGamePacket.setMultiplayerGame(true);
@@ -411,13 +412,16 @@ public class ProxySession implements PlayerSession {
         startGamePacket.setCurrentTick(0);
         startGamePacket.setEnchantmentSeed(0);
         startGamePacket.setMultiplayerCorrelationId("");
+        startGamePacket.setUnknownBool0(false);
 
         startGamePacket.setMovementServerAuthoritative(false);
-        startGamePacket.setVanillaVersion(DragonProxy.BEDROCK_CODEC.getMinecraftVersion());
+        startGamePacket.setVanillaVersion("*");
+        startGamePacket.setUnknownInt0(0);
+        startGamePacket.setUnknownInt1(0);
 
         startGamePacket.setBlockPalette(BlockTranslator.BLOCK_PALETTE);
         startGamePacket.setItemEntries(PaletteManager.ITEM_PALETTE);
-        bedrockSession.sendPacketImmediately(startGamePacket);
+        sendPacketImmediately(startGamePacket);
 
         BiomeDefinitionListPacket biomeDefinitionListPacket = new BiomeDefinitionListPacket();
         biomeDefinitionListPacket.setTag(PaletteManager.BIOME_ENTRIES);

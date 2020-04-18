@@ -25,7 +25,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import com.nukkitx.protocol.bedrock.BedrockServer;
 import com.nukkitx.protocol.bedrock.v389.Bedrock_v389;
-import com.nukkitx.protocol.bedrock.v390.Bedrock_v390;
+import com.nukkitx.protocol.bedrock.v392.Bedrock_v402;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.command.CommandManager;
@@ -56,16 +56,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Log4j2
 public class DragonProxy {
-    public static final BedrockPacketCodec BEDROCK_CODEC = Bedrock_v390.V390_CODEC;
-    public static final BedrockPacketCodec[] BEDROCK_SUPPORTED_CODECS = {BEDROCK_CODEC, Bedrock_v389.V389_CODEC};
+    public static final BedrockPacketCodec BEDROCK_CODEC = Bedrock_v402.V392_CODEC;
+    public static final BedrockPacketCodec[] BEDROCK_SUPPORTED_CODECS = {BEDROCK_CODEC};
     public static final int[] BEDROCK_SUPPORTED_PROTOCOLS;
 
     static {
         BEDROCK_SUPPORTED_PROTOCOLS = new int[BEDROCK_SUPPORTED_CODECS.length];
         for (int i = 0; i < BEDROCK_SUPPORTED_CODECS.length; i++) {
-            BEDROCK_SUPPORTED_PROTOCOLS[i] = BEDROCK_SUPPORTED_CODECS[i].getProtocolVersion();
+            BEDROCK_SUPPORTED_PROTOCOLS[i] = 391; //BEDROCK_SUPPORTED_CODECS[i].getProtocolVersion();
         }
         Arrays.sort(BEDROCK_SUPPORTED_PROTOCOLS);
+
+        log.warn(Arrays.toString(BEDROCK_SUPPORTED_PROTOCOLS));
     }
 
     public static final ObjectMapper JSON_MAPPER = new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);

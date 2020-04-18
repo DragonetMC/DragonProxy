@@ -72,9 +72,10 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
 
             // We send a start game packet and play status so the client doesn't get stuck on loading resources
             session.sendFakeStartGame(true);
-            session.getBedrockSession().disconnect(TextFormat.GOLD + "Unsupported game version.\n" + TextFormat.WHITE + "Please use 1.14.0");
+            session.getBedrockSession().disconnect(TextFormat.GOLD + "Unsupported game version.\n" + TextFormat.WHITE + "Please use 1.15.0.8 (RTX beta 1)");
             return true;
         }
+
         session.getBedrockSession().setPacketCodec(DragonProxy.BEDROCK_SUPPORTED_CODECS[index]);
 
         JsonNode certData;
