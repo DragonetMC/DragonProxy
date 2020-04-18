@@ -95,7 +95,7 @@ public class EntityMetaTranslator {
                     break;
                 case 2: // Custom name
                     if(meta.getValue() != null) {
-                        dictionary.putString(EntityData.NAMETAG, meta.getValue().toString());
+                        dictionary.putString(EntityData.NAMETAG, MessageTranslator.translate((Message) meta.getValue()));
                     }
                     break;
                 case 3: // Is custom name visible
