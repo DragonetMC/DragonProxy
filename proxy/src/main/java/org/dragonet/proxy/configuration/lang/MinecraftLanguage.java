@@ -60,7 +60,7 @@ public class MinecraftLanguage {
         if(language.containsKey(key)) {
             return language.get(key);
         }
-        log.warn("Invalid language string: " + key);
+        //log.warn("Invalid language string: " + key);
         return "";
     }
 
@@ -68,7 +68,7 @@ public class MinecraftLanguage {
         if(language.containsKey(key)) {
             return String.format(language.get(key), args);
         }
-        log.warn("Invalid language string: " + key + " - args (" + Arrays.toString(args) + ")");
+        //log.warn("Invalid language string: " + key + " - args (" + Arrays.toString(args) + ")");
         return "";
     }
 }
