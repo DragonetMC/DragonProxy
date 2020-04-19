@@ -25,6 +25,7 @@ import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.ImageData;
 import com.nukkitx.protocol.bedrock.packet.PlayerListPacket;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.configuration.DragonConfiguration;
 import org.dragonet.proxy.data.PlayerListInfo;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
@@ -59,9 +60,11 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
         cachedPlayer.setRotation(Vector3f.from(packet.getYaw(), packet.getPitch(), 0));
         cachedPlayer.spawn(session);
 
-        if(session.getProxy().getConfiguration().getRemoteAuthType() == RemoteAuthType.OFFLINE) {
+        DragonConfiguration config = session.getProxy().getConfiguration();
+        if(config.getRemoteAuthType() == RemoteAuthType.OFFLINE && !config.isForcePlayerSkins()) {
             return;
         }
+
         if(session.getProxy().getConfiguration().getPlayerConfig().isFetchSkin()) {
             session.getProxy().getGeneralThreadPool().execute(() -> {
                 GameProfile profile = playerListEntry.getProfile();

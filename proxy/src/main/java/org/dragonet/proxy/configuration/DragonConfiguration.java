@@ -59,6 +59,9 @@ public class DragonConfiguration {
     @JsonProperty("ping-passthrough")
     private boolean pingPassthrough;
 
+    @JsonProperty("force-player-skins")
+    private boolean forcePlayerSkins;
+
     @JsonProperty("player-settings")
     private PlayerConfig playerConfig;
 

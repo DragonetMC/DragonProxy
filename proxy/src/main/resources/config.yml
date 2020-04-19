@@ -36,6 +36,9 @@ xbox-auth: false
 # Whether or not to use the motd and player count of the primary remote server
 ping-passthrough: true
 
+# Forces Player Skins on Hybrid servers
+force-player-skins: false
+
 # Player gameplay related settings
 player-settings:
   # Whether or not to translate commands sent from the remote server and display
