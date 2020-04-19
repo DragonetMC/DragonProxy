@@ -23,6 +23,7 @@ import com.github.steveice10.mc.auth.exception.request.RequestException;
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
 import com.github.steveice10.mc.protocol.data.SubProtocol;
 import com.github.steveice10.mc.protocol.data.game.ClientRequest;
+import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.data.game.statistic.Statistic;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientRequestPacket;
 import com.github.steveice10.packetlib.Client;
@@ -519,6 +520,16 @@ public class ProxySession implements PlayerSession {
         inventoryContentPacket.setContainerId(ContainerId.CREATIVE);
         inventoryContentPacket.setContents(creativeItems);
         sendPacket(inventoryContentPacket);
+    }
+
+    public void sendGamemode() {
+        SetPlayerGameTypePacket setPlayerGameTypePacket = new SetPlayerGameTypePacket();
+        setPlayerGameTypePacket.setGamemode(cachedEntity.getGameMode().ordinal());
+        sendPacket(setPlayerGameTypePacket);
+
+        if(cachedEntity.getGameMode() == GameMode.CREATIVE) {
+            sendCreativeInventory();
+        }
     }
 
     public void onTick() {

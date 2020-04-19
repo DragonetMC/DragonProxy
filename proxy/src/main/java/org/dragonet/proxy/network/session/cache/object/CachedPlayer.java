@@ -39,7 +39,7 @@ import java.util.Set;
 public class CachedPlayer extends CachedEntity {
     private final GameProfile profile;
 
-    private GameMode gameMode;
+    private GameMode gameMode = GameMode.SURVIVAL;
 
     private float flySpeed = 0.05f;
     private int selectedHotbarSlot = 0;

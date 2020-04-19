@@ -48,19 +48,14 @@ public class PCRespawnTranslator extends PacketTranslator<ServerRespawnPacket> {
         CachedPlayer player = session.getCachedEntity();
 
         // Stop the rain
-        LevelEventPacket levelEventPacket = new LevelEventPacket();
-        levelEventPacket.setType(LevelEventType.STOP_RAIN);
-        levelEventPacket.setPosition(Vector3f.ZERO);
-        levelEventPacket.setData(0);
-        session.sendPacket(levelEventPacket);
+        session.getWorldCache().stopRain(session);
 
         // This is needed so the time will be sent again for the new world if the daylight cycle is stopped
         session.getWorldCache().setFirstTimePacket(true);
 
         // Set the players gamemode
-        SetPlayerGameTypePacket setPlayerGameTypePacket = new SetPlayerGameTypePacket();
-        setPlayerGameTypePacket.setGamemode(packet.getGamemode().ordinal());
-        session.sendPacket(setPlayerGameTypePacket);
+        player.setGameMode(packet.getGamemode());
+        session.sendGamemode();
 
         // Respawn the player
         RespawnPacket respawnPacket = new RespawnPacket();

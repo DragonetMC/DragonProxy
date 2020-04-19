@@ -71,12 +71,9 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
 
         session.getEntityCache().clonePlayer(packet.getEntityId(), session.getCachedEntity());
 
-        // TODO: Temporary
-        SetPlayerGameTypePacket setPlayerGameTypePacket = new SetPlayerGameTypePacket();
-        setPlayerGameTypePacket.setGamemode(packet.getGameMode().ordinal());
-        session.sendPacket(setPlayerGameTypePacket);
-
+        // Update the players game mode
         session.getCachedEntity().setGameMode(packet.getGameMode());
+        session.sendGamemode();
 
         if(packet.getGameMode() == GameMode.CREATIVE) {
             session.sendCreativeInventory();
