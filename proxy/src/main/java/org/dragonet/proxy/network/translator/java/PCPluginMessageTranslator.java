@@ -19,7 +19,14 @@
 package org.dragonet.proxy.network.translator.java;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPluginMessagePacket;
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteStreams;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.network.hybrid.EncryptionMessage;
+import org.dragonet.proxy.network.hybrid.HybridMessage;
+import org.dragonet.proxy.network.hybrid.PlayerLoginMessage;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
@@ -27,12 +34,31 @@ import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 @Log4j2
 @PCPacketTranslator(packetClass = ServerPluginMessagePacket.class)
 public class PCPluginMessageTranslator extends PacketTranslator<ServerPluginMessagePacket> {
+    private static Object2ObjectMap<String, HybridMessage> hybridMessages = new Object2ObjectOpenHashMap<>();
+
+    static {
+        hybridMessages.put("PlayerLogin", new PlayerLoginMessage());
+        hybridMessages.put("Encryption", new EncryptionMessage());
+    }
 
     @Override
     public void translate(ProxySession session, ServerPluginMessagePacket packet) {
-        switch(packet.getChannel().toLowerCase()) {
+        switch(packet.getChannel()) {
             case "minecraft:brand":
 
+                break;
+            case "DragonProxy":
+                ByteArrayDataInput in = ByteStreams.newDataInput(packet.getData());
+                String subchannel = in.readUTF();
+
+                HybridMessage hybridMessage = hybridMessages.get(subchannel);
+                if(hybridMessage == null) {
+                    log.warn("Invalid hybrid message received with name: " + subchannel);
+                    return;
+                }
+
+                hybridMessage.decode(in);
+                hybridMessage.handle(session.getHybridMessageHandler());
                 break;
         }
     }

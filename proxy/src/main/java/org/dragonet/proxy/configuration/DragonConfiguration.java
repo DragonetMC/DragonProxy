@@ -62,6 +62,9 @@ public class DragonConfiguration {
     @JsonProperty("player-settings")
     private PlayerConfig playerConfig;
 
+    @JsonProperty("hybrid")
+    private HybridConfig hybridConfig;
+
     @JsonProperty("thread-pool-size")
     private int threadPoolSize;
 
@@ -75,5 +78,14 @@ public class DragonConfiguration {
 
         @JsonProperty("fetch-skins")
         private boolean fetchSkin;
+    }
+
+    @Getter
+    public static class HybridConfig {
+        @JsonProperty
+        private boolean encryption;
+
+        @JsonProperty("ip-forwarding")
+        private boolean ipForwarding;
     }
 }

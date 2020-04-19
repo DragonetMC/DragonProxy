@@ -22,5 +22,6 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 
 public enum RemoteAuthType {
     CREDENTIALS,
-    OFFLINE
+    OFFLINE,
+    HYBRID
 }

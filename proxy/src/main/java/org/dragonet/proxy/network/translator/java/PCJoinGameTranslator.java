@@ -33,6 +33,7 @@ import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
 import com.nukkitx.protocol.bedrock.packet.SetPlayerGameTypePacket;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.network.hybrid.EncryptionMessage;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.PacketTranslator;
 import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
@@ -107,18 +108,10 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
         sendClientBrand(session);
 
         // Send player data
-        ByteArrayDataOutput output = ByteStreams.newDataOutput();
-        output.writeUTF("PlayerLogin");
-        output.writeUTF(session.getAuthData().getDisplayName()); // Display name
-        output.writeUTF(session.getAuthData().getXuid()); // XUID
-        output.writeUTF(session.getAuthData().getIdentity().toString()); // UUID
-        output.writeInt(session.getClientData().getDeviceOs().ordinal());
-        output.writeInt(session.getClientData().getUiProfile().ordinal());
-        output.writeUTF(session.getClientData().getDeviceModel());
-        output.writeUTF(session.getClientData().getGameVersion());
-        output.writeUTF(session.getClientData().getLanguageCode());
+        sendPlayerData(session);
 
-        session.sendRemotePacket(new ClientPluginMessagePacket("dragonproxy:main", output.toByteArray()));
+        // Send encryption status
+        session.sendHybridMessage(new EncryptionMessage(session.getProxy().getConfiguration().getHybridConfig().isEncryption()));
     }
 
     /**
@@ -134,5 +127,23 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
             return;
         }
         session.sendRemotePacket(new ClientPluginMessagePacket("minecraft:brand", brandOutput.getByteBuffer().array()));
+    }
+
+    private void sendPlayerData(ProxySession session) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("PlayerLogin");
+        out.writeUTF(session.getAuthData().getDisplayName()); // Display name
+        out.writeUTF(session.getAuthData().getXuid()); // XUID
+        out.writeUTF(session.getAuthData().getIdentity().toString()); // UUID
+        out.writeInt(session.getClientData().getDeviceOs().ordinal());
+        out.writeInt(session.getClientData().getUiProfile().ordinal());
+        out.writeUTF(session.getClientData().getDeviceModel());
+        out.writeUTF(session.getClientData().getGameVersion());
+        out.writeUTF(session.getClientData().getLanguageCode());
+        out.writeBoolean(true); // IP forwarding enabled
+        out.writeUTF(session.getBedrockSession().getAddress().getHostName());
+        out.writeShort(session.getBedrockSession().getAddress().getPort());
+
+        session.sendRemotePacket(new ClientPluginMessagePacket("dragonproxy:main", out.toByteArray()));
     }
 }

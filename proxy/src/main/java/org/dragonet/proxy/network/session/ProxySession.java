@@ -24,6 +24,7 @@ import com.github.steveice10.mc.protocol.MinecraftProtocol;
 import com.github.steveice10.mc.protocol.data.SubProtocol;
 import com.github.steveice10.mc.protocol.data.game.ClientRequest;
 import com.github.steveice10.mc.protocol.data.game.statistic.Statistic;
+import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientRequestPacket;
 import com.github.steveice10.packetlib.Client;
 import com.github.steveice10.packetlib.event.session.ConnectedEvent;
@@ -32,6 +33,8 @@ import com.github.steveice10.packetlib.event.session.PacketReceivedEvent;
 import com.github.steveice10.packetlib.event.session.SessionAdapter;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
@@ -48,6 +51,8 @@ import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.form.CustomForm;
 import org.dragonet.proxy.form.components.InputComponent;
 import org.dragonet.proxy.form.components.LabelComponent;
+import org.dragonet.proxy.network.hybrid.HybridMessage;
+import org.dragonet.proxy.network.hybrid.HybridMessageHandler;
 import org.dragonet.proxy.network.session.cache.*;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
@@ -109,10 +114,14 @@ public class ProxySession implements PlayerSession {
 
     private boolean firstTimePacket = true;
 
+    private HybridMessageHandler hybridMessageHandler;
+
     public ProxySession(DragonProxy proxy, BedrockServerSession bedrockSession) {
         this.proxy = proxy;
         this.bedrockSession = bedrockSession;
         this.bedrockSession.setLogging(true);
+
+        hybridMessageHandler = new HybridMessageHandler(this);
 
         dataCache.put("auth_state", AuthState.NONE);
 
@@ -521,6 +530,12 @@ public class ProxySession implements PlayerSession {
         inventoryContentPacket.setContainerId(ContainerId.CREATIVE);
         inventoryContentPacket.setContents(creativeItems);
         sendPacket(inventoryContentPacket);
+    }
+
+    public void sendHybridMessage(HybridMessage message) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF(message.getId());
+        sendRemotePacket(new ClientPluginMessagePacket("DragonProxy", message.encode(out).toByteArray()));
     }
 
     public void onTick() {
