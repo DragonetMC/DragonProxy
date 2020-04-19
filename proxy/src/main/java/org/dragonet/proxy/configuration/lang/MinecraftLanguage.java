@@ -57,7 +57,7 @@ public class MinecraftLanguage {
     }
 
     public static String translate(String key) {
-        if(language.containsKey(key)) {
+        if(key != null && language.containsKey(key)) {
             return language.get(key);
         }
         //log.warn("Invalid language string: " + key);
@@ -65,7 +65,7 @@ public class MinecraftLanguage {
     }
 
     public static String translate(String key, Object[] args) {
-        if(language.containsKey(key)) {
+        if(key != null && language.containsKey(key)) {
             return String.format(language.get(key), args);
         }
         //log.warn("Invalid language string: " + key + " - args (" + Arrays.toString(args) + ")");

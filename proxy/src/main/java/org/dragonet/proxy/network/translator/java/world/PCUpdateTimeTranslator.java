@@ -37,8 +37,8 @@ public class PCUpdateTimeTranslator extends PacketTranslator<ServerUpdateTimePac
 
         if(packet.getTime() < 0) {
             // Skip it the first time the time is sent to get the client at the same time as the server
-            if(session.isFirstTimePacket()) {
-                session.setFirstTimePacket(false);
+            if(worldCache.isFirstTimePacket()) {
+                worldCache.setFirstTimePacket(false);
                 sendTime(session, time);
                 return;
             }

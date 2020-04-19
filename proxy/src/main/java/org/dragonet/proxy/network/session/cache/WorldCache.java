@@ -42,6 +42,8 @@ public class WorldCache implements Cache {
     @Setter(value = AccessLevel.NONE)
     private boolean timeStopped = false;
 
+    private boolean firstTimePacket = true;
+
     public void setTimeStopped(ProxySession session, boolean value) {
         timeStopped = value;
 
