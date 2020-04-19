@@ -106,7 +106,7 @@ public class CachedWindow {
         addEntityPacket.setPosition(position.toFloat());
         addEntityPacket.setMotion(Vector3f.ZERO);
         addEntityPacket.setRotation(Vector3f.ZERO);
-        addEntityPacket.setEntityType(BedrockEntityType.VILLAGER.getType());
+        addEntityPacket.setEntityType(BedrockEntityType.VILLAGER_V2.getType());
         addEntityPacket.getMetadata().put(EntityData.SCALE, 0.01f);
 
         session.sendPacket(addEntityPacket);

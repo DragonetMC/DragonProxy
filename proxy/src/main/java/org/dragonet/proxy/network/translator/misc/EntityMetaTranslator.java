@@ -63,6 +63,7 @@ public class EntityMetaTranslator {
         translatorMap.put(BedrockEntityType.IRON_GOLEM, new IronGolemMetaTranslator());
         translatorMap.put(BedrockEntityType.ENDER_DRAGON, new EnderDragonMetaTranslator());
         translatorMap.put(BedrockEntityType.SPIDER, new SpiderMetaTranslator());
+        translatorMap.put(BedrockEntityType.VILLAGER_V2, new VillagerMetaTransformer());
     }
 
     /**
