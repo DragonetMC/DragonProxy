@@ -28,7 +28,9 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.util.TextFormat;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Log4j2
@@ -36,40 +38,49 @@ public class BlockEntityTranslator {
     // Java to Bedrock block entity name map
     private static final Object2ObjectMap<String, String> blockEntityMap = new Object2ObjectOpenHashMap<>();
 
+    private static final List<String> bedrockBlockEntities = new ArrayList<>();
+
     static {
-        blockEntityMap.put("minecraft:bed", "Bed");
-        blockEntityMap.put("minecraft:chest", "Chest");
-        blockEntityMap.put("minecraft:ender_chest", "EnderChest");
-        blockEntityMap.put("minecraft:command_block", "CommandBlock");
-        blockEntityMap.put("minecraft:sign", "Sign");
-        blockEntityMap.put("minecraft:flower_pot", "FlowerPot");
-        blockEntityMap.put("minecraft:hopper", "Hopper");
-        blockEntityMap.put("minecraft:dropper", "Dropper");
-        blockEntityMap.put("minecraft:dispenser", "Dispenser");
-        blockEntityMap.put("minecraft:daylight_detector", "DaylightDetector");
-        blockEntityMap.put("minecraft:shulker_box", "ShulkerBox");
-        blockEntityMap.put("minecraft:furnace", "Furnace");
-        blockEntityMap.put("minecraft:structure_block", "StructureBlock");
-        blockEntityMap.put("minecraft:end_gateway", "EndGateway");
-        blockEntityMap.put("minecraft:beacon", "Beacon");
-        blockEntityMap.put("minecraft:end_portal", "EndPortal");
-        blockEntityMap.put("minecraft:mob_spawner", "MobSpawner");
-        blockEntityMap.put("minecraft:skull", "Skull");
-        blockEntityMap.put("minecraft:banner", "Banner");
-        blockEntityMap.put("minecraft:comparator", "Comparator");
-        blockEntityMap.put("minecraft:jukebox", "Jukebox");
-        blockEntityMap.put("minecraft:piston", "PistonArm");
-        blockEntityMap.put("minecraft:noteblock", "Noteblock");
-        blockEntityMap.put("minecraft:enchanting_table", "EnchantTable");
-        blockEntityMap.put("minecraft:brewing_stand", "BrewingStand");
+        register("minecraft:bed", "Bed");
+        register("minecraft:chest", "Chest");
+        register("minecraft:ender_chest", "EnderChest");
+        register("minecraft:command_block", "CommandBlock");
+        register("minecraft:sign", "Sign");
+        register("minecraft:flower_pot", "FlowerPot");
+        register("minecraft:hopper", "Hopper");
+        register("minecraft:dropper", "Dropper");
+        register("minecraft:dispenser", "Dispenser");
+        register("minecraft:daylight_detector", "DaylightDetector");
+        register("minecraft:shulker_box", "ShulkerBox");
+        register("minecraft:furnace", "Furnace");
+        register("minecraft:structure_block", "StructureBlock");
+        register("minecraft:end_gateway", "EndGateway");
+        register("minecraft:beacon", "Beacon");
+        register("minecraft:end_portal", "EndPortal");
+        register("minecraft:mob_spawner", "MobSpawner");
+        register("minecraft:skull", "Skull");
+        register("minecraft:banner", "Banner");
+        register("minecraft:comparator", "Comparator");
+        register("minecraft:jukebox", "Jukebox");
+        register("minecraft:piston", "PistonArm");
+        register("minecraft:noteblock", "Noteblock");
+        register("minecraft:enchanting_table", "EnchantTable");
+        register("minecraft:brewing_stand", "BrewingStand");
 
         // Not sure about these ones
-        blockEntityMap.put("minecraft:beehive", "Beehive");
-        blockEntityMap.put("minecraft:bell", "Bell");
-        blockEntityMap.put("minecraft:smoker", "Smoker");
-        blockEntityMap.put("minecraft:blast_furnace", "BlastFurnace");
-        blockEntityMap.put("minecraft:barrel", "Barrel");
-        blockEntityMap.put("minecraft:campfire", "Campfire");
+        register("minecraft:beehive", "Beehive");
+        register("minecraft:bell", "Bell");
+        register("minecraft:smoker", "Smoker");
+        register("minecraft:blast_furnace", "BlastFurnace");
+        register("minecraft:barrel", "Barrel");
+        register("minecraft:campfire", "Campfire");
+    }
+
+    private static void register(String javaId, String bedrockId) {
+        blockEntityMap.put(javaId, bedrockId);
+
+        // This is here because of networks like Hypixel that dont use namespaced ids
+        bedrockBlockEntities.add(bedrockId);
     }
 
     public static CompoundTag translateToBedrock(com.github.steveice10.opennbt.tag.builtin.CompoundTag javaTag) {
@@ -84,9 +95,12 @@ public class BlockEntityTranslator {
         String bedrockId = getBedrockIdentifier(javaId);
 
         if(bedrockId == null) {
-            log.info(TextFormat.GRAY + "(debug) Unhandled block entity: " + javaId);
-            bedrockId = javaId; // Fall back
-            return null;
+            if(bedrockBlockEntities.contains(javaId)) {
+                bedrockId = javaId;
+            } else {
+                log.info(TextFormat.GRAY + "(debug) Unhandled block entity: " + javaId);
+                return null;
+            }
         }
 
         // TODO: bed colour
