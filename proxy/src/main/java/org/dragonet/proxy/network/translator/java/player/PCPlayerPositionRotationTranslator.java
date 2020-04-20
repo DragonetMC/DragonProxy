@@ -56,8 +56,17 @@ public class PCPlayerPositionRotationTranslator extends PacketTranslator<ServerP
 
         entity.setSpawned(true);
 
-        entity.moveAbsolute(session, Vector3f.from(packet.getX(), packet.getY() + BedrockEntityType.PLAYER.getOffset(), packet.getZ()), Vector3f.from(packet.getPitch(),
-            packet.getYaw(), 0), true, false);
+        if(!packet.getRelative().isEmpty()) {
+            entity.moveRelative(session, Vector3f.from(packet.getX(), packet.getY(), packet.getZ()), Vector3f.from(packet.getPitch(), packet.getYaw(), 0), true, true);
+        } else {
+            double x = Math.abs(entity.getPosition().getX() - packet.getX());
+            double y = Math.abs(entity.getPosition().getY() - packet.getY());
+            double z = Math.abs(entity.getPosition().getZ() - packet.getZ());
+
+            if (x >= 1 || y >= 1 || z >= 1) {
+                entity.moveAbsolute(session, Vector3f.from(packet.getX(), packet.getY(), packet.getZ()), Vector3f.from(packet.getPitch(), packet.getYaw(), 0), true, false);
+            }
+        }
 
         session.sendRemotePacket(new ClientTeleportConfirmPacket(packet.getTeleportId()));
     }
