@@ -405,7 +405,7 @@ public class ProxySession implements PlayerSession {
         startGamePacket.setWorldTemplateOptionLocked(false);
 
         startGamePacket.setLevelId(UUID.randomUUID().toString());
-        startGamePacket.setWorldName("DragonProxy " + proxy.getVersion());
+        startGamePacket.setWorldName(proxy.getConfiguration().getMotd2());
         startGamePacket.setPremiumWorldTemplateId("00000000-0000-0000-0000-000000000000");
         startGamePacket.setCurrentTick(0);
         startGamePacket.setEnchantmentSeed(0);
