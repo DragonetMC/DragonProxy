@@ -16,15 +16,13 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.annotations;
+package org.dragonet.proxy.network.translator.misc;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import lombok.Getter;
+import org.dragonet.proxy.network.session.ProxySession;
 
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface PCPacketTranslator {
-    Class packetClass();
+@Getter
+public abstract class PacketTranslator<P> {
+
+    public abstract void translate(ProxySession session, P packet);
 }

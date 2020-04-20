@@ -21,24 +21,17 @@ package org.dragonet.proxy.network.translator.java;
 import com.github.steveice10.mc.protocol.data.game.command.CommandNode;
 import com.github.steveice10.mc.protocol.data.game.command.CommandParser;
 import com.github.steveice10.mc.protocol.data.game.command.CommandType;
-import com.github.steveice10.mc.protocol.data.game.command.SuggestionType;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDeclareCommandsPacket;
 import com.nukkitx.protocol.bedrock.data.CommandData;
 import com.nukkitx.protocol.bedrock.data.CommandEnumData;
 import com.nukkitx.protocol.bedrock.data.CommandParamData;
-import com.nukkitx.protocol.bedrock.data.CommandParamType;
 import com.nukkitx.protocol.bedrock.packet.AvailableCommandsPacket;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.command.ProxyCommand;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 import java.util.*;
 
@@ -54,7 +47,7 @@ import java.util.*;
  * - Implement multiple overload support
  */
 @Log4j2
-@PCPacketTranslator(packetClass = ServerDeclareCommandsPacket.class)
+@PacketRegisterInfo(packet = ServerDeclareCommandsPacket.class)
 public class PCDeclareCommandsTranslator extends PacketTranslator<ServerDeclareCommandsPacket> {
     private static Map<CommandParser, CommandParamData.Type> parserTypeMap = new HashMap<>();
 

@@ -18,7 +18,6 @@
  */
 package org.dragonet.proxy.network.translator.java.world;
 
-import com.github.steveice10.mc.protocol.data.MagicValues;
 import com.github.steveice10.mc.protocol.data.game.ClientRequest;
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.data.game.world.notify.EnterCreditsValue;
@@ -34,8 +33,8 @@ import com.nukkitx.protocol.bedrock.packet.ShowCreditsPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 import org.dragonet.proxy.util.TextFormat;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -43,7 +42,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static com.nukkitx.protocol.bedrock.data.LevelEventType.*;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerNotifyClientPacket.class)
+@PacketRegisterInfo(packet = ServerNotifyClientPacket.class)
 public class PCNotifyClientTranslator extends PacketTranslator<ServerNotifyClientPacket> {
 
     @Override

@@ -21,23 +21,18 @@ package org.dragonet.proxy.network.translator.java.entity;
 import com.github.steveice10.mc.protocol.data.game.entity.EntityStatus;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityStatusPacket;
 import com.nukkitx.protocol.bedrock.data.EntityEventType;
-import com.nukkitx.protocol.bedrock.data.LevelEventType;
 import com.nukkitx.protocol.bedrock.packet.EntityEventPacket;
-import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 import org.dragonet.proxy.util.TextFormat;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Log4j2
-@PCPacketTranslator(packetClass = ServerEntityStatusPacket.class)
+@PacketRegisterInfo(packet = ServerEntityStatusPacket.class)
 public class PCEntityStatusTranslator extends PacketTranslator<ServerEntityStatusPacket> {
     private static Object2ObjectMap<EntityStatus, EntityEventType> entityEventMap = new Object2ObjectOpenHashMap<>();
 

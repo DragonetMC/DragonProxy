@@ -24,11 +24,11 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.command.CommandManager;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 @Log4j2
-@PEPacketTranslator(packetClass = CommandRequestPacket.class)
+@PacketRegisterInfo(packet = CommandRequestPacket.class)
 public class PECommandRequestTranslator extends PacketTranslator<CommandRequestPacket> {
 
     @Override

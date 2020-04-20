@@ -22,16 +22,16 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientCreat
 import com.nukkitx.protocol.bedrock.data.ItemData;
 import com.nukkitx.protocol.bedrock.packet.BlockPickRequestPacket;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
-import org.dragonet.proxy.network.translator.misc.ItemTranslator;
+import org.dragonet.proxy.network.translator.ItemTranslatorRegistry;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
-@PEPacketTranslator(packetClass = BlockPickRequestPacket.class)
+@PacketRegisterInfo(packet = BlockPickRequestPacket.class)
 public class PEBlockPickRequestTranslator extends PacketTranslator<BlockPickRequestPacket> {
 
     @Override
     public void translate(ProxySession session, BlockPickRequestPacket packet) {
         int bedrockId = session.getChunkCache().getBlockAt(packet.getBlockPosition());
-        session.sendRemotePacket(new ClientCreativeInventoryActionPacket(packet.getHotbarSlot(), ItemTranslator.translateToJava(ItemData.of(bedrockId, (short) 0, 1))));
+        session.sendRemotePacket(new ClientCreativeInventoryActionPacket(packet.getHotbarSlot(), ItemTranslatorRegistry.translateToJava(ItemData.of(bedrockId, (short) 0, 1))));
     }
 }

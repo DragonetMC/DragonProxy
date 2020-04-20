@@ -20,10 +20,10 @@ package org.dragonet.proxy.network.translator.java.world;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerBlockValuePacket;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
-@PCPacketTranslator(packetClass = ServerBlockValuePacket.class)
+@PacketRegisterInfo(packet = ServerBlockValuePacket.class)
 public class PCBlockValueTranslator extends PacketTranslator<ServerBlockValuePacket> {
 
     @Override

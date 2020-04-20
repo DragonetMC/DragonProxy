@@ -20,16 +20,14 @@ package org.dragonet.proxy.network.translator.java.entity.movement;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityPositionRotationPacket;
 import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.packet.MoveEntityAbsolutePacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.util.TextFormat;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerEntityPositionRotationPacket.class)
+@PacketRegisterInfo(packet = ServerEntityPositionRotationPacket.class)
 public class PCEntityPositionRotationTranslator extends PacketTranslator<ServerEntityPositionRotationPacket> {
 
     @Override

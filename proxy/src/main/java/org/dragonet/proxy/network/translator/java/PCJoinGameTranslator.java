@@ -31,11 +31,10 @@ import com.nukkitx.nbt.stream.NBTOutputStream;
 import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
-import com.nukkitx.protocol.bedrock.packet.SetPlayerGameTypePacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -43,7 +42,7 @@ import java.nio.ByteBuffer;
 
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerJoinGamePacket.class)
+@PacketRegisterInfo(packet = ServerJoinGamePacket.class)
 public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket> {
     public static final PCJoinGameTranslator INSTANCE = new PCJoinGameTranslator();
 

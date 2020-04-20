@@ -27,14 +27,11 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockAttributeType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerEntityPropertiesPacket.class)
+@PacketRegisterInfo(packet = ServerEntityPropertiesPacket.class)
 public class PCEntityPropertiesTranslator extends PacketTranslator<ServerEntityPropertiesPacket> {
     private static Object2ObjectMap<AttributeType, BedrockAttributeType> attributeMap = new Object2ObjectOpenHashMap<>();
 

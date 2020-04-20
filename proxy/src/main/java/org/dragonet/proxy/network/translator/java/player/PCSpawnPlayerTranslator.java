@@ -23,18 +23,17 @@ import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.ImageData;
-import com.nukkitx.protocol.bedrock.packet.PlayerListPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.PlayerListInfo;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 import org.dragonet.proxy.remote.RemoteAuthType;
 import org.dragonet.proxy.util.SkinUtils;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerSpawnPlayerPacket.class)
+@PacketRegisterInfo(packet = ServerSpawnPlayerPacket.class)
 public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerPacket> {
 
     @Override

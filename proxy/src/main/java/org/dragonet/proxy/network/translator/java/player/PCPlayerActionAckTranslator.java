@@ -22,16 +22,14 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.Serv
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.LevelEventType;
 import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
-import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.network.translator.misc.BlockTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 import org.dragonet.proxy.util.TextFormat;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerPlayerActionAckPacket.class)
+@PacketRegisterInfo(packet = ServerPlayerActionAckPacket.class)
 public class PCPlayerActionAckTranslator extends PacketTranslator<ServerPlayerActionAckPacket> {
 
     @Override

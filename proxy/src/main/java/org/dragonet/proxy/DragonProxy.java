@@ -35,9 +35,9 @@ import org.dragonet.proxy.console.DragonConsole;
 import org.dragonet.proxy.metrics.MetricsManager;
 import org.dragonet.proxy.network.ProxyServerEventListener;
 import org.dragonet.proxy.network.SessionManager;
+import org.dragonet.proxy.network.translator.ItemTranslatorRegistry;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.dragonet.proxy.network.translator.misc.BlockTranslator;
-import org.dragonet.proxy.network.translator.misc.ItemTranslator;
 import org.dragonet.proxy.util.*;
 
 import java.io.File;
@@ -45,7 +45,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.DecimalFormat;
 import java.util.Arrays;
@@ -166,7 +165,7 @@ public class DragonProxy {
         sessionManager = new SessionManager();
 
         new PacketTranslatorRegistry();
-        new ItemTranslator();
+        new ItemTranslatorRegistry();
         new BlockTranslator();
         new SkinUtils();
         new MinecraftLanguage();

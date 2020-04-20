@@ -18,25 +18,17 @@
  */
 package org.dragonet.proxy.network.translator.java.player;
 
-import com.github.steveice10.mc.protocol.data.game.ClientRequest;
-import com.github.steveice10.mc.protocol.packet.ingame.client.ClientRequestPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerAbilitiesPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerHealthPacket;
-import com.nukkitx.protocol.bedrock.data.Attribute;
-import com.nukkitx.protocol.bedrock.packet.AdventureSettingsPacket;
-import com.nukkitx.protocol.bedrock.packet.RespawnPacket;
-import com.nukkitx.protocol.bedrock.packet.SetHealthPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockAttributeType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
-import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerPlayerHealthPacket.class)
+@PacketRegisterInfo(packet = ServerPlayerHealthPacket.class)
 public class PCPlayerHealthTranslator extends PacketTranslator<ServerPlayerHealthPacket> {
 
     @Override

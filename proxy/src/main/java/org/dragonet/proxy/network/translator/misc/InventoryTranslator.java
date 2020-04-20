@@ -25,6 +25,7 @@ import com.nukkitx.protocol.bedrock.data.ItemData;
 import com.nukkitx.protocol.bedrock.packet.InventoryContentPacket;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
+import org.dragonet.proxy.network.translator.ItemTranslatorRegistry;
 import org.dragonet.proxy.network.translator.misc.inventory.GenericInventoryTranslator;
 
 import java.util.HashMap;
@@ -55,17 +56,17 @@ public class InventoryTranslator {
 
         // Hotbar
         for(int i = 36; i < 45; i++) {
-            contents[i - 36] = ItemTranslator.translateSlotToBedrock(cachedWindow.getItems()[i]);
+            contents[i - 36] = ItemTranslatorRegistry.translateSlotToBedrock(cachedWindow.getItems()[i]);
         }
 
         // Inventory
         for(int i = 9; i < 36; i++) {
-            contents[i] = ItemTranslator.translateSlotToBedrock(cachedWindow.getItems()[i]);
+            contents[i] = ItemTranslatorRegistry.translateSlotToBedrock(cachedWindow.getItems()[i]);
         }
 
         // Armour
         for(int i = 5; i < 9; i++) {
-            contents[i + 31] = ItemTranslator.translateSlotToBedrock(cachedWindow.getItems()[i]);
+            contents[i + 31] = ItemTranslatorRegistry.translateSlotToBedrock(cachedWindow.getItems()[i]);
         }
 
         inventoryContentPacket.setContents(contents);

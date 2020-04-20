@@ -19,17 +19,14 @@
 package org.dragonet.proxy.network.translator.bedrock;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
-import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
 import com.github.steveice10.mc.protocol.data.game.world.block.CommandBlockMode;
-import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerSwingArmPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientUpdateCommandBlockPacket;
-import com.nukkitx.protocol.bedrock.packet.AnimatePacket;
 import com.nukkitx.protocol.bedrock.packet.CommandBlockUpdatePacket;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
-@PEPacketTranslator(packetClass = CommandBlockUpdatePacket.class)
+@PacketRegisterInfo(packet = CommandBlockUpdatePacket.class)
 public class PECommandBlockUpdateTranslator extends PacketTranslator<CommandBlockUpdatePacket> {
 
     @Override

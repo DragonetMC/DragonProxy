@@ -1,22 +1,4 @@
-/*
- * DragonProxy
- * Copyright (C) 2016-2020 Dragonet Foundation
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You can view the LICENSE file for more details.
- *
- * https://github.com/DragonetMC/DragonProxy
- */
-package org.dragonet.proxy.network.translator.misc;
+package org.dragonet.proxy.network.translator;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -30,19 +12,39 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.network.translator.misc.IItemTranslator;
+import org.dragonet.proxy.network.translator.misc.MessageTranslator;
 import org.dragonet.proxy.network.translator.misc.item.ItemEntry;
+import org.dragonet.proxy.util.registry.ItemRegisterInfo;
+import org.dragonet.proxy.util.registry.Registry;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Log4j2
-public class ItemTranslator {
+public class ItemTranslatorRegistry extends Registry {
+    private static Int2ObjectMap<IItemTranslator> customTranslators = new Int2ObjectOpenHashMap<>(); // bedrock id
+
     private static final Int2ObjectMap<ItemEntry> javaToBedrockMap = new Int2ObjectOpenHashMap<>();
     private static final Int2ObjectMap<ItemEntry> bedrockToJavaMap = new Int2ObjectOpenHashMap<>();
 
     private static final AtomicInteger javaIdAllocator = new AtomicInteger(0);
+
+
+    static {
+        registerType(ItemRegisterInfo.class);
+        registerPath("org.dragonet.proxy.network.translator.misc.item", (info, clazz) -> {
+            try {
+                customTranslators.put(((ItemRegisterInfo) info).bedrockId(), (IItemTranslator) clazz.newInstance());
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
     static {
         InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("mappings/1.15/item_mappings.json");
@@ -50,9 +52,9 @@ public class ItemTranslator {
             throw new AssertionError("Item mapping table not found");
         }
 
-        Map<String, ItemMappingEntry> itemEntries;
+        Map<String, ItemTranslatorRegistry.ItemMappingEntry> itemEntries;
         try {
-            itemEntries = DragonProxy.JSON_MAPPER.readValue(stream, new TypeReference<Map<String, ItemMappingEntry>>(){});
+            itemEntries = DragonProxy.JSON_MAPPER.readValue(stream, new TypeReference<Map<String, ItemTranslatorRegistry.ItemMappingEntry>>(){});
         } catch (IOException e) {
             throw new RuntimeException("Failed to parse item mappings", e);
         }
@@ -71,7 +73,12 @@ public class ItemTranslator {
         }
         ItemEntry bedrockItem = javaToBedrockMap.get(item.getId());
 
-        if (item.getNbt() == null || bedrockItem.getBedrockRuntimeId() == 397) { // Fix skull NBT crashing the client
+        // Custom item translation. TODO: make this better
+        if(customTranslators.containsKey(bedrockItem.getBedrockRuntimeId())) {
+           // item = customTranslators.get(bedrockItem.getBedrockRuntimeId()).translateToBedrock(item);
+        }
+
+        if (item.getNbt() == null|| bedrockItem.getBedrockRuntimeId() == 397) { // Fix skull NBT crashing the client
             return ItemData.of(bedrockItem.getBedrockRuntimeId(), (short) bedrockItem.getBedrockData(), item.getAmount());
         }
 
@@ -100,6 +107,7 @@ public class ItemTranslator {
     public static com.nukkitx.nbt.tag.CompoundTag translateItemNBT(CompoundTag tag) {
         CompoundTagBuilder root = CompoundTagBuilder.builder();
 
+        // First handle NBT that applies to all items
         if(!tag.contains("display")) {
             CompoundTagBuilder display = CompoundTagBuilder.builder();
 

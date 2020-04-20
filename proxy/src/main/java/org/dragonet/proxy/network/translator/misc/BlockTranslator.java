@@ -71,6 +71,8 @@ public class BlockTranslator {
 
     private static Object2IntMap<String> bedrockId2RuntimeMap = new Object2IntOpenHashMap<>();
     private static Int2ObjectMap<String> bedrockRuntime2IdMap = new Int2ObjectOpenHashMap<>();
+    @Getter
+    private static Int2IntMap beds = new Int2IntOpenHashMap();
 
     @Getter
     private static int waterRuntimeId;
@@ -125,6 +127,10 @@ public class BlockTranslator {
 
             if(blockMappingEntry.isWaterlogged()) {
                 waterlogged.add(javaProtocolId);
+            }
+
+            if(blockMappingEntry.getBedColor() != null && javaIdentifier.contains("_bed")) {
+                beds.put(bedrockRuntimeId, blockMappingEntry.getBedColor().byteValue());
             }
 
             bedrock2JavaMap.putIfAbsent(bedrockRuntimeId, new BlockState(javaProtocolId));
@@ -204,9 +210,13 @@ public class BlockTranslator {
         @JsonProperty("bedrock_identifier")
         private String bedrockIdentifier;
 
+        @JsonProperty("block_hardness")
         private double hardness;
         private boolean waterlogged;
         private List<BlockStateEntry> bedrockStates = new ArrayList<>();
+
+        @JsonProperty("bed_color")
+        private Integer bedColor;
 
         @JsonProperty("bedrock_states")
         private void loadBedrockStates(Map<String, Object> map) {
