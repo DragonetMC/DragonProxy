@@ -37,8 +37,7 @@ import java.util.Map;
 public class BlockEntityTranslator {
     // Java to Bedrock block entity name map
     private static final Object2ObjectMap<String, String> blockEntityMap = new Object2ObjectOpenHashMap<>();
-
-    private static final List<String> bedrockBlockEntities = new ArrayList<>();
+    private static final Object2ObjectMap<String, String> legacyJavaToBedrockMap = new Object2ObjectOpenHashMap<>();
 
     static {
         register("minecraft:bed", "Bed");
@@ -49,19 +48,19 @@ public class BlockEntityTranslator {
         register("minecraft:flower_pot", "FlowerPot");
         register("minecraft:hopper", "Hopper");
         register("minecraft:dropper", "Dropper");
-        register("minecraft:dispenser", "Dispenser");
-        register("minecraft:daylight_detector", "DaylightDetector");
+        register("minecraft:dispenser", "Dispenser", "Trap");
+        register("minecraft:daylight_detector", "DaylightDetector", "DLDetector");
         register("minecraft:shulker_box", "ShulkerBox");
         register("minecraft:furnace", "Furnace");
         register("minecraft:structure_block", "StructureBlock");
         register("minecraft:end_gateway", "EndGateway");
         register("minecraft:beacon", "Beacon");
-        register("minecraft:end_portal", "EndPortal");
+        register("minecraft:end_portal", "EndPortal", "Airportal");
         register("minecraft:mob_spawner", "MobSpawner");
         register("minecraft:skull", "Skull");
         register("minecraft:banner", "Banner");
         register("minecraft:comparator", "Comparator");
-        register("minecraft:jukebox", "Jukebox");
+        register("minecraft:jukebox", "Jukebox", "RecordPlayer");
         register("minecraft:piston", "PistonArm");
         register("minecraft:noteblock", "Noteblock");
         register("minecraft:enchanting_table", "EnchantTable");
@@ -78,9 +77,11 @@ public class BlockEntityTranslator {
 
     private static void register(String javaId, String bedrockId) {
         blockEntityMap.put(javaId, bedrockId);
+    }
 
-        // This is here because of networks like Hypixel that dont use namespaced ids
-        bedrockBlockEntities.add(bedrockId);
+    private static void register(String javaId, String bedrockId, String legacyJavaId) {
+        blockEntityMap.put(javaId, bedrockId);
+        blockEntityMap.put(legacyJavaId, bedrockId);
     }
 
     public static CompoundTag translateToBedrock(com.github.steveice10.opennbt.tag.builtin.CompoundTag javaTag) {
@@ -95,12 +96,8 @@ public class BlockEntityTranslator {
         String bedrockId = getBedrockIdentifier(javaId);
 
         if(bedrockId == null) {
-            if(bedrockBlockEntities.contains(javaId)) {
-                bedrockId = javaId;
-            } else {
-                log.info(TextFormat.GRAY + "(debug) Unhandled block entity: " + javaId);
-                return null;
-            }
+            log.info(TextFormat.GRAY + "(debug) Unhandled block entity: " + javaId);
+            return null;
         }
 
         // TODO: bed colour
@@ -146,7 +143,7 @@ public class BlockEntityTranslator {
 
     public static String getJavaIdentifier(String bedrockIdentifier) {
         for(Map.Entry<String, String> entry : blockEntityMap.entrySet()) {
-            if(entry.getValue().equals(bedrockIdentifier)) {
+            if(entry.getKey().startsWith("minecraft:") && entry.getValue().equals(bedrockIdentifier)) {
                 return entry.getKey();
             }
         }

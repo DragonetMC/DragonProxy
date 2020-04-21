@@ -19,6 +19,8 @@
 package org.dragonet.proxy.network.translator.misc.item;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.nukkitx.nbt.tag.CompoundTag;
+import com.nukkitx.protocol.bedrock.data.ItemData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -36,4 +38,12 @@ public class ItemEntry {
     private int bedrockRuntimeId;
     @JsonProperty
     private int bedrockData;
+
+    public ItemData toItemData(int amount) {
+        return ItemData.of(bedrockRuntimeId, (short) bedrockData, amount);
+    }
+
+    public ItemData toItemData(int amount, CompoundTag tag) {
+        return ItemData.of(bedrockRuntimeId, (short) bedrockData, amount, tag);
+    }
 }

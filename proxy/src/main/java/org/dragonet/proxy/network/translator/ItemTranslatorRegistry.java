@@ -71,18 +71,18 @@ public class ItemTranslatorRegistry extends Registry {
         if(item == null || !javaToBedrockMap.containsKey(item.getId())) {
             return ItemData.AIR;
         }
-        ItemEntry bedrockItem = javaToBedrockMap.get(item.getId());
+        ItemEntry itemEntry = javaToBedrockMap.get(item.getId());
 
         // Custom item translation. TODO: make this better
-        if(customTranslators.containsKey(bedrockItem.getBedrockRuntimeId())) {
-           // item = customTranslators.get(bedrockItem.getBedrockRuntimeId()).translateToBedrock(item);
+        if(customTranslators.containsKey(itemEntry.getBedrockRuntimeId())) {
+          return customTranslators.get(itemEntry.getBedrockRuntimeId()).translateToBedrock(item, itemEntry);
         }
 
-        if (item.getNbt() == null|| bedrockItem.getBedrockRuntimeId() == 397) { // Fix skull NBT crashing the client
-            return ItemData.of(bedrockItem.getBedrockRuntimeId(), (short) bedrockItem.getBedrockData(), item.getAmount());
+        if (item.getNbt() == null || itemEntry.getBedrockRuntimeId() == 397) { // Fix skull NBT crashing the client
+            return itemEntry.toItemData(item.getAmount());
         }
 
-        return ItemData.of(bedrockItem.getBedrockRuntimeId(), (short) bedrockItem.getBedrockData(), item.getAmount(), translateItemNBT(item.getNbt()));
+        return itemEntry.toItemData(item.getAmount(), translateItemNBT(item.getNbt()));
     }
 
     public static ItemData translateSlotToBedrock(ItemStack item) {
