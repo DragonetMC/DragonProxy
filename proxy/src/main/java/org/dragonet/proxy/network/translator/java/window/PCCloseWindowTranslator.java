@@ -34,7 +34,7 @@ public class PCCloseWindowTranslator extends PacketTranslator<ServerCloseWindowP
     public void translate(ProxySession session, ServerCloseWindowPacket packet) {
         CachedWindow cachedWindow = session.getWindowCache().getById(packet.getWindowId());
         if(cachedWindow == null) {
-            log.info(TextFormat.GRAY + "(debug) PCCloseWindowTranslator: cached window is null");
+            //log.info(TextFormat.GRAY + "(debug) PCCloseWindowTranslator: cached window is null");
             return;
         }
 

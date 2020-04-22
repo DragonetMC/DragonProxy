@@ -125,12 +125,9 @@ public class BlockTranslator {
             String bedrockIdentifier = blockMappingEntry.getBedrockIdentifier();
             CompoundTag blockTag = buildBedrockState(bedrockIdentifier, blockMappingEntry.getBedrockStates());
 
-            if(blockMappingEntry.isWaterlogged()) {
+            // TODO: temporary fix for some waterlogged blocks
+            if(blockMappingEntry.isWaterlogged() || javaIdentifier.contains("bubble_column") || javaIdentifier.contains("kelp") || javaIdentifier.contains("seagrass")) {
                 waterlogged.add(javaProtocolId);
-            }
-
-            if(blockMappingEntry.getBedColor() != null && javaIdentifier.contains("_bed")) {
-                beds.put(bedrockRuntimeId, blockMappingEntry.getBedColor().byteValue());
             }
 
             bedrock2JavaMap.putIfAbsent(bedrockRuntimeId, new BlockState(javaProtocolId));
@@ -214,9 +211,6 @@ public class BlockTranslator {
         private double hardness;
         private boolean waterlogged;
         private List<BlockStateEntry> bedrockStates = new ArrayList<>();
-
-        @JsonProperty("bed_color")
-        private Integer bedColor;
 
         @JsonProperty("bedrock_states")
         private void loadBedrockStates(Map<String, Object> map) {
