@@ -38,6 +38,9 @@ public class PCEntityMetadataTranslator extends PacketTranslator<ServerEntityMet
             //log.info(TextFormat.GRAY + "(debug) EntityMetadataTranslator: Cached entity is null");
             return;
         }
+        if(cachedEntity.getEntityType() == null) {
+            return;
+        }
 
         EntityDataMap metadata = EntityMetaTranslator.translateToBedrock(session, cachedEntity, packet.getMetadata());
         cachedEntity.getMetadata().putAll(metadata);

@@ -45,20 +45,20 @@ public class PCSpawnObjectTranslator extends PacketTranslator<ServerSpawnObjectP
             return;
         }
 
-        if(packet.getType() == ObjectType.ITEM_FRAME) {
-            return;
-        }
+        if(packet.getType() != ObjectType.ITEM_FRAME) {
+            BedrockEntityType entityType = EntityTypeTranslator.translateToBedrock(packet.getType());
+            if (entityType == null) {
+                log.warn("Cannot translate object type: " + packet.getType().name());
+                return;
+            }
 
-        BedrockEntityType entityType = EntityTypeTranslator.translateToBedrock(packet.getType());
-        if(entityType == null) {
-            log.warn("Cannot translate object type: " + packet.getType().name());
-            return;
-        }
-
-        if(entityType == BedrockEntityType.ITEM) {
-            cachedEntity = session.getEntityCache().newItemEntity(packet.getEntityId());
+            if(entityType == BedrockEntityType.ITEM) {
+                cachedEntity = session.getEntityCache().newItemEntity(packet.getEntityId());
+            } else {
+                cachedEntity = session.getEntityCache().newEntity(entityType, packet.getEntityId());
+            }
         } else {
-            cachedEntity = session.getEntityCache().newEntity(entityType, packet.getEntityId());
+            cachedEntity = session.getEntityCache().newItemFrame(packet.getEntityId());
         }
 
         if(packet.getData() instanceof FallingBlockData) {

@@ -28,10 +28,7 @@ import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
-import org.dragonet.proxy.network.session.cache.object.CachedEntity;
-import org.dragonet.proxy.network.session.cache.object.CachedItemEntity;
-import org.dragonet.proxy.network.session.cache.object.CachedPainting;
-import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
+import org.dragonet.proxy.network.session.cache.object.*;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -96,6 +93,18 @@ public class EntityCache implements Cache {
      */
     public CachedItemEntity newItemEntity(int entityId) {
         CachedItemEntity entity = new CachedItemEntity(nextClientEntityId.getAndIncrement(), entityId);
+
+        entities.put(entity.getProxyEid(), entity);
+        clientToRemoteMap.put(entity.getProxyEid(), entity.getRemoteEid());
+        remoteToClientMap.put(entity.getRemoteEid(), entity.getProxyEid());
+        return entity;
+    }
+
+    /**
+     * Constructs a new cached item frame. This should probably be moved out of here eventually.
+     */
+    public CachedItemFrame newItemFrame(int entityId) {
+        CachedItemFrame entity = new CachedItemFrame(nextClientEntityId.getAndIncrement(), entityId);
 
         entities.put(entity.getProxyEid(), entity);
         clientToRemoteMap.put(entity.getProxyEid(), entity.getRemoteEid());

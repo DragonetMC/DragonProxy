@@ -19,7 +19,10 @@ public class SkullItemTranslator implements IItemTranslator {
 
         // Check if it contains the display info
         if(javaTag.contains("display")) {
-            return itemEntry.toItemData(item.getAmount(), ItemTranslatorRegistry.translateItemNBT(javaTag.get("display")));
+            CompoundTag tag = new CompoundTag("")
+                .put(javaTag.get("display"));
+
+            return itemEntry.toItemData(item.getAmount(), ItemTranslatorRegistry.translateItemNBT(tag));
         }
         return itemEntry.toItemData(item.getAmount());
     }

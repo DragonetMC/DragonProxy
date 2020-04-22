@@ -31,11 +31,13 @@ import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.cache.object.CachedItemEntity;
+import org.dragonet.proxy.network.session.cache.object.CachedItemFrame;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.misc.entity.living.*;
 import org.dragonet.proxy.network.translator.misc.entity.IMetaTranslator;
 import org.dragonet.proxy.network.translator.misc.entity.object.FishHookMetaTranslator;
 import org.dragonet.proxy.network.translator.misc.entity.object.ItemEntityMetaTranslator;
+import org.dragonet.proxy.network.translator.misc.entity.object.ItemFrameMetaTranslator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +45,8 @@ import java.util.Map;
 @Log4j2
 public class EntityMetaTranslator {
     private static final Object2ObjectMap<BedrockEntityType, IMetaTranslator> translatorMap = new Object2ObjectOpenHashMap<>();
+
+    private static final ItemFrameMetaTranslator itemFrameTranslator = new ItemFrameMetaTranslator();
 
     static {
         translatorMap.put(BedrockEntityType.ITEM, new ItemEntityMetaTranslator());
@@ -74,6 +78,13 @@ public class EntityMetaTranslator {
         EntityFlags flags = dictionary.getFlags();
 
         for(EntityMetadata meta : metadata) {
+            // HACK FOR ITEM FRAMES
+            if(entity instanceof CachedItemFrame) {
+                itemFrameTranslator.setEntity(entity);
+                itemFrameTranslator.translateToBedrock(session, dictionary, meta);
+                return null;
+            }
+
             switch(meta.getId()) {
                 case 0: // Flags
                     byte javaFlags = (byte) meta.getValue();

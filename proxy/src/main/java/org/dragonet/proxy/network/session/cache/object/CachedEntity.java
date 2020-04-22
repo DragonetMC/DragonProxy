@@ -84,7 +84,9 @@ public class CachedEntity {
         this.proxyEid = proxyEid;
         this.remoteEid = remoteEid;
 
-        addDefaultData();
+        if(entityType != null) {
+            addDefaultData();
+        }
     }
 
     public CachedEntity(BedrockEntityType entityType, long proxyEid) {
@@ -92,7 +94,9 @@ public class CachedEntity {
         this.proxyEid = proxyEid;
         this.local = true;
 
-        addDefaultData();
+        if(entityType != null) {
+            addDefaultData();
+        }
     }
 
     public void spawn(ProxySession session) {
