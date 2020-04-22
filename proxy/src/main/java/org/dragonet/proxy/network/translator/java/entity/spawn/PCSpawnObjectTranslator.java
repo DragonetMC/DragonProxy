@@ -28,13 +28,13 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 import org.dragonet.proxy.network.translator.misc.BlockTranslator;
 import org.dragonet.proxy.network.translator.misc.EntityTypeTranslator;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerSpawnObjectPacket.class)
+@PacketRegisterInfo(packet = ServerSpawnObjectPacket.class)
 public class PCSpawnObjectTranslator extends PacketTranslator<ServerSpawnObjectPacket> {
 
     @Override

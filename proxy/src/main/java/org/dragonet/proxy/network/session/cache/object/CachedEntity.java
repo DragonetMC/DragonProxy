@@ -23,6 +23,7 @@ import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.*;
 import com.nukkitx.protocol.bedrock.packet.*;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -67,8 +68,8 @@ public class CachedEntity {
     protected int dimension = 0; // -1 = nether, 0 = overworld, 1 = end
 
     protected Map<BedrockAttributeType, Attribute> attributes = new HashMap<>();
-    protected Set<EntityEffectTranslator.BedrockEffect> effects = new HashSet<>();
-    protected Set<CachedEntity> passengers = new HashSet<>();
+    protected Set<EntityEffectTranslator.BedrockEffect> effects = new ObjectOpenHashSet<>();
+    protected Set<CachedEntity> passengers = new ObjectOpenHashSet<>();
 
     // This feels like an ugly way to do it, but here it is
     protected Map<String, Object> extraData = new HashMap<>();
@@ -218,9 +219,8 @@ public class CachedEntity {
 
         // Metadata
         metadata.put(EntityData.SCALE, 1f);
-        metadata.put(EntityData.AIR, (short) 400);
-        metadata.put(EntityData.MAX_AIR, (short) 400);
-        metadata.put(EntityData.NAMETAG, "");
+        metadata.put(EntityData.AIR, (short) 300);
+        metadata.put(EntityData.MAX_AIR, (short) 300);
         metadata.put(EntityData.BOUNDING_BOX_HEIGHT, entityType.getHeight());
         metadata.put(EntityData.BOUNDING_BOX_WIDTH, entityType.getWidth());
         metadata.put(EntityData.LEAD_HOLDER_EID, (long) -1);

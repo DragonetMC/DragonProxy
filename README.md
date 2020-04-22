@@ -38,7 +38,7 @@ If you are having trouble please refer to our [Discord](https://invite.gg/Dragon
 2. Go to the repo folder `cd DragonProxy` (or whatever you called it) 
 3. Execute `mvn clean package`  
   
-> The output jar can be found at `bootstrap/target/DragonProxy.jar`.  
+> The output jar can be found at `bootstrap/standalone/target/DragonProxy.jar`.  
 
   
 ## Donating

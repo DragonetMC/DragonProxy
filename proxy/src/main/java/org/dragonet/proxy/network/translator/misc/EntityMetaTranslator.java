@@ -21,7 +21,10 @@ package org.dragonet.proxy.network.translator.misc;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Pose;
 import com.github.steveice10.mc.protocol.data.message.Message;
+import com.github.steveice10.mc.protocol.data.message.TextMessage;
 import com.nukkitx.protocol.bedrock.data.*;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
@@ -39,7 +42,7 @@ import java.util.Map;
 
 @Log4j2
 public class EntityMetaTranslator {
-    private static final Map<BedrockEntityType, IMetaTranslator> translatorMap = new HashMap<>();
+    private static final Object2ObjectMap<BedrockEntityType, IMetaTranslator> translatorMap = new Object2ObjectOpenHashMap<>();
 
     static {
         translatorMap.put(BedrockEntityType.ITEM, new ItemEntityMetaTranslator());
@@ -60,6 +63,7 @@ public class EntityMetaTranslator {
         translatorMap.put(BedrockEntityType.IRON_GOLEM, new IronGolemMetaTranslator());
         translatorMap.put(BedrockEntityType.ENDER_DRAGON, new EnderDragonMetaTranslator());
         translatorMap.put(BedrockEntityType.SPIDER, new SpiderMetaTranslator());
+        translatorMap.put(BedrockEntityType.VILLAGER_V2, new VillagerMetaTransformer());
     }
 
     /**
@@ -92,7 +96,7 @@ public class EntityMetaTranslator {
                     break;
                 case 2: // Custom name
                     if(meta.getValue() != null) {
-                        dictionary.putString(EntityData.NAMETAG, meta.getValue().toString());
+                        dictionary.putString(EntityData.NAMETAG, MessageTranslator.translate((Message) meta.getValue()));
                     }
                     break;
                 case 3: // Is custom name visible

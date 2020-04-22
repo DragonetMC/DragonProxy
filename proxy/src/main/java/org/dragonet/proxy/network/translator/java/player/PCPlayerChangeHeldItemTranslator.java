@@ -19,14 +19,13 @@
 package org.dragonet.proxy.network.translator.java.player;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerChangeHeldItemPacket;
-import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerFacingPacket;
 import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
-@PCPacketTranslator(packetClass = ServerPlayerChangeHeldItemPacket.class)
+@PacketRegisterInfo(packet = ServerPlayerChangeHeldItemPacket.class)
 public class PCPlayerChangeHeldItemTranslator extends PacketTranslator<ServerPlayerChangeHeldItemPacket> {
 
     @Override

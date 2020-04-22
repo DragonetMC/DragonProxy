@@ -27,12 +27,12 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 import org.dragonet.proxy.util.TextFormat;
 
 @Log4j2
-@PEPacketTranslator(packetClass = MovePlayerPacket.class)
+@PacketRegisterInfo(packet = MovePlayerPacket.class)
 public class PEMovePlayerTranslator extends PacketTranslator<MovePlayerPacket> {
 
     @Override
@@ -62,8 +62,8 @@ public class PEMovePlayerTranslator extends PacketTranslator<MovePlayerPacket> {
             y = Math.ceil(y * 2) / 2; // If we only do this when on ground then movement isn't so buggy
         }
 
-        ClientPlayerPositionRotationPacket playerPositionRotationPacket = new ClientPlayerPositionRotationPacket(packet.isOnGround(), packet.getPosition().getX(),
-           y, packet.getPosition().getZ(), packet.getRotation().getY(), packet.getRotation().getX());
+        ClientPlayerPositionRotationPacket playerPositionRotationPacket = new ClientPlayerPositionRotationPacket(packet.isOnGround(), GenericMath.round(packet.getPosition().getX(), 4),
+           y, GenericMath.round(packet.getPosition().getZ(), 4), packet.getRotation().getY(), packet.getRotation().getX());
 
         session.sendRemotePacket(playerPositionRotationPacket);
     }

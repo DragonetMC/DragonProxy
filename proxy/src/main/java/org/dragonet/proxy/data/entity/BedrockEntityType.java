@@ -27,7 +27,7 @@ public enum BedrockEntityType {
     PIG(12, 0.9f),
     SHEEP(13, 1.3f, 0.9f),
     WOLF(14, 0.85f, 0.6f),
-    VILLAGER(15, 1.8f, 0.6f, 1.62f),
+    VILLAGER_V2(15, 1.8f, 0.6f, 1.62f),
     MOOSHROOM(16, 1.4f, 0.9f),
     SQUID(17, 0.8f),
     RABBIT(18, 0.5f, 0.4f),

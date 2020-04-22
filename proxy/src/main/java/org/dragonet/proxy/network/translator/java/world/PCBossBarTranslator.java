@@ -26,8 +26,8 @@ import com.nukkitx.protocol.bedrock.packet.BossEventPacket;
 import com.nukkitx.protocol.bedrock.packet.RemoveEntityPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 import org.dragonet.proxy.network.translator.misc.MessageTranslator;
 import org.dragonet.proxy.util.TextFormat;
 
@@ -35,7 +35,7 @@ import java.util.UUID;
 
 @Log4j2
 
-@PCPacketTranslator(packetClass = ServerBossBarPacket.class)
+@PacketRegisterInfo(packet = ServerBossBarPacket.class)
 public class PCBossBarTranslator extends PacketTranslator<ServerBossBarPacket> {
 
     @Override

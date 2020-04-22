@@ -41,7 +41,7 @@ public class EntityTypeTranslator {
         entityMap.put(MobType.PIG, BedrockEntityType.PIG);
         entityMap.put(MobType.SHEEP, BedrockEntityType.SHEEP);
         entityMap.put(MobType.WOLF, BedrockEntityType.WOLF);
-        entityMap.put(MobType.VILLAGER, BedrockEntityType.VILLAGER);
+        entityMap.put(MobType.VILLAGER, BedrockEntityType.VILLAGER_V2);
         entityMap.put(MobType.MOOSHROOM, BedrockEntityType.MOOSHROOM);
         entityMap.put(MobType.SQUID, BedrockEntityType.SQUID);
         entityMap.put(MobType.RABBIT, BedrockEntityType.RABBIT);

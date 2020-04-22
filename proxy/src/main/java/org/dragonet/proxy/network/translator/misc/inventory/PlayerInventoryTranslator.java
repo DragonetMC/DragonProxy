@@ -7,7 +7,6 @@ import com.nukkitx.protocol.bedrock.packet.InventorySlotPacket;
 import org.dragonet.proxy.data.window.BedrockWindowType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
-import org.dragonet.proxy.network.translator.misc.ItemTranslator;
 
 public class PlayerInventoryTranslator extends IInventoryTranslator {
 

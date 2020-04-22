@@ -16,13 +16,17 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator;
+package org.dragonet.proxy.data;
 
+import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.dragonet.proxy.network.session.ProxySession;
+import lombok.Setter;
 
 @Getter
-public abstract class PacketTranslator<P> {
-
-    public abstract void translate(ProxySession session, P packet);
+@AllArgsConstructor
+public class PlayerListInfo {
+    private final PlayerListEntry entry;
+    @Setter
+    private String displayName;
 }

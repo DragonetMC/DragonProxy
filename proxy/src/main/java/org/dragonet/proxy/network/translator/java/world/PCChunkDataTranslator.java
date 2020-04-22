@@ -20,9 +20,6 @@ package org.dragonet.proxy.network.translator.java.world;
 
 import com.github.steveice10.mc.protocol.data.game.chunk.Column;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerChunkDataPacket;
-import com.nukkitx.math.GenericMath;
-import com.nukkitx.math.TrigMath;
-import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector2i;
 import com.nukkitx.nbt.NbtUtils;
 import com.nukkitx.nbt.stream.NBTOutputStream;
@@ -31,20 +28,18 @@ import com.nukkitx.network.VarInts;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.NetworkChunkPublisherUpdatePacket;
 import io.netty.buffer.*;
-import it.unimi.dsi.fastutil.io.FastByteArrayOutputStream;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.chunk.ChunkData;
 import org.dragonet.proxy.data.chunk.ChunkSection;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.session.cache.ChunkCache;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 import java.io.IOException;
 
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerChunkDataPacket.class)
+@PacketRegisterInfo(packet = ServerChunkDataPacket.class)
 public class PCChunkDataTranslator extends PacketTranslator<ServerChunkDataPacket> {
 
     @Override

@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
-import org.dragonet.proxy.network.translator.misc.ItemTranslator;
+import org.dragonet.proxy.network.translator.ItemTranslatorRegistry;
 
 @Getter
 @RequiredArgsConstructor
@@ -36,7 +36,7 @@ public class SlotChangeAction implements IInventoryAction {
         int transactionId = inventory.getTransactionIdCounter().getAndIncrement();
 
         session.sendRemotePacket(new ClientWindowActionPacket(inventory.getWindowId(), transactionId,
-            actionData.getSlot(), ItemTranslator.translateToJava(actionData.getToItem()), windowAction, windowActionParam));
+            actionData.getSlot(), ItemTranslatorRegistry.translateToJava(actionData.getToItem()), windowAction, windowActionParam));
 
         inventory.getTransactions().put(transactionId, true);
     }

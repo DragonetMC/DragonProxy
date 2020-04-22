@@ -18,39 +18,37 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
-import com.github.steveice10.mc.protocol.data.game.scoreboard.ScoreboardAction;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerRespawnPacket;
-import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.packet.*;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-
-import java.util.concurrent.TimeUnit;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerRespawnPacket.class)
+@PacketRegisterInfo(packet = ServerRespawnPacket.class)
 public class PCRespawnTranslator extends PacketTranslator<ServerRespawnPacket> {
 
     @Override
     public void translate(ProxySession session, ServerRespawnPacket packet) {
-        CachedPlayer cachedPlayer = session.getCachedEntity();
+        CachedPlayer player = session.getCachedEntity();
+
+        // Stop the rain
+        session.getWorldCache().stopRain(session);
+
+        // This is needed so the time will be sent again for the new world if the daylight cycle is stopped
+        session.getWorldCache().setFirstTimePacket(true);
 
         // Set the players gamemode
-        SetPlayerGameTypePacket setPlayerGameTypePacket = new SetPlayerGameTypePacket();
-        setPlayerGameTypePacket.setGamemode(packet.getGamemode().ordinal());
-        session.sendPacket(setPlayerGameTypePacket);
+        player.setGameMode(packet.getGamemode());
+        session.sendGamemode();
 
         // Respawn the player
         RespawnPacket respawnPacket = new RespawnPacket();
-        respawnPacket.setRuntimeEntityId(cachedPlayer.getProxyEid());
-        respawnPacket.setPosition(cachedPlayer.getSpawnPosition());
+        respawnPacket.setRuntimeEntityId(player.getProxyEid());
+        respawnPacket.setPosition(player.getSpawnPosition());
         respawnPacket.setState(RespawnPacket.State.SERVER_READY);
         session.sendPacket(respawnPacket);
     }

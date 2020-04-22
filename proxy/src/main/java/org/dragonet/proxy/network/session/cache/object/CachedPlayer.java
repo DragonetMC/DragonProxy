@@ -39,7 +39,7 @@ import java.util.Set;
 public class CachedPlayer extends CachedEntity {
     private final GameProfile profile;
 
-    private GameMode gameMode;
+    private GameMode gameMode = GameMode.SURVIVAL;
 
     private float flySpeed = 0.05f;
     private int selectedHotbarSlot = 0;
@@ -59,7 +59,7 @@ public class CachedPlayer extends CachedEntity {
     @Override
     public void spawn(ProxySession session) {
         AddPlayerPacket addPlayerPacket = new AddPlayerPacket();
-        addPlayerPacket.setUuid(profile.getId());
+        addPlayerPacket.setUuid(javaUuid);
         addPlayerPacket.setUsername(profile.getName());
         addPlayerPacket.setRuntimeEntityId(proxyEid);
         addPlayerPacket.setUniqueEntityId(proxyEid);
@@ -71,6 +71,7 @@ public class CachedPlayer extends CachedEntity {
         addPlayerPacket.getAdventureSettings().setPlayerPermission(PlayerPermission.MEMBER);
         addPlayerPacket.getAdventureSettings().setCommandPermission(CommandPermission.NORMAL);
         addPlayerPacket.setDeviceId("");
+        addPlayerPacket.getMetadata().putAll(metadata);
 
         session.sendPacket(addPlayerPacket);
         spawned = true;

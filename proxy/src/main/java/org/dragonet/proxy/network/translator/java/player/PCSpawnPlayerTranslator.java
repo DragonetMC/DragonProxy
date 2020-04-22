@@ -24,42 +24,55 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.Serve
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.ImageData;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.data.PlayerListInfo;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
+import org.dragonet.proxy.remote.RemoteAuthType;
 import org.dragonet.proxy.util.SkinUtils;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerSpawnPlayerPacket.class)
+@PacketRegisterInfo(packet = ServerSpawnPlayerPacket.class)
 public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerPacket> {
 
     @Override
     public void translate(ProxySession session, ServerSpawnPlayerPacket packet) {
-        PlayerListEntry playerListEntry = session.getPlayerListCache().getPlayerInfo().get(packet.getUuid());
+        PlayerListInfo playerListInfo = session.getPlayerListCache().getPlayerInfo().get(packet.getUuid());
+        if(playerListInfo == null) {
+            log.warn("Received spawn player before player list. Ignoring...");
+            return;
+        }
+        PlayerListEntry playerListEntry = playerListInfo.getEntry();
         long cachedEntityId = session.getPlayerListCache().getPlayerEntityIds().getLong(packet.getUuid());
+        CachedPlayer cachedPlayer;
 
-        CachedPlayer cachedPlayer = session.getEntityCache().newPlayer(packet.getEntityId(), cachedEntityId, playerListEntry.getProfile());
+        if(session.getEntityCache().getByRemoteId(packet.getEntityId()) != null) {
+            cachedPlayer = (CachedPlayer) session.getEntityCache().getByRemoteId(packet.getEntityId());
+        } else {
+            cachedPlayer = session.getEntityCache().newPlayer(packet.getEntityId(), cachedEntityId, playerListEntry.getProfile());
+        }
+
         cachedPlayer.setJavaUuid(packet.getUuid());
         cachedPlayer.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
         cachedPlayer.setRotation(Vector3f.from(packet.getYaw(), packet.getPitch(), 0));
         cachedPlayer.spawn(session);
 
+        if(session.getProxy().getConfiguration().getRemoteAuthType() == RemoteAuthType.OFFLINE) {
+            return;
+        }
         if(session.getProxy().getConfiguration().getPlayerConfig().isFetchSkin()) {
             session.getProxy().getGeneralThreadPool().execute(() -> {
                 GameProfile profile = playerListEntry.getProfile();
 
-                ImageData skinData = SkinUtils.fetchSkin(profile);
-                if (skinData == null) {
-                    return;
-                }
+                ImageData skinData = SkinUtils.fetchSkin(session, profile);
+                if (skinData == null) return;
 
-//                byte[] capeData = SkinUtils.fetchOptifineCape(profile);
-//                if(capeData == null) {
-//                    capeData = clientData.getCapeData();
-//                }
+                ImageData capeData = SkinUtils.fetchUnofficialCape(profile);
+                if(capeData == null) capeData = ImageData.EMPTY;
 
-                session.setPlayerSkin(profile.getId(), cachedEntityId, skinData);
+                GameProfile.TextureModel model = playerListEntry.getProfile().getTexture(GameProfile.TextureType.SKIN).getModel();
+                session.setPlayerSkin(profile.getId(), cachedPlayer.getProxyEid(), skinData, model, capeData);
             });
         }
     }

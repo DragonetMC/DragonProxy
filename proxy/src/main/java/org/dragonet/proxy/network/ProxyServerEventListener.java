@@ -22,11 +22,11 @@ import com.github.steveice10.mc.protocol.data.status.ServerStatusInfo;
 import com.nukkitx.protocol.bedrock.BedrockPong;
 import com.nukkitx.protocol.bedrock.BedrockServerEventHandler;
 import com.nukkitx.protocol.bedrock.BedrockServerSession;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.configuration.DragonConfiguration;
-import org.dragonet.proxy.network.session.ProxySession;
+import sun.print.resources.serviceui;
 
 import javax.annotation.Nonnull;
 import java.net.InetSocketAddress;
@@ -34,6 +34,7 @@ import java.net.InetSocketAddress;
 /**
  * Handles the bedrock client raknet ping.
  */
+@Log4j2
 @RequiredArgsConstructor
 public class ProxyServerEventListener implements BedrockServerEventHandler {
     private static final BedrockPong pong = new BedrockPong();
@@ -45,7 +46,7 @@ public class ProxyServerEventListener implements BedrockServerEventHandler {
         pong.setGameType("Default");
         pong.setNintendoLimited(false);
         pong.setProtocolVersion(DragonProxy.BEDROCK_CODEC.getProtocolVersion());
-        pong.setVersion(DragonProxy.BEDROCK_CODEC.getMinecraftVersion());
+        pong.setVersion(null); //Do we really want this added to the MOTD?
         pong.setIpv4Port(DragonProxy.INSTANCE.getConfiguration().getBindPort());
     }
 
@@ -58,23 +59,22 @@ public class ProxyServerEventListener implements BedrockServerEventHandler {
     public BedrockPong onQuery(@Nonnull InetSocketAddress address) {
         DragonConfiguration config = proxy.getConfiguration();
 
+        ServerStatusInfo serverInfo = null;
         if (config.isPingPassthrough()) {
-            ServerStatusInfo serverInfo = proxy.getPingPassthroughThread().getStatusInfo();
+            serverInfo = proxy.getPingPassthroughThread().getStatusInfo();
+        }
 
-            if (serverInfo != null) {
-                pong.setMotd(serverInfo.getDescription().getText());
-                pong.setSubMotd(config.getMotd2());
-
-                // Add 1 to prevent the bedrock client for disallowing the player to join the server
-                pong.setMaximumPlayerCount(serverInfo.getPlayerInfo().getMaxPlayers() + 1);
-                pong.setPlayerCount(serverInfo.getPlayerInfo().getOnlinePlayers());
-            }
+        if (serverInfo != null) {
+            pong.setMaximumPlayerCount(serverInfo.getPlayerInfo().getMaxPlayers());
+            pong.setPlayerCount(serverInfo.getPlayerInfo().getOnlinePlayers());
         } else {
             pong.setPlayerCount(proxy.getSessionManager().getPlayerCount());
             pong.setMaximumPlayerCount(config.getMaxPlayers());
-            pong.setMotd(config.getMotd());
-            pong.setSubMotd(config.getMotd2());
         }
+
+        //Java MOTD never look good on Bedrock. This should never passthrough
+        pong.setMotd(config.getMotd());
+        pong.setSubMotd(config.getMotd2());
 
         return pong;
     }

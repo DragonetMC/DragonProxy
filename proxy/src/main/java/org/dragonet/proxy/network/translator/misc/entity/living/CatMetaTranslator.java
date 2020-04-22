@@ -31,7 +31,26 @@ public class CatMetaTranslator extends AbstractTameableMetaTranslator {
     public void translateToBedrock(ProxySession session, EntityDataMap dictionary, EntityMetadata metadata) {
         switch(metadata.getId()) {
             case 18: // Type
-                dictionary.putInt(EntityData.VARIANT, (int) metadata.getValue()); // TODO: check values?
+                // Variants are not the exact values in Bedrock
+                int variantColor;
+                switch ((int) metadata.getValue()) {
+                    case 0:
+                        variantColor = 8;
+                        break;
+                    case 8:
+                        variantColor = 0;
+                        break;
+                    case 9:
+                        variantColor = 10;
+                        break;
+                    case 10:
+                        variantColor = 9;
+                        break;
+                    default:
+                        variantColor = (int) metadata.getValue();
+                        break;
+                }
+                dictionary.putInt(EntityData.VARIANT, variantColor);
                 break;
             case 19: // Unknown
             case 20: // Unknown

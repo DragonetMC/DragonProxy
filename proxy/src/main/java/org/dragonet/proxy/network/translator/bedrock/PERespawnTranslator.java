@@ -20,13 +20,12 @@ package org.dragonet.proxy.network.translator.bedrock;
 
 import com.github.steveice10.mc.protocol.data.game.ClientRequest;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientRequestPacket;
-import com.nukkitx.protocol.bedrock.packet.AnimatePacket;
 import com.nukkitx.protocol.bedrock.packet.RespawnPacket;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
-@PEPacketTranslator(packetClass = RespawnPacket.class)
+@PacketRegisterInfo(packet = RespawnPacket.class)
 public class PERespawnTranslator extends PacketTranslator<RespawnPacket> {
 
     @Override

@@ -18,7 +18,6 @@
  */
 package org.dragonet.proxy.network.translator.java.player;
 
-import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientTeleportConfirmPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import com.nukkitx.math.vector.Vector3f;
@@ -26,41 +25,48 @@ import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerPlayerPositionRotationPacket.class)
+@PacketRegisterInfo(packet = ServerPlayerPositionRotationPacket.class)
 public class PCPlayerPositionRotationTranslator extends PacketTranslator<ServerPlayerPositionRotationPacket> {
-    public static final PCPlayerPositionRotationTranslator INSTANCE = new PCPlayerPositionRotationTranslator();
 
     @Override
     public void translate(ProxySession session, ServerPlayerPositionRotationPacket packet) {
-        CachedPlayer cachedEntity = session.getCachedEntity();
+        CachedPlayer entity = session.getCachedEntity();
 
-        if (!cachedEntity.isSpawned()) {
-            cachedEntity.sendMetadata(session);
+        if (!entity.isSpawned()) {
+            entity.sendMetadata(session);
 
             MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
-            movePlayerPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
+            movePlayerPacket.setRuntimeEntityId(entity.getProxyEid());
             movePlayerPacket.setPosition(Vector3f.from(packet.getX(), packet.getY() + BedrockEntityType.PLAYER.getOffset() + 0.1f, packet.getZ()));
             movePlayerPacket.setRotation(Vector3f.from(packet.getPitch(), packet.getYaw(), 0));
             movePlayerPacket.setMode(MovePlayerPacket.Mode.RESET);
             movePlayerPacket.setOnGround(true);
 
             session.sendPacket(movePlayerPacket);
-            cachedEntity.setSpawned(true);
+            entity.setSpawned(true);
 
             log.info("Spawned player " + session.getUsername() + " at " + packet.getX() + " " + packet.getY() + " " + packet.getZ());
             return;
         }
 
-        cachedEntity.setSpawned(true);
+        entity.setSpawned(true);
 
-        cachedEntity.moveAbsolute(session, Vector3f.from(packet.getX(), packet.getY() + BedrockEntityType.PLAYER.getOffset() + 0.1f, packet.getZ()),
-            Vector3f.from(packet.getPitch(), packet.getYaw(), 0), true, false);
+        if(!packet.getRelative().isEmpty()) {
+            entity.moveRelative(session, Vector3f.from(packet.getX(), packet.getY(), packet.getZ()), Vector3f.from(packet.getPitch(), packet.getYaw(), 0), true, true);
+        } else {
+            double x = Math.abs(entity.getPosition().getX() - packet.getX());
+            double y = Math.abs(entity.getPosition().getY() - packet.getY());
+            double z = Math.abs(entity.getPosition().getZ() - packet.getZ());
+
+            if (x >= 1 || y >= 1 || z >= 1) {
+                entity.moveAbsolute(session, Vector3f.from(packet.getX(), packet.getY(), packet.getZ()), Vector3f.from(packet.getPitch(), packet.getYaw(), 0), true, false);
+            }
+        }
 
         session.sendRemotePacket(new ClientTeleportConfirmPacket(packet.getTeleportId()));
     }

@@ -19,8 +19,10 @@
 package org.dragonet.proxy.network.session.cache;
 
 import com.github.steveice10.mc.auth.data.GameProfile;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2LongMap;
+import it.unimi.dsi.fastutil.ints.Int2LongMaps;
+import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
+import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.Getter;
@@ -40,12 +42,12 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequiredArgsConstructor
 @Getter
 public class EntityCache implements Cache {
-    private Long2ObjectMap<CachedEntity> entities = new Long2ObjectOpenHashMap<>();
+    private Long2ObjectMap<CachedEntity> entities = Long2ObjectMaps.synchronize(new Long2ObjectOpenHashMap<>());
     private Object2LongMap<UUID> bossbars = new Object2LongOpenHashMap<>();
 
-    private final AtomicLong nextClientEntityId = new AtomicLong(1L); // 1 is for client
-    private final Map<Integer, Long> remoteToClientMap = Collections.synchronizedMap(new HashMap<>());
-    private final Map<Long, Integer> clientToRemoteMap = Collections.synchronizedMap(new HashMap<>());
+    private final AtomicLong nextClientEntityId = new AtomicLong(1L);
+    private final Int2LongMap remoteToClientMap = Int2LongMaps.synchronize(new Int2LongOpenHashMap());
+    private final Long2IntMap clientToRemoteMap = Long2IntMaps.synchronize(new Long2IntOpenHashMap());
 
     /**
      * Retrieve a cached entity from proxy entity id.
@@ -63,7 +65,7 @@ public class EntityCache implements Cache {
      */
     public CachedEntity getByRemoteId(int entityId) {
         if(remoteToClientMap.containsKey(entityId)) {
-            return entities.getOrDefault(remoteToClientMap.get(entityId), null);
+            return entities.get(remoteToClientMap.get(entityId));
         }
         return null;
     }
@@ -161,7 +163,6 @@ public class EntityCache implements Cache {
     }
 
     public CachedPlayer clonePlayer(int newEntityId, CachedPlayer player) {
-        destroyEntity(player.getProxyEid());
         player.setRemoteEid(newEntityId);
 
         entities.put(player.getProxyEid(), player);

@@ -21,10 +21,10 @@ package org.dragonet.proxy.network.translator.java.world;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerUnloadChunkPacket;
 import com.nukkitx.math.vector.Vector2i;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
-@PCPacketTranslator(packetClass = ServerUnloadChunkPacket.class)
+@PacketRegisterInfo(packet = ServerUnloadChunkPacket.class)
 public class PCUnloadChunkTranslator extends PacketTranslator<ServerUnloadChunkPacket> {
 
     @Override

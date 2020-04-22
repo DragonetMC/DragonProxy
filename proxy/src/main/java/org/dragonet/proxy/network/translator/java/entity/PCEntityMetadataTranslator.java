@@ -23,12 +23,12 @@ import com.nukkitx.protocol.bedrock.data.EntityDataMap;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 import org.dragonet.proxy.network.translator.misc.EntityMetaTranslator;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerEntityMetadataPacket.class)
+@PacketRegisterInfo(packet = ServerEntityMetadataPacket.class)
 public class PCEntityMetadataTranslator extends PacketTranslator<ServerEntityMetadataPacket> {
 
     @Override

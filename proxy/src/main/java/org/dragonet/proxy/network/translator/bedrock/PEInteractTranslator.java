@@ -22,11 +22,11 @@ import com.nukkitx.protocol.bedrock.packet.InteractPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 @Log4j2
-@PEPacketTranslator(packetClass = InteractPacket.class)
+@PacketRegisterInfo(packet = InteractPacket.class)
 public class PEInteractTranslator extends PacketTranslator<InteractPacket> {
 
     @Override

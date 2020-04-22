@@ -34,9 +34,9 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.data.window.BedrockWindowType;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.translator.ItemTranslatorRegistry;
 import org.dragonet.proxy.network.translator.misc.BlockEntityTranslator;
 import org.dragonet.proxy.network.translator.misc.BlockTranslator;
-import org.dragonet.proxy.network.translator.misc.ItemTranslator;
 import org.dragonet.proxy.network.translator.misc.inventory.IInventoryTranslator;
 import org.dragonet.proxy.network.translator.misc.inventory.action.SlotChangeAction;
 
@@ -124,12 +124,12 @@ public class CachedWindow {
             log.warn("set item");
             return false;
         }
-        this.items[slot] = ItemTranslator.translateToJava(item);
+        this.items[slot] = ItemTranslatorRegistry.translateToJava(item);
         return true;
     }
 
     public ItemData getItem(int slot) {
-        return ItemTranslator.translateSlotToBedrock(items[slot]);
+        return ItemTranslatorRegistry.translateSlotToBedrock(items[slot]);
     }
 
     private void sendFakeEntity(ProxySession session, Vector3i position) {
@@ -142,7 +142,7 @@ public class CachedWindow {
         addEntityPacket.setPosition(position.toFloat());
         addEntityPacket.setMotion(Vector3f.ZERO);
         addEntityPacket.setRotation(Vector3f.ZERO);
-        addEntityPacket.setEntityType(BedrockEntityType.VILLAGER.getType());
+        addEntityPacket.setEntityType(BedrockEntityType.VILLAGER_V2.getType());
         addEntityPacket.getMetadata().put(EntityData.SCALE, 0.01f);
 
         session.sendPacket(addEntityPacket);

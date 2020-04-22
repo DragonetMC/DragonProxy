@@ -19,16 +19,14 @@
 package org.dragonet.proxy.network.translator.java;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerStatisticsPacket;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 @Log4j2
 
-@PCPacketTranslator(packetClass = ServerStatisticsPacket.class)
+@PacketRegisterInfo(packet = ServerStatisticsPacket.class)
 public class PCStatisticsTranslator extends PacketTranslator<ServerStatisticsPacket> {
     public static final PCStatisticsTranslator INSTANCE = new PCStatisticsTranslator();
 

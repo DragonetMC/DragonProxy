@@ -11,10 +11,6 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.window.BedrockWindowType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
-import org.dragonet.proxy.network.translator.misc.ItemTranslator;
-
-import java.util.Arrays;
-
 @Log4j2
 public class SingleChestInventoryTranslator extends ContainerInventoryTranslator {
     protected static ItemData UNUSABLE_INVENTORY_SPACE_BLOCK;

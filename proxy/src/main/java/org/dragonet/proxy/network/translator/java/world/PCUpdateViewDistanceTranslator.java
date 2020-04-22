@@ -19,18 +19,14 @@
 package org.dragonet.proxy.network.translator.java.world;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerUpdateViewDistancePacket;
-import com.nukkitx.math.GenericMath;
-import com.nukkitx.math.TrigMath;
 import com.nukkitx.protocol.bedrock.packet.ChunkRadiusUpdatedPacket;
-import com.nukkitx.protocol.bedrock.packet.NetworkChunkPublisherUpdatePacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.util.TextFormat;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerUpdateViewDistancePacket.class)
+@PacketRegisterInfo(packet = ServerUpdateViewDistancePacket.class)
 public class PCUpdateViewDistanceTranslator extends PacketTranslator<ServerUpdateViewDistancePacket> {
 
     @Override

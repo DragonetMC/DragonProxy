@@ -40,6 +40,7 @@ import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.dragonet.proxy.remote.RemoteAuthType;
 import org.dragonet.proxy.remote.RemoteServer;
 import org.dragonet.proxy.util.BedrockLoginUtils;
+import org.dragonet.proxy.util.TextFormat;
 
 import java.io.IOException;
 import java.security.interfaces.ECPublicKey;
@@ -69,8 +70,9 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
             // Set a codec so we can disconnect them
             session.getBedrockSession().setPacketCodec(DragonProxy.BEDROCK_CODEC);
 
-            // TODO: This message will never actually be displayed because the bedrock client is weird
-            session.getBedrockSession().disconnect("Please use " + DragonProxy.BEDROCK_CODEC.getMinecraftVersion());
+            // We send a start game packet and play status so the client doesn't get stuck on loading resources
+            session.sendFakeStartGame(true);
+            session.getBedrockSession().disconnect(TextFormat.GOLD + "Unsupported game version.\n" + TextFormat.WHITE + "Please use 1.14.0");
             return true;
         }
         session.getBedrockSession().setPacketCodec(DragonProxy.BEDROCK_SUPPORTED_CODECS[index]);

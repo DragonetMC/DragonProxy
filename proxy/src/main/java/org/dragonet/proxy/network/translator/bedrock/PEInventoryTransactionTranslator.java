@@ -43,17 +43,16 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
-import org.dragonet.proxy.network.translator.misc.ItemTranslator;
-import org.dragonet.proxy.network.translator.misc.inventory.IInventoryTranslator;
+import org.dragonet.proxy.network.translator.ItemTranslatorRegistry;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
 import org.dragonet.proxy.network.translator.misc.inventory.action.DropItemAction;
 import org.dragonet.proxy.network.translator.misc.inventory.action.IInventoryAction;
 import org.dragonet.proxy.network.translator.misc.inventory.action.SlotChangeAction;
 import org.dragonet.proxy.util.TextFormat;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 @Log4j2
-@PEPacketTranslator(packetClass = InventoryTransactionPacket.class)
+@PacketRegisterInfo(packet = InventoryTransactionPacket.class)
 public class PEInventoryTransactionTranslator extends PacketTranslator<InventoryTransactionPacket> {
 
     @Override
@@ -72,11 +71,11 @@ public class PEInventoryTransactionTranslator extends PacketTranslator<Inventory
                         case CREATIVE:
                             switch(action.getSlot()) {
                                 case 0: // Delete item
-                                    session.sendRemotePacket(new ClientCreativeInventoryActionPacket(-1, ItemTranslator.translateToJava(action.getToItem())));
+                                    session.sendRemotePacket(new ClientCreativeInventoryActionPacket(-1, ItemTranslatorRegistry.translateToJava(action.getToItem())));
                                     break;
                                 case 1: // Create item
                                     session.sendRemotePacket(new ClientCreativeInventoryActionPacket(36 + session.getCachedEntity().getSelectedHotbarSlot(),
-                                        ItemTranslator.translateToJava(action.getFromItem())));
+                                        ItemTranslatorRegistry.translateToJava(action.getFromItem())));
                                     break;
                             }
                             break;

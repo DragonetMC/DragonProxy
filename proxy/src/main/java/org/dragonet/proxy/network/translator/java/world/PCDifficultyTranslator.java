@@ -20,13 +20,11 @@ package org.dragonet.proxy.network.translator.java.world;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerDifficultyPacket;
 import com.nukkitx.protocol.bedrock.packet.SetDifficultyPacket;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
-@PCPacketTranslator(packetClass = ServerDifficultyPacket.class)
+@PacketRegisterInfo(packet = ServerDifficultyPacket.class)
 public class PCDifficultyTranslator extends PacketTranslator<ServerDifficultyPacket> {
 
     @Override

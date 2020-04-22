@@ -24,9 +24,11 @@ import com.github.steveice10.mc.auth.service.SessionService;
 import com.nukkitx.protocol.bedrock.data.ImageData;
 import com.nukkitx.protocol.bedrock.data.SerializedSkin;
 import it.unimi.dsi.fastutil.io.FastByteArrayOutputStream;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.PlayerListCache;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -42,6 +44,9 @@ import java.util.UUID;
 
 @Log4j2
 public class SkinUtils {
+    private static final String NORMAL_RESOURCE_PATCH = "ewogICAiZ2VvbWV0cnkiIDogewogICAgICAiZGVmYXVsdCIgOiAiZ2VvbWV0cnkuaHVtYW5vaWQuY3VzdG9tIgogICB9Cn0K";
+    private static final String SLIM_RESOURCE_PATCH = "ewogICAiZ2VvbWV0cnkiIDogewogICAgICAiZGVmYXVsdCIgOiAiZ2VvbWV0cnkuaHVtYW5vaWQuY3VzdG9tU2xpbSIKICAgfQp9";
+
     private static final SessionService service = new SessionService();
 
     public static ImageData STEVE_SKIN;
@@ -54,14 +59,20 @@ public class SkinUtils {
         }
     }
 
-    public static SerializedSkin createSkinEntry(ProxySession session, ImageData skinImage) {
+    public static SerializedSkin createSkinEntry(ImageData skinImage, GameProfile.TextureModel model, ImageData capeImage) {
+        // Skin Geometry is hard coded otherwise players will turn invisible if joining with custom models
+        String skinResourcePatch = NORMAL_RESOURCE_PATCH;
+        if(model == GameProfile.TextureModel.SLIM) {
+            skinResourcePatch = SLIM_RESOURCE_PATCH;
+        }
+
         String randomId = UUID.randomUUID().toString();
         return SerializedSkin.of(
             randomId,
-            new String(Base64.getDecoder().decode(session.getClientData().getSkinGeometryName())),
+            new String(Base64.getDecoder().decode(skinResourcePatch)),
             skinImage,
             Collections.emptyList(),
-            ImageData.EMPTY,
+            capeImage,
             "",
             "",
             false,
@@ -74,7 +85,16 @@ public class SkinUtils {
     /**
      * Fetches a skin from the Mojang session server
      */
-    public static ImageData fetchSkin(GameProfile profile) {
+    public static ImageData fetchSkin(ProxySession session, GameProfile profile) {
+        // TODO: HANDLE RATE LIMITING
+        PlayerListCache playerListCache = session.getPlayerListCache();
+
+        // Check if the skin is already cached
+        if(playerListCache.getRemoteSkinCache().containsKey(profile.getId())) {
+            //log.warn("Retrieving from cache: " + profile.getName());
+            return playerListCache.getRemoteSkinCache().get(profile.getId());
+        }
+
         try {
             service.fillProfileTextures(profile, false);
         } catch (PropertyException e) {
@@ -85,7 +105,9 @@ public class SkinUtils {
         GameProfile.Texture texture = profile.getTexture(GameProfile.TextureType.SKIN);
         if(texture != null) {
             try {
-                return parseBufferedImage(ImageIO.read(new URL(texture.getURL())));
+                ImageData skin = parseBufferedImage(ImageIO.read(new URL(texture.getURL())));
+                playerListCache.getRemoteSkinCache().put(profile.getId(), skin); // Cache the skin
+                return skin;
             } catch (IOException e) {
                 log.warn("Failed to fetch skin for player " + profile.getName() + ": " + e.getMessage());
             }
@@ -94,25 +116,47 @@ public class SkinUtils {
     }
 
     /**
-     * Checks if a player has an optifine cape and if so downloads it from
-     * optifine's servers
+     * Checks if a player has an unofficial cape and if so downloads it from
+     * their servers
      */
-    public static ImageData fetchOptifineCape(GameProfile profile) {
-        try {
-            URL url = new URL("http://s.optifine.net/capes/" + profile.getName() + ".png");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    public static ImageData fetchUnofficialCape(GameProfile profile) {
+        for(CapeServers server : CapeServers.values()) {
+            try {
+                URL url = new URL(server.getUrl(profile));
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            if(connection.getResponseCode() == 404) {
-                log.info("Player " + profile.getName() + " does not have an optifine cape");
-                return null;
-            }
-            log.warn("Player " + profile.getName() + " does have an optifine cape");
+                if (connection.getResponseCode() == 404) {
+                    return null;
+                }
 
-            return parseBufferedImage(ImageIO.read(connection.getInputStream()));
-        } catch (IOException e) {
-            log.warn("Failed to fetch optifine cape for player " + profile.getName() + ": " + e.getMessage());
+                return parseBufferedImage(ImageIO.read(connection.getInputStream()));
+            } catch (IOException e) {}
         }
         return null;
+    }
+
+    @RequiredArgsConstructor
+    private enum CapeServers {
+        OPTIFINE("http://s.optifine.net/capes/%s.png", CapeUrlType.USERNAME),
+        MINECRAFTCAPES("https://minecraftcapes.co.uk/getCape/%s", CapeUrlType.UUID);
+
+        private final String url;
+        private final CapeUrlType type;
+
+        private String getUrl(GameProfile profile) {
+            switch(type) {
+                case UUID:
+                    return String.format(url, profile.getId().toString().replace("-", ""));
+                case USERNAME:
+                    return String.format(url, profile.getName());
+            }
+            return null;
+        }
+    }
+
+    private enum CapeUrlType {
+        UUID,
+        USERNAME
     }
 
     private static ImageData parseBufferedImage(BufferedImage image) {

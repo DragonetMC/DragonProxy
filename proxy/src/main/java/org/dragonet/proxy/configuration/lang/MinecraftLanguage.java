@@ -19,10 +19,13 @@
 package org.dragonet.proxy.configuration.lang;
 
 import com.google.gson.stream.JsonReader;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +34,7 @@ import java.util.Map;
  */
 @Log4j2
 public class MinecraftLanguage {
-    private static final Map<String, String> language = new HashMap<>();
+    private static final Object2ObjectMap<String, String> language = new Object2ObjectOpenHashMap<>();
 
     static {
         // TODO: support for more languages
@@ -54,10 +57,18 @@ public class MinecraftLanguage {
     }
 
     public static String translate(String key) {
-        return language.get(key);
+        if(key != null && language.containsKey(key)) {
+            return language.get(key);
+        }
+        //log.warn("Invalid language string: " + key);
+        return "";
     }
 
     public static String translate(String key, Object[] args) {
-        return String.format(language.get(key), args);
+        if(key != null && language.containsKey(key)) {
+            return String.format(language.get(key), args);
+        }
+        //log.warn("Invalid language string: " + key + " - args (" + Arrays.toString(args) + ")");
+        return "";
     }
 }

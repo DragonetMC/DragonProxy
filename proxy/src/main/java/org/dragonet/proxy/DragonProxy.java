@@ -25,6 +25,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import com.nukkitx.protocol.bedrock.BedrockServer;
 import com.nukkitx.protocol.bedrock.v389.Bedrock_v389;
+import com.nukkitx.protocol.bedrock.v390.Bedrock_v390;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.command.CommandManager;
@@ -34,9 +35,9 @@ import org.dragonet.proxy.console.DragonConsole;
 import org.dragonet.proxy.metrics.MetricsManager;
 import org.dragonet.proxy.network.ProxyServerEventListener;
 import org.dragonet.proxy.network.SessionManager;
+import org.dragonet.proxy.network.translator.ItemTranslatorRegistry;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
 import org.dragonet.proxy.network.translator.misc.BlockTranslator;
-import org.dragonet.proxy.network.translator.misc.ItemTranslator;
 import org.dragonet.proxy.util.*;
 
 import java.io.File;
@@ -44,9 +45,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -54,8 +55,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Log4j2
 public class DragonProxy {
-    public static final BedrockPacketCodec BEDROCK_CODEC = Bedrock_v389.V389_CODEC;
-    public static final BedrockPacketCodec[] BEDROCK_SUPPORTED_CODECS = {BEDROCK_CODEC};
+    public static final BedrockPacketCodec BEDROCK_CODEC = Bedrock_v390.V390_CODEC;
+    public static final BedrockPacketCodec[] BEDROCK_SUPPORTED_CODECS = {BEDROCK_CODEC, Bedrock_v389.V389_CODEC};
     public static final int[] BEDROCK_SUPPORTED_PROTOCOLS;
 
     static {
@@ -63,6 +64,7 @@ public class DragonProxy {
         for (int i = 0; i < BEDROCK_SUPPORTED_CODECS.length; i++) {
             BEDROCK_SUPPORTED_PROTOCOLS[i] = BEDROCK_SUPPORTED_CODECS[i].getProtocolVersion();
         }
+        Arrays.sort(BEDROCK_SUPPORTED_PROTOCOLS);
     }
 
     public static final ObjectMapper JSON_MAPPER = new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -163,7 +165,7 @@ public class DragonProxy {
         sessionManager = new SessionManager();
 
         new PacketTranslatorRegistry();
-        new ItemTranslator();
+        new ItemTranslatorRegistry();
         new BlockTranslator();
         new SkinUtils();
         new MinecraftLanguage();
