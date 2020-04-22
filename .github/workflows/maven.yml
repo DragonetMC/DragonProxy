@@ -1,9 +1,9 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Java CI with Maven
+name: DragonProxy
 
-on: [pull_request]
+on: [push]
 
 jobs:
   build:
@@ -23,3 +23,5 @@ jobs:
       with:
         name: DragonProxy
         path: bootstrap/standalone/target/DragonProxy.jar
+    - name: submodules-init
+      uses: snickerbockers/submodules-init@v4
