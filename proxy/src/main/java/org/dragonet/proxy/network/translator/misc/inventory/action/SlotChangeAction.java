@@ -20,8 +20,8 @@ public class SlotChangeAction implements IInventoryAction {
 
     @Override
     public boolean isValid(ProxySession session) {
-        return inventory.getItem(actionData.getSlot()) != null && inventory.getItem(actionData.getSlot()).getId() == actionData.getFromItem().getId()
-            && inventory.getInventoryTranslator().isSlotValid(actionData.getSlot());
+        return inventory.getItem(actionData.getSlot()) != null; //&& inventory.getItem(actionData.getSlot()).getId() == actionData.getFromItem().getId()
+           // && inventory.getInventoryTranslator().isSlotValid(actionData.getSlot());
     }
 
     @Override

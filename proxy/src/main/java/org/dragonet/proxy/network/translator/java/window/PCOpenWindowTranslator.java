@@ -31,9 +31,7 @@ import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
 import org.dragonet.proxy.network.translator.misc.InventoryTranslator;
 import org.dragonet.proxy.network.translator.misc.ItemTranslator;
 import org.dragonet.proxy.network.translator.misc.MessageTranslator;
-import org.dragonet.proxy.network.translator.misc.inventory.AnvilInventoryTranslator;
-import org.dragonet.proxy.network.translator.misc.inventory.IInventoryTranslator;
-import org.dragonet.proxy.network.translator.misc.inventory.SingleChestInventoryTranslator;
+import org.dragonet.proxy.network.translator.misc.inventory.*;
 import org.dragonet.proxy.util.TextFormat;
 
 import java.util.HashMap;
@@ -48,7 +46,14 @@ public class PCOpenWindowTranslator extends PacketTranslator<ServerOpenWindowPac
         windowMap.put(WindowType.GENERIC_9X1, new SingleChestInventoryTranslator(27, 1));
         windowMap.put(WindowType.GENERIC_9X2, new SingleChestInventoryTranslator(27, 2));
         windowMap.put(WindowType.GENERIC_9X3, new SingleChestInventoryTranslator(27, 3));
+        windowMap.put(WindowType.GENERIC_9X4, new DoubleChestInventoryTranslator(54, 4));
+        windowMap.put(WindowType.GENERIC_9X5, new DoubleChestInventoryTranslator(54, 5));
+        windowMap.put(WindowType.GENERIC_9X6, new DoubleChestInventoryTranslator(54, 6));
+        windowMap.put(WindowType.SHULKER_BOX, new SingleChestInventoryTranslator(BedrockWindowType.SHULKER_BOX, 27, 3));
+        windowMap.put(WindowType.GENERIC_3X3, new DispenserInventoryTranslator(9));
         windowMap.put(WindowType.ANVIL, new AnvilInventoryTranslator(3));
+        windowMap.put(WindowType.FURNACE, new FurnaceInventoryTranslator(3));
+        windowMap.put(WindowType.BEACON, new BeaconInventoryTranslator(1));
     }
 
     @Override

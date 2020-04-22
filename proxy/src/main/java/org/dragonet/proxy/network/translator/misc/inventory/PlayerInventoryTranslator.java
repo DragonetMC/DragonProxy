@@ -17,32 +17,52 @@ public class PlayerInventoryTranslator extends IInventoryTranslator {
 
     @Override
     public void updateInventory(ProxySession session, CachedWindow window) {
+        sendInventory(session, window);
+        sendArmor(session, window);
+        sendOffhand(session, window);
+    }
+
+    @Override
+    public void updateSlot(ProxySession session, CachedWindow window, int slot) {
+        updateInventory(session, window); // TODO: Dont send entire inventory
+    }
+
+    public void sendInventory(ProxySession session, CachedWindow window) {
         InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
         inventoryContentPacket.setContainerId(ContainerId.INVENTORY);
-
-        ItemData[] contents = new ItemData[40];
+        ItemData[] contents = new ItemData[36];
 
         // Hotbar
         for(int i = 36; i < 45; i++) {
-            contents[i - 36] = ItemTranslator.translateSlotToBedrock(window.getItems()[i]);
+            contents[i - 36] = window.getItem(i);
         }
 
         // Inventory
         for(int i = 9; i < 36; i++) {
-            contents[i] = ItemTranslator.translateSlotToBedrock(window.getItems()[i]);
-        }
-
-        // Armour
-        for(int i = 5; i < 9; i++) {
-            contents[i + 31] = ItemTranslator.translateSlotToBedrock(window.getItems()[i]);
+            contents[i] = window.getItem(i);
         }
 
         inventoryContentPacket.setContents(contents);
         session.sendPacket(inventoryContentPacket);
     }
 
-    @Override
-    public void updateSlot(ProxySession session, CachedWindow window, int slot) {
-        updateInventory(session, window); // TODO: Dont send entire inventory
+    public void sendArmor(ProxySession session, CachedWindow window) {
+        InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
+        inventoryContentPacket.setContainerId(ContainerId.ARMOR);
+        ItemData[] contents = new ItemData[4];
+
+        for(int i = 5; i < 9; i++) {
+            contents[i - 5] = window.getItem(i);
+        }
+
+        inventoryContentPacket.setContents(contents);
+        session.sendPacket(inventoryContentPacket);
+    }
+
+    public void sendOffhand(ProxySession session, CachedWindow window) {
+        InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
+        inventoryContentPacket.setContainerId(ContainerId.ARMOR);
+        inventoryContentPacket.setContents(new ItemData[]{window.getItem(45)});
+        session.sendPacket(inventoryContentPacket);
     }
 }

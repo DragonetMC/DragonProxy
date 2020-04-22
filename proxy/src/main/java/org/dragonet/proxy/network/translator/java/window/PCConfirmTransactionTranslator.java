@@ -41,6 +41,8 @@ public class PCConfirmTransactionTranslator extends PacketTranslator<ServerConfi
 
         boolean transactionStatus = inventory.getTransactions().get(packet.getActionId());
 
-        session.sendRemotePacket(new ClientConfirmTransactionPacket(packet.getWindowId(), packet.getActionId(), packet.isAccepted()));
+        if(!packet.isAccepted()) {
+            session.sendRemotePacket(new ClientConfirmTransactionPacket(packet.getWindowId(), packet.getActionId(), true));
+        }
     }
 }

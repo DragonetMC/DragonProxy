@@ -1,18 +1,13 @@
 package org.dragonet.proxy.network.translator.misc.inventory;
 
-import com.nukkitx.protocol.bedrock.data.ContainerId;
 import org.dragonet.proxy.data.window.BedrockWindowType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 
-public class AnvilInventoryTranslator extends ContainerInventoryTranslator {
+public class FurnaceInventoryTranslator extends ContainerInventoryTranslator {
 
-    public AnvilInventoryTranslator(int size) {
-        super(BedrockWindowType.ANVIL, size);
-
-        slotMappings.put(1, 0);
-        slotMappings.put(2, 1);
-        slotMappings.put(50, 2);
+    public FurnaceInventoryTranslator(int size) {
+        super(BedrockWindowType.FURNACE, size);
     }
 
     @Override

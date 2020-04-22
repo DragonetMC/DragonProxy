@@ -2,6 +2,7 @@ package org.dragonet.proxy.network.translator.misc.inventory;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.nukkitx.nbt.CompoundTagBuilder;
+import com.nukkitx.protocol.bedrock.data.ContainerId;
 import com.nukkitx.protocol.bedrock.data.ItemData;
 import com.nukkitx.protocol.bedrock.packet.InventoryContentPacket;
 import com.nukkitx.protocol.bedrock.packet.InventorySlotPacket;
@@ -15,9 +16,9 @@ import org.dragonet.proxy.network.translator.misc.ItemTranslator;
 import java.util.Arrays;
 
 @Log4j2
-public class SingleChestInventoryTranslator extends IInventoryTranslator {
-    private static ItemData UNUSABLE_INVENTORY_SPACE_BLOCK;
-    private final int rows;
+public class SingleChestInventoryTranslator extends ContainerInventoryTranslator {
+    protected static ItemData UNUSABLE_INVENTORY_SPACE_BLOCK;
+    protected final int rows;
 
     static {
         CompoundTagBuilder root = CompoundTagBuilder.builder();
@@ -31,7 +32,11 @@ public class SingleChestInventoryTranslator extends IInventoryTranslator {
     }
 
     public SingleChestInventoryTranslator(int size, int rows) {
-        super(BedrockWindowType.CHEST, size);
+        this(BedrockWindowType.CHEST, size, rows);
+    }
+
+    public SingleChestInventoryTranslator(BedrockWindowType windowType, int size, int rows) {
+        super(windowType, size);
         this.rows = rows;
     }
 
@@ -52,19 +57,6 @@ public class SingleChestInventoryTranslator extends IInventoryTranslator {
         contentPacket.setContainerId(window.getWindowId());
         contentPacket.setContents(bedrockItems);
         session.sendPacket(contentPacket);
-
-//        log.warn("update inventory");
-    }
-
-    @Override
-    public void updateSlot(ProxySession session, CachedWindow window, int slot) {
-        InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
-        inventorySlotPacket.setContainerId(window.getWindowId());
-        inventorySlotPacket.setItem(ItemTranslator.translateSlotToBedrock(window.getItems()[slot]));
-        inventorySlotPacket.setSlot(slot);
-        session.sendPacket(inventorySlotPacket);
-
-//        log.warn("update slot");
     }
 
     @Override
