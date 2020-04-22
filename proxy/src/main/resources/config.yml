@@ -3,7 +3,7 @@
 #   https://github.com/DragonetMC/DragonProxy
 # -----------------------------------------------
 # DO NOT CHANGE THIS VARIABLE!!!!!!
-config-version: 2
+config-version: 3
 # DO NOT CHANGE THIS VARIABLE!!!!!!
 
 locale: 'EN'
@@ -52,6 +52,9 @@ metrics:
   enabled: true
   # DO NOT CHANGE
   server-uuid: donotchange_serveruuid
+
+# How many chunks to send to the client each tick. There are 20 ticks in a second.
+chunks-per-tick: 5
 
 # The amount of threads that will be used.
 # Only change if you know what you are doing

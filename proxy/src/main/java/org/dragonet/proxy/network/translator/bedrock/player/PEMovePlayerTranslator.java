@@ -66,5 +66,7 @@ public class PEMovePlayerTranslator extends PacketTranslator<MovePlayerPacket> {
            y, GenericMath.round(packet.getPosition().getZ(), 4), packet.getRotation().getY(), packet.getRotation().getX());
 
         session.sendRemotePacket(playerPositionRotationPacket);
+
+        session.getChunkCache().sendOrderedChunks(session);
     }
 }

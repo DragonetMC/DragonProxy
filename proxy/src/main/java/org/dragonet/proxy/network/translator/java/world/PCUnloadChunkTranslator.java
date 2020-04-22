@@ -29,6 +29,6 @@ public class PCUnloadChunkTranslator extends PacketTranslator<ServerUnloadChunkP
 
     @Override
     public void translate(ProxySession session, ServerUnloadChunkPacket packet) {
-        session.getChunkCache().getJavaChunks().remove(Vector2i.from(packet.getX(), packet.getZ()));
+        //session.getChunkCache().unloadChunk(Vector2i.from(packet.getX(), packet.getZ()));
     }
 }

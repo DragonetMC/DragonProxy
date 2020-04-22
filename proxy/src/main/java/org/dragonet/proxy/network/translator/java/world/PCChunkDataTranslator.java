@@ -47,65 +47,65 @@ public class PCChunkDataTranslator extends PacketTranslator<ServerChunkDataPacke
         Column column = packet.getColumn();
         session.getChunkCache().getJavaChunks().put(Vector2i.from(column.getX(), column.getZ()), column);
 
-        ChunkData chunkData = session.getChunkCache().translateChunk(session, column.getX(), column.getZ());
-
-        NetworkChunkPublisherUpdatePacket chunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
-        chunkPublisherUpdatePacket.setPosition(session.getCachedEntity().getPosition().toInt());
-        chunkPublisherUpdatePacket.setRadius(8 << 4);
-        session.sendPacket(chunkPublisherUpdatePacket);
-
-        if(column.getBiomeData() != null) { // Full chunk
-            ByteBuf buffer = ByteBufAllocator.DEFAULT.directBuffer();
-            try {
-                ChunkSection[] sections = chunkData.sections;
-
-                int sectionCount = sections.length - 1;
-                while (sectionCount >= 0 && sections[sectionCount].isEmpty()) {
-                    sectionCount--;
-                }
-                sectionCount++;
-
-                for (int i = 0; i < sectionCount; i++) {
-                    chunkData.sections[i].writeToNetwork(buffer);
-                }
-
-                buffer.writeBytes(new byte[256]); // Biomes - 256 bytes
-                buffer.writeByte(0); // Border blocks - Education Edition only
-
-                // Extra Data
-                VarInts.writeUnsignedInt(buffer, 0);
-
-                ByteBufOutputStream stream = new ByteBufOutputStream(Unpooled.buffer());
-                NBTOutputStream nbtStream = NbtUtils.createNetworkWriter(stream);
-                for (CompoundTag blockEntity : chunkData.blockEntities) {
-                    nbtStream.write(blockEntity);
-                }
-
-//                FastByteArrayOutputStream fast = new FastByteArrayOutputStream(new byte[256]);
-//                NBTOutputStream nbtStream1 = NbtUtils.createNetworkWriter(stream);
-//                for (CompoundTag blockEntity : chunkData.blockEntities) {
-//                    nbtStream1.write(blockEntity);
+//        ChunkData chunkData = session.getChunkCache().translateChunk(column.getX(), column.getZ());
+//
+//        NetworkChunkPublisherUpdatePacket chunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
+//        chunkPublisherUpdatePacket.setPosition(session.getCachedEntity().getPosition().toInt());
+//        chunkPublisherUpdatePacket.setRadius(8 << 4);
+//        session.sendPacket(chunkPublisherUpdatePacket);
+//
+//        if(column.getBiomeData() != null) { // Full chunk
+//            ByteBuf buffer = ByteBufAllocator.DEFAULT.directBuffer();
+//            try {
+//                ChunkSection[] sections = chunkData.sections;
+//
+//                int sectionCount = sections.length - 1;
+//                while (sectionCount >= 0 && sections[sectionCount].isEmpty()) {
+//                    sectionCount--;
 //                }
-                buffer.writeBytes(stream.buffer());
-
-                byte[] payload = new byte[buffer.readableBytes()];
-                buffer.readBytes(payload);
-
-                LevelChunkPacket levelChunkPacket = new LevelChunkPacket();
-                levelChunkPacket.setChunkX(column.getX());
-                levelChunkPacket.setChunkZ(column.getZ());
-                levelChunkPacket.setCachingEnabled(false);
-                levelChunkPacket.setSubChunksLength(sectionCount);
-                levelChunkPacket.setData(payload);
-
-                session.sendPacket(levelChunkPacket);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            } finally {
-                buffer.release();
-            }
-        } else {
-            log.warn("non full chunk");
-        }
+//                sectionCount++;
+//
+//                for (int i = 0; i < sectionCount; i++) {
+//                    chunkData.sections[i].writeToNetwork(buffer);
+//                }
+//
+//                buffer.writeBytes(new byte[256]); // Biomes - 256 bytes
+//                buffer.writeByte(0); // Border blocks - Education Edition only
+//
+//                // Extra Data
+//                VarInts.writeUnsignedInt(buffer, 0);
+//
+//                ByteBufOutputStream stream = new ByteBufOutputStream(Unpooled.buffer());
+//                NBTOutputStream nbtStream = NbtUtils.createNetworkWriter(stream);
+//                for (CompoundTag blockEntity : chunkData.blockEntities) {
+//                    nbtStream.write(blockEntity);
+//                }
+//
+////                FastByteArrayOutputStream fast = new FastByteArrayOutputStream(new byte[256]);
+////                NBTOutputStream nbtStream1 = NbtUtils.createNetworkWriter(stream);
+////                for (CompoundTag blockEntity : chunkData.blockEntities) {
+////                    nbtStream1.write(blockEntity);
+////                }
+//                buffer.writeBytes(stream.buffer());
+//
+//                byte[] payload = new byte[buffer.readableBytes()];
+//                buffer.readBytes(payload);
+//
+//                LevelChunkPacket levelChunkPacket = new LevelChunkPacket();
+//                levelChunkPacket.setChunkX(column.getX());
+//                levelChunkPacket.setChunkZ(column.getZ());
+//                levelChunkPacket.setCachingEnabled(false);
+//                levelChunkPacket.setSubChunksLength(sectionCount);
+//                levelChunkPacket.setData(payload);
+//
+//                session.sendPacket(levelChunkPacket);
+//            } catch (IOException ex) {
+//                ex.printStackTrace();
+//            } finally {
+//                buffer.release();
+//            }
+//        } else {
+//            log.warn("non full chunk");
+//        }
     }
 }

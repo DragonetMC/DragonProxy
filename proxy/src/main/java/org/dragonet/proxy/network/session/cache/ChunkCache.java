@@ -25,32 +25,58 @@ import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector2i;
 import com.nukkitx.math.vector.Vector3i;
+import com.nukkitx.nbt.NbtUtils;
+import com.nukkitx.nbt.stream.NBTOutputStream;
 import com.nukkitx.nbt.tag.CompoundTag;
+import com.nukkitx.network.VarInts;
+import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
+import com.nukkitx.protocol.bedrock.packet.NetworkChunkPublisherUpdatePacket;
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.data.chunk.ChunkData;
 import org.dragonet.proxy.data.chunk.ChunkSection;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.misc.BlockEntityTranslator;
 import org.dragonet.proxy.network.translator.misc.BlockTranslator;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import static org.dragonet.proxy.network.translator.java.PCJoinGameTranslator.EMPTY_LEVEL_CHUNK_DATA;
 
 @Log4j2
 public class ChunkCache implements Cache {
+
     @Getter
     private Object2ObjectMap<Vector2i, Column> javaChunks = new Object2ObjectOpenHashMap<>();
+
+    private final ObjectSet<Vector2i> loadedChunks = new ObjectOpenHashSet<>();
+    private final Queue<LevelChunkPacket> updateQueue = new ConcurrentLinkedQueue<>();
+
+    private int chunkPerTick;
+
+    public ChunkCache() {
+        chunkPerTick = DragonProxy.INSTANCE.getConfiguration().getChunksPerTick();
+    }
 
     /**
      * Translates a chunk from Java Edition to Bedrock Edition.
      */
-    public ChunkData translateChunk(ProxySession session, int columnX, int columnZ) {
+    public ChunkData translateChunk(int columnX, int columnZ) {
         Vector2i columnPos = Vector2i.from(columnX, columnZ);
 
         if (javaChunks.containsKey(columnPos)) {
@@ -95,6 +121,130 @@ public class ChunkCache implements Cache {
         return null;
     }
 
+    public void onTick(ProxySession session) {
+        int counter = 0;
+        while (!updateQueue.isEmpty() && counter <= chunkPerTick) {
+            session.sendPacket(updateQueue.poll());
+            counter++;
+        }
+    }
+
+    public void unloadChunk(Vector2i position) {
+        javaChunks.remove(position);
+        loadedChunks.remove(position);
+    }
+
+    public void sendChunk(ProxySession session, int x, int z, boolean force) {
+        Vector2i columnPos = Vector2i.from(x, z);
+
+        if (!loadedChunks.contains(columnPos) || force) {
+            NetworkChunkPublisherUpdatePacket chunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
+            chunkPublisherUpdatePacket.setPosition(session.getCachedEntity().getPosition().toInt());
+            chunkPublisherUpdatePacket.setRadius(8 << 4);
+
+            session.sendPacket(chunkPublisherUpdatePacket);
+
+            ByteBuf buffer = ByteBufAllocator.DEFAULT.directBuffer();
+            try {
+                ChunkData chunkData = translateChunk(x, z);
+                if(chunkData != null) {
+
+                    ChunkSection[] sections = chunkData.sections;
+
+                    int sectionCount = sections.length - 1;
+                    while (sectionCount >= 0 && sections[sectionCount].isEmpty()) {
+                        sectionCount--;
+                    }
+                    sectionCount++;
+
+                    for (int i = 0; i < sectionCount; i++) {
+                        chunkData.sections[i].writeToNetwork(buffer);
+                    }
+
+                    buffer.writeBytes(new byte[256]); // Biomes - 256 bytes
+                    buffer.writeByte(0); // Border blocks - Education Edition only
+
+                    // Extra Data
+                    VarInts.writeUnsignedInt(buffer, 0);
+
+                    ByteBufOutputStream stream = new ByteBufOutputStream(Unpooled.buffer());
+                    NBTOutputStream nbtStream = NbtUtils.createNetworkWriter(stream);
+                    for (CompoundTag blockEntity : chunkData.blockEntities) {
+                        nbtStream.write(blockEntity);
+                    }
+
+                    buffer.writeBytes(stream.buffer());
+
+                    byte[] payload = new byte[buffer.readableBytes()];
+                    buffer.readBytes(payload);
+
+                    LevelChunkPacket levelChunkPacket = new LevelChunkPacket();
+                    levelChunkPacket.setChunkX(x);
+                    levelChunkPacket.setChunkZ(z);
+                    levelChunkPacket.setCachingEnabled(false);
+                    levelChunkPacket.setSubChunksLength(sectionCount);
+                    levelChunkPacket.setData(payload);
+
+                    updateQueue.add(levelChunkPacket);
+                    loadedChunks.add(columnPos);
+                } else {
+                    //log.warn("chunk data is null");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                buffer.release();
+            }
+        }
+    }
+
+    public void sendEmptyChunk(int x, int z) {
+        LevelChunkPacket levelChunkPacket = new LevelChunkPacket();
+        levelChunkPacket.setChunkX(x);
+        levelChunkPacket.setChunkZ(z);
+        levelChunkPacket.setSubChunksLength(0);
+        levelChunkPacket.setData(EMPTY_LEVEL_CHUNK_DATA);
+        levelChunkPacket.setCachingEnabled(false);
+
+        updateQueue.add(levelChunkPacket);
+    }
+
+    public void sendEmptyChunks(ProxySession session, int radius) {
+        CachedPlayer player = session.getCachedEntity();
+        int centerX = player.getPosition().getFloorX() >> 4;
+        int centerZ = player.getPosition().getFloorZ() >> 4;
+
+        for (int x = -radius; x < radius; x++)
+            for (int z = -radius; z < radius; z++)
+                sendEmptyChunk(centerX + x, centerZ + z);
+    }
+
+    public void sendOrderedChunks(ProxySession session) {
+        CachedPlayer player = session.getCachedEntity();
+
+        int centerX = player.getPosition().getFloorX() >> 4;
+        int centerZ = player.getPosition().getFloorZ() >> 4;
+
+        int radius = (int) Math.ceil(Math.sqrt(56));
+
+        Set<Vector2i> toLoad = new HashSet<>();
+
+        for (int x = centerX - radius; x <= centerX + radius; x++)
+            for (int z = centerZ - radius; z <= centerZ + radius; z++)
+                toLoad.add(Vector2i.from(x, z));
+
+        for (Vector2i chunk : toLoad)
+            sendChunk(session, chunk.getX(), chunk.getY(), false);
+
+        Set<Vector2i> toUnLoad = new HashSet<>(loadedChunks);
+        toUnLoad.removeAll(toLoad);
+
+        for (Vector2i chunk : toUnLoad)
+            sendEmptyChunk(chunk.getX(), chunk.getY());
+
+        loadedChunks.removeAll(toUnLoad);
+    }
+
     public int getBlockAt(Vector3i position) {
         Vector2i chunkPosition = Vector2i.from(position.getX() >> 4, position.getZ() >> 4);
         if(!javaChunks.containsKey(chunkPosition)) {
@@ -137,5 +287,7 @@ public class ChunkCache implements Cache {
     @Override
     public void purge() {
         javaChunks.clear();
+        loadedChunks.clear();
+        updateQueue.clear();
     }
 }

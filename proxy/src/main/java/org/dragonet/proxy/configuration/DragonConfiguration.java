@@ -65,6 +65,9 @@ public class DragonConfiguration {
     @JsonProperty("thread-pool-size")
     private int threadPoolSize;
 
+    @JsonProperty("chunks-per-tick")
+    private int chunksPerTick;
+
     @Getter
     public static class PlayerConfig {
         @JsonProperty("enable-commands")

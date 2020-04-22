@@ -50,6 +50,8 @@ public class PCPlayerPositionRotationTranslator extends PacketTranslator<ServerP
             session.sendPacket(movePlayerPacket);
             entity.setSpawned(true);
 
+            session.getChunkCache().sendOrderedChunks(session);
+
             log.info("Spawned player " + session.getUsername() + " at " + packet.getX() + " " + packet.getY() + " " + packet.getZ());
             return;
         }
@@ -67,6 +69,8 @@ public class PCPlayerPositionRotationTranslator extends PacketTranslator<ServerP
                 entity.moveAbsolute(session, Vector3f.from(packet.getX(), packet.getY(), packet.getZ()), Vector3f.from(packet.getPitch(), packet.getYaw(), 0), true, false);
             }
         }
+
+        session.getChunkCache().sendOrderedChunks(session);
 
         session.sendRemotePacket(new ClientTeleportConfirmPacket(packet.getTeleportId()));
     }
