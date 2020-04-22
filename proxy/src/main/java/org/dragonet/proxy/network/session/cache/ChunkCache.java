@@ -67,10 +67,10 @@ public class ChunkCache implements Cache {
     private final ObjectSet<Vector2i> loadedChunks = new ObjectOpenHashSet<>();
     private final Queue<LevelChunkPacket> updateQueue = new ConcurrentLinkedQueue<>();
 
-    private int chunkPerTick;
+    private int chunksPerTick;
 
     public ChunkCache() {
-        chunkPerTick = DragonProxy.INSTANCE.getConfiguration().getChunksPerTick();
+        chunksPerTick = DragonProxy.INSTANCE.getConfiguration().getChunksPerTick();
     }
 
     /**
@@ -123,7 +123,7 @@ public class ChunkCache implements Cache {
 
     public void onTick(ProxySession session) {
         int counter = 0;
-        while (!updateQueue.isEmpty() && counter <= chunkPerTick) {
+        while (!updateQueue.isEmpty() && counter <= chunksPerTick) {
             session.sendPacket(updateQueue.poll());
             counter++;
         }
@@ -138,17 +138,10 @@ public class ChunkCache implements Cache {
         Vector2i columnPos = Vector2i.from(x, z);
 
         if (!loadedChunks.contains(columnPos) || force) {
-            NetworkChunkPublisherUpdatePacket chunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
-            chunkPublisherUpdatePacket.setPosition(session.getCachedEntity().getPosition().toInt());
-            chunkPublisherUpdatePacket.setRadius(8 << 4);
-
-            session.sendPacket(chunkPublisherUpdatePacket);
-
             ByteBuf buffer = ByteBufAllocator.DEFAULT.directBuffer();
             try {
                 ChunkData chunkData = translateChunk(x, z);
                 if(chunkData != null) {
-
                     ChunkSection[] sections = chunkData.sections;
 
                     int sectionCount = sections.length - 1;
@@ -161,11 +154,7 @@ public class ChunkCache implements Cache {
                         chunkData.sections[i].writeToNetwork(buffer);
                     }
 
-                    buffer.writeBytes(new byte[256]); // Biomes - 256 bytes
-                    buffer.writeByte(0); // Border blocks - Education Edition only
-
-                    // Extra Data
-                    VarInts.writeUnsignedInt(buffer, 0);
+                    buffer.writeBytes(new byte[258]);  // Biomes (256) + Border Size + Extra Data Size
 
                     ByteBufOutputStream stream = new ByteBufOutputStream(Unpooled.buffer());
                     NBTOutputStream nbtStream = NbtUtils.createNetworkWriter(stream);
@@ -214,9 +203,11 @@ public class ChunkCache implements Cache {
         int centerX = player.getPosition().getFloorX() >> 4;
         int centerZ = player.getPosition().getFloorZ() >> 4;
 
-        for (int x = -radius; x < radius; x++)
-            for (int z = -radius; z < radius; z++)
+        for (int x = -radius; x < radius; x++) {
+            for (int z = -radius; z < radius; z++) {
                 sendEmptyChunk(centerX + x, centerZ + z);
+            }
+        }
     }
 
     public void sendOrderedChunks(ProxySession session) {
@@ -225,24 +216,47 @@ public class ChunkCache implements Cache {
         int centerX = player.getPosition().getFloorX() >> 4;
         int centerZ = player.getPosition().getFloorZ() >> 4;
 
-        int radius = (int) Math.ceil(Math.sqrt(56));
+        int radius = session.getRenderDistance();
+
+        // Update the view position
+        updateChunkPosition(session, player.getPosition().toInt());
 
         Set<Vector2i> toLoad = new HashSet<>();
 
-        for (int x = centerX - radius; x <= centerX + radius; x++)
-            for (int z = centerZ - radius; z <= centerZ + radius; z++)
+        // Add positions within the specified radius around the player
+        for (int x = centerX - radius; x <= centerX + radius; x++) {
+            for (int z = centerZ - radius; z <= centerZ + radius; z++) {
                 toLoad.add(Vector2i.from(x, z));
+            }
+        }
 
-        for (Vector2i chunk : toLoad)
+        // Send the chunks
+        for (Vector2i chunk : toLoad) {
             sendChunk(session, chunk.getX(), chunk.getY(), false);
+        }
 
+        // Remove any chunks outside of the radius
         Set<Vector2i> toUnLoad = new HashSet<>(loadedChunks);
         toUnLoad.removeAll(toLoad);
 
-        for (Vector2i chunk : toUnLoad)
+        for (Vector2i chunk : toUnLoad) {
             sendEmptyChunk(chunk.getX(), chunk.getY());
+        }
 
         loadedChunks.removeAll(toUnLoad);
+    }
+
+    public void updateChunkPosition(ProxySession session, Vector3i position) {
+        Vector2i chunkPosition = Vector2i.from(position.getX() >> 4, position.getZ() >> 4);
+
+        if (session.getLastChunkPosition() == null || !session.getLastChunkPosition().equals(chunkPosition)) {
+            NetworkChunkPublisherUpdatePacket chunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
+            chunkPublisherUpdatePacket.setPosition(position);
+            chunkPublisherUpdatePacket.setRadius(session.getRenderDistance() << 4);
+
+            session.sendPacket(chunkPublisherUpdatePacket);
+            session.setLastChunkPosition(chunkPosition);
+        }
     }
 
     public int getBlockAt(Vector3i position) {

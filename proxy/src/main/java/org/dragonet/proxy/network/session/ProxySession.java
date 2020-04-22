@@ -34,6 +34,7 @@ import com.github.steveice10.packetlib.event.session.SessionAdapter;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 import com.nukkitx.math.vector.Vector2f;
+import com.nukkitx.math.vector.Vector2i;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.tag.CompoundTag;
@@ -107,6 +108,7 @@ public class ProxySession implements PlayerSession {
 
     private Vector3i lastClickedPosition = null;
     private CachedEntity lastClickedEntity = null;
+    private Vector2i lastChunkPosition = null;
 
     public ProxySession(DragonProxy proxy, BedrockServerSession bedrockSession) {
         this.proxy = proxy;
