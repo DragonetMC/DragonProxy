@@ -15,6 +15,8 @@ import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.translator.misc.IItemTranslator;
 import org.dragonet.proxy.network.translator.misc.MessageTranslator;
 import org.dragonet.proxy.network.translator.misc.item.ItemEntry;
+import org.dragonet.proxy.network.translator.misc.item.nbt.DisplayNbtTranslator;
+import org.dragonet.proxy.network.translator.misc.item.nbt.EnchantmentNbtTranslator;
 import org.dragonet.proxy.util.registry.ItemRegisterInfo;
 import org.dragonet.proxy.util.registry.Registry;
 
@@ -108,19 +110,11 @@ public class ItemTranslatorRegistry extends Registry {
         CompoundTagBuilder root = CompoundTagBuilder.builder();
 
         // First handle NBT that applies to all items
-        if(!tag.contains("display")) {
-            CompoundTagBuilder display = CompoundTagBuilder.builder();
-
-            if (tag.contains("name")) {
-                display.stringTag("Name", Message.fromString((String) tag.get("name").getValue()).getFullText());
-                tag.remove("name");
-            }
-            if (tag.contains("lore")) {
-                com.nukkitx.nbt.tag.ListTag list = (com.nukkitx.nbt.tag.ListTag) translateRawNBT((Tag) tag.get("lore"));
-                display.listTag("Lore", com.nukkitx.nbt.tag.StringTag.class, list.getValue()); // TODO: fix unchecked assignment
-                tag.remove("lore");
-            }
-            root.tag(display.build("display"));
+        // TODO: register these with annotations
+        root.tag(new DisplayNbtTranslator().translateToBedrock(tag));
+        com.nukkitx.nbt.tag.CompoundTag etag = new EnchantmentNbtTranslator().translateToBedrock(tag);
+        if(etag != null) {
+            root.tag(etag);
         }
 
         if(tag.getValue() != null && !tag.getValue().isEmpty()) {
