@@ -1,14 +1,17 @@
 package org.dragonet.proxy.network.translator.bedrock;
 
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientChatPacket;
+import com.nukkitx.protocol.bedrock.data.GameRuleData;
+import com.nukkitx.protocol.bedrock.packet.GameRulesChangedPacket;
 import com.nukkitx.protocol.bedrock.packet.SettingsCommandPacket;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.WorldCache;
-import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
+@PacketRegisterInfo(packet = SettingsCommandPacket.class)
 public class PESettingsCommandTranslator extends PacketTranslator<SettingsCommandPacket> {
     private static final Object2ObjectMap<String, String> gameRuleMap = new Object2ObjectOpenHashMap<>();
 
@@ -49,13 +52,13 @@ public class PESettingsCommandTranslator extends PacketTranslator<SettingsComman
         String[] args = packet.getCommand().replaceAll("/gamerule ", "").split(" ");
 
         // Coordinates are a special case
-        if(args[0].equalsIgnoreCase("showcoordinates")) {
+        if(args[0].equalsIgnoreCase("showcoordinates") && !session.getCachedEntity().isReducedDebugInfo()) {
             worldCache.setShowCoordinates(session, Boolean.parseBoolean(args[1]));
             return;
         }
 
         if(!gameRuleMap.containsKey(args[0])) {
-            // TODO: reset the game rule on the client
+            // TODO: reset the game rule on the client?
             return;
         }
 

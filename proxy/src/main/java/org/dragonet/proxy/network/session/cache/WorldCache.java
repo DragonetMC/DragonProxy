@@ -18,6 +18,7 @@
  */
 package org.dragonet.proxy.network.session.cache;
 
+import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.data.game.setting.Difficulty;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.GameRuleData;
@@ -34,8 +35,7 @@ import org.dragonet.proxy.network.session.ProxySession;
 
 @Data
 public class WorldCache implements Cache {
-    @Setter(value = AccessLevel.NONE)
-    private Object2IntMap<StatInfo> statistics = new Object2IntOpenHashMap<>();
+    private final Object2IntMap<StatInfo> statistics = new Object2IntOpenHashMap<>();
     private double rainLevel = 0.0;
 
     private Difficulty difficulty = Difficulty.EASY;
@@ -48,6 +48,7 @@ public class WorldCache implements Cache {
     @Setter(value = AccessLevel.NONE)
     private boolean showCoordinates = true;
 
+
     /**
      * Starts or stops the daylight cycle in the current world.
      */
@@ -56,7 +57,6 @@ public class WorldCache implements Cache {
 
         GameRulesChangedPacket gameRulesChangedPacket = new GameRulesChangedPacket();
         gameRulesChangedPacket.getGameRules().add(new GameRuleData<>("dodaylightcycle", !value));
-
         session.sendPacket(gameRulesChangedPacket);
     }
 
@@ -65,7 +65,6 @@ public class WorldCache implements Cache {
 
         GameRulesChangedPacket gameRulesChangedPacket = new GameRulesChangedPacket();
         gameRulesChangedPacket.getGameRules().add(new GameRuleData<>("showcoordinates", value));
-
         session.sendPacket(gameRulesChangedPacket);
     }
 

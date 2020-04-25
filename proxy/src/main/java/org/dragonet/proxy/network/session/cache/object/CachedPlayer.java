@@ -25,6 +25,7 @@ import com.nukkitx.protocol.bedrock.data.*;
 import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket;
 import com.nukkitx.protocol.bedrock.packet.AdventureSettingsPacket;
 import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.dragonet.proxy.DragonProxy;
@@ -45,6 +46,10 @@ public class CachedPlayer extends CachedEntity {
     private int selectedHotbarSlot = 0;
 
     private PlayerPermission playerPermission = PlayerPermission.MEMBER;
+    private int opPermissionLevel = 0;
+
+    @Setter(value = AccessLevel.NONE)
+    private boolean reducedDebugInfo = false;
 
     private boolean canFly, flying, noClip, autoJump, worldImmutable = false;
 
@@ -80,6 +85,12 @@ public class CachedPlayer extends CachedEntity {
     }
 
     public void sendAdventureSettings(ProxySession session) {
+        if(opPermissionLevel >= 2) {
+            playerPermission = PlayerPermission.OPERATOR;
+        } else {
+            playerPermission = PlayerPermission.MEMBER;
+        }
+
         AdventureSettingsPacket adventureSettingsPacket = new AdventureSettingsPacket();
         adventureSettingsPacket.setUniqueEntityId(proxyEid);
         adventureSettingsPacket.setPlayerPermission(playerPermission);
@@ -155,5 +166,12 @@ public class CachedPlayer extends CachedEntity {
         movePlayerPacket.setMode(MovePlayerPacket.Mode.ROTATION);
 
         session.sendPacket(movePlayerPacket);
+    }
+
+    public void setReducedDebugInfo(ProxySession session, boolean value) {
+        if(proxyEid == session.getCachedEntity().getProxyEid()) {
+            session.getWorldCache().setShowCoordinates(session, !value);
+        }
+        reducedDebugInfo = value;
     }
 }

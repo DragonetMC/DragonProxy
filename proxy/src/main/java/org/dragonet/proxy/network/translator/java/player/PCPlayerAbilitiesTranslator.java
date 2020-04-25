@@ -34,7 +34,6 @@ public class PCPlayerAbilitiesTranslator extends PacketTranslator<ServerPlayerAb
         CachedPlayer player = session.getCachedEntity();
 
         player.setFlySpeed(packet.getFlySpeed());
-
         player.setCanFly(packet.isCanFly());
         player.setFlying(packet.isFlying());
 
