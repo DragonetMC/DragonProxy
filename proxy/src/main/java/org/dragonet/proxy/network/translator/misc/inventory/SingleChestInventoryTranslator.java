@@ -13,19 +13,7 @@ import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 @Log4j2
 public class SingleChestInventoryTranslator extends ContainerInventoryTranslator {
-    protected static ItemData UNUSABLE_INVENTORY_SPACE_BLOCK;
     protected final int rows;
-
-    static {
-        CompoundTagBuilder root = CompoundTagBuilder.builder();
-        CompoundTagBuilder display = CompoundTagBuilder.builder();
-
-        display.stringTag("Name", "Unusuable inventory space");
-        root.tag(display.build("display"));
-
-        // Update block
-        UNUSABLE_INVENTORY_SPACE_BLOCK = ItemData.of(248, (short) 0, 1, root.buildRootTag());
-    }
 
     public SingleChestInventoryTranslator(int size, int rows) {
         this(BedrockWindowType.CHEST, size, rows);

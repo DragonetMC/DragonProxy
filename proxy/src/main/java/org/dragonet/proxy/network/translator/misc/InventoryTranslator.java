@@ -18,7 +18,9 @@
  */
 package org.dragonet.proxy.network.translator.misc;
 
+import com.nukkitx.nbt.CompoundTagBuilder;
+import com.nukkitx.protocol.bedrock.data.ItemData;
+
 public class InventoryTranslator {
-
-
+    
 }
