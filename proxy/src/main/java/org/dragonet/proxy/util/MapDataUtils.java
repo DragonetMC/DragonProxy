@@ -83,7 +83,7 @@ public class MapDataUtils {
             if(red == -1 && green == -1 && blue == -1) {
                 alpha = 0;
             }
-            return (alpha << 24) | (red << 16) | (green << 8) | blue;
+            return ((alpha & 0xFF) << 24) | ((blue & 0xFF) << 16) | ((green & 0xFF) << 8) | (red & 0xFF);
         }
     }
 

@@ -11,8 +11,6 @@
 package org.dragonet.proxy.data.chunk;
 
 import com.google.common.base.Preconditions;
-import gnu.trove.map.TIntShortMap;
-import gnu.trove.map.hash.TIntShortHashMap;
 
 public class ChunkBuilder {
 
@@ -20,7 +18,7 @@ public class ChunkBuilder {
     private final int z;
 
     private ChunkSection[] sections;
-    private final TIntShortMap extraData = new TIntShortHashMap();
+//    private final TIntShortMap extraData = new TIntShortHashMap();
     private byte[] biomes;
     private byte[] heightMap;
     //private final List<BlockUpdate> blockUpdates = new ArrayList<>();
@@ -47,7 +45,7 @@ public class ChunkBuilder {
     }
 
     public ChunkBuilder extraData(int key, short value) {
-        this.extraData.put(key, value);
+//        this.extraData.put(key, value);
         return this;
     }
 
@@ -86,17 +84,18 @@ public class ChunkBuilder {
         Preconditions.checkNotNull(this.sections, "sections");
         Preconditions.checkNotNull(this.biomes, "biomes");
         Preconditions.checkNotNull(this.heightMap, "heightMap");
-        ChunkData chunk = new ChunkData(this.x, this.z, this.sections, this.extraData, this.biomes,
-                this.heightMap/*, this.blockUpdates*/);
-        if (this.dirty) {
-            chunk.setDirty();
-        }
-        if (this.generated) {
-            chunk.setGenerated();
-        }
-        if (this.populated) {
-            chunk.setPopulated();
-        }
-        return chunk;
+//        ChunkData chunk = new ChunkData(this.x, this.z, this.sections, this.extraData, this.biomes,
+//                this.heightMap/*, this.blockUpdates*/);
+//        if (this.dirty) {
+//            chunk.setDirty();
+//        }
+//        if (this.generated) {
+//            chunk.setGenerated();
+//        }
+//        if (this.populated) {
+//            chunk.setPopulated();
+//        }
+//        return chunk;
+        return null;
     }
 }

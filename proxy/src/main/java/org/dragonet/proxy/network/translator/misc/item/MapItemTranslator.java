@@ -45,6 +45,7 @@ public class MapItemTranslator implements IItemTranslator {
 
         if(javaTag.contains("map")) {
             root.longTag("map_uuid", ((IntTag) javaTag.get("map")).getValue().longValue());
+            root.intTag("map_name_index", ((IntTag) javaTag.get("map")).getValue());
         }
         return itemEntry.toItemData(item.getAmount(), root.buildRootTag());
     }
