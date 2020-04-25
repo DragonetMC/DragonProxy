@@ -42,9 +42,9 @@ public class PCPlayerPositionRotationTranslator extends PacketTranslator<ServerP
 
             MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
             movePlayerPacket.setRuntimeEntityId(entity.getProxyEid());
-            movePlayerPacket.setPosition(Vector3f.from(packet.getX(), packet.getY() + BedrockEntityType.PLAYER.getOffset() + 0.1f, packet.getZ()));
+            movePlayerPacket.setPosition(Vector3f.from(packet.getX(), packet.getY() + BedrockEntityType.PLAYER.getOffset(), packet.getZ()));
             movePlayerPacket.setRotation(Vector3f.from(packet.getPitch(), packet.getYaw(), 0));
-            movePlayerPacket.setMode(MovePlayerPacket.Mode.RESET);
+            movePlayerPacket.setMode(MovePlayerPacket.Mode.NORMAL);
             movePlayerPacket.setOnGround(true);
 
             session.sendPacket(movePlayerPacket);

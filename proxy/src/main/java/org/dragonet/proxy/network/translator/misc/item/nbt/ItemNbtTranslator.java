@@ -16,18 +16,10 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.util.registry;
+package org.dragonet.proxy.network.translator.misc.item.nbt;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.nukkitx.nbt.tag.CompoundTag;
 
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface PacketRegisterInfo {
-    /**
-     * The packet class. TODO: better description
-     */
-    Class packet();
+public interface ItemNbtTranslator {
+    CompoundTag translateToBedrock(com.github.steveice10.opennbt.tag.builtin.CompoundTag javaTag);
 }

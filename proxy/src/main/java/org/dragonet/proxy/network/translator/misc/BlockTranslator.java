@@ -38,6 +38,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.util.FileUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -78,9 +79,9 @@ public class BlockTranslator {
     private static int waterRuntimeId;
 
     static {
-        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("data/runtime_block_states.dat");
+        InputStream stream = FileUtils.getResource("data/runtime_block_states.dat");
         if(stream == null) {
-            throw new AssertionError("Static runtime block state table not found");
+            throw new RuntimeException("Static runtime block state table not found");
         }
 
         ListTag<CompoundTag> blocksTag;
@@ -125,12 +126,9 @@ public class BlockTranslator {
             String bedrockIdentifier = blockMappingEntry.getBedrockIdentifier();
             CompoundTag blockTag = buildBedrockState(bedrockIdentifier, blockMappingEntry.getBedrockStates());
 
-            if(blockMappingEntry.isWaterlogged()) {
+            // TODO: temporary fix for some waterlogged blocks
+            if(blockMappingEntry.isWaterlogged() || javaIdentifier.contains("bubble_column") || javaIdentifier.contains("kelp") || javaIdentifier.contains("seagrass")) {
                 waterlogged.add(javaProtocolId);
-            }
-
-            if(blockMappingEntry.getBedColor() != null && javaIdentifier.contains("_bed")) {
-                beds.put(bedrockRuntimeId, blockMappingEntry.getBedColor().byteValue());
             }
 
             bedrock2JavaMap.putIfAbsent(bedrockRuntimeId, new BlockState(javaProtocolId));
@@ -214,9 +212,6 @@ public class BlockTranslator {
         private double hardness;
         private boolean waterlogged;
         private List<BlockStateEntry> bedrockStates = new ArrayList<>();
-
-        @JsonProperty("bed_color")
-        private Integer bedColor;
 
         @JsonProperty("bedrock_states")
         private void loadBedrockStates(Map<String, Object> map) {

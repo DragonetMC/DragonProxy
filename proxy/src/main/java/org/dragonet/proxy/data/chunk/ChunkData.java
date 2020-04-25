@@ -15,9 +15,6 @@ import com.google.common.base.Preconditions;
 import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.network.VarInts;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
-import gnu.trove.TCollections;
-import gnu.trove.map.TIntShortMap;
-import gnu.trove.map.hash.TIntShortHashMap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import lombok.extern.log4j.Log4j2;
@@ -67,7 +64,7 @@ public final class ChunkData implements Closeable {
 
     public List<CompoundTag> blockEntities = new ArrayList<>();
 
-    private final TIntShortMap extraData = new TIntShortHashMap();
+    //private final TIntShortMap extraData = new TIntShortHashMap();
 
     private volatile boolean dirty;
 
@@ -89,19 +86,19 @@ public final class ChunkData implements Closeable {
         this.heightMap = new byte[ARRAY_SIZE];
     }
 
-    ChunkData(int x, int z, ChunkSection[] sections, TIntShortMap extraData, byte[] biomes, byte[] heightMap) {
-        this.x = x;
-        this.z = z;
-        Preconditions.checkNotNull(sections, "sections");
-        this.sections = Arrays.copyOf(sections, SECTION_COUNT);
-        Preconditions.checkNotNull(extraData, "extraData");
-        this.extraData.putAll(extraData);
-        Preconditions.checkNotNull(biomes, "biomes");
-        this.biomes = Arrays.copyOf(biomes, ARRAY_SIZE);
-        Preconditions.checkNotNull(heightMap, "heightMap");
-        this.heightMap = Arrays.copyOf(heightMap, ARRAY_SIZE);
-//        this.blockUpdates = Preconditions.checkNotNull(blockUpdates, "blockUpdates");
-    }
+//    ChunkData(int x, int z, ChunkSection[] sections, TIntShortMap extraData, byte[] biomes, byte[] heightMap) {
+//        this.x = x;
+//        this.z = z;
+//        Preconditions.checkNotNull(sections, "sections");
+//        this.sections = Arrays.copyOf(sections, SECTION_COUNT);
+//        Preconditions.checkNotNull(extraData, "extraData");
+//        this.extraData.putAll(extraData);
+//        Preconditions.checkNotNull(biomes, "biomes");
+//        this.biomes = Arrays.copyOf(biomes, ARRAY_SIZE);
+//        Preconditions.checkNotNull(heightMap, "heightMap");
+//        this.heightMap = Arrays.copyOf(heightMap, ARRAY_SIZE);
+////        this.blockUpdates = Preconditions.checkNotNull(blockUpdates, "blockUpdates");
+//    }
 
     public synchronized void init() {
         if (!this.initialized) {
@@ -220,29 +217,29 @@ public final class ChunkData implements Closeable {
 //        return this.getBlockExtraData(Level.chunkBlockKey(x, y, z));
 //    }
 
-    public synchronized short getBlockExtraData(int index) {
-        return this.extraData.get(index);
-    }
+    //public synchronized short getBlockExtraData(int index) {
+//        return this.extraData.get(index);
+//    }
 
 //    public  void setBlockExtraData(int x, int y, int z, short data) {
 //        Chunk.checkBounds(x, y, z);
 //        this.setBlockExtraData(Level.chunkBlockKey(x, y, z), data);
 //    }
 
-    public synchronized void setBlockExtraData(int index, short data) {
-        boolean dirty = false;
-        if (data == 0) {
-            if (this.extraData.remove(index) != -1) {
-                dirty = true;
-            }
-        } else {
-            this.extraData.put(index, data);
-            dirty = true;
-        }
-        if (dirty) {
-            this.setDirty();
-        }
-    }
+//    public synchronized void setBlockExtraData(int index, short data) {
+//        boolean dirty = false;
+//        if (data == 0) {
+//            if (this.extraData.remove(index) != -1) {
+//                dirty = true;
+//            }
+//        } else {
+//            this.extraData.put(index, data);
+//            dirty = true;
+//        }
+//        if (dirty) {
+//            this.setDirty();
+//        }
+//    }
 
     public synchronized int getBiome(int x, int z) {
         return this.biomes[ChunkData.getXZIndex(x, z)] & 0xFF;
@@ -444,10 +441,6 @@ public final class ChunkData implements Closeable {
 //        return ImmutableList.copyOf(this.tiles.valueCollection());
 //    }
 
-    public synchronized TIntShortMap getBlockExtraData() {
-        return TCollections.unmodifiableMap(this.extraData);
-    }
-
     public boolean isGenerated() {
         return generated;
     }
@@ -517,7 +510,7 @@ public final class ChunkData implements Closeable {
         Arrays.fill(this.sections, null);
         Arrays.fill(this.biomes, (byte) 0);
         Arrays.fill(this.heightMap, (byte) 0);
-        this.extraData.clear();
+//        this.extraData.clear();
 //        this.tiles.clear();
         this.generated = false;
 //        this.cachedPacket = null;

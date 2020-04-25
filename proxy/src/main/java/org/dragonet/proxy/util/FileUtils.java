@@ -16,18 +16,15 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.util.registry;
+package org.dragonet.proxy.util;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.dragonet.proxy.DragonProxy;
 
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface PacketRegisterInfo {
-    /**
-     * The packet class. TODO: better description
-     */
-    Class packet();
+import java.io.InputStream;
+
+public class FileUtils {
+
+    public static InputStream getResource(String path) {
+        return DragonProxy.class.getClassLoader().getResourceAsStream(path);
+    }
 }
