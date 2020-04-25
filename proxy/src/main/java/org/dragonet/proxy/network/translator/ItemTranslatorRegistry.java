@@ -1,3 +1,21 @@
+/*
+ * DragonProxy
+ * Copyright (C) 2016-2020 Dragonet Foundation
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You can view the LICENSE file for more details.
+ *
+ * https://github.com/DragonetMC/DragonProxy
+ */
 package org.dragonet.proxy.network.translator;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,9 +25,8 @@ import com.github.steveice10.mc.protocol.data.message.Message;
 import com.github.steveice10.opennbt.tag.builtin.*;
 import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.protocol.bedrock.data.ItemData;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import com.nukkitx.protocol.util.Int2ObjectBiMap;
+import it.unimi.dsi.fastutil.ints.*;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
@@ -32,14 +49,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Log4j2
 public class ItemTranslatorRegistry extends Registry {
-    private static List<ItemNbtTranslator> nbtTranslators = new ArrayList<>();
-    private static Int2ObjectMap<IItemTranslator> customTranslators = new Int2ObjectOpenHashMap<>(); // bedrock id
+    // Translators for NBT that is common to all items
+    private static final List<ItemNbtTranslator> nbtTranslators = new ArrayList<>();
 
-    private static final Int2ObjectMap<ItemEntry> javaToBedrockMap = new Int2ObjectOpenHashMap<>();
-    private static final Int2ObjectMap<ItemEntry> bedrockToJavaMap = new Int2ObjectOpenHashMap<>();
+    // Translators for specific items
+    private static final Int2ObjectMap<IItemTranslator> customTranslators = new Int2ObjectOpenHashMap<>(); // bedrock id
 
+    // Java to Bedrock and vice versa
+    private static final Int2ObjectMap<ItemEntry> javaToBedrockMap = new Int2ObjectLinkedOpenHashMap<>();
+    private static final Int2ObjectMap<ItemEntry> bedrockToJavaMap = new Int2ObjectLinkedOpenHashMap<>();
+
+    // The mappings are generated sequentially starting from air (id 0)
+    // This counter is increment for every item we loop over
     private static final AtomicInteger javaIdAllocator = new AtomicInteger(0);
-
 
     static {
         // Register custom item translators

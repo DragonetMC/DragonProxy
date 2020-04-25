@@ -44,6 +44,8 @@ public class CachedPlayer extends CachedEntity {
     private float flySpeed = 0.05f;
     private int selectedHotbarSlot = 0;
 
+    private PlayerPermission playerPermission = PlayerPermission.MEMBER;
+
     private boolean canFly, flying, noClip, autoJump, worldImmutable = false;
 
     public CachedPlayer(long proxyEid, int remoteEid, GameProfile profile) {
@@ -68,7 +70,7 @@ public class CachedPlayer extends CachedEntity {
         addPlayerPacket.setMotion(Vector3f.ZERO);
         addPlayerPacket.setRotation(rotation);
         addPlayerPacket.setHand(ItemData.AIR);
-        addPlayerPacket.getAdventureSettings().setPlayerPermission(PlayerPermission.MEMBER);
+        addPlayerPacket.getAdventureSettings().setPlayerPermission(playerPermission);
         addPlayerPacket.getAdventureSettings().setCommandPermission(CommandPermission.NORMAL);
         addPlayerPacket.setDeviceId("");
         addPlayerPacket.getMetadata().putAll(metadata);
@@ -80,7 +82,7 @@ public class CachedPlayer extends CachedEntity {
     public void sendAdventureSettings(ProxySession session) {
         AdventureSettingsPacket adventureSettingsPacket = new AdventureSettingsPacket();
         adventureSettingsPacket.setUniqueEntityId(proxyEid);
-        adventureSettingsPacket.setPlayerPermission(PlayerPermission.MEMBER);
+        adventureSettingsPacket.setPlayerPermission(playerPermission);
         adventureSettingsPacket.setCommandPermission(CommandPermission.NORMAL);
 
         Set<AdventureSettingsPacket.Flag> flags = new HashSet<>();
