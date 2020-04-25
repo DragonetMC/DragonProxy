@@ -21,7 +21,6 @@ package org.dragonet.proxy.network.translator.bedrock.world;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientSetBeaconEffectPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientUpdateSignPacket;
-import com.google.common.collect.ObjectArrays;
 import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
 import lombok.extern.log4j.Log4j2;

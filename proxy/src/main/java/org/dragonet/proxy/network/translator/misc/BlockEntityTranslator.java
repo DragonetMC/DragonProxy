@@ -18,11 +18,9 @@
  */
 package org.dragonet.proxy.network.translator.misc;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.github.steveice10.mc.protocol.data.message.ChatColor;
 import com.github.steveice10.mc.protocol.data.message.Message;
 import com.github.steveice10.mc.protocol.data.message.MessageStyle;
-import com.google.gson.JsonObject;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.nbt.tag.CompoundTag;
@@ -30,15 +28,9 @@ import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
-import net.minidev.json.JSONObject;
-import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.util.TextFormat;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Log4j2
@@ -122,10 +114,6 @@ public class BlockEntityTranslator {
             case "Sign":
                 String signText = "";
                 for(int i = 0; i < 4; i++) {
-
-                    log.warn(bedrockId);
-                    log.warn(javaTag);
-
                     int currentLine = i+1;
 
                     //Signs have different color names than chat color ugh
