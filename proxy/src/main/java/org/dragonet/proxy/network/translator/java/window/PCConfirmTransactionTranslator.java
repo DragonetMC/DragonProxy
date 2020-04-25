@@ -22,6 +22,7 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientConfi
 import com.github.steveice10.mc.protocol.packet.ingame.server.window.ServerConfirmTransactionPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.session.cache.object.CachedWindow;
 import org.dragonet.proxy.network.translator.misc.PacketTranslator;
 import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
@@ -32,6 +33,15 @@ public class PCConfirmTransactionTranslator extends PacketTranslator<ServerConfi
 
     @Override
     public void translate(ProxySession session, ServerConfirmTransactionPacket packet) {
-        session.sendRemotePacket(new ClientConfirmTransactionPacket(packet.getWindowId(), packet.getActionId(), packet.isAccepted()));
+        CachedWindow inventory = session.getWindowCache().getById(packet.getWindowId());
+        if(inventory == null) {
+            return;
+        }
+
+        boolean transactionStatus = inventory.getTransactions().get(packet.getActionId());
+
+        if(!packet.isAccepted()) {
+            session.sendRemotePacket(new ClientConfirmTransactionPacket(packet.getWindowId(), packet.getActionId(), true));
+        }
     }
 }

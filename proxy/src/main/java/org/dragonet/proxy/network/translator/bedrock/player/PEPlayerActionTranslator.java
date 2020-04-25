@@ -96,9 +96,9 @@ public class PEPlayerActionTranslator extends PacketTranslator<PlayerActionPacke
 
                 // Open command block window, as its handled client side on Java edition
                 if(session.getChunkCache().getBlockAt(packet.getBlockPosition()) == BlockTranslator.BEDROCK_COMMAND_BLOCK_ID) {
-                    CachedWindow cachedWindow = session.getWindowCache().newWindow(BedrockWindowType.COMMAND_BLOCK, session.getWindowCache().getLocalWindowIdAllocator().getAndIncrement());
-                    cachedWindow.setName("Command Block");
-                    cachedWindow.open(session);
+//                    CachedWindow cachedWindow = session.getWindowCache().newWindow(session.getWindowCache().getLocalWindowIdAllocator().getAndIncrement());
+//                    cachedWindow.setName("Command Block");
+//                    cachedWindow.open(session);
                     return;
                 }
 

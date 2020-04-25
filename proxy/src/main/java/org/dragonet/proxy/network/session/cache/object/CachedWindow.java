@@ -23,14 +23,24 @@ import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.data.EntityData;
+import com.nukkitx.protocol.bedrock.data.ItemData;
 import com.nukkitx.protocol.bedrock.packet.*;
+import it.unimi.dsi.fastutil.ints.Int2BooleanMap;
+import it.unimi.dsi.fastutil.ints.Int2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.data.window.BedrockWindowType;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.translator.ItemTranslatorRegistry;
 import org.dragonet.proxy.network.translator.misc.BlockEntityTranslator;
 import org.dragonet.proxy.network.translator.misc.BlockTranslator;
+import org.dragonet.proxy.network.translator.misc.inventory.IInventoryTranslator;
+import org.dragonet.proxy.network.translator.misc.inventory.action.SlotChangeAction;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
 @Log4j2
@@ -38,6 +48,7 @@ public class CachedWindow {
     private final int windowId;
 
     private ItemStack[] items;
+    private IInventoryTranslator inventoryTranslator;
     private BedrockWindowType windowType;
 
     private String name;
@@ -45,10 +56,14 @@ public class CachedWindow {
 
     private Vector3i fakeBlockPosition = null;
 
-    public CachedWindow(int windowId, BedrockWindowType windowType, int size) {
+    private AtomicInteger transactionIdCounter = new AtomicInteger(1);
+    private Int2BooleanMap transactions = new Int2BooleanOpenHashMap();
+
+    public CachedWindow(int windowId, IInventoryTranslator inventoryTranslator) {
         this.windowId = windowId;
-        this.windowType = windowType;
-        this.items = new ItemStack[size];
+        this.inventoryTranslator = inventoryTranslator;
+        this.items = new ItemStack[inventoryTranslator.getSize()];
+        this.windowType = inventoryTranslator.getBedrockWindowType();
     }
 
     public void open(ProxySession session) {
@@ -94,6 +109,27 @@ public class CachedWindow {
         open = false;
 
         // TODO: should we remove the window from the cache at this point? i'll leave it for now.
+    }
+
+    public void sendInventory(ProxySession session) {
+        inventoryTranslator.updateInventory(session, this);
+    }
+
+    public void sendSlot(ProxySession session, int slot) {
+        inventoryTranslator.updateSlot(session, this, slot);
+    }
+
+    public boolean setItem(int slot, ItemData item) {
+        if(slot > items.length) {
+            log.warn("set item");
+            return false;
+        }
+        this.items[slot] = ItemTranslatorRegistry.translateToJava(item);
+        return true;
+    }
+
+    public ItemData getItem(int slot) {
+        return ItemTranslatorRegistry.translateSlotToBedrock(items[slot]);
     }
 
     private void sendFakeEntity(ProxySession session, Vector3i position) {
