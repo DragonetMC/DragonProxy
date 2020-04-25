@@ -40,27 +40,27 @@ public class PCEntityEquipmentTranslator extends PacketTranslator<ServerEntityEq
 
         switch(packet.getSlot()) {
             case HELMET:
-                cachedEntity.setHelmet(ItemTranslatorRegistry.translateSlotToBedrock(packet.getItem()));
+                cachedEntity.setHelmet(ItemTranslatorRegistry.translateToBedrock(packet.getItem()));
                 cachedEntity.sendArmor(session);
                 return;
             case CHESTPLATE:
-                cachedEntity.setChestplate(ItemTranslatorRegistry.translateSlotToBedrock(packet.getItem()));
+                cachedEntity.setChestplate(ItemTranslatorRegistry.translateToBedrock(packet.getItem()));
                 cachedEntity.sendArmor(session);
                 return;
             case LEGGINGS:
-                cachedEntity.setLeggings(ItemTranslatorRegistry.translateSlotToBedrock(packet.getItem()));
+                cachedEntity.setLeggings(ItemTranslatorRegistry.translateToBedrock(packet.getItem()));
                 cachedEntity.sendArmor(session);
                 return;
             case BOOTS:
-                cachedEntity.setBoots(ItemTranslatorRegistry.translateSlotToBedrock(packet.getItem()));
+                cachedEntity.setBoots(ItemTranslatorRegistry.translateToBedrock(packet.getItem()));
                 cachedEntity.sendArmor(session);
                 return;
             case MAIN_HAND:
-                cachedEntity.setMainHand(ItemTranslatorRegistry.translateSlotToBedrock(packet.getItem()));
+                cachedEntity.setMainHand(ItemTranslatorRegistry.translateToBedrock(packet.getItem()));
                 break;
             case OFF_HAND:
                 // TODO
-                cachedEntity.setOffHand(ItemTranslatorRegistry.translateSlotToBedrock(packet.getItem()));
+                cachedEntity.setOffHand(ItemTranslatorRegistry.translateToBedrock(packet.getItem()));
                 return;
             default:
                 log.warn("Unknown slot: " + packet.getSlot().name());

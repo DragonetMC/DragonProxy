@@ -37,15 +37,14 @@ public class PacketTranslatorRegistry<P> extends Registry {
 
     static {
         // TODO: make this shit shorter
-        registerType(PacketRegisterInfo.class);
-        registerPath("org.dragonet.proxy.network.translator.java", (info, clazz) -> {
+        registerPath("org.dragonet.proxy.network.translator.java", PacketRegisterInfo.class, (info, clazz) -> {
             try {
                 JAVA_TO_BEDROCK.addTranslator(((PacketRegisterInfo) info).packet(), (PacketTranslator<Packet>) clazz.newInstance());
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
         });
-        registerPath("org.dragonet.proxy.network.translator.bedrock", (info, clazz) -> {
+        registerPath("org.dragonet.proxy.network.translator.bedrock", PacketRegisterInfo.class, (info, clazz) -> {
             try {
                 BEDROCK_TO_JAVA.addTranslator(((PacketRegisterInfo) info).packet(), (PacketTranslator<BedrockPacket>) clazz.newInstance());
             } catch (InstantiationException | IllegalAccessException e) {
