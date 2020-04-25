@@ -18,7 +18,10 @@
  */
 package org.dragonet.proxy.network.translator.bedrock.world;
 
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.packet.ingame.client.window.ClientSetBeaconEffectPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientUpdateSignPacket;
+import com.google.common.collect.ObjectArrays;
 import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
 import lombok.extern.log4j.Log4j2;
@@ -37,11 +40,17 @@ public class PEBlockEntityDataTranslator extends PacketTranslator<BlockEntityDat
         }
         CompoundTag tag = (CompoundTag) packet.getData();
 
-        log.warn(tag);
-
         switch(tag.getString("id")) {
             case "Sign":
-                //ClientUpdateSignPacket clientUpdateSignPacket = new ClientUpdateSignPacket(new Position());
+                String[] signText = ((CompoundTag) packet.getData()).getString("Text").split("\\r?\\n");
+                String[] signDefault = new String[] { "\n", "\n", "\n", "\n" };
+                for(int i = 0; i < signText.length; i++) {
+                    signDefault[i] = signText[i];
+                }
+
+                Position pos = new Position(packet.getBlockPosition().getX(), packet.getBlockPosition().getY(), packet.getBlockPosition().getZ());
+                ClientUpdateSignPacket clientUpdateSignPacket = new ClientUpdateSignPacket(pos, signDefault);
+                session.sendRemotePacket(clientUpdateSignPacket);
                 break;
             case "Beacon":
                 session.sendRemotePacket(new ClientSetBeaconEffectPacket(tag.getInt("primary"), tag.getInt("secondary")));
