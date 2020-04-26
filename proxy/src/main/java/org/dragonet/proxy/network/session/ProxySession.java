@@ -259,7 +259,6 @@ public class ProxySession implements PlayerSession {
         if(proxy.getConfiguration().getRemoteAuthType() == RemoteAuthType.CREDENTIALS) {
             dataCache.put("auth_state", AuthState.AUTHENTICATING);
             sendFakeStartGame(false);
-            sendLoginForm();
             return;
         }
 
@@ -345,18 +344,23 @@ public class ProxySession implements PlayerSession {
 
         log.warn("SPAWN PLAYER");
 
+        if(proxy.getConfiguration().getRemoteAuthType() == RemoteAuthType.CREDENTIALS) {
+            sendLoginForm();
+            return;
+        }
+
         // Start connecting to remote server.
         // There is a slight delay before connection because otherwise the player will join
         // the server too quickly and chunks will not show.
         if(proxy.getConfiguration().getRemoteAuthType() == RemoteAuthType.OFFLINE) {
-            sendMessage(TextFormat.DARK_AQUA + "Waiting 3 seconds before connecting...");
+            sendMessage(TextFormat.DARK_AQUA + "Waiting 2 seconds before connecting...");
 
             proxy.getGeneralThreadPool().schedule(() -> {
                 sendMessage(" ");
 
                 RemoteServer remoteServer = new RemoteServer("local", proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort());
                 connect(remoteServer);
-            }, 3, TimeUnit.SECONDS);
+            }, 2, TimeUnit.SECONDS);
         }
     }
 

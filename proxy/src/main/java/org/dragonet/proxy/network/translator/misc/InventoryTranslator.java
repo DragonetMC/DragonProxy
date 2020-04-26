@@ -56,17 +56,17 @@ public class InventoryTranslator {
 
         // Hotbar
         for(int i = 36; i < 45; i++) {
-            contents[i - 36] = ItemTranslatorRegistry.translateSlotToBedrock(cachedWindow.getItems()[i]);
+            contents[i - 36] = ItemTranslatorRegistry.translateToBedrock(cachedWindow.getItems()[i]);
         }
 
         // Inventory
         for(int i = 9; i < 36; i++) {
-            contents[i] = ItemTranslatorRegistry.translateSlotToBedrock(cachedWindow.getItems()[i]);
+            contents[i] = ItemTranslatorRegistry.translateToBedrock(cachedWindow.getItems()[i]);
         }
 
         // Armour
         for(int i = 5; i < 9; i++) {
-            contents[i + 31] = ItemTranslatorRegistry.translateSlotToBedrock(cachedWindow.getItems()[i]);
+            contents[i + 31] = ItemTranslatorRegistry.translateToBedrock(cachedWindow.getItems()[i]);
         }
 
         inventoryContentPacket.setContents(contents);

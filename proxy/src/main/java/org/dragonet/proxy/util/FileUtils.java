@@ -16,43 +16,15 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.data;
+package org.dragonet.proxy.util;
 
-public enum EnchantmentType {
-    PROTECTION,
-    FIRE_PROTECTION,
-    FEATHER_FALLING,
-    BLAST_PROTECTION,
-    PROJECTILE_PROTECTION,
-    THORNS,
-    RESPIRATION,
-    DEPTH_STRIDER,
-    AQUA_AFFINITY,
-    SHARPNESS,
-    SMITE,
-    BANE_OF_ARTHROPODS,
-    KNOCKBACK,
-    FIRE_ASPECT,
-    LOOTING,
-    EFFICIENCY,
-    SILK_TOUCH,
-    UNBREAKING,
-    FORTUNE,
-    POWER,
-    PUNCH,
-    FLAME,
-    INFINITY,
-    LUCK_OF_THE_SEA,
-    LURE,
-    FROST_WALKER,
-    MENDING,
-    BINDING_CURSE,
-    VANISHING_CURSE,
-    IMPALING,
-    RIPTIDE,
-    LOYALTY,
-    CHANNELING,
-    MULTISHOT,
-    PIERCING,
-    QUICK_CHARGE
+import org.dragonet.proxy.DragonProxy;
+
+import java.io.InputStream;
+
+public class FileUtils {
+
+    public static InputStream getResource(String path) {
+        return DragonProxy.class.getClassLoader().getResourceAsStream(path);
+    }
 }

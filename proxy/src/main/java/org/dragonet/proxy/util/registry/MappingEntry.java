@@ -16,43 +16,7 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.data;
+package org.dragonet.proxy.util.registry;
 
-public enum EnchantmentType {
-    PROTECTION,
-    FIRE_PROTECTION,
-    FEATHER_FALLING,
-    BLAST_PROTECTION,
-    PROJECTILE_PROTECTION,
-    THORNS,
-    RESPIRATION,
-    DEPTH_STRIDER,
-    AQUA_AFFINITY,
-    SHARPNESS,
-    SMITE,
-    BANE_OF_ARTHROPODS,
-    KNOCKBACK,
-    FIRE_ASPECT,
-    LOOTING,
-    EFFICIENCY,
-    SILK_TOUCH,
-    UNBREAKING,
-    FORTUNE,
-    POWER,
-    PUNCH,
-    FLAME,
-    INFINITY,
-    LUCK_OF_THE_SEA,
-    LURE,
-    FROST_WALKER,
-    MENDING,
-    BINDING_CURSE,
-    VANISHING_CURSE,
-    IMPALING,
-    RIPTIDE,
-    LOYALTY,
-    CHANNELING,
-    MULTISHOT,
-    PIERCING,
-    QUICK_CHARGE
+public interface MappingEntry {
 }

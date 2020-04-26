@@ -32,7 +32,7 @@ public class ItemEntityMetaTranslator extends IMetaTranslator {
     public void translateToBedrock(ProxySession session, EntityDataMap dictionary, EntityMetadata metadata) {
         if(metadata.getId() == 7) { // Item
             CachedItemEntity entity = (CachedItemEntity) this.entity;
-            entity.setItem(ItemTranslatorRegistry.translateSlotToBedrock((ItemStack) metadata.getValue()));
+            entity.setItem(ItemTranslatorRegistry.translateToBedrock((ItemStack) metadata.getValue()));
             entity.spawn(session);
         }
     }

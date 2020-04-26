@@ -1,3 +1,21 @@
+/*
+ * DragonProxy
+ * Copyright (C) 2016-2020 Dragonet Foundation
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You can view the LICENSE file for more details.
+ *
+ * https://github.com/DragonetMC/DragonProxy
+ */
 package org.dragonet.proxy.network.translator;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,8 +25,8 @@ import com.github.steveice10.mc.protocol.data.message.Message;
 import com.github.steveice10.opennbt.tag.builtin.*;
 import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.protocol.bedrock.data.ItemData;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import com.nukkitx.protocol.util.Int2ObjectBiMap;
+import it.unimi.dsi.fastutil.ints.*;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
@@ -17,7 +35,9 @@ import org.dragonet.proxy.network.translator.misc.MessageTranslator;
 import org.dragonet.proxy.network.translator.misc.item.ItemEntry;
 import org.dragonet.proxy.network.translator.misc.item.nbt.DisplayNbtTranslator;
 import org.dragonet.proxy.network.translator.misc.item.nbt.EnchantmentNbtTranslator;
+import org.dragonet.proxy.network.translator.misc.item.nbt.ItemNbtTranslator;
 import org.dragonet.proxy.util.registry.ItemRegisterInfo;
+import org.dragonet.proxy.util.registry.MappingEntry;
 import org.dragonet.proxy.util.registry.Registry;
 
 import java.io.IOException;
@@ -29,48 +49,47 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Log4j2
 public class ItemTranslatorRegistry extends Registry {
-    private static Int2ObjectMap<IItemTranslator> customTranslators = new Int2ObjectOpenHashMap<>(); // bedrock id
+    // Translators for NBT that is common to all items
+    private static final List<ItemNbtTranslator> nbtTranslators = new ArrayList<>();
 
-    private static final Int2ObjectMap<ItemEntry> javaToBedrockMap = new Int2ObjectOpenHashMap<>();
-    private static final Int2ObjectMap<ItemEntry> bedrockToJavaMap = new Int2ObjectOpenHashMap<>();
+    // Translators for specific items
+    private static final Int2ObjectMap<IItemTranslator> customTranslators = new Int2ObjectOpenHashMap<>(); // bedrock id
 
+    // Java to Bedrock and vice versa
+    private static final Int2ObjectMap<ItemEntry> javaToBedrockMap = new Int2ObjectLinkedOpenHashMap<>();
+    private static final Int2ObjectMap<ItemEntry> bedrockToJavaMap = new Int2ObjectLinkedOpenHashMap<>();
+
+    // The mappings are generated sequentially starting from air (id 0)
+    // This counter is increment for every item we loop over
     private static final AtomicInteger javaIdAllocator = new AtomicInteger(0);
 
-
     static {
-        registerType(ItemRegisterInfo.class);
-        registerPath("org.dragonet.proxy.network.translator.misc.item", (info, clazz) -> {
+        // Register custom item translators
+        registerPath("org.dragonet.proxy.network.translator.misc.item", ItemRegisterInfo.class, (info, clazz) -> {
             try {
                 customTranslators.put(((ItemRegisterInfo) info).bedrockId(), (IItemTranslator) clazz.newInstance());
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
         });
-    }
 
-    static {
-        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("mappings/1.15/item_mappings.json");
-        if (stream == null) {
-            throw new AssertionError("Item mapping table not found");
-        }
+        // Load item mappings from disk
+        registerMapping("mappings/1.15/item_mappings.json", ItemMappingEntry.class, itemEntries -> {
+            itemEntries.forEach((key, value) -> {
+                ItemMappingEntry itemMappingEntry = (ItemMappingEntry) value;
+                int javaProtocolId = javaIdAllocator.getAndIncrement(); // Entries are loaded sequentially in the mapping file
 
-        Map<String, ItemTranslatorRegistry.ItemMappingEntry> itemEntries;
-        try {
-            itemEntries = DragonProxy.JSON_MAPPER.readValue(stream, new TypeReference<Map<String, ItemTranslatorRegistry.ItemMappingEntry>>(){});
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to parse item mappings", e);
-        }
-
-        itemEntries.forEach((javaIdentifier, itemMappingEntry) -> {
-            int javaProtocolId = javaIdAllocator.getAndIncrement(); // Entries are loaded sequentially in the mapping file
-
-            javaToBedrockMap.put(javaProtocolId, new ItemEntry(javaIdentifier, javaProtocolId, itemMappingEntry.getBedrockId(), itemMappingEntry.getBedrockData()));
-            bedrockToJavaMap.put(itemMappingEntry.getBedrockId(), new ItemEntry(javaIdentifier, javaProtocolId, itemMappingEntry.getBedrockId(), itemMappingEntry.getBedrockData()));
+                javaToBedrockMap.put(javaProtocolId, new ItemEntry(key, javaProtocolId, itemMappingEntry.getBedrockId(), itemMappingEntry.getBedrockData()));
+                bedrockToJavaMap.put(itemMappingEntry.getBedrockId(), new ItemEntry(key, javaProtocolId, itemMappingEntry.getBedrockId(), itemMappingEntry.getBedrockData()));
+            });
         });
+
+        nbtTranslators.add(new DisplayNbtTranslator());
+        nbtTranslators.add(new EnchantmentNbtTranslator());
     }
 
     public static ItemData translateToBedrock(ItemStack item) {
-        if(item == null || !javaToBedrockMap.containsKey(item.getId())) {
+        if(item == null || item.getId() == 0 || !javaToBedrockMap.containsKey(item.getId())) {
             return ItemData.AIR;
         }
         ItemEntry itemEntry = javaToBedrockMap.get(item.getId());
@@ -87,35 +106,24 @@ public class ItemTranslatorRegistry extends Registry {
         return itemEntry.toItemData(item.getAmount(), translateItemNBT(item.getNbt()));
     }
 
-    public static ItemData translateSlotToBedrock(ItemStack item) {
-        if(item == null || item.getId() == 0) {
-            return ItemData.AIR;
-        }
-
-        ItemData data = translateToBedrock(item);
-        return data;
-    }
-
     public static ItemStack translateToJava(ItemData item) {
-        if(item == null || !bedrockToJavaMap.containsKey(item.getId())) {
+        if(item == null || item.getId() == 0 || !bedrockToJavaMap.containsKey(item.getId())) {
             return new ItemStack(0);
         }
 
         ItemEntry javaItem = bedrockToJavaMap.get(item.getId());
-//        log.warn("ITEM NAME: " + javaItem.getJavaIdentifier());
         return new ItemStack(javaItem.getJavaProtocolId(), item.getCount());
     }
 
     public static com.nukkitx.nbt.tag.CompoundTag translateItemNBT(CompoundTag tag) {
         CompoundTagBuilder root = CompoundTagBuilder.builder();
 
-        // First handle NBT that applies to all items
-        // TODO: register these with annotations
-        root.tag(new DisplayNbtTranslator().translateToBedrock(tag));
-        com.nukkitx.nbt.tag.CompoundTag etag = new EnchantmentNbtTranslator().translateToBedrock(tag);
-        if(etag != null) {
-            root.tag(etag);
-        }
+        nbtTranslators.forEach(translator -> {
+            com.nukkitx.nbt.tag.CompoundTag bedrockTag = translator.translateToBedrock(tag);
+            if(bedrockTag != null) {
+                root.tag(bedrockTag);
+            }
+        });
 
         if(tag.getValue() != null && !tag.getValue().isEmpty()) {
             for(String tagName : tag.getValue().keySet()) {
@@ -189,7 +197,7 @@ public class ItemTranslatorRegistry extends Registry {
     }
 
     @Getter
-    private static class ItemMappingEntry {
+    private static class ItemMappingEntry implements MappingEntry {
         @JsonProperty("bedrock_id")
         private int bedrockId;
 
