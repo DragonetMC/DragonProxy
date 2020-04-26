@@ -126,8 +126,7 @@ public class BlockTranslator {
             String bedrockIdentifier = blockMappingEntry.getBedrockIdentifier();
             CompoundTag blockTag = buildBedrockState(bedrockIdentifier, blockMappingEntry.getBedrockStates());
 
-            // TODO: temporary fix for some waterlogged blocks
-            if(blockMappingEntry.isWaterlogged() || javaIdentifier.contains("bubble_column") || javaIdentifier.contains("kelp") || javaIdentifier.contains("seagrass")) {
+            if(blockMappingEntry.isWaterlogged()) {
                 waterlogged.add(javaProtocolId);
             }
 
