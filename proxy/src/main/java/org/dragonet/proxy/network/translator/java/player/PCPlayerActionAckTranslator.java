@@ -24,7 +24,9 @@ import com.nukkitx.protocol.bedrock.data.LevelEventType;
 import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.translator.misc.BlockTranslator;
 import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.BlockUtils;
 import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 import org.dragonet.proxy.util.TextFormat;
 
@@ -44,10 +46,11 @@ public class PCPlayerActionAckTranslator extends PacketTranslator<ServerPlayerAc
 
         switch(packet.getAction()) {
             case START_DIGGING:
-                // TODO: ServerBlockBreakAnimPacket?
+                double breakTime = Math.ceil(BlockUtils.getBreakTime(session.getCachedEntity().getMainHand(), BlockTranslator.translateToBedrock(packet.getNewState())) * 20);
+
                 levelEventPacket.setType(LevelEventType.BLOCK_START_BREAK);
                 levelEventPacket.setPosition(position);
-                levelEventPacket.setData((int) (65535 / Math.ceil(0.5 * 20))); // TODO: break times
+                levelEventPacket.setData((int) (65535 / breakTime));
                 break;
             case CANCEL_DIGGING:
                 levelEventPacket.setType(LevelEventType.BLOCK_STOP_BREAK);

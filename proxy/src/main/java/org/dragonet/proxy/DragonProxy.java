@@ -165,8 +165,8 @@ public class DragonProxy {
         sessionManager = new SessionManager();
 
         new PacketTranslatorRegistry();
-        new ItemTranslatorRegistry();
         new BlockTranslator();
+        new ItemTranslatorRegistry();
         new SkinUtils();
         new MinecraftLanguage();
         new MapDataUtils();

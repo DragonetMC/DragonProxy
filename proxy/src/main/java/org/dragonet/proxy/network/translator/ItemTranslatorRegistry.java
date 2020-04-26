@@ -19,17 +19,15 @@
 package org.dragonet.proxy.network.translator;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
-import com.github.steveice10.mc.protocol.data.message.Message;
 import com.github.steveice10.opennbt.tag.builtin.*;
 import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.protocol.bedrock.data.ItemData;
-import com.nukkitx.protocol.util.Int2ObjectBiMap;
 import it.unimi.dsi.fastutil.ints.*;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.data.item.ToolTier;
+import org.dragonet.proxy.data.item.ToolType;
 import org.dragonet.proxy.network.translator.misc.IItemTranslator;
 import org.dragonet.proxy.network.translator.misc.MessageTranslator;
 import org.dragonet.proxy.network.translator.misc.item.ItemEntry;
@@ -40,11 +38,8 @@ import org.dragonet.proxy.util.registry.ItemRegisterInfo;
 import org.dragonet.proxy.util.registry.MappingEntry;
 import org.dragonet.proxy.util.registry.Registry;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Log4j2
@@ -57,7 +52,9 @@ public class ItemTranslatorRegistry extends Registry {
 
     // Java to Bedrock and vice versa
     private static final Int2ObjectMap<ItemEntry> javaToBedrockMap = new Int2ObjectLinkedOpenHashMap<>();
-    private static final Int2ObjectMap<ItemEntry> bedrockToJavaMap = new Int2ObjectLinkedOpenHashMap<>();
+
+    // TODO: HACK: THIS SHOULD BE PRIVATE
+    public static final Int2ObjectMap<ItemEntry> bedrockToJavaMap = new Int2ObjectLinkedOpenHashMap<>();
 
     // The mappings are generated sequentially starting from air (id 0)
     // This counter is increment for every item we loop over
@@ -79,8 +76,10 @@ public class ItemTranslatorRegistry extends Registry {
                 ItemMappingEntry itemMappingEntry = (ItemMappingEntry) value;
                 int javaProtocolId = javaIdAllocator.getAndIncrement(); // Entries are loaded sequentially in the mapping file
 
-                javaToBedrockMap.put(javaProtocolId, new ItemEntry(key, javaProtocolId, itemMappingEntry.getBedrockId(), itemMappingEntry.getBedrockData()));
-                bedrockToJavaMap.put(itemMappingEntry.getBedrockId(), new ItemEntry(key, javaProtocolId, itemMappingEntry.getBedrockId(), itemMappingEntry.getBedrockData()));
+                ItemEntry entry = new ItemEntry(key, javaProtocolId, itemMappingEntry.getBedrockId(), itemMappingEntry.getBedrockData(), itemMappingEntry.getToolType(), itemMappingEntry.getToolTier());
+
+                javaToBedrockMap.put(javaProtocolId, entry);
+                bedrockToJavaMap.put(itemMappingEntry.getBedrockId(), entry);
             });
         });
 
@@ -203,5 +202,11 @@ public class ItemTranslatorRegistry extends Registry {
 
         @JsonProperty("bedrock_data")
         private int bedrockData;
+
+        @JsonProperty("tool_type")
+        private ToolType toolType;
+
+        @JsonProperty("tool_tier")
+        private ToolTier toolTier;
     }
 }

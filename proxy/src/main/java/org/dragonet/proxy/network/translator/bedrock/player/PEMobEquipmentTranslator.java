@@ -32,6 +32,7 @@ public class PEMobEquipmentTranslator extends PacketTranslator<MobEquipmentPacke
     @Override
     public void translate(ProxySession session, MobEquipmentPacket packet) {
         if(packet.getContainerId() == 0) {
+            session.getCachedEntity().setMainHand(packet.getItem());
             session.getCachedEntity().setSelectedHotbarSlot(packet.getHotbarSlot());
             session.sendRemotePacket(new ClientPlayerChangeHeldItemPacket(packet.getHotbarSlot()));
         }

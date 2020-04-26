@@ -36,7 +36,6 @@ import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.PlayerSession;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
@@ -64,7 +63,6 @@ import org.dragonet.proxy.util.SkinUtils;
 import org.dragonet.proxy.util.TextFormat;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
