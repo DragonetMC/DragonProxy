@@ -93,7 +93,7 @@ public class ProxySession implements PlayerSession {
     private EntityCache entityCache = new EntityCache();
     private WindowCache windowCache = new WindowCache();
     private ChunkCache chunkCache = new ChunkCache();
-    private WorldCache worldCache = new WorldCache();
+    private WorldCache worldCache;
     private PlayerListCache playerListCache = new PlayerListCache();
 
     private CachedPlayer cachedEntity;
@@ -110,6 +110,8 @@ public class ProxySession implements PlayerSession {
         this.proxy = proxy;
         this.bedrockSession = bedrockSession;
         this.bedrockSession.setLogging(true);
+
+        worldCache = new WorldCache(this);
 
         dataCache.put("auth_state", AuthState.NONE);
 
