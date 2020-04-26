@@ -20,15 +20,11 @@ package org.dragonet.proxy.network.session.cache;
 
 import com.github.steveice10.mc.protocol.data.game.chunk.Chunk;
 import com.github.steveice10.mc.protocol.data.game.chunk.Column;
-import com.github.steveice10.mc.protocol.data.game.entity.metadata.Position;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
-import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector2i;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
@@ -36,7 +32,7 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.chunk.ChunkData;
 import org.dragonet.proxy.data.chunk.ChunkSection;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.misc.BlockEntityTranslator;
+import org.dragonet.proxy.network.translator.BlockEntityTranslatorRegistry;
 import org.dragonet.proxy.network.translator.misc.BlockTranslator;
 
 import java.util.ArrayList;
@@ -84,7 +80,7 @@ public class ChunkCache implements Cache {
 
             List<CompoundTag> bedrockBlockEntities = new ArrayList<>();
             for(int i = 0; i < column.getTileEntities().length; i++) {
-                CompoundTag tag = BlockEntityTranslator.translateToBedrock(column.getTileEntities()[i]);
+                CompoundTag tag = BlockEntityTranslatorRegistry.translateToBedrock(column.getTileEntities()[i]);
                 if(tag != null) {
                     bedrockBlockEntities.add(tag);
                 }

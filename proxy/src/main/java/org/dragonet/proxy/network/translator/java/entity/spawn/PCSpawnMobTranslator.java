@@ -27,6 +27,7 @@ import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.TextFormat;
 import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 import org.dragonet.proxy.network.translator.misc.EntityTypeTranslator;
 
@@ -38,7 +39,7 @@ public class PCSpawnMobTranslator extends PacketTranslator<ServerSpawnMobPacket>
     public void translate(ProxySession session, ServerSpawnMobPacket packet) {
         CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(packet.getEntityId());
         if(cachedEntity != null) {
-            log.info("Cached entity already exists, cant spawn a new one: " + cachedEntity.getEntityType().name());
+            log.info(TextFormat.GRAY + "Cached entity (mob) already exists, cant spawn a new one: " + cachedEntity.getEntityType().name());
             return;
         }
 
