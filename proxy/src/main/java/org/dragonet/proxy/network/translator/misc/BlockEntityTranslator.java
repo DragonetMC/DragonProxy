@@ -117,15 +117,21 @@ public class BlockEntityTranslator {
                     int currentLine = i+1;
 
                     //Signs have different color names than chat color ugh
-                    String color = javaTag.get("Color").getValue().toString()
-                    .replaceAll("\\bblue\\b", "dark_blue")
-                    .replaceAll("\\bgray\\b", "dark_gray")
-                    .replaceAll("\\blight_blue\\b", "blue")
-                    .replaceAll("\\blight_gray\\b", "gray");
+                    String color = ChatColor.BLACK.toString();
+                    if(javaTag.get("color") != null) {
+                        color = javaTag.get("Color").getValue().toString()
+                        .replaceAll("\\bblue\\b", "dark_blue")
+                        .replaceAll("\\bgray\\b", "dark_gray")
+                        .replaceAll("\\blight_blue\\b", "blue")
+                        .replaceAll("\\blight_gray\\b", "gray");
+                    }
+
+                    //Lambda requiring stupid stuff
+                    String finalColor = color;
 
                     Message message = Message.fromString(javaTag.get("Text" + currentLine).getValue().toString());
                     message.getExtra().forEach(messageExtra -> {
-                        messageExtra.setStyle(new MessageStyle().setColor(ChatColor.byName(color)));
+                        messageExtra.setStyle(new MessageStyle().setColor(ChatColor.byName(finalColor)));
                     });
                     signText += MessageTranslator.translate(message) + "\n";
                 }
