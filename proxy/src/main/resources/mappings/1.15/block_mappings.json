@@ -8825,21 +8825,24 @@
     "hardness": 0.0,
     "bedrock_states": {
       "sea_grass_type": "default"
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:tall_seagrass[half=upper]": {
     "bedrock_identifier": "minecraft:seagrass",
     "hardness": 0.0,
     "bedrock_states": {
       "sea_grass_type": "double_top"
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:tall_seagrass[half=lower]": {
     "bedrock_identifier": "minecraft:seagrass",
     "hardness": 0.0,
     "bedrock_states": {
       "sea_grass_type": "double_bot"
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:piston[extended=true,facing=north]": {
     "bedrock_identifier": "minecraft:piston",
@@ -74235,28 +74238,32 @@
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 0
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=1]": {
     "bedrock_identifier": "minecraft:kelp",
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 1
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=2]": {
     "bedrock_identifier": "minecraft:kelp",
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 2
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=3]": {
     "bedrock_identifier": "minecraft:kelp",
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 3
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=4]": {
     "bedrock_identifier": "minecraft:kelp",
@@ -74277,49 +74284,56 @@
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 6
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=7]": {
     "bedrock_identifier": "minecraft:kelp",
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 7
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=8]": {
     "bedrock_identifier": "minecraft:kelp",
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 8
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=9]": {
     "bedrock_identifier": "minecraft:kelp",
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 9
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=10]": {
     "bedrock_identifier": "minecraft:kelp",
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 10
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=11]": {
     "bedrock_identifier": "minecraft:kelp",
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 11
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=12]": {
     "bedrock_identifier": "minecraft:kelp",
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 12
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=13]": {
     "bedrock_identifier": "minecraft:kelp",
@@ -74340,70 +74354,80 @@
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 15
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=16]": {
     "bedrock_identifier": "minecraft:kelp",
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 16
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=17]": {
     "bedrock_identifier": "minecraft:kelp",
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 17
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=18]": {
     "bedrock_identifier": "minecraft:kelp",
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 18
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=19]": {
     "bedrock_identifier": "minecraft:kelp",
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 19
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=20]": {
     "bedrock_identifier": "minecraft:kelp",
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 20
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=21]": {
     "bedrock_identifier": "minecraft:kelp",
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 21
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=22]": {
     "bedrock_identifier": "minecraft:kelp",
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 22
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=23]": {
     "bedrock_identifier": "minecraft:kelp",
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 23
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=24]": {
     "bedrock_identifier": "minecraft:kelp",
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 24
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:kelp[age=25]": {
     "bedrock_identifier": "minecraft:kelp",
@@ -74417,7 +74441,8 @@
     "hardness": 0.0,
     "bedrock_states": {
       "kelp_age": 0
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:dried_kelp_block": {
     "bedrock_identifier": "minecraft:dried_kelp_block",
@@ -76064,14 +76089,16 @@
     "hardness": 0.0,
     "bedrock_states": {
       "drag_down": true
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:bubble_column[drag=false]": {
     "bedrock_identifier": "minecraft:bubble_column",
     "hardness": 0.0,
     "bedrock_states": {
       "drag_down": false
-    }
+    },
+    "waterlogged": true
   },
   "minecraft:polished_granite_stairs[facing=north,half=top,shape=straight,waterlogged=true]": {
     "bedrock_identifier": "minecraft:polished_granite_stairs",
