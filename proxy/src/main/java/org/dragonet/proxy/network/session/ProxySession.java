@@ -427,7 +427,7 @@ public class ProxySession implements PlayerSession {
         sendPacket(biomeDefinitionListPacket);
 
         AvailableEntityIdentifiersPacket entityPacket = new AvailableEntityIdentifiersPacket();
-        entityPacket.setTag(CompoundTag.EMPTY);
+        entityPacket.setTag(PaletteManager.ENTITY_IDENTIFIERS);
         sendPacket(entityPacket);
 
         // Spawn

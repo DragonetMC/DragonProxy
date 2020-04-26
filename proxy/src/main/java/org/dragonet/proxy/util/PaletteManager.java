@@ -41,6 +41,7 @@ public class PaletteManager {
     public static ListTag<CompoundTag> BLOCK_PALETTE;
 
     public static CompoundTag BIOME_ENTRIES;
+    public static CompoundTag ENTITY_IDENTIFIERS;
     public static final List<RuntimeCreativeItemEntry> CREATIVE_ITEMS = new ArrayList<>();
 
     static {
@@ -48,6 +49,7 @@ public class PaletteManager {
         loadItems();
         loadCreativeItems();
         loadBiomeData();
+        loadEntityIdentifiers();
     }
 
     /**
@@ -58,7 +60,7 @@ public class PaletteManager {
     }
 
     private static void loadItems() {
-        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("data/runtime_item_states.json");
+        InputStream stream = FileUtils.getResource("data/runtime_item_states.json");
         if (stream == null) {
             throw new AssertionError("Static item state table not found");
         }
@@ -78,7 +80,7 @@ public class PaletteManager {
      * to runtime ids.
      */
     private static void loadCreativeItems() {
-        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("data/creative_items.json");
+        InputStream stream = FileUtils.getResource("data/creative_items.json");
         if (stream == null) {
             throw new RuntimeException("Creative item data not found");
         }
@@ -96,13 +98,26 @@ public class PaletteManager {
      * This is currently not used anywhere, but will be at some point.
      */
     private static void loadBiomeData() {
-        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("data/biome_definitions.dat");
+        InputStream stream = FileUtils.getResource("data/biome_definitions.dat");
         if (stream == null) {
             throw new AssertionError("Biome data table not found");
         }
 
         try(NBTInputStream nbtInputStream = NbtUtils.createNetworkReader(stream)) {
             BIOME_ENTRIES = (CompoundTag) nbtInputStream.readTag();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void loadEntityIdentifiers() {
+        InputStream stream = FileUtils.getResource("data/entity_identifiers.dat");
+        if (stream == null) {
+            throw new AssertionError("Entity identifiers table not found");
+        }
+
+        try(NBTInputStream nbtInputStream = NbtUtils.createNetworkReader(stream)) {
+            ENTITY_IDENTIFIERS = (CompoundTag) nbtInputStream.readTag();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
