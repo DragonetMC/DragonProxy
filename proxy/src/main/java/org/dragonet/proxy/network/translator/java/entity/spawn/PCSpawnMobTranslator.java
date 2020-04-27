@@ -48,7 +48,7 @@ public class PCSpawnMobTranslator extends PacketTranslator<ServerSpawnMobPacket>
             log.warn("Cannot translate mob type: " + packet.getType().name());
             return;
         }
-        
+
         cachedEntity = session.getEntityCache().newEntity(entityType, packet.getEntityId());
 
         if(packet.getType() == MobType.GIANT) {

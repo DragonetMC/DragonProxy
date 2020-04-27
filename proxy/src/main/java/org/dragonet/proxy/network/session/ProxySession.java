@@ -19,6 +19,7 @@
 package org.dragonet.proxy.network.session;
 
 import com.github.steveice10.mc.auth.data.GameProfile;
+import com.github.steveice10.mc.auth.exception.property.PropertyException;
 import com.github.steveice10.mc.auth.exception.request.RequestException;
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
 import com.github.steveice10.mc.protocol.data.SubProtocol;
@@ -228,7 +229,12 @@ public class ProxySession implements PlayerSession {
             ImageData capeData = SkinUtils.fetchUnofficialCape(profile);
             if(capeData == null) capeData = ImageData.EMPTY;
 
-            GameProfile.TextureModel model = profile.getTexture(GameProfile.TextureType.SKIN).getModel();
+            GameProfile.TextureModel model = null;
+            try {
+                model = profile.getTexture(GameProfile.TextureType.SKIN).getModel();
+            } catch (PropertyException e) {
+                log.warn("Failed to get skin model for player " + profile.getName(), e);
+            }
             setPlayerSkin2(authData.getIdentity(), skinData, model, capeData);
         });
     }

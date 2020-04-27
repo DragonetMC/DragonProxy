@@ -95,7 +95,13 @@ public class SkinUtils {
             return playerListCache.getRemoteSkinCache().get(profile.getId());
         }
 
-        GameProfile.Texture texture = profile.getTexture(GameProfile.TextureType.SKIN);
+        GameProfile.Texture texture;
+        try {
+            texture = profile.getTexture(GameProfile.TextureType.SKIN);
+        } catch (PropertyException e) {
+            log.warn("Failed to get skin for player " + profile.getName(), e);
+            return null;
+        }
         if(texture != null) {
             try {
                 ImageData skin = parseBufferedImage(ImageIO.read(new URL(texture.getURL())));
