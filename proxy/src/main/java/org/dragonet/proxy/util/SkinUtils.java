@@ -95,13 +95,6 @@ public class SkinUtils {
             return playerListCache.getRemoteSkinCache().get(profile.getId());
         }
 
-        try {
-            service.fillProfileTextures(profile, false);
-        } catch (PropertyException e) {
-            log.warn("Failed to fill profile with textures: " + e.getMessage());
-            return null;
-        }
-
         GameProfile.Texture texture = profile.getTexture(GameProfile.TextureType.SKIN);
         if(texture != null) {
             try {

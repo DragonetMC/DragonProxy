@@ -43,6 +43,15 @@ public class BlockUtils {
         BlockTranslator.BlockMappingEntry blockEntry = BlockTranslator.ID_TO_ENTRY.get(blockId);
         ItemEntry itemEntry = ItemTranslatorRegistry.bedrockToJavaMap.get(item.getId());
 
+        if(blockEntry == null) {
+            log.info("(debug) block entry is null in getBreakTime, id: " + blockId);
+            return 0;
+        }
+        if(itemEntry == null) {
+            log.info("(debug) item entry is null in getBreakTime, id: " + item.getId());
+            return 0;
+        }
+
         boolean woolBlock = blockEntry.getBedrockIdentifier().equals("minecraft:wool");
         boolean cobwebBlock = blockEntry.getBedrockIdentifier().equals("minecraft:cobweb");
         boolean correctTool = isCorrectTool(itemEntry, blockEntry);

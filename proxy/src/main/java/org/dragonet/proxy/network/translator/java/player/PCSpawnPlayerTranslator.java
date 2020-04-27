@@ -22,15 +22,19 @@ import com.github.steveice10.mc.auth.data.GameProfile;
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntry;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.spawn.ServerSpawnPlayerPacket;
 import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.protocol.bedrock.data.EntityData;
 import com.nukkitx.protocol.bedrock.data.ImageData;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.PlayerListInfo;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
+import org.dragonet.proxy.network.translator.misc.MessageTranslator;
 import org.dragonet.proxy.network.translator.misc.PacketTranslator;
 import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 import org.dragonet.proxy.remote.RemoteAuthType;
 import org.dragonet.proxy.util.SkinUtils;
+
+import java.util.Base64;
 
 @Log4j2
 @PacketRegisterInfo(packet = ServerSpawnPlayerPacket.class)
