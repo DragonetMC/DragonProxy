@@ -22,8 +22,6 @@ import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import com.github.steveice10.packetlib.io.buffer.ByteBufferNetOutput;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.nbt.NbtUtils;
@@ -32,7 +30,6 @@ import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.network.hybrid.EncryptionMessage;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.misc.PacketTranslator;
 import org.dragonet.proxy.util.registry.PacketRegisterInfo;
@@ -102,12 +99,6 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
 
         // Send brand
         sendClientBrand(session);
-
-        // Send player data
-        sendPlayerData(session);
-
-        // Send encryption status
-        session.sendHybridMessage(new EncryptionMessage(session.getProxy().getConfiguration().getHybridConfig().isEncryption()));
     }
 
     /**
@@ -123,23 +114,5 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
             return;
         }
         session.sendRemotePacket(new ClientPluginMessagePacket("minecraft:brand", brandOutput.getByteBuffer().array()));
-    }
-
-    private void sendPlayerData(ProxySession session) {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("PlayerLogin");
-        out.writeUTF(session.getAuthData().getDisplayName()); // Display name
-        out.writeUTF(session.getAuthData().getXuid()); // XUID
-        out.writeUTF(session.getAuthData().getIdentity().toString()); // UUID
-        out.writeInt(session.getClientData().getDeviceOs().ordinal());
-        out.writeInt(session.getClientData().getUiProfile().ordinal());
-        out.writeUTF(session.getClientData().getDeviceModel());
-        out.writeUTF(session.getClientData().getGameVersion());
-        out.writeUTF(session.getClientData().getLanguageCode());
-        out.writeBoolean(true); // IP forwarding enabled
-        out.writeUTF(session.getBedrockSession().getAddress().getHostName());
-        out.writeShort(session.getBedrockSession().getAddress().getPort());
-
-        session.sendRemotePacket(new ClientPluginMessagePacket("dragonproxy:main", out.toByteArray()));
     }
 }

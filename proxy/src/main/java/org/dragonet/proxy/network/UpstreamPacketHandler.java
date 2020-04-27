@@ -36,6 +36,8 @@ import com.nukkitx.protocol.bedrock.util.EncryptionUtils;
 import lombok.extern.log4j.Log4j2;
 import net.minidev.json.JSONObject;
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.network.hybrid.HybridMessageHandler;
+import org.dragonet.proxy.network.hybrid.messages.FormResponseMessage;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
 import org.dragonet.proxy.network.session.data.AuthData;
@@ -187,6 +189,14 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
     @Override
     @SuppressWarnings("unchecked")
     public boolean handle(ModalFormResponsePacket packet) {
+        // Hybrid stuff
+        HybridMessageHandler hybridHandler = session.getHybridMessageHandler();
+        if(hybridHandler != null && hybridHandler.getFormIdMap().containsKey(packet.getFormId())) {
+            session.sendHybridMessage(new FormResponseMessage(hybridHandler.getFormIdMap().get(packet.getFormId()), packet.getFormData()));
+            hybridHandler.getFormIdMap().remove(packet.getFormId());
+            return true;
+        }
+
         if(session.getFormCache().containsKey(packet.getFormId())) {
             CompletableFuture<JsonArray> future = session.getFormCache().get(packet.getFormId());
             JsonElement data = new JsonParser().parse(packet.getFormData());

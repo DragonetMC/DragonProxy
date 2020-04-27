@@ -24,9 +24,11 @@ import com.google.common.io.ByteStreams;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.network.hybrid.EncryptionMessage;
+import org.dragonet.proxy.network.hybrid.messages.EncryptionMessage;
 import org.dragonet.proxy.network.hybrid.HybridMessage;
-import org.dragonet.proxy.network.hybrid.PlayerLoginMessage;
+import org.dragonet.proxy.network.hybrid.messages.PlayerLoginMessage;
+import org.dragonet.proxy.network.hybrid.messages.SetEntityDataMessage;
+import org.dragonet.proxy.network.hybrid.messages.ShowFormMessage;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.misc.PacketTranslator;
 import org.dragonet.proxy.util.registry.PacketRegisterInfo;
@@ -39,6 +41,8 @@ public class PCPluginMessageTranslator extends PacketTranslator<ServerPluginMess
     static {
         hybridMessages.put("PlayerLogin", new PlayerLoginMessage());
         hybridMessages.put("Encryption", new EncryptionMessage());
+        hybridMessages.put("SetEntityData", new SetEntityDataMessage());
+        hybridMessages.put("ShowForm", new ShowFormMessage());
     }
 
     @Override

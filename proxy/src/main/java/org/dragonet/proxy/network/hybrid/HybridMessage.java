@@ -7,6 +7,9 @@ public interface HybridMessage {
     ByteArrayDataOutput encode(ByteArrayDataOutput out);
     void decode(ByteArrayDataInput in);
 
-    default void handle(HybridMessageHandler handler) { } // TODO: illegal access
+    default void handle(HybridMessageHandler handler) {
+        throw new UnsupportedOperationException();
+    }
+
     String getId();
 }

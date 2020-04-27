@@ -1,9 +1,11 @@
-package org.dragonet.proxy.network.hybrid;
+package org.dragonet.proxy.network.hybrid.messages;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.dragonet.proxy.network.hybrid.HybridMessage;
 import org.dragonet.proxy.network.session.data.AuthData;
 import org.dragonet.proxy.network.session.data.DeviceOS;
 import org.dragonet.proxy.network.session.data.UIProfile;
@@ -11,6 +13,7 @@ import org.dragonet.proxy.network.session.data.UIProfile;
 import java.net.InetSocketAddress;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class PlayerLoginMessage implements HybridMessage {
     private AuthData authData;

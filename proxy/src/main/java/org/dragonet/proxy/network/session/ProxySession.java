@@ -26,13 +26,11 @@ import com.github.steveice10.mc.protocol.data.SubProtocol;
 import com.github.steveice10.mc.protocol.data.game.ClientRequest;
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.data.game.statistic.Statistic;
+import com.github.steveice10.mc.protocol.packet.handshake.client.HandshakePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientRequestPacket;
 import com.github.steveice10.packetlib.Client;
-import com.github.steveice10.packetlib.event.session.ConnectedEvent;
-import com.github.steveice10.packetlib.event.session.DisconnectedEvent;
-import com.github.steveice10.packetlib.event.session.PacketReceivedEvent;
-import com.github.steveice10.packetlib.event.session.SessionAdapter;
+import com.github.steveice10.packetlib.event.session.*;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 import com.google.common.io.ByteArrayDataOutput;
@@ -52,8 +50,10 @@ import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.form.CustomForm;
 import org.dragonet.proxy.form.components.InputComponent;
 import org.dragonet.proxy.form.components.LabelComponent;
+import org.dragonet.proxy.network.hybrid.messages.EncryptionMessage;
 import org.dragonet.proxy.network.hybrid.HybridMessage;
 import org.dragonet.proxy.network.hybrid.HybridMessageHandler;
+import org.dragonet.proxy.network.hybrid.messages.PlayerLoginMessage;
 import org.dragonet.proxy.network.session.cache.*;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
@@ -169,6 +169,41 @@ public class ProxySession implements PlayerSession {
                     PacketTranslatorRegistry.JAVA_TO_BEDROCK.translate(ProxySession.this, event.getPacket());
                 } catch (Exception e) {
                     log.throwing(e);
+                }
+            }
+
+            @Override
+            public void packetSending(PacketSendingEvent event) {
+                if(event.getPacket() instanceof HandshakePacket) {
+                    PlayerLoginMessage playerLoginMessage = new PlayerLoginMessage();
+                    playerLoginMessage.setAuthData(authData);
+                    playerLoginMessage.setDeviceOS(clientData.getDeviceOs());
+                    playerLoginMessage.setUiProfile(clientData.getUiProfile());
+                    playerLoginMessage.setDeviceModel(clientData.getDeviceModel());
+                    playerLoginMessage.setGameVersion(clientData.getGameVersion());
+                    playerLoginMessage.setLanguageCode(clientData.getLanguageCode());
+
+                    sendHybridMessage(playerLoginMessage);
+//
+//                    playerLoginMessage.setIpAddress(bedrockSession.getAddress());
+//                    ByteArrayDataOutput out = ByteStreams.newDataOutput();
+//                    out.writeUTF("PlayerLogin");
+//                    out.writeUTF(authData.getDisplayName()); // Display name
+//                    out.writeUTF(authData.getXuid()); // XUID
+//                    out.writeUTF(authData.getIdentity().toString()); // UUID
+//                    out.writeInt(clientData.getDeviceOs().ordinal());
+//                    out.writeInt(clientData.getUiProfile().ordinal());
+//                    out.writeUTF(clientData.getDeviceModel());
+//                    out.writeUTF(clientData.getGameVersion());
+//                    out.writeUTF(clientData.getLanguageCode());
+//                    out.writeBoolean(true); // IP forwarding enabled
+//                    out.writeUTF(bedrockSession.getAddress().getHostName());
+//                    out.writeShort(bedrockSession.getAddress().getPort());
+//
+//                    sendRemotePacket(new ClientPluginMessagePacket("dragonproxy:main", out.toByteArray()));
+
+                    // Send encryption status
+                    sendHybridMessage(new EncryptionMessage(proxy.getConfiguration().getHybridConfig().isEncryption()));
                 }
             }
         });
