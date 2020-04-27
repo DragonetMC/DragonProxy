@@ -155,6 +155,13 @@ public class DragonProxy {
             return;
         }
 
+        if(!configuration.isPingPassthrough() && configuration.getMaxPlayers() < 0) {
+            log.error("The max players in the config has been set to a value less than 0, and ping passthrough is disabled");
+
+            System.exit(0);
+            return;
+        }
+
         if(!RELEASE) {
             log.warn("This is a development build. It may contain bugs. Do not use in production.");
         }
