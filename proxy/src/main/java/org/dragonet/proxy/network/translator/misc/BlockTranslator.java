@@ -26,18 +26,16 @@ import com.nukkitx.nbt.NbtUtils;
 import com.nukkitx.nbt.stream.NBTInputStream;
 import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.nbt.tag.ListTag;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.data.item.ToolType;
+import org.dragonet.proxy.util.FileUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -72,13 +70,19 @@ public class BlockTranslator {
     private static Object2IntMap<String> bedrockId2RuntimeMap = new Object2IntOpenHashMap<>();
     private static Int2ObjectMap<String> bedrockRuntime2IdMap = new Int2ObjectOpenHashMap<>();
 
+    // TOOD: HACK
+    public static Int2ObjectMap<BlockMappingEntry> ID_TO_ENTRY = new Int2ObjectLinkedOpenHashMap<>();
+
+    @Getter
+    private static Int2IntMap beds = new Int2IntOpenHashMap();
+
     @Getter
     private static int waterRuntimeId;
 
     static {
-        InputStream stream = DragonProxy.class.getClassLoader().getResourceAsStream("data/runtime_block_states.dat");
+        InputStream stream = FileUtils.getResource("data/runtime_block_states.dat");
         if(stream == null) {
-            throw new AssertionError("Static runtime block state table not found");
+            throw new RuntimeException("Static runtime block state table not found");
         }
 
         ListTag<CompoundTag> blocksTag;
@@ -147,6 +151,9 @@ public class BlockTranslator {
             bedrockRuntime2IdMap.put(bedrockRuntimeId, bedrockIdentifier);
             java2BedrockMap.put(javaProtocolId, bedrockRuntimeId);
 
+            // TODO: HACK
+            ID_TO_ENTRY.put(bedrockRuntimeId, blockMappingEntry);
+
             bedrockIdAllocator.incrementAndGet();
         });
 
@@ -200,11 +207,15 @@ public class BlockTranslator {
     }
 
     @Getter
-    private static class BlockMappingEntry {
+    public static class BlockMappingEntry {
         @JsonProperty("bedrock_identifier")
         private String bedrockIdentifier;
 
         private double hardness;
+
+        @JsonProperty("tool_type")
+        private ToolType toolType;
+
         private boolean waterlogged;
         private List<BlockStateEntry> bedrockStates = new ArrayList<>();
 
@@ -216,7 +227,7 @@ public class BlockTranslator {
 
     @Getter
     @AllArgsConstructor
-    private static class BlockStateEntry {
+    public static class BlockStateEntry {
         private String name;
         private Object value;
     }

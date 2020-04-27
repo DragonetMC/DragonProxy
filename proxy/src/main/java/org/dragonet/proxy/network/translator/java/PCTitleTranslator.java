@@ -18,17 +18,18 @@
  */
 package org.dragonet.proxy.network.translator.java;
 
+import com.github.steveice10.mc.protocol.data.message.ChatColor;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerTitlePacket;
 import com.nukkitx.protocol.bedrock.packet.SetTitlePacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 import org.dragonet.proxy.network.translator.misc.MessageTranslator;
 
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerTitlePacket.class)
+@PacketRegisterInfo(packet = ServerTitlePacket.class)
 public class PCTitleTranslator extends PacketTranslator<ServerTitlePacket> {
     public static PCTitleTranslator INSTANCE = new PCTitleTranslator();
 
@@ -45,6 +46,16 @@ public class PCTitleTranslator extends PacketTranslator<ServerTitlePacket> {
                 bedrockPacket.setText(MessageTranslator.translate(packet.getTitle()));
                 break;
             case TITLE:
+                //Otherwise title is black when no colour specified
+                if(packet.getTitle().getStyle().getColor() == ChatColor.NONE) {
+                    packet.getTitle().getStyle().setColor(ChatColor.WHITE);
+                }
+
+                //Change black to none other wise title background is also black
+                if(packet.getTitle().getStyle().getColor() == ChatColor.BLACK) {
+                    packet.getTitle().getStyle().setColor(ChatColor.NONE);
+                }
+
                 bedrockPacket.setType(SetTitlePacket.Type.SET_TITLE);
                 bedrockPacket.setText(MessageTranslator.translate(packet.getTitle()));
                 break;

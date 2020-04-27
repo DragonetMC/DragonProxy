@@ -16,13 +16,7 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator;
+package org.dragonet.proxy.util.registry;
 
-import lombok.Getter;
-import org.dragonet.proxy.network.session.ProxySession;
-
-@Getter
-public abstract class PacketTranslator<P> {
-
-    public abstract void translate(ProxySession session, P packet);
+public interface MappingEntry {
 }

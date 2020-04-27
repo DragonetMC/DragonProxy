@@ -204,6 +204,9 @@ public class SoundTranslator {
         soundMap.put(BuiltinSound.BLOCK_WOODEN_TRAPDOOR_CLOSE, "random.door_close");
         soundMap.put(BuiltinSound.BLOCK_WOODEN_TRAPDOOR_OPEN, "random.door_open");
 
+        soundMap.put(BuiltinSound.BLOCK_BELL_USE, "block.bell.hit");
+        soundMap.put(BuiltinSound.BLOCK_BELL_RESONATE, "block.bell.hit"); // TODO
+
         soundMap.put(BuiltinSound.ENCHANT_THORNS_HIT, null);
 
         soundMap.put(BuiltinSound.ENTITY_ARMOR_STAND_BREAK, "mob.armor_stand.break");
@@ -531,6 +534,7 @@ public class SoundTranslator {
         soundMap.put(BuiltinSound.ENTITY_COD_FLOP, "mob.fish.flop");
         soundMap.put(BuiltinSound.ENTITY_PUFFER_FISH_FLOP, "mob.fish.flop");
         soundMap.put(BuiltinSound.ENTITY_SALMON_FLOP, "mob.fish.flop");
+        soundMap.put(BuiltinSound.ENTITY_SALMON_AMBIENT, null); // TODO
         soundMap.put(BuiltinSound.ENTITY_TROPICAL_FISH_FLOP, "mob.fish.flop");
         soundMap.put(BuiltinSound.ENTITY_GUARDIAN_FLOP, "mob.guardian.flop");
 
@@ -738,6 +742,8 @@ public class SoundTranslator {
         soundMap.put(BuiltinSound.ENTITY_PHANTOM_HURT, "mob.phantom.hurt");
         soundMap.put(BuiltinSound.ENTITY_PHANTOM_DEATH, "mob.phantom.death");
         soundMap.put(BuiltinSound.ENTITY_PHANTOM_SWOOP, "mob.phantom.swoop");
+
+        soundMap.put(BuiltinSound.ENTITY_TURTLE_SWIM, "mob.turtle.swim");
     }
 
     /**

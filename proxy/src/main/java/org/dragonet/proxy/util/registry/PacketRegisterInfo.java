@@ -16,7 +16,7 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.translator.annotations;
+package org.dragonet.proxy.util.registry;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -25,6 +25,9 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PEPacketTranslator {
-    Class packetClass();
+public @interface PacketRegisterInfo {
+    /**
+     * The packet class. TODO: better description
+     */
+    Class packet();
 }

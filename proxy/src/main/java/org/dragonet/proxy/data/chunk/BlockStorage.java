@@ -11,8 +11,9 @@
 package org.dragonet.proxy.data.chunk;
 
 import com.nukkitx.network.VarInts;
-import gnu.trove.list.array.TIntArrayList;
 import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.chunk.bitarray.BitArray;
@@ -24,7 +25,7 @@ public class BlockStorage {
     private static final int SIZE = 4096;
 
     @Getter
-    private final TIntArrayList palette;
+    private final IntList palette;
     @Getter
     private BitArray bitArray;
 
@@ -34,11 +35,11 @@ public class BlockStorage {
 
     public BlockStorage(BitArrayVersion version) {
         this.bitArray = version.createPalette(SIZE);
-        this.palette = new TIntArrayList(16, -1);
+        this.palette = new IntArrayList();
         this.palette.add(0); // Air is at the start of every palette.
     }
 
-    private BlockStorage(BitArray bitArray, TIntArrayList palette) {
+    private BlockStorage(BitArray bitArray, IntList palette) {
         this.palette = palette;
         this.bitArray = bitArray;
     }
@@ -62,10 +63,9 @@ public class BlockStorage {
         }
 
         VarInts.writeInt(buffer, palette.size());
-        palette.forEach(id -> {
+        for (int id : palette) {
             VarInts.writeInt(buffer, id);
-            return true;
-        });
+        }
     }
 
     public synchronized void writeToStorage(ByteBuf buffer) {
@@ -126,6 +126,6 @@ public class BlockStorage {
     }
 
     public BlockStorage copy() {
-        return new BlockStorage(this.bitArray.copy(), new TIntArrayList(this.palette));
+        return new BlockStorage(this.bitArray.copy(), new IntArrayList(this.palette));
     }
 }

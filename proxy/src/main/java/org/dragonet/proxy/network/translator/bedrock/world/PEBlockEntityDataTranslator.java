@@ -25,11 +25,11 @@ import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 @Log4j2
-@PEPacketTranslator(packetClass = BlockEntityDataPacket.class)
+@PacketRegisterInfo(packet = BlockEntityDataPacket.class)
 public class PEBlockEntityDataTranslator extends PacketTranslator<BlockEntityDataPacket> {
 
     @Override
@@ -39,11 +39,17 @@ public class PEBlockEntityDataTranslator extends PacketTranslator<BlockEntityDat
         }
         CompoundTag tag = (CompoundTag) packet.getData();
 
-        log.warn(tag);
-
         switch(tag.getString("id")) {
             case "Sign":
-                //ClientUpdateSignPacket clientUpdateSignPacket = new ClientUpdateSignPacket(new Position());
+                String[] signText = ((CompoundTag) packet.getData()).getString("Text").split("\\r?\\n");
+                String[] signDefault = new String[] { "\n", "\n", "\n", "\n" };
+                for(int i = 0; i < signText.length; i++) {
+                    signDefault[i] = signText[i];
+                }
+
+                Position pos = new Position(packet.getBlockPosition().getX(), packet.getBlockPosition().getY(), packet.getBlockPosition().getZ());
+                ClientUpdateSignPacket clientUpdateSignPacket = new ClientUpdateSignPacket(pos, signDefault);
+                session.sendRemotePacket(clientUpdateSignPacket);
                 break;
             case "Beacon":
                 session.sendRemotePacket(new ClientSetBeaconEffectPacket(tag.getInt("primary"), tag.getInt("secondary")));

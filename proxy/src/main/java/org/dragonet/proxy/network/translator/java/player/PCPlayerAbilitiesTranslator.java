@@ -19,19 +19,14 @@
 package org.dragonet.proxy.network.translator.java.player;
 
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerAbilitiesPacket;
-import com.nukkitx.protocol.bedrock.data.CommandPermission;
-import com.nukkitx.protocol.bedrock.data.EntityFlag;
-import com.nukkitx.protocol.bedrock.data.PlayerPermission;
-import com.nukkitx.protocol.bedrock.packet.AdventureSettingsPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerPlayerAbilitiesPacket.class)
+@PacketRegisterInfo(packet = ServerPlayerAbilitiesPacket.class)
 public class PCPlayerAbilitiesTranslator extends PacketTranslator<ServerPlayerAbilitiesPacket> {
 
     @Override
@@ -39,7 +34,6 @@ public class PCPlayerAbilitiesTranslator extends PacketTranslator<ServerPlayerAb
         CachedPlayer player = session.getCachedEntity();
 
         player.setFlySpeed(packet.getFlySpeed());
-
         player.setCanFly(packet.isCanFly());
         player.setFlying(packet.isFlying());
 

@@ -21,14 +21,12 @@ package org.dragonet.proxy.network.translator.java.world;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockChangeRecord;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerBlockChangePacket;
 import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.network.translator.misc.BlockTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 
-@PCPacketTranslator(packetClass = ServerBlockChangePacket.class)
+@PacketRegisterInfo(packet = ServerBlockChangePacket.class)
 public class PCBlockChangeTranslator extends PacketTranslator<ServerBlockChangePacket> {
 
     @Override

@@ -95,14 +95,13 @@ public class SkinUtils {
             return playerListCache.getRemoteSkinCache().get(profile.getId());
         }
 
+        GameProfile.Texture texture;
         try {
-            service.fillProfileTextures(profile, false);
+            texture = profile.getTexture(GameProfile.TextureType.SKIN);
         } catch (PropertyException e) {
-            log.warn("Failed to fill profile with textures: " + e.getMessage());
+            log.warn("Failed to get skin for player " + profile.getName(), e);
             return null;
         }
-
-        GameProfile.Texture texture = profile.getTexture(GameProfile.TextureType.SKIN);
         if(texture != null) {
             try {
                 ImageData skin = parseBufferedImage(ImageIO.read(new URL(texture.getURL())));
@@ -160,19 +159,17 @@ public class SkinUtils {
     }
 
     private static ImageData parseBufferedImage(BufferedImage image) {
-        FastByteArrayOutputStream outputStream = new FastByteArrayOutputStream();
-
+        FastByteArrayOutputStream out = new FastByteArrayOutputStream();
         for(int y = 0; y < image.getHeight(); ++y) {
             for(int x = 0; x < image.getWidth(); ++x) {
                 Color color = new Color(image.getRGB(x, y), true);
-                outputStream.write(color.getRed());
-                outputStream.write(color.getGreen());
-                outputStream.write(color.getBlue());
-                outputStream.write(color.getAlpha());
+                out.write(color.getRed());
+                out.write(color.getGreen());
+                out.write(color.getBlue());
+                out.write(color.getAlpha());
             }
         }
-
         image.flush();
-        return ImageData.of(image.getWidth(), image.getHeight(), outputStream.array);
+        return ImageData.of(image.getWidth(), image.getHeight(), out.array);
     }
 }

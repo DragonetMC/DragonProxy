@@ -23,12 +23,12 @@ import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.network.translator.misc.BlockEntityTranslator;
+import org.dragonet.proxy.network.translator.BlockEntityTranslatorRegistry;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerUpdateTileEntityPacket.class)
+@PacketRegisterInfo(packet = ServerUpdateTileEntityPacket.class)
 public class PCUpdateTileEntityTranslator extends PacketTranslator<ServerUpdateTileEntityPacket> {
 
     @Override
@@ -37,7 +37,7 @@ public class PCUpdateTileEntityTranslator extends PacketTranslator<ServerUpdateT
 
         BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
         blockEntityDataPacket.setBlockPosition(position);
-        blockEntityDataPacket.setData(BlockEntityTranslator.translateToBedrock(packet.getNbt()));
+        blockEntityDataPacket.setData(BlockEntityTranslatorRegistry.translateToBedrock(packet.getNbt()));
 
         session.sendPacket(blockEntityDataPacket);
     }

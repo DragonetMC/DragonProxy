@@ -18,17 +18,18 @@
  */
 package org.dragonet.proxy.network.translator.java.entity;
 
+import com.github.steveice10.mc.protocol.data.game.entity.EquipmentSlot;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityEquipmentPacket;
 import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.network.translator.misc.ItemTranslator;
+import org.dragonet.proxy.network.translator.ItemTranslatorRegistry;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerEntityEquipmentPacket.class)
+@PacketRegisterInfo(packet = ServerEntityEquipmentPacket.class)
 public class PCEntityEquipmentTranslator extends PacketTranslator<ServerEntityEquipmentPacket> {
 
     @Override
@@ -40,27 +41,27 @@ public class PCEntityEquipmentTranslator extends PacketTranslator<ServerEntityEq
 
         switch(packet.getSlot()) {
             case HELMET:
-                cachedEntity.setHelmet(ItemTranslator.translateSlotToBedrock(packet.getItem()));
+                cachedEntity.setHelmet(ItemTranslatorRegistry.translateToBedrock(packet.getItem()));
                 cachedEntity.sendArmor(session);
                 return;
             case CHESTPLATE:
-                cachedEntity.setChestplate(ItemTranslator.translateSlotToBedrock(packet.getItem()));
+                cachedEntity.setChestplate(ItemTranslatorRegistry.translateToBedrock(packet.getItem()));
                 cachedEntity.sendArmor(session);
                 return;
             case LEGGINGS:
-                cachedEntity.setLeggings(ItemTranslator.translateSlotToBedrock(packet.getItem()));
+                cachedEntity.setLeggings(ItemTranslatorRegistry.translateToBedrock(packet.getItem()));
                 cachedEntity.sendArmor(session);
                 return;
             case BOOTS:
-                cachedEntity.setBoots(ItemTranslator.translateSlotToBedrock(packet.getItem()));
+                cachedEntity.setBoots(ItemTranslatorRegistry.translateToBedrock(packet.getItem()));
                 cachedEntity.sendArmor(session);
                 return;
             case MAIN_HAND:
-                cachedEntity.setMainHand(ItemTranslator.translateSlotToBedrock(packet.getItem()));
+                cachedEntity.setMainHand(ItemTranslatorRegistry.translateToBedrock(packet.getItem()));
                 break;
             case OFF_HAND:
                 // TODO
-                cachedEntity.setOffHand(ItemTranslator.translateSlotToBedrock(packet.getItem()));
+                cachedEntity.setOffHand(ItemTranslatorRegistry.translateToBedrock(packet.getItem()));
                 return;
             default:
                 log.warn("Unknown slot: " + packet.getSlot().name());

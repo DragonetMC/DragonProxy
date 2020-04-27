@@ -23,11 +23,11 @@ import com.nukkitx.protocol.bedrock.packet.SetTimePacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.WorldCache;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerUpdateTimePacket.class)
+@PacketRegisterInfo(packet = ServerUpdateTimePacket.class)
 public class PCUpdateTimeTranslator extends PacketTranslator<ServerUpdateTimePacket> {
 
     @Override
@@ -37,8 +37,8 @@ public class PCUpdateTimeTranslator extends PacketTranslator<ServerUpdateTimePac
 
         if(packet.getTime() < 0) {
             // Skip it the first time the time is sent to get the client at the same time as the server
-            if(session.isFirstTimePacket()) {
-                session.setFirstTimePacket(false);
+            if(worldCache.isFirstTimePacket()) {
+                worldCache.setFirstTimePacket(false);
                 sendTime(session, time);
                 return;
             }

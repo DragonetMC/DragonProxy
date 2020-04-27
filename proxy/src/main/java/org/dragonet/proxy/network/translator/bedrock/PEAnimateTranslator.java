@@ -22,10 +22,10 @@ import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
 import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerSwingArmPacket;
 import com.nukkitx.protocol.bedrock.packet.AnimatePacket;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
-@PEPacketTranslator(packetClass = AnimatePacket.class)
+@PacketRegisterInfo(packet = AnimatePacket.class)
 public class PEAnimateTranslator extends PacketTranslator<AnimatePacket> {
 
     @Override

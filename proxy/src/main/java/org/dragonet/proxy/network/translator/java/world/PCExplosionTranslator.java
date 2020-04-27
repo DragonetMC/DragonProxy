@@ -21,19 +21,14 @@ package org.dragonet.proxy.network.translator.java.world;
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.github.steveice10.mc.protocol.data.game.world.block.ExplodedBlockRecord;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerExplosionPacket;
-import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.protocol.bedrock.packet.ExplodePacket;
 import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
-import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 
-@PCPacketTranslator(packetClass = ServerExplosionPacket.class)
+@PacketRegisterInfo(packet = ServerExplosionPacket.class)
 public class PCExplosionTranslator extends PacketTranslator<ServerExplosionPacket> {
 
     @Override

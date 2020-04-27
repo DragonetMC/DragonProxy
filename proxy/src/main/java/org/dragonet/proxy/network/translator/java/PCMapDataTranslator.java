@@ -19,19 +19,18 @@
 package org.dragonet.proxy.network.translator.java;
 
 import com.github.steveice10.mc.protocol.data.game.world.map.MapData;
-import com.github.steveice10.mc.protocol.data.game.world.map.MapIcon;
-import com.github.steveice10.mc.protocol.data.game.world.map.MapIconType;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerMapDataPacket;
-import com.nukkitx.protocol.bedrock.data.MapDecoration;
 import com.nukkitx.protocol.bedrock.packet.ClientboundMapItemDataPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 import org.dragonet.proxy.util.MapDataUtils;
 
+import java.util.Arrays;
+
 @Log4j2
-@PCPacketTranslator(packetClass = ServerMapDataPacket.class)
+@PacketRegisterInfo(packet = ServerMapDataPacket.class)
 public class PCMapDataTranslator extends PacketTranslator<ServerMapDataPacket> {
 
     @Override
@@ -53,7 +52,7 @@ public class PCMapDataTranslator extends PacketTranslator<ServerMapDataPacket> {
             int[] colors = new int[mapData.getData().length];
 
             for (int i = 0; i < colors.length; i++) {
-                colors[i] = MapDataUtils.getColor(mapData.getData()[i]).argb();
+                colors[i] = MapDataUtils.getColor(mapData.getData()[i] & 0xFF).argb();
             }
 
             mapItemDataPacket.setColors(colors);

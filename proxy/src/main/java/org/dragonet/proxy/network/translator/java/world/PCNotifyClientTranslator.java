@@ -18,7 +18,6 @@
  */
 package org.dragonet.proxy.network.translator.java.world;
 
-import com.github.steveice10.mc.protocol.data.MagicValues;
 import com.github.steveice10.mc.protocol.data.game.ClientRequest;
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.data.game.world.notify.EnterCreditsValue;
@@ -27,29 +26,23 @@ import com.github.steveice10.mc.protocol.data.game.world.notify.ThunderStrengthV
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientRequestPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerNotifyClientPacket;
 import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.data.CommandPermission;
 import com.nukkitx.protocol.bedrock.data.EntityFlag;
 import com.nukkitx.protocol.bedrock.data.LevelEventType;
-import com.nukkitx.protocol.bedrock.data.PlayerPermission;
-import com.nukkitx.protocol.bedrock.packet.AdventureSettingsPacket;
 import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
-import com.nukkitx.protocol.bedrock.packet.SetPlayerGameTypePacket;
 import com.nukkitx.protocol.bedrock.packet.ShowCreditsPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 import org.dragonet.proxy.util.TextFormat;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.nukkitx.protocol.bedrock.data.LevelEventType.*;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerNotifyClientPacket.class)
+@PacketRegisterInfo(packet = ServerNotifyClientPacket.class)
 public class PCNotifyClientTranslator extends PacketTranslator<ServerNotifyClientPacket> {
 
     @Override
@@ -60,41 +53,35 @@ public class PCNotifyClientTranslator extends PacketTranslator<ServerNotifyClien
             case CHANGE_GAMEMODE:
                 GameMode gameMode = (GameMode) packet.getValue();
 
+                cachedPlayer.setGameMode(gameMode);
                 cachedPlayer.setNoClip(gameMode == GameMode.SPECTATOR);
                 cachedPlayer.setWorldImmutable(gameMode == GameMode.ADVENTURE);
-                //cachedPlayer.setFlying(gameMode == GameMode.SPECTATOR);
-                //cachedPlayer.setCanFly(gameMode == GameMode.CREATIVE || gameMode == GameMode.SPECTATOR);
-
-                if(gameMode == GameMode.CREATIVE) {
-                    session.sendCreativeInventory();
-                }
 
                 cachedPlayer.sendAdventureSettings(session);
 
                 // Tell the client to change the game mode
-                SetPlayerGameTypePacket setGameTypePacket = new SetPlayerGameTypePacket();
-                setGameTypePacket.setGamemode(gameMode.ordinal());
-                session.sendPacket(setGameTypePacket);
+                session.sendGamemode();
 
                 // Set the CAN_FLY flag and send to the client
                 cachedPlayer.setEntityFlag(EntityFlag.CAN_FLY, gameMode == GameMode.CREATIVE || gameMode == GameMode.SPECTATOR);
                 cachedPlayer.sendMetadata(session);
                 break;
             case START_RAIN:
-                session.sendPacket(createLevelEvent(START_RAIN, ThreadLocalRandom.current().nextInt(50000) + 10000));
+                session.getWorldCache().startRain(session, ThreadLocalRandom.current().nextInt(50000) + 10000);
                 break;
             case RAIN_STRENGTH:
                 double rainStrength = ((RainStrengthValue) packet.getValue()).getStrength();
 
                 if(rainStrength > 0.0) {
-                    session.sendPacket(createLevelEvent(START_RAIN, (int) rainStrength * 65535));
+                    session.getWorldCache().startRain(session, (int) rainStrength * 65535);
                     break;
                 }
             case STOP_RAIN:
-                session.sendPacket(createLevelEvent(STOP_RAIN, 0));
+                session.getWorldCache().stopRain(session);
                 break;
             case THUNDER_STRENGTH:
                 double thunderStrength = ((ThunderStrengthValue) packet.getValue()).getStrength();
+
 
                 if(thunderStrength > 0.0) {
                     session.sendPacket(createLevelEvent(START_THUNDER, (int) thunderStrength * 65535));

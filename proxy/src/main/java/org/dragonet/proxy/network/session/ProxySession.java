@@ -19,10 +19,12 @@
 package org.dragonet.proxy.network.session;
 
 import com.github.steveice10.mc.auth.data.GameProfile;
+import com.github.steveice10.mc.auth.exception.property.PropertyException;
 import com.github.steveice10.mc.auth.exception.request.RequestException;
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
 import com.github.steveice10.mc.protocol.data.SubProtocol;
 import com.github.steveice10.mc.protocol.data.game.ClientRequest;
+import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.data.game.statistic.Statistic;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientRequestPacket;
@@ -38,7 +40,6 @@ import com.google.common.io.ByteStreams;
 import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.PlayerSession;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
@@ -68,7 +69,6 @@ import org.dragonet.proxy.util.SkinUtils;
 import org.dragonet.proxy.util.TextFormat;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -240,7 +240,12 @@ public class ProxySession implements PlayerSession {
             ImageData capeData = SkinUtils.fetchUnofficialCape(profile);
             if(capeData == null) capeData = ImageData.EMPTY;
 
-            GameProfile.TextureModel model = profile.getTexture(GameProfile.TextureType.SKIN).getModel();
+            GameProfile.TextureModel model = null;
+            try {
+                model = profile.getTexture(GameProfile.TextureType.SKIN).getModel();
+            } catch (PropertyException e) {
+                log.warn("Failed to get skin model for player " + profile.getName(), e);
+            }
             setPlayerSkin2(authData.getIdentity(), skinData, model, capeData);
         });
     }
@@ -269,7 +274,6 @@ public class ProxySession implements PlayerSession {
         if(proxy.getConfiguration().getRemoteAuthType() == RemoteAuthType.CREDENTIALS) {
             dataCache.put("auth_state", AuthState.AUTHENTICATING);
             sendFakeStartGame(false);
-            sendLoginForm();
             return;
         }
 
@@ -355,18 +359,23 @@ public class ProxySession implements PlayerSession {
 
         log.warn("SPAWN PLAYER");
 
+        if(proxy.getConfiguration().getRemoteAuthType() == RemoteAuthType.CREDENTIALS) {
+            sendLoginForm();
+            return;
+        }
+
         // Start connecting to remote server.
         // There is a slight delay before connection because otherwise the player will join
         // the server too quickly and chunks will not show.
         if(proxy.getConfiguration().getRemoteAuthType() == RemoteAuthType.OFFLINE) {
-            sendMessage(TextFormat.DARK_AQUA + "Waiting 3 seconds before connecting...");
+            sendMessage(TextFormat.DARK_AQUA + "Waiting 2 seconds before connecting...");
 
             proxy.getGeneralThreadPool().schedule(() -> {
                 sendMessage(" ");
 
                 RemoteServer remoteServer = new RemoteServer("local", proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort());
                 connect(remoteServer);
-            }, 3, TimeUnit.SECONDS);
+            }, 2, TimeUnit.SECONDS);
         }
     }
 
@@ -433,7 +442,7 @@ public class ProxySession implements PlayerSession {
         sendPacket(biomeDefinitionListPacket);
 
         AvailableEntityIdentifiersPacket entityPacket = new AvailableEntityIdentifiersPacket();
-        entityPacket.setTag(CompoundTag.EMPTY);
+        entityPacket.setTag(PaletteManager.ENTITY_IDENTIFIERS);
         sendPacket(entityPacket);
 
         // Spawn
@@ -536,6 +545,16 @@ public class ProxySession implements PlayerSession {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(message.getId());
         sendRemotePacket(new ClientPluginMessagePacket("DragonProxy", message.encode(out).toByteArray()));
+    }
+
+    public void sendGamemode() {
+        SetPlayerGameTypePacket setPlayerGameTypePacket = new SetPlayerGameTypePacket();
+        setPlayerGameTypePacket.setGamemode(cachedEntity.getGameMode().ordinal());
+        sendPacket(setPlayerGameTypePacket);
+
+        if(cachedEntity.getGameMode() == GameMode.CREATIVE) {
+            sendCreativeInventory();
+        }
     }
 
     public void onTick() {

@@ -23,10 +23,10 @@ import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.packet.SetEntityMotionPacket;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
-@PCPacketTranslator(packetClass = ServerEntityVelocityPacket.class)
+@PacketRegisterInfo(packet = ServerEntityVelocityPacket.class)
 public class PCEntityVelocityTranslator extends PacketTranslator<ServerEntityVelocityPacket> {
 
     @Override

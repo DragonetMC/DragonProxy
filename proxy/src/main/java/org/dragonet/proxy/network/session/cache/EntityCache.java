@@ -129,7 +129,7 @@ public class EntityCache implements Cache {
     }
 
     public long removeBossBar(UUID uuid) {
-        long proxyEid = bossbars.get(uuid);
+        long proxyEid = bossbars.getLong(uuid);
         bossbars.remove(uuid);
         return proxyEid;
     }

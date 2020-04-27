@@ -22,16 +22,17 @@ import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlaye
 import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PEPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 @Log4j2
-@PEPacketTranslator(packetClass = MobEquipmentPacket.class)
+@PacketRegisterInfo(packet = MobEquipmentPacket.class)
 public class PEMobEquipmentTranslator extends PacketTranslator<MobEquipmentPacket> {
 
     @Override
     public void translate(ProxySession session, MobEquipmentPacket packet) {
         if(packet.getContainerId() == 0) {
+            session.getCachedEntity().setMainHand(packet.getItem());
             session.getCachedEntity().setSelectedHotbarSlot(packet.getHotbarSlot());
             session.sendRemotePacket(new ClientPlayerChangeHeldItemPacket(packet.getHotbarSlot()));
         }

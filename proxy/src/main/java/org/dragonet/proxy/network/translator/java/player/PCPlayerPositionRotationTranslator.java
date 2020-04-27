@@ -18,7 +18,6 @@
  */
 package org.dragonet.proxy.network.translator.java.player;
 
-import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientTeleportConfirmPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.player.ServerPlayerPositionRotationPacket;
 import com.nukkitx.math.vector.Vector3f;
@@ -26,13 +25,12 @@ import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerPlayerPositionRotationPacket.class)
+@PacketRegisterInfo(packet = ServerPlayerPositionRotationPacket.class)
 public class PCPlayerPositionRotationTranslator extends PacketTranslator<ServerPlayerPositionRotationPacket> {
 
     @Override
@@ -44,9 +42,9 @@ public class PCPlayerPositionRotationTranslator extends PacketTranslator<ServerP
 
             MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
             movePlayerPacket.setRuntimeEntityId(entity.getProxyEid());
-            movePlayerPacket.setPosition(Vector3f.from(packet.getX(), packet.getY() + BedrockEntityType.PLAYER.getOffset() + 0.1f, packet.getZ()));
+            movePlayerPacket.setPosition(Vector3f.from(packet.getX(), packet.getY() + BedrockEntityType.PLAYER.getOffset(), packet.getZ()));
             movePlayerPacket.setRotation(Vector3f.from(packet.getPitch(), packet.getYaw(), 0));
-            movePlayerPacket.setMode(MovePlayerPacket.Mode.RESET);
+            movePlayerPacket.setMode(MovePlayerPacket.Mode.NORMAL);
             movePlayerPacket.setOnGround(true);
 
             session.sendPacket(movePlayerPacket);
@@ -58,8 +56,17 @@ public class PCPlayerPositionRotationTranslator extends PacketTranslator<ServerP
 
         entity.setSpawned(true);
 
-        entity.moveAbsolute(session, Vector3f.from(packet.getX(), packet.getY() + BedrockEntityType.PLAYER.getOffset(), packet.getZ()), Vector3f.from(packet.getPitch(),
-            packet.getYaw(), 0), true, false);
+        if(!packet.getRelative().isEmpty()) {
+            entity.moveRelative(session, Vector3f.from(packet.getX(), packet.getY(), packet.getZ()), Vector3f.from(packet.getPitch(), packet.getYaw(), 0), true, true);
+        } else {
+            double x = Math.abs(entity.getPosition().getX() - packet.getX());
+            double y = Math.abs(entity.getPosition().getY() - packet.getY());
+            double z = Math.abs(entity.getPosition().getZ() - packet.getZ());
+
+            if (x >= 1 || y >= 1 || z >= 1) {
+                entity.moveAbsolute(session, Vector3f.from(packet.getX(), packet.getY(), packet.getZ()), Vector3f.from(packet.getPitch(), packet.getYaw(), 0), true, false);
+            }
+        }
 
         session.sendRemotePacket(new ClientTeleportConfirmPacket(packet.getTeleportId()));
     }

@@ -21,23 +21,19 @@ package org.dragonet.proxy.network.translator.java.entity;
 import com.github.steveice10.mc.protocol.data.game.entity.EntityStatus;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityStatusPacket;
 import com.nukkitx.protocol.bedrock.data.EntityEventType;
-import com.nukkitx.protocol.bedrock.data.LevelEventType;
 import com.nukkitx.protocol.bedrock.packet.EntityEventPacket;
-import com.nukkitx.protocol.bedrock.packet.LevelEventPacket;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 import org.dragonet.proxy.util.TextFormat;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Log4j2
-@PCPacketTranslator(packetClass = ServerEntityStatusPacket.class)
+@PacketRegisterInfo(packet = ServerEntityStatusPacket.class)
 public class PCEntityStatusTranslator extends PacketTranslator<ServerEntityStatusPacket> {
     private static Object2ObjectMap<EntityStatus, EntityEventType> entityEventMap = new Object2ObjectOpenHashMap<>();
 
@@ -58,13 +54,40 @@ public class PCEntityStatusTranslator extends PacketTranslator<ServerEntityStatu
 
     @Override
     public void translate(ProxySession session, ServerEntityStatusPacket packet) {
-        CachedEntity cachedEntity = session.getEntityCache().getByRemoteId(packet.getEntityId());
-        if(cachedEntity == null) {
+        CachedEntity entity = session.getEntityCache().getByRemoteId(packet.getEntityId());
+        if(entity == null) {
             //log.info("(debug) Cached entity is null");
             return;
         }
 
         switch(packet.getStatus()) {
+            case PLAYER_ENABLE_REDUCED_DEBUG:
+                ((CachedPlayer) entity).setReducedDebugInfo(session, true);
+                return;
+            case PLAYER_DISABLE_REDUCED_DEBUG:
+                ((CachedPlayer) entity).setReducedDebugInfo(session, false);
+                return;
+            case PLAYER_OP_PERMISSION_LEVEL_0:
+                ((CachedPlayer) entity).setOpPermissionLevel(0);
+                ((CachedPlayer) entity).sendAdventureSettings(session);
+                return;
+            case PLAYER_OP_PERMISSION_LEVEL_1:
+                ((CachedPlayer) entity).setOpPermissionLevel(1);
+                ((CachedPlayer) entity).sendAdventureSettings(session);
+                return;
+            case PLAYER_OP_PERMISSION_LEVEL_2:
+                ((CachedPlayer) entity).setOpPermissionLevel(2);
+                ((CachedPlayer) entity).sendAdventureSettings(session);
+                return;
+            case PLAYER_OP_PERMISSION_LEVEL_3:
+                ((CachedPlayer) entity).setOpPermissionLevel(3);
+                ((CachedPlayer) entity).sendAdventureSettings(session);
+                return;
+            case PLAYER_OP_PERMISSION_LEVEL_4:
+                ((CachedPlayer) entity).setOpPermissionLevel(4);
+                ((CachedPlayer) entity).sendAdventureSettings(session);
+                return;
+
             case LIVING_BURN:
             case SHEEP_GRAZE_OR_TNT_CART_EXPLODE:
             case SQUID_RESET_ROTATION: // TODO
@@ -73,7 +96,7 @@ public class PCEntityStatusTranslator extends PacketTranslator<ServerEntityStatu
         }
 
         EntityEventPacket entityEventPacket = new EntityEventPacket();
-        entityEventPacket.setRuntimeEntityId(cachedEntity.getProxyEid());
+        entityEventPacket.setRuntimeEntityId(entity.getProxyEid());
 
         EntityEventType bedrockEvent = entityEventMap.get(packet.getStatus());
         if(bedrockEvent == null) {

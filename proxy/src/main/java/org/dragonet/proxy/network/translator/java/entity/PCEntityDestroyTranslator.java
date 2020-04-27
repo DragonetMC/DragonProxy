@@ -22,14 +22,12 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntit
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
-import org.dragonet.proxy.network.session.cache.object.CachedItemEntity;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
-import org.dragonet.proxy.util.TextFormat;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 @Log4j2
-@PCPacketTranslator(packetClass = ServerEntityDestroyPacket.class)
+@PacketRegisterInfo(packet = ServerEntityDestroyPacket.class)
 public class PCEntityDestroyTranslator extends PacketTranslator<ServerEntityDestroyPacket> {
 
     @Override

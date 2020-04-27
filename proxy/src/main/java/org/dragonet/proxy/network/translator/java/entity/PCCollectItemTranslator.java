@@ -22,10 +22,10 @@ import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntit
 import com.nukkitx.protocol.bedrock.packet.TakeItemEntityPacket;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
-import org.dragonet.proxy.network.translator.PacketTranslator;
-import org.dragonet.proxy.network.translator.annotations.PCPacketTranslator;
+import org.dragonet.proxy.network.translator.misc.PacketTranslator;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
-@PCPacketTranslator(packetClass = ServerEntityCollectItemPacket.class)
+@PacketRegisterInfo(packet = ServerEntityCollectItemPacket.class)
 public class PCCollectItemTranslator extends PacketTranslator<ServerEntityCollectItemPacket> {
 
     @Override

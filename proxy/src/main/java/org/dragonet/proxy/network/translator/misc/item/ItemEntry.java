@@ -18,22 +18,28 @@
  */
 package org.dragonet.proxy.network.translator.misc.item;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.nukkitx.nbt.tag.CompoundTag;
+import com.nukkitx.protocol.bedrock.data.ItemData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.dragonet.proxy.data.item.ToolTier;
+import org.dragonet.proxy.data.item.ToolType;
 
 @Getter
 @AllArgsConstructor
 public class ItemEntry {
-    @JsonProperty
     private String javaIdentifier;
-    @JsonProperty("javaId")
     private int javaProtocolId;
-
-    // TODO: add back support for bedrock identifier, as the geyser mappings dont include it
-    //private String bedrockIdentifier;
-    @JsonProperty("bedrockId")
     private int bedrockRuntimeId;
-    @JsonProperty
     private int bedrockData;
+    private ToolType toolType;
+    private ToolTier toolTier;
+
+    public ItemData toItemData(int amount) {
+        return ItemData.of(bedrockRuntimeId, (short) bedrockData, amount);
+    }
+
+    public ItemData toItemData(int amount, CompoundTag tag) {
+        return ItemData.of(bedrockRuntimeId, (short) bedrockData, amount, tag);
+    }
 }
