@@ -61,7 +61,6 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
         cachedPlayer.setJavaUuid(packet.getUuid());
         cachedPlayer.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
         cachedPlayer.setRotation(Vector3f.from(packet.getYaw(), packet.getPitch(), 0));
-        cachedPlayer.getMetadata().put(EntityData.NAMETAG, "lol here");
         cachedPlayer.spawn(session);
 
         if(session.getProxy().getConfiguration().getRemoteAuthType() == RemoteAuthType.OFFLINE) {
