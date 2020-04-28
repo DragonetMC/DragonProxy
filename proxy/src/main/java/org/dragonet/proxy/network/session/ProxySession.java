@@ -436,7 +436,7 @@ public class ProxySession implements PlayerSession {
         sendPacket(playStatusPacket);
 
         if(!disconnect) {
-            cachedEntity = entityCache.newPlayer(1, entityId, new GameProfile(getAuthData().getIdentity(), getAuthData().getDisplayName()));
+            cachedEntity = entityCache.newPlayer(Integer.MIN_VALUE, entityId, new GameProfile(getAuthData().getIdentity(), getAuthData().getDisplayName()));
         }
     }
 
