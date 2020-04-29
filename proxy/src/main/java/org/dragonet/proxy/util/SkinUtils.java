@@ -42,9 +42,6 @@ import java.util.UUID;
 
 @Log4j2
 public class SkinUtils {
-    private static final String NORMAL_RESOURCE_PATCH = "ewogICAiZ2VvbWV0cnkiIDogewogICAgICAiZGVmYXVsdCIgOiAiZ2VvbWV0cnkuaHVtYW5vaWQuY3VzdG9tIgogICB9Cn0K";
-    private static final String SLIM_RESOURCE_PATCH = "ewogICAiZ2VvbWV0cnkiIDogewogICAgICAiZGVmYXVsdCIgOiAiZ2VvbWV0cnkuaHVtYW5vaWQuY3VzdG9tU2xpbSIKICAgfQp9";
-
     private static final SessionService service = new SessionService();
 
     public static ImageData STEVE_SKIN;
