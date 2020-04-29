@@ -18,6 +18,8 @@
  */
 package org.dragonet.proxy;
 
+import com.nukkitx.math.vector.Vector2f;
+import com.nukkitx.math.vector.Vector3f;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;

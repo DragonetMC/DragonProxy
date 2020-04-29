@@ -46,6 +46,7 @@ import com.nukkitx.protocol.bedrock.packet.*;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.data.WorldBorder;
 import org.dragonet.proxy.form.CustomForm;
 import org.dragonet.proxy.form.components.InputComponent;
 import org.dragonet.proxy.form.components.LabelComponent;
@@ -512,7 +513,18 @@ public class ProxySession implements PlayerSession {
         packet.setPlatformChatId("");
         packet.setMessage(text);
 
-        bedrockSession.sendPacket(packet);
+        sendPacket(packet);
+    }
+
+    public void sendActionBar(String text, int stayTime) {
+        SetTitlePacket setTitlePacket = new SetTitlePacket();
+        setTitlePacket.setType(SetTitlePacket.Type.SET_ACTIONBAR_MESSAGE);
+        setTitlePacket.setText(text);
+        setTitlePacket.setFadeInTime(0);
+        setTitlePacket.setStayTime(stayTime);
+        setTitlePacket.setFadeOutTime(0);
+
+        sendPacket(setTitlePacket);
     }
 
     public void sendCreativeInventory() {
@@ -542,6 +554,9 @@ public class ProxySession implements PlayerSession {
 
     public void onTick() {
         //entityCache.getEntities().values().forEach(entity -> entity.onTick(this));
+        if(worldCache.getWorldBorder() != null) {
+            worldCache.getWorldBorder().onTick(this);
+        }
     }
 
     public RemoteServer getRemoteServer() {
