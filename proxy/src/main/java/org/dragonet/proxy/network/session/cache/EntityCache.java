@@ -163,6 +163,7 @@ public class EntityCache implements Cache {
     }
 
     public CachedPlayer clonePlayer(int newEntityId, CachedPlayer player) {
+        remoteToClientMap.remove(player.getRemoteEid());
         player.setRemoteEid(newEntityId);
 
         entities.put(player.getProxyEid(), player);
