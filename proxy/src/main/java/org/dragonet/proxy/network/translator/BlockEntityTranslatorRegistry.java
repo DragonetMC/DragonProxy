@@ -71,6 +71,7 @@ public class BlockEntityTranslatorRegistry extends Registry {
         register("minecraft:barrel", "Barrel");
         register("minecraft:campfire", "Campfire");
         register("minecraft:lectern", "Lectern");
+        register("minecraft:trapped_chest", "Chest"); // TODO: Chest or TrappedChest?
     }
 
     private static void register(String javaId, String bedrockId) {
