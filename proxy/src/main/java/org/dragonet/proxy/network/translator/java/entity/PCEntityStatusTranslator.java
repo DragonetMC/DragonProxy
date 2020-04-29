@@ -92,6 +92,7 @@ public class PCEntityStatusTranslator extends PacketTranslator<ServerEntityStatu
             case SHEEP_GRAZE_OR_TNT_CART_EXPLODE:
             case SQUID_RESET_ROTATION: // TODO
             case LIVING_TELEPORT: // TODO
+            case RABBIT_JUMP_OR_MINECART_SPAWNER_DELAY_RESET:
                 return;
         }
 
