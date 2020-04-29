@@ -25,6 +25,7 @@ import lombok.Setter;
 import org.dragonet.proxy.remote.RemoteAuthType;
 
 @Getter
+@Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DragonConfiguration {
     @JsonProperty("config-version")
