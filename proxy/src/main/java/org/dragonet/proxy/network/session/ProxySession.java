@@ -226,7 +226,7 @@ public class ProxySession implements PlayerSession {
             ImageData skinData = SkinUtils.fetchSkin(this, profile);
             if (skinData == null) return;
 
-            ImageData capeData = SkinUtils.fetchUnofficialCape(profile);
+            ImageData capeData = SkinUtils.fetchCape(this, profile);
             if(capeData == null) capeData = ImageData.EMPTY;
 
             GameProfile.TextureModel model = null;
