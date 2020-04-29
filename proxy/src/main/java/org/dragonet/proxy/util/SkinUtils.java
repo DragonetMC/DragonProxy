@@ -26,6 +26,7 @@ import com.nukkitx.protocol.bedrock.data.SerializedSkin;
 import it.unimi.dsi.fastutil.io.FastByteArrayOutputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import net.minidev.json.JSONValue;
 import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.PlayerListCache;
@@ -34,6 +35,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -53,23 +55,17 @@ public class SkinUtils {
 
     static {
         try {
-            STEVE_SKIN = parseBufferedImage(ImageIO.read(DragonProxy.class.getClassLoader().getResource("skin_steve.png")));
+            STEVE_SKIN = parseBufferedImage(ImageIO.read(DragonProxy.class.getClassLoader().getResource("skin_steve.png")), false);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public static SerializedSkin createSkinEntry(ImageData skinImage, GameProfile.TextureModel model, ImageData capeImage) {
-        // Skin Geometry is hard coded otherwise players will turn invisible if joining with custom models
-        String skinResourcePatch = NORMAL_RESOURCE_PATCH;
-        if(model == GameProfile.TextureModel.SLIM) {
-            skinResourcePatch = SLIM_RESOURCE_PATCH;
-        }
-
         String randomId = UUID.randomUUID().toString();
         return SerializedSkin.of(
             randomId,
-            new String(Base64.getDecoder().decode(skinResourcePatch)),
+            convertLegacyGeometryName((model == GameProfile.TextureModel.SLIM) ? "Slim" : ""),
             skinImage,
             Collections.emptyList(),
             capeImage,
@@ -104,7 +100,7 @@ public class SkinUtils {
         }
         if(texture != null) {
             try {
-                ImageData skin = parseBufferedImage(ImageIO.read(new URL(texture.getURL())));
+                ImageData skin = parseBufferedImage(ImageIO.read(new URL(texture.getURL())), false);
                 playerListCache.getRemoteSkinCache().put(profile.getId(), skin); // Cache the skin
                 return skin;
             } catch (IOException e) {
@@ -115,23 +111,50 @@ public class SkinUtils {
     }
 
     /**
-     * Checks if a player has an unofficial cape and if so downloads it from
+     * Checks if a player has a mojang cape or unofficial cape and if so downloads it from
      * their servers
      */
-    public static ImageData fetchUnofficialCape(GameProfile profile) {
-        for(CapeServers server : CapeServers.values()) {
-            try {
-                URL url = new URL(server.getUrl(profile));
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    public static ImageData fetchCape(ProxySession session, GameProfile profile) {
+        // TODO: HANDLE RATE LIMITING
+        PlayerListCache playerListCache = session.getPlayerListCache();
 
-                if (connection.getResponseCode() == 404) {
-                    return null;
-                }
-
-                return parseBufferedImage(ImageIO.read(connection.getInputStream()));
-            } catch (IOException e) {}
+        // Check if the cape is already cached
+        if(playerListCache.getRemoteCapeCache().containsKey(profile.getId())) {
+            //log.warn("Retrieving from cache: " + profile.getName());
+            return playerListCache.getRemoteCapeCache().get(profile.getId());
         }
-        return null;
+
+        GameProfile.Texture texture;
+        try {
+            texture = profile.getTexture(GameProfile.TextureType.CAPE);
+        } catch (PropertyException e) {
+            return null;
+        }
+
+        if(texture != null) {
+            try {
+                ImageData cape = parseBufferedImage(ImageIO.read(new URL(texture.getURL())), false);
+                playerListCache.getRemoteCapeCache().put(profile.getId(), cape); // Cache the cape
+                return cape;
+            } catch (IOException e) {
+                log.warn("Failed to fetch cape for player " + profile.getName() + ": " + e.getMessage());
+            }
+        } else {
+            for (CapeServers server : CapeServers.values()) {
+                try {
+                    URL url = new URL(server.getUrl(profile));
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+                    if (connection.getResponseCode() != 404) {
+                        log.warn(String.format("%s has cape at %s", profile.getName(), texture.getURL()));
+                        return parseBufferedImage(ImageIO.read(connection.getInputStream()), true);
+                    }
+                } catch (IOException e) {
+                    log.warn("Failed to fetch cape for player " + profile.getName() + ": " + e.getMessage());
+                }
+            }
+        }
+        return ImageData.EMPTY;
     }
 
     @RequiredArgsConstructor
@@ -158,8 +181,22 @@ public class SkinUtils {
         USERNAME
     }
 
-    private static ImageData parseBufferedImage(BufferedImage image) {
-        FastByteArrayOutputStream out = new FastByteArrayOutputStream();
+    private static ImageData parseBufferedImage(BufferedImage image, boolean cape) {
+        int imageWidth = image.getWidth();
+        int imageHeight = image.getHeight();
+        int bedrockSkinSize = (imageWidth * imageHeight) * 4;
+
+        //Capes need to be 64x32, 128x64 etc otherwise they will render weird. This is an issue i had on MinecratCapes
+        if(cape) {
+            imageWidth = 64;
+            imageHeight = 32;
+            while((imageWidth < image.getWidth()) || (imageHeight < image.getHeight())) {
+                imageWidth *= 2;
+                imageHeight *= 2;
+            }
+        }
+
+        FastByteArrayOutputStream out = new FastByteArrayOutputStream(bedrockSkinSize);
         for(int y = 0; y < image.getHeight(); ++y) {
             for(int x = 0; x < image.getWidth(); ++x) {
                 Color color = new Color(image.getRGB(x, y), true);
@@ -169,7 +206,13 @@ public class SkinUtils {
                 out.write(color.getAlpha());
             }
         }
+
         image.flush();
+
         return ImageData.of(image.getWidth(), image.getHeight(), out.array);
+    }
+
+    private static String convertLegacyGeometryName(String geometryModel) {
+        return "{\"geometry\" : {\"default\" : \"geometry.humanoid.custom" + JSONValue.escape(geometryModel) + "\"}}";
     }
 }
