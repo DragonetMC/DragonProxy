@@ -47,6 +47,7 @@ public class PlayerListCache implements Cache {
     private Object2LongMap<UUID> playerEntityIds = new Object2LongOpenHashMap<>();
 
     private Object2ObjectMap<UUID, ImageData> remoteSkinCache = new Object2ObjectOpenHashMap<>();
+    private Object2ObjectMap<UUID, ImageData> remoteCapeCache = new Object2ObjectOpenHashMap<>();
 
     public void updateDisplayName(GameProfile profile, String displayName) {
         playerInfo.get(profile.getId()).setDisplayName(displayName);

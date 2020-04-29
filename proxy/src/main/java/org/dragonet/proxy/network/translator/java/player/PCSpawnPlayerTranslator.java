@@ -61,6 +61,9 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
         cachedPlayer.setJavaUuid(packet.getUuid());
         cachedPlayer.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
         cachedPlayer.setRotation(Vector3f.from(packet.getYaw(), packet.getPitch(), 0));
+        if(cachedPlayer.getProfile().getName() != null) {
+            cachedPlayer.getMetadata().put(EntityData.NAMETAG, cachedPlayer.getProfile().getName());
+        }
         cachedPlayer.spawn(session);
 
         if(session.getProxy().getConfiguration().getRemoteAuthType() == RemoteAuthType.OFFLINE) {
@@ -73,7 +76,7 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
                 ImageData skinData = SkinUtils.fetchSkin(session, profile);
                 if (skinData == null) return;
 
-                ImageData capeData = SkinUtils.fetchUnofficialCape(profile);
+                ImageData capeData = SkinUtils.fetchCape(session, profile);
                 if(capeData == null) capeData = ImageData.EMPTY;
 
                 GameProfile.TextureModel model = null;
