@@ -43,7 +43,9 @@ public class PingPassthroughThread implements Runnable {
     @Override
     public void run() {
         try {
-            client = new Client(proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort(), new MinecraftProtocol(SubProtocol.STATUS), new TcpSessionFactory());
+            client = new Client(proxy.getConfiguration().getRemoteServer().getAddress(), proxy.getConfiguration().getRemoteServer().getPort(),
+                new MinecraftProtocol(SubProtocol.STATUS), new TcpSessionFactory());
+
             client.getSession().setFlag(MinecraftConstants.SERVER_INFO_HANDLER_KEY, (ServerInfoHandler) (session, info) -> {
                 statusInfo = info;
                 client.getSession().disconnect(null);

@@ -66,7 +66,7 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
         }
         cachedPlayer.spawn(session);
 
-        if(session.getProxy().getConfiguration().getRemoteAuthType() == RemoteAuthType.OFFLINE) {
+        if(session.getProxy().getConfiguration().getRemoteServer().getAuthType() == RemoteAuthType.OFFLINE) {
             return;
         }
         if(session.getProxy().getConfiguration().getPlayerConfig().isFetchSkin()) {

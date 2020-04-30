@@ -69,7 +69,7 @@ public class DragonProxy {
 
     public static final ObjectMapper JSON_MAPPER = new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
-    private static final int CONFIG_VERSION = 2;
+    private static final int CONFIG_VERSION = 3;
     private static final boolean RELEASE = false;
     public static DragonProxy INSTANCE = null;
 
@@ -243,10 +243,10 @@ public class DragonProxy {
             configuration.setBindPort(bindPort);
         }
         if(remoteAddress != null) {
-            configuration.setRemoteAddress(remoteAddress);
+            configuration.getRemoteServer().setAddress(remoteAddress);
         }
         if(remotePort != -1) {
-            configuration.setRemotePort(remotePort);
+            configuration.getRemoteServer().setPort(remotePort);
         }
     }
 

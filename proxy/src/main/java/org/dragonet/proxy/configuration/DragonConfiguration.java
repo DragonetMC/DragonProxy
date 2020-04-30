@@ -45,26 +45,29 @@ public class DragonConfiguration {
     @JsonProperty("max-players")
     private int maxPlayers;
 
-    @JsonProperty("remote-address")
-    private String remoteAddress;
-
-    @JsonProperty("remote-port")
-    private int remotePort;
-
-    @JsonProperty("remote-auth")
-    private RemoteAuthType remoteAuthType;
-
     @JsonProperty("xbox-auth")
     private boolean xboxAuth;
 
     @JsonProperty("ping-passthrough")
     private boolean pingPassthrough;
 
+    @JsonProperty("remote-server")
+    private RemoteServerConfig remoteServer;
+
     @JsonProperty("player-settings")
     private PlayerConfig playerConfig;
 
     @JsonProperty("thread-pool-size")
     private int threadPoolSize;
+
+    @Getter
+    @Setter
+    public static class RemoteServerConfig {
+        private String address;
+        private int port;
+        @JsonProperty("auth-type")
+        private RemoteAuthType authType;
+    }
 
     @Getter
     public static class PlayerConfig {

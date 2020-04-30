@@ -202,7 +202,7 @@ public class ProxySession implements PlayerSession {
             sendMessage(" ");
 
             // Start connecting to remote server
-            RemoteServer remoteServer = new RemoteServer("local", proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort());
+            RemoteServer remoteServer = new RemoteServer("local", proxy.getConfiguration().getRemoteServer().getAddress(), proxy.getConfiguration().getRemoteServer().getPort());
             connect(remoteServer);
 
             // Enable coordinates now
@@ -260,7 +260,7 @@ public class ProxySession implements PlayerSession {
      * This method handles the initial bedrock client connection.
      */
     public void handleJoin() {
-        if(proxy.getConfiguration().getRemoteAuthType() == RemoteAuthType.CREDENTIALS) {
+        if(proxy.getConfiguration().getRemoteServer().getAuthType() == RemoteAuthType.CREDENTIALS) {
             dataCache.put("auth_state", AuthState.AUTHENTICATING);
             sendFakeStartGame(false);
             return;
@@ -348,7 +348,7 @@ public class ProxySession implements PlayerSession {
 
         log.warn("SPAWN PLAYER");
 
-        if(proxy.getConfiguration().getRemoteAuthType() == RemoteAuthType.CREDENTIALS) {
+        if(proxy.getConfiguration().getRemoteServer().getAuthType() == RemoteAuthType.CREDENTIALS) {
             sendLoginForm();
             return;
         }
@@ -356,13 +356,13 @@ public class ProxySession implements PlayerSession {
         // Start connecting to remote server.
         // There is a slight delay before connection because otherwise the player will join
         // the server too quickly and chunks will not show.
-        if(proxy.getConfiguration().getRemoteAuthType() == RemoteAuthType.OFFLINE) {
+        if(proxy.getConfiguration().getRemoteServer().getAuthType() == RemoteAuthType.OFFLINE) {
             sendMessage(TextFormat.DARK_AQUA + "Waiting 2 seconds before connecting...");
 
             proxy.getGeneralThreadPool().schedule(() -> {
                 sendMessage(" ");
 
-                RemoteServer remoteServer = new RemoteServer("local", proxy.getConfiguration().getRemoteAddress(), proxy.getConfiguration().getRemotePort());
+                RemoteServer remoteServer = new RemoteServer("local", proxy.getConfiguration().getRemoteServer().getAddress(), proxy.getConfiguration().getRemoteServer().getPort());
                 connect(remoteServer);
             }, 2, TimeUnit.SECONDS);
         }
