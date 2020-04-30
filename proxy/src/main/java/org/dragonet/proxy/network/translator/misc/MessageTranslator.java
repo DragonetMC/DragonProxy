@@ -122,8 +122,8 @@ public class MessageTranslator {
         for (int i = 0; i < messages.length; i++) {
             if (messages[i] instanceof TranslationMessage) {
                 TranslationMessage tmsg = (TranslationMessage) messages[i];
-//                strings.add(toBedrockFormat(messages[i].getStyle().getFormats()));
-//                strings.add(toBedrockColor(messages[i].getStyle().getColor()));
+//                strings.add(toBedrockFormat(org.dragonet.proxy.hybrid.messages[i].getStyle().getFormats()));
+//                strings.add(toBedrockColor(org.dragonet.proxy.hybrid.messages[i].getStyle().getColor()));
 
                 strings.add(MinecraftLanguage.translate(tmsg.getTranslationKey()));
 

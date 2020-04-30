@@ -50,14 +50,14 @@ import org.dragonet.proxy.DragonProxy;
 import org.dragonet.proxy.form.CustomForm;
 import org.dragonet.proxy.form.components.InputComponent;
 import org.dragonet.proxy.form.components.LabelComponent;
-import org.dragonet.proxy.network.hybrid.messages.EncryptionMessage;
-import org.dragonet.proxy.network.hybrid.HybridMessage;
+import org.dragonet.proxy.hybrid.HybridMessage;
+import org.dragonet.proxy.hybrid.data.AuthData;
+import org.dragonet.proxy.hybrid.messages.EncryptionMessage;
 import org.dragonet.proxy.network.hybrid.HybridMessageHandler;
-import org.dragonet.proxy.network.hybrid.messages.PlayerLoginMessage;
+import org.dragonet.proxy.hybrid.messages.PlayerLoginMessage;
 import org.dragonet.proxy.network.session.cache.*;
 import org.dragonet.proxy.network.session.cache.object.CachedEntity;
 import org.dragonet.proxy.network.session.cache.object.CachedPlayer;
-import org.dragonet.proxy.network.session.data.AuthData;
 import org.dragonet.proxy.network.session.data.AuthState;
 import org.dragonet.proxy.network.session.data.ClientData;
 import org.dragonet.proxy.network.translator.PacketTranslatorRegistry;
@@ -244,7 +244,7 @@ public class ProxySession implements PlayerSession {
                 sendMessage(TextFormat.AQUA + "You username was changed to " + TextFormat.DARK_AQUA + username + TextFormat.AQUA + " like your Mojang account username");
             }
 
-            // Empty line to seperate DragonProxy messages from server messages
+            // Empty line to seperate DragonProxy org.dragonet.proxy.hybrid.messages from server org.dragonet.proxy.hybrid.messages
             sendMessage(" ");
 
             // Start connecting to remote server

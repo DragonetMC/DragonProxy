@@ -1,16 +1,17 @@
-package org.dragonet.proxy.network.hybrid.messages;
+package org.dragonet.proxy.hybrid.messages;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.dragonet.proxy.network.hybrid.HybridMessage;
-import org.dragonet.proxy.network.session.data.AuthData;
-import org.dragonet.proxy.network.session.data.DeviceOS;
-import org.dragonet.proxy.network.session.data.UIProfile;
+import org.dragonet.proxy.hybrid.HybridMessage;
+import org.dragonet.proxy.hybrid.data.AuthData;
+import org.dragonet.proxy.hybrid.data.DeviceOS;
+import org.dragonet.proxy.hybrid.data.UIProfile;
 
 import java.net.InetSocketAddress;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -34,6 +35,7 @@ public class PlayerLoginMessage implements HybridMessage {
         out.writeUTF(deviceModel);
         out.writeUTF(gameVersion);
         out.writeUTF(languageCode);
+        out.writeBoolean(false); // encryption
         out.writeBoolean(ipAddress != null);
 
         if(ipAddress != null) {
@@ -45,7 +47,16 @@ public class PlayerLoginMessage implements HybridMessage {
 
     @Override
     public void decode(ByteArrayDataInput in) {
-        // one-way
+        authData = new AuthData(in.readUTF(), UUID.fromString(in.readUTF()), in.readUTF());
+        deviceOS = DeviceOS.values()[in.readInt()];
+        uiProfile = UIProfile.values()[in.readInt()];
+        deviceModel = in.readUTF();
+        gameVersion = in.readUTF();
+        languageCode = in.readUTF();
+        in.readBoolean(); // encryption
+        if(in.readBoolean()) { // ip forwarding enabled
+            ipAddress = new InetSocketAddress(in.readUTF(), in.readShort());
+        }
     }
 
     @Override

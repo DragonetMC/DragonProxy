@@ -165,6 +165,12 @@
             <version>8.3.1</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.dragonet.proxy.hybrid</groupId>
+            <artifactId>hybrid-common</artifactId>
+            <version>0.4-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>

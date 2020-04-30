@@ -11,6 +11,7 @@
     <modules>
         <module>bootstrap</module>
         <module>proxy</module>
+        <module>hybrid-common</module>
     </modules>
 
     <name>DragonProxy</name>

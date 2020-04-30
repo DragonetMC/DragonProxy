@@ -21,14 +21,9 @@ package org.dragonet.proxy.network.translator.java;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerPluginMessagePacket;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.network.hybrid.messages.EncryptionMessage;
-import org.dragonet.proxy.network.hybrid.HybridMessage;
-import org.dragonet.proxy.network.hybrid.messages.PlayerLoginMessage;
-import org.dragonet.proxy.network.hybrid.messages.SetEntityDataMessage;
-import org.dragonet.proxy.network.hybrid.messages.ShowFormMessage;
+import org.dragonet.proxy.hybrid.HybridMessage;
+import org.dragonet.proxy.hybrid.HybridMessageRegistry;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.misc.PacketTranslator;
 import org.dragonet.proxy.util.registry.PacketRegisterInfo;
@@ -36,14 +31,6 @@ import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 @Log4j2
 @PacketRegisterInfo(packet = ServerPluginMessagePacket.class)
 public class PCPluginMessageTranslator extends PacketTranslator<ServerPluginMessagePacket> {
-    private static Object2ObjectMap<String, HybridMessage> hybridMessages = new Object2ObjectOpenHashMap<>();
-
-    static {
-        hybridMessages.put("PlayerLogin", new PlayerLoginMessage());
-        hybridMessages.put("Encryption", new EncryptionMessage());
-        hybridMessages.put("SetEntityData", new SetEntityDataMessage());
-        hybridMessages.put("ShowForm", new ShowFormMessage());
-    }
 
     @Override
     public void translate(ProxySession session, ServerPluginMessagePacket packet) {
@@ -55,9 +42,9 @@ public class PCPluginMessageTranslator extends PacketTranslator<ServerPluginMess
                 ByteArrayDataInput in = ByteStreams.newDataInput(packet.getData());
                 String subchannel = in.readUTF();
 
-                HybridMessage hybridMessage = hybridMessages.get(subchannel);
+                HybridMessage hybridMessage = HybridMessageRegistry.getMessage(subchannel, true);
                 if(hybridMessage == null) {
-                    log.warn("Invalid hybrid message received with name: " + subchannel);
+                    log.warn("Invalid hybrid message received with id: " + subchannel);
                     return;
                 }
 

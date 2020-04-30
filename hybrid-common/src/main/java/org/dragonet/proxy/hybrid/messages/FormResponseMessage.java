@@ -1,19 +1,25 @@
-package org.dragonet.proxy.network.hybrid.messages;
+package org.dragonet.proxy.hybrid.messages;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.dragonet.proxy.network.hybrid.HybridMessage;
-import org.dragonet.proxy.network.hybrid.HybridMessageHandler;
+import lombok.NoArgsConstructor;
+import org.dragonet.proxy.hybrid.HybridMessage;
 
 @Getter
-public class ShowFormMessage implements HybridMessage {
+@AllArgsConstructor
+@NoArgsConstructor
+public class FormResponseMessage implements HybridMessage {
     private int formId;
     private String formData;
 
     @Override
     public ByteArrayDataOutput encode(ByteArrayDataOutput out) {
-        throw new UnsupportedOperationException();
+        out.writeInt(formId);
+        out.writeUTF(formData);
+        return out;
     }
 
     @Override
@@ -23,12 +29,7 @@ public class ShowFormMessage implements HybridMessage {
     }
 
     @Override
-    public void handle(HybridMessageHandler handler) {
-        handler.handle(this);
-    }
-
-    @Override
     public String getId() {
-        return "ShowForm";
+        return "FormResponse";
     }
 }

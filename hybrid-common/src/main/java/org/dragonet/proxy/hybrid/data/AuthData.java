@@ -16,16 +16,21 @@
  *
  * https://github.com/DragonetMC/DragonProxy
  */
-package org.dragonet.proxy.network.session.data;
+package org.dragonet.proxy.hybrid.data;
 
-import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
- * Represents all possible user interface types
- * specified in the bedrock LoginPacket.
- */
-public enum UIProfile {
-    @JsonEnumDefaultValue
-    CLASSIC,
-    POCKET
+import java.util.UUID;
+
+@Getter
+@AllArgsConstructor
+public final class AuthData {
+    private String displayName;
+    private UUID identity;
+    @JsonProperty("XUID")
+    @Setter
+    private String xuid;
 }

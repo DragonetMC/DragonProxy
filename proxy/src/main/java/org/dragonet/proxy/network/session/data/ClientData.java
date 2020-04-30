@@ -21,6 +21,8 @@ package org.dragonet.proxy.network.session.data;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import org.dragonet.proxy.hybrid.data.DeviceOS;
+import org.dragonet.proxy.hybrid.data.UIProfile;
 
 import java.util.UUID;
 

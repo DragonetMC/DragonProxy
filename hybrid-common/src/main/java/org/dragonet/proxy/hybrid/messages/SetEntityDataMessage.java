@@ -1,22 +1,23 @@
-package org.dragonet.proxy.network.hybrid.messages;
+package org.dragonet.proxy.hybrid.messages;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
-import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.protocol.bedrock.data.EntityData;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+//import com.nukkitx.math.vector.Vector3f;
+//import com.nukkitx.math.vector.Vector3i;
+//import com.nukkitx.protocol.bedrock.data.EntityData;
+//import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+//import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
-import org.dragonet.proxy.network.hybrid.HybridMessage;
-import org.dragonet.proxy.network.hybrid.HybridMessageHandler;
+import org.dragonet.proxy.hybrid.AbstractHybridMessageHandler;
+import org.dragonet.proxy.hybrid.HybridMessage;
+//import org.dragonet.proxy.network.hybrid.HybridMessageHandler;
 
 @Getter
 public class SetEntityDataMessage implements HybridMessage {
-    private static final EntityData[] ENTITY_DATA = EntityData.values();
+//    private static final EntityData[] ENTITY_DATA = EntityData.values();
 
     private int entityId;
-    private Object2ObjectMap<EntityData, Object> entityDataMap = new Object2ObjectOpenHashMap<>();
+//    private Object2ObjectMap<EntityData, Object> entityDataMap = new Object2ObjectOpenHashMap<>();
 
     @Override
     public ByteArrayDataOutput encode(ByteArrayDataOutput out) {
@@ -49,13 +50,13 @@ public class SetEntityDataMessage implements HybridMessage {
                 // TODO
                 break;
             case 6: // vector3i
-                value = Vector3i.from(in.readInt(), in.readInt(), in.readInt());
+//                value = Vector3i.from(in.readInt(), in.readInt(), in.readInt());
                 break;
             case 7: // long
                 value = in.readLong();
                 break;
             case 8: // vector3f
-                value = Vector3f.from(in.readFloat(), in.readFloat(), in.readFloat());
+//                value = Vector3f.from(in.readFloat(), in.readFloat(), in.readFloat());
                 break;
         }
 
@@ -63,15 +64,15 @@ public class SetEntityDataMessage implements HybridMessage {
             return;
         }
 
-        for(EntityData entityData : ENTITY_DATA) {
-            if(entityData.name().equalsIgnoreCase(name)) {
-                entityDataMap.put(entityData, value);
-            }
-        }
+//        for(EntityData entityData : ENTITY_DATA) {
+//            if(entityData.name().equalsIgnoreCase(name)) {
+//                entityDataMap.put(entityData, value);
+//            }
+//        }
     }
 
     @Override
-    public void handle(HybridMessageHandler handler) {
+    public void handle(AbstractHybridMessageHandler handler) {
         handler.handle(this);
     }
 
