@@ -103,6 +103,9 @@ public class DragonProxy {
 
     private long startTime;
     private int bindPort;
+    private String remoteAddress;
+    private int remotePort;
+
     @Getter
     private File dataFolder;
     @Getter
@@ -111,17 +114,27 @@ public class DragonProxy {
     /**
      * Constructs a new instance of the DragonProxy class.
      * This is the main class for the proxy (although the command line option parsing is in the `bootstrap` module)
+     */
+    public DragonProxy(PlatformType type, File dataPath) {
+        this(type, dataPath, -1, null, -1);
+    }
+
+    /**
+     * Constructs a new instance of the DragonProxy class.
+     * This is the main class for the proxy (although the command line option parsing is in the `bootstrap` module)
      *
      * @param bedrockPort a custom port provided from a command line option
      *                    to override the bind port in the config
      */
-    public DragonProxy(PlatformType type, File dataPath, int bedrockPort) {
+    public DragonProxy(PlatformType type, File dataPath, int bedrockPort, String remoteAddress, int remotePort) {
         INSTANCE = this;
 
         startTime = System.currentTimeMillis();
         platformType = type;
         dataFolder = dataPath;
         bindPort = bedrockPort;
+        this.remoteAddress = remoteAddress;
+        this.remotePort = remotePort;
 
         log.info("Welcome to DragonProxy version " + getVersion());
 
@@ -161,6 +174,8 @@ public class DragonProxy {
             System.exit(0);
             return;
         }
+
+        handleConfigOverrides();
 
         if(!RELEASE) {
             log.warn("This is a development build. It may contain bugs. Do not use in production.");
@@ -220,6 +235,18 @@ public class DragonProxy {
                 }
             } catch (InterruptedException ignored) {
             }
+        }
+    }
+
+    private void handleConfigOverrides() {
+        if(bindPort != -1) {
+            configuration.setBindPort(bindPort);
+        }
+        if(remoteAddress != null) {
+            configuration.setRemoteAddress(remoteAddress);
+        }
+        if(remotePort != -1) {
+            configuration.setRemotePort(remotePort);
         }
     }
 

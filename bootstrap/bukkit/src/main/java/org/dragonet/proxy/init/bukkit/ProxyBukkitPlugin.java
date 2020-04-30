@@ -36,7 +36,7 @@ public class ProxyBukkitPlugin extends JavaPlugin {
         getDataFolder().mkdir();
 
         // Initialize the main proxy class
-        proxy = new DragonProxy(PlatformType.BUKKIT, getDataFolder(), -1);
+        proxy = new DragonProxy(PlatformType.BUKKIT, getDataFolder());
     }
 
     @Override
