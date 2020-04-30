@@ -1,22 +1,4 @@
-/*
- * DragonProxy
- * Copyright (C) 2016-2020 Dragonet Foundation
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You can view the LICENSE file for more details.
- *
- * https://github.com/DragonetMC/DragonProxy
- */
-package org.dragonet.proxy.network.translator.misc;
+package org.dragonet.proxy.network.translator;
 
 import com.github.steveice10.mc.protocol.data.message.ChatColor;
 import com.github.steveice10.mc.protocol.data.message.Message;
@@ -29,17 +11,32 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.translator.misc.MessageTranslator;
+import org.dragonet.proxy.network.translator.misc.tile.IBlockEntityTranslator;
 import org.dragonet.proxy.util.TextFormat;
+import org.dragonet.proxy.util.registry.BlockEntityRegisterInfo;
+import org.dragonet.proxy.util.registry.Registry;
 
 import java.util.Map;
 
 @Log4j2
-public class BlockEntityTranslator {
+public class BlockEntityTranslatorRegistry extends Registry {
     // Java to Bedrock block entity name map
     private static final Object2ObjectMap<String, String> blockEntityMap = new Object2ObjectOpenHashMap<>();
     private static final Object2ObjectMap<String, String> legacyJavaToBedrockMap = new Object2ObjectOpenHashMap<>();
 
+    private static final Object2ObjectMap<String, IBlockEntityTranslator> customTranslators = new Object2ObjectOpenHashMap<>();
+
     static {
+        // Register custom block entity translators
+        registerPath("org.dragonet.proxy.network.translator.misc.tile", BlockEntityRegisterInfo.class, (info ,clazz) -> {
+            try {
+                customTranslators.put(((BlockEntityRegisterInfo) info).bedrockId(), (IBlockEntityTranslator) clazz.newInstance());
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        });
+
         register("minecraft:bed", "Bed");
         register("minecraft:chest", "Chest");
         register("minecraft:ender_chest", "EnderChest");
@@ -73,6 +70,8 @@ public class BlockEntityTranslator {
         register("minecraft:blast_furnace", "BlastFurnace");
         register("minecraft:barrel", "Barrel");
         register("minecraft:campfire", "Campfire");
+        register("minecraft:lectern", "Lectern");
+        register("minecraft:trapped_chest", "Chest"); // TODO: Chest or TrappedChest?
     }
 
     private static void register(String javaId, String bedrockId) {
@@ -100,37 +99,9 @@ public class BlockEntityTranslator {
             return null;
         }
 
-        // TODO: bed colour
-        //log.info(javaTag.getValue());
-
-        switch(bedrockId) {
-            case "Beacon":
-                // TODO: see above, make this automatically translate
-                root.intTag("Primary", (int) javaTag.get("Primary").getValue());
-                root.intTag("Secondary", (int) javaTag.get("Secondary").getValue());
-                root.intTag("Levels", (int) javaTag.get("Levels").getValue());
-                root.stringTag("Lock", "");
-                break;
-            case "Sign":
-                String signText = "";
-                for(int i = 0; i < 4; i++) {
-                    int currentLine = i+1;
-
-                    //Signs have different color names than chat color ugh
-                    String color = javaTag.get("Color").getValue().toString()
-                    .replaceAll("\\bblue\\b", "dark_blue")
-                    .replaceAll("\\bgray\\b", "dark_gray")
-                    .replaceAll("\\blight_blue\\b", "blue")
-                    .replaceAll("\\blight_gray\\b", "gray");
-
-                    Message message = Message.fromString(javaTag.get("Text" + currentLine).getValue().toString());
-                    message.getExtra().forEach(messageExtra -> {
-                        messageExtra.setStyle(new MessageStyle().setColor(ChatColor.byName(color)));
-                    });
-                    signText += MessageTranslator.translate(message) + "\n";
-                }
-                root.stringTag("Text", signText);
-                break;
+        // Execute custom translators
+        if(customTranslators.containsKey(bedrockId)) {
+            customTranslators.get(bedrockId).translateToBedrock(root, javaTag);
         }
 
         root.stringTag("id", bedrockId);

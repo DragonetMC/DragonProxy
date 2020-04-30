@@ -19,6 +19,7 @@
 package org.dragonet.proxy.network.session;
 
 import com.github.steveice10.mc.auth.data.GameProfile;
+import com.github.steveice10.mc.auth.exception.property.PropertyException;
 import com.github.steveice10.mc.auth.exception.request.RequestException;
 import com.github.steveice10.mc.protocol.MinecraftProtocol;
 import com.github.steveice10.mc.protocol.data.SubProtocol;
@@ -36,7 +37,6 @@ import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 import com.nukkitx.math.vector.Vector2f;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.PlayerSession;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
@@ -64,7 +64,6 @@ import org.dragonet.proxy.util.SkinUtils;
 import org.dragonet.proxy.util.TextFormat;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -227,10 +226,15 @@ public class ProxySession implements PlayerSession {
             ImageData skinData = SkinUtils.fetchSkin(this, profile);
             if (skinData == null) return;
 
-            ImageData capeData = SkinUtils.fetchUnofficialCape(profile);
+            ImageData capeData = SkinUtils.fetchCape(this, profile);
             if(capeData == null) capeData = ImageData.EMPTY;
 
-            GameProfile.TextureModel model = profile.getTexture(GameProfile.TextureType.SKIN).getModel();
+            GameProfile.TextureModel model = null;
+            try {
+                model = profile.getTexture(GameProfile.TextureType.SKIN).getModel();
+            } catch (PropertyException e) {
+                log.warn("Failed to get skin model for player " + profile.getName(), e);
+            }
             setPlayerSkin2(authData.getIdentity(), skinData, model, capeData);
         });
     }
@@ -427,7 +431,7 @@ public class ProxySession implements PlayerSession {
         sendPacket(biomeDefinitionListPacket);
 
         AvailableEntityIdentifiersPacket entityPacket = new AvailableEntityIdentifiersPacket();
-        entityPacket.setTag(CompoundTag.EMPTY);
+        entityPacket.setTag(PaletteManager.ENTITY_IDENTIFIERS);
         sendPacket(entityPacket);
 
         // Spawn

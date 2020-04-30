@@ -74,16 +74,12 @@ public class MapDataUtils {
         private final int green;
         private final int blue;
 
-        /**
-         * Copyright (C) 2006 The Android Open Source Project
-         * Adapted from https://android.googlesource.com/platform/frameworks/base/+/aeb60fb/graphics/java/android/graphics/Color.java#107
-         */
         public int argb() {
             int alpha = 255;
             if(red == -1 && green == -1 && blue == -1) {
                 alpha = 0;
             }
-            return ((alpha & 0xFF) << 24) | ((blue & 0xFF) << 16) | ((green & 0xFF) << 8) | (red & 0xFF);
+            return ((alpha & 0xFF) << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | (blue & 0xFF);
         }
     }
 

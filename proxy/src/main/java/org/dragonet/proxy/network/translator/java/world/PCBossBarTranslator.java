@@ -104,9 +104,13 @@ public class PCBossBarTranslator extends PacketTranslator<ServerBossBarPacket> {
     }
 
     private void removeFakeEntity(ProxySession session, UUID uuid) {
-        RemoveEntityPacket removeEntityPacket = new RemoveEntityPacket();
-        removeEntityPacket.setUniqueEntityId(session.getEntityCache().removeBossBar(uuid));
+        if(session.getEntityCache().getBossbars().containsKey(uuid)) {
+            RemoveEntityPacket removeEntityPacket = new RemoveEntityPacket();
+            removeEntityPacket.setUniqueEntityId(session.getEntityCache().removeBossBar(uuid));
 
-        session.sendPacket(removeEntityPacket);
+            session.sendPacket(removeEntityPacket);
+        } else {
+            log.info(TextFormat.GRAY + "(debug) tried removing a bossbar that doesnt exist");
+        }
     }
 }

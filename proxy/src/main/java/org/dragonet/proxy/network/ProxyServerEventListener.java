@@ -65,14 +65,14 @@ public class ProxyServerEventListener implements BedrockServerEventHandler {
         }
 
         if (serverInfo != null) {
-            pong.setMaximumPlayerCount(serverInfo.getPlayerInfo().getMaxPlayers());
+            pong.setMaximumPlayerCount(serverInfo.getPlayerInfo().getMaxPlayers() + 1);
             pong.setPlayerCount(serverInfo.getPlayerInfo().getOnlinePlayers());
         } else {
             pong.setPlayerCount(proxy.getSessionManager().getPlayerCount());
             pong.setMaximumPlayerCount(config.getMaxPlayers());
         }
 
-        //Java MOTD never look good on Bedrock. This should never passthrough
+        // Java MOTD never look good on Bedrock. This should never passthrough
         pong.setMotd(config.getMotd());
         pong.setSubMotd(config.getMotd2());
 

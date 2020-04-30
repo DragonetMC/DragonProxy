@@ -18,6 +18,7 @@
  */
 package org.dragonet.proxy.network.translator.java.entity;
 
+import com.github.steveice10.mc.protocol.data.game.entity.EquipmentSlot;
 import com.github.steveice10.mc.protocol.packet.ingame.server.entity.ServerEntityEquipmentPacket;
 import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
 import lombok.extern.log4j.Log4j2;

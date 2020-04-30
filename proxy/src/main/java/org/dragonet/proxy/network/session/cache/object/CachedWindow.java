@@ -29,7 +29,7 @@ import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.entity.BedrockEntityType;
 import org.dragonet.proxy.data.window.BedrockWindowType;
 import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.misc.BlockEntityTranslator;
+import org.dragonet.proxy.network.translator.BlockEntityTranslatorRegistry;
 import org.dragonet.proxy.network.translator.misc.BlockTranslator;
 
 @Data
@@ -121,7 +121,7 @@ public class CachedWindow {
         BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
         blockEntityDataPacket.setBlockPosition(position);
         blockEntityDataPacket.setData(CompoundTag.builder()
-            .stringTag("id", BlockEntityTranslator.getBedrockIdentifier(windowType.getFakeId()))
+            .stringTag("id", BlockEntityTranslatorRegistry.getBedrockIdentifier(windowType.getFakeId()))
             .stringTag("CustomName", name)
             .intTag("x", position.getX())
             .intTag("y", position.getY())

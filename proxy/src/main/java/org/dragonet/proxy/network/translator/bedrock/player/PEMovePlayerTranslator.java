@@ -62,8 +62,10 @@ public class PEMovePlayerTranslator extends PacketTranslator<MovePlayerPacket> {
             y = Math.ceil(y * 2) / 2; // If we only do this when on ground then movement isn't so buggy
         }
 
-        ClientPlayerPositionRotationPacket playerPositionRotationPacket = new ClientPlayerPositionRotationPacket(packet.isOnGround(), GenericMath.round(packet.getPosition().getX(), 4),
-           y, GenericMath.round(packet.getPosition().getZ(), 4), packet.getRotation().getY(), packet.getRotation().getX());
+        // I must admit some credit to Geyser for finding the precision loss issue
+        // I Googled how to not lose precision when casting a float to a double and apparently this is a good way to do it
+        ClientPlayerPositionRotationPacket playerPositionRotationPacket = new ClientPlayerPositionRotationPacket(packet.isOnGround(), Double.parseDouble(Float.toString(packet.getPosition().getX())),
+           y, Double.parseDouble(Float.toString(packet.getPosition().getZ())), packet.getRotation().getY(), packet.getRotation().getX());
 
         session.sendRemotePacket(playerPositionRotationPacket);
     }

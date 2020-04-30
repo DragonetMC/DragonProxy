@@ -18,11 +18,33 @@
  */
 package org.dragonet.proxy.network.translator.misc.item.nbt;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.steveice10.opennbt.tag.builtin.*;
 import com.nukkitx.nbt.CompoundTagBuilder;
-import org.dragonet.proxy.data.EnchantmentType;
+import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import org.dragonet.proxy.DragonProxy;
+import org.dragonet.proxy.util.FileUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class EnchantmentNbtTranslator implements ItemNbtTranslator {
+    private static final Object2IntMap<String> enchantMap = new Object2IntLinkedOpenHashMap<>();
+
+    static {
+        InputStream stream = FileUtils.getResource("mappings/1.15/enchantments.json");
+        if(stream == null) {
+            throw new AssertionError("Cannot find enchantment mappings");
+        }
+
+        try {
+            JsonNode rootNode = DragonProxy.JSON_MAPPER.readTree(stream);
+            rootNode.fields().forEachRemaining(entry -> enchantMap.put(entry.getKey(), entry.getValue().intValue()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public com.nukkitx.nbt.tag.CompoundTag translateToBedrock(CompoundTag javaTag) {
@@ -37,13 +59,10 @@ public class EnchantmentNbtTranslator implements ItemNbtTranslator {
                 StringTag id = ((CompoundTag) tag).get("id");
                 ShortTag lvl = ((CompoundTag) tag).get("lvl");
 
-                EnchantmentType enchantmentType = EnchantmentType.valueOf(id.getValue().replace("minecraft:", "").toUpperCase());
-                if(enchantmentType == null) {
-                    return;
+                if(enchantMap.containsKey(id.getValue())) {
+                    root.shortTag("id", (short) enchantMap.getInt(id));
+                    root.shortTag("lvl", lvl.getValue());
                 }
-
-                root.shortTag("id", (short) enchantmentType.ordinal());
-                root.shortTag("lvl", lvl.getValue());
             }
         });
         return root.buildRootTag();
