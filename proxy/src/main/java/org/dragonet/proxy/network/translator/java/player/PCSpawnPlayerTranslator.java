@@ -69,6 +69,7 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
         if(session.getProxy().getConfiguration().getRemoteAuthType() == RemoteAuthType.OFFLINE) {
             return;
         }
+
         if(session.getProxy().getConfiguration().getPlayerConfig().isFetchSkin()) {
             session.getProxy().getGeneralThreadPool().execute(() -> {
                 GameProfile profile = playerListEntry.getProfile();
@@ -85,7 +86,7 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
                 } catch (PropertyException e) {
                     log.warn("Failed to get skin model for player " + profile.getName(), e);
                 }
-                session.setPlayerSkin(profile.getId(), cachedPlayer.getProxyEid(), skinData, model, capeData);
+                session.setPlayerSkin(profile.getId(), skinData, model, capeData);
             });
         }
     }

@@ -47,18 +47,14 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
             PlayerListPacket.Entry bedrockEntry = new PlayerListPacket.Entry(entry.getProfile().getId());
             String displayName = entry.getProfile().getName();
             //Check player name is a valid minecraft name
-            if(displayName == null || !displayName.matches("^[a-zA-Z0-9_]{0,17}+$")) {
-                return;
+            if(displayName != null && (!displayName.matches("^[a-zA-Z0-9_]{0,17}+$") || displayName.equalsIgnoreCase(session.getUsername()))) {
+                displayName = null;
             }
 
             playerListCache.getPlayerInfo().put(entry.getProfile().getId(), new PlayerListInfo(entry, displayName));
 
             switch(packet.getAction()) {
                 case ADD_PLAYER:
-                    if(entry.getProfile().getId().equals(session.getCachedEntity().getJavaUuid())) {
-                        return;
-                    }
-
                     long proxyEid = session.getEntityCache().getNextClientEntityId().getAndIncrement();
                     playerListCache.getPlayerEntityIds().put(entry.getProfile().getId(), proxyEid);
 

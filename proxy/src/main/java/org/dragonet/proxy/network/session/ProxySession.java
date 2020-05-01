@@ -235,7 +235,7 @@ public class ProxySession implements PlayerSession {
             } catch (PropertyException e) {
                 log.warn("Failed to get skin model for player " + profile.getName(), e);
             }
-            setPlayerSkin2(authData.getIdentity(), skinData, model, capeData);
+            setPlayerSkin(authData.getIdentity(), skinData, model, capeData);
         });
     }
 
@@ -440,43 +440,47 @@ public class ProxySession implements PlayerSession {
         sendPacket(playStatusPacket);
 
         if(!disconnect) {
-            cachedEntity = entityCache.newPlayer(Integer.MIN_VALUE, entityId, new GameProfile(getAuthData().getIdentity(), getAuthData().getDisplayName()));
+            cachedEntity = entityCache.newPlayer(1, entityId, new GameProfile(getAuthData().getIdentity(), getAuthData().getDisplayName()));
         }
     }
 
-    /**
-     * Set a skin for the specified player.
-     *
-     * @param playerId the target player uuid
-     * @param entityId
-     * @param skinData the skin data
-     */
-    public void setPlayerSkin(UUID playerId, long entityId, ImageData skinData, GameProfile.TextureModel model, ImageData capeData) {
-        GameProfile profile = playerListCache.getPlayerInfo().get(playerId).getEntry().getProfile();
-
-        // Remove the player from the player list
-        PlayerListPacket removePacket = new PlayerListPacket();
-        removePacket.setAction(PlayerListPacket.Action.REMOVE);
-        removePacket.getEntries().add(new PlayerListPacket.Entry(playerId));
-        sendPacket(removePacket);
-
-        // Add them back to the player list with a new skin
-        PlayerListPacket addPacket = new PlayerListPacket();
-        addPacket.setAction(PlayerListPacket.Action.ADD);
-
-        PlayerListPacket.Entry entry = new PlayerListPacket.Entry(playerId);
-        entry.setEntityId(entityId);
-        entry.setName(profile.getName());
-        entry.setSkin(SkinUtils.createSkinEntry(skinData, model, capeData));
-        entry.setXuid("");
-        entry.setPlatformChatId("");
-
-        addPacket.getEntries().add(entry);
-        sendPacket(addPacket); // TODO
-
-        // TODO: ideally we would use PlayerSkinPacket, but that crashes...
-        // See below
-    }
+//    /**
+//     * Set a skin for the specified player.
+//     *
+//     * @param playerId the target player uuid
+//     * @param entityId
+//     * @param skinData the skin data
+//     */
+//    public void setPlayerSkin(UUID playerId, long entityId, ImageData skinData, GameProfile.TextureModel model, ImageData capeData) {
+//        GameProfile profile = playerListCache.getPlayerInfo().get(playerId).getEntry().getProfile();
+//        String displayName = playerListCache.getPlayerInfo().get(playerId).getDisplayName();
+//        if (displayName == null) {
+//            displayName = "§4§lROBOT";
+//        }
+//
+//        // Remove the player from the player list
+//        PlayerListPacket removePacket = new PlayerListPacket();
+//        removePacket.setAction(PlayerListPacket.Action.REMOVE);
+//        removePacket.getEntries().add(new PlayerListPacket.Entry(playerId));
+//        sendPacket(removePacket);
+//
+//        // Add them back to the player list with a new skin
+//        PlayerListPacket addPacket = new PlayerListPacket();
+//        addPacket.setAction(PlayerListPacket.Action.ADD);
+//
+//        PlayerListPacket.Entry entry = new PlayerListPacket.Entry(playerId);
+//        entry.setEntityId(entityId);
+//        entry.setName(displayName);
+//        entry.setSkin(SkinUtils.createSkinEntry(skinData, model, capeData));
+//        entry.setXuid("");
+//        entry.setPlatformChatId("");
+//
+//        addPacket.getEntries().add(entry);
+//        sendPacket(addPacket); // TODO
+//
+//        // TODO: ideally we would use PlayerSkinPacket, but that crashes...
+//        // See below
+//    }
 
     /**
      * Currently used for setting our own skin, however hopefully it can be used to
@@ -485,11 +489,15 @@ public class ProxySession implements PlayerSession {
      * @param playerId the target player uuid
      * @param skinData the skin data
      */
-    public void setPlayerSkin2(UUID playerId, ImageData skinData, GameProfile.TextureModel model, ImageData capeData) {
+    public void setPlayerSkin(UUID playerId, ImageData skinData, GameProfile.TextureModel model, ImageData capeData) {
         PlayerSkinPacket playerSkinPacket = new PlayerSkinPacket();
-        playerSkinPacket.setUuid(playerId);
 
+        playerSkinPacket.setUuid(playerId);
         playerSkinPacket.setSkin(SkinUtils.createSkinEntry(skinData, model, capeData));
+        playerSkinPacket.setOldSkinName("OldName");
+        playerSkinPacket.setNewSkinName("NewName");
+        playerSkinPacket.setTrustedSkin(true);
+
         sendPacket(playerSkinPacket);
     }
 
