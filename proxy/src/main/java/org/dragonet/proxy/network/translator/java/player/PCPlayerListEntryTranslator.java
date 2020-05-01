@@ -28,9 +28,8 @@ import org.dragonet.proxy.data.PlayerListInfo;
 import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.session.cache.PlayerListCache;
 import org.dragonet.proxy.network.translator.misc.PacketTranslator;
-import org.dragonet.proxy.util.registry.PacketRegisterInfo;
-import org.dragonet.proxy.network.translator.misc.MessageTranslator;
 import org.dragonet.proxy.util.SkinUtils;
+import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 
 @Log4j2
 @PacketRegisterInfo(packet = ServerPlayerListEntryPacket.class)
@@ -42,17 +41,20 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
         PlayerListPacket playerListPacket = new PlayerListPacket();
 
         for(PlayerListEntry entry : packet.getEntries()) {
+
+            if(entry.getDisplayName() == null || entry.getDisplayName().toString().isEmpty()) { return; }
+
             PlayerListPacket.Entry bedrockEntry = new PlayerListPacket.Entry(entry.getProfile().getId());
-            String displayName = entry.getDisplayName() != null ? MessageTranslator.translate(entry.getDisplayName()) : entry.getProfile().getName();
+            String displayName = entry.getProfile().getName();
+            //Check player name is a valid minecraft name
+            if(displayName != null && (!displayName.matches("^[a-zA-Z0-9_]{0,17}+$") || displayName.equalsIgnoreCase(session.getUsername()))) {
+                displayName = null;
+            }
 
             playerListCache.getPlayerInfo().put(entry.getProfile().getId(), new PlayerListInfo(entry, displayName));
 
             switch(packet.getAction()) {
                 case ADD_PLAYER:
-                    if(entry.getProfile().getId().equals(session.getCachedEntity().getJavaUuid())) {
-                        return;
-                    }
-
                     long proxyEid = session.getEntityCache().getNextClientEntityId().getAndIncrement();
                     playerListCache.getPlayerEntityIds().put(entry.getProfile().getId(), proxyEid);
 
@@ -65,7 +67,6 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
                     bedrockEntry.setPlatformChatId("");
 
                     playerListPacket.getEntries().add(bedrockEntry);
-
                     session.sendPacket(playerListPacket);
                     break;
 

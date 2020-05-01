@@ -67,7 +67,7 @@ public class SkinUtils {
             false,
             false,
             false,
-            "",
+            randomId,
             randomId);
     }
 
