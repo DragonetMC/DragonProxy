@@ -8,7 +8,7 @@ import org.dragonet.proxy.util.registry.BlockEntityRegisterInfo;
 public class BeaconBlockEntityTranslator implements IBlockEntityTranslator {
 
     @Override
-    public void translateToBedrock(CompoundTagBuilder builder, CompoundTag javaTag) {
+    public void translateToBedrock(CompoundTagBuilder builder, CompoundTag javaTag, String javaId) {
         // TODO: validation
         builder.intTag("Primary", (int) javaTag.get("Primary").getValue());
         builder.intTag("Secondary", (int) javaTag.get("Secondary").getValue());

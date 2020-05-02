@@ -27,6 +27,7 @@ import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import jdk.nashorn.internal.ir.Block;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.data.chunk.ChunkData;
@@ -80,7 +81,11 @@ public class ChunkCache implements Cache {
 
             List<CompoundTag> bedrockBlockEntities = new ArrayList<>();
             for(int i = 0; i < column.getTileEntities().length; i++) {
-                CompoundTag tag = BlockEntityTranslatorRegistry.translateToBedrock(column.getTileEntities()[i]);
+                int x = Integer.parseInt(column.getTileEntities()[i].get("x").getValue().toString());
+                int y = Integer.parseInt(column.getTileEntities()[i].get("y").getValue().toString());
+                int z = Integer.parseInt(column.getTileEntities()[i].get("z").getValue().toString());
+                BlockState block = getJavaBlockAt(Vector3i.from(x, y, z));
+                CompoundTag tag = BlockEntityTranslatorRegistry.translateToBedrock(column.getTileEntities()[i], block);
                 if(tag != null) {
                     bedrockBlockEntities.add(tag);
                 }
@@ -106,7 +111,28 @@ public class ChunkCache implements Cache {
         return 0;
     }
 
+    public BlockState getJavaBlockAt(Vector3i position) {
+        Vector2i chunkPosition = Vector2i.from(position.getX() >> 4, position.getZ() >> 4);
+        if(!javaChunks.containsKey(chunkPosition)) {
+            return new BlockState(0); // Air
+        }
+        Column column = javaChunks.get(chunkPosition);
+        Chunk chunk = column.getChunks()[position.getY() >> 4];
+        Vector3i blockPosition = Vector3i.from(position.getX() & 15, position.getY() & 15, position.getZ() & 15);
+
+        if(chunk != null) {
+            return chunk.get(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
+        }
+        return new BlockState(0);
+    }
+
     public void updateBlock(ProxySession session, Vector3i position, BlockState state) {
+        Vector2i chunkPosition = Vector2i.from(position.getX() >> 4, position.getZ() >> 4);
+        Vector3i blockPosition = Vector3i.from(position.getX() & 15, position.getY() & 15, position.getZ() & 15);
+        Column column = javaChunks.get(chunkPosition);
+        column.getChunks()[position.getY() >> 4].set(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ(), state);
+        javaChunks.put(chunkPosition, column);
+
         UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
         updateBlockPacket.setBlockPosition(position);
         updateBlockPacket.setDataLayer(0);

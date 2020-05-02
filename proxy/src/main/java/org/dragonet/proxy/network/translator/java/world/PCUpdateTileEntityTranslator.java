@@ -18,6 +18,7 @@
  */
 package org.dragonet.proxy.network.translator.java.world;
 
+import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.github.steveice10.mc.protocol.packet.ingame.server.world.ServerUpdateTileEntityPacket;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
@@ -37,7 +38,7 @@ public class PCUpdateTileEntityTranslator extends PacketTranslator<ServerUpdateT
 
         BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
         blockEntityDataPacket.setBlockPosition(position);
-        blockEntityDataPacket.setData(BlockEntityTranslatorRegistry.translateToBedrock(packet.getNbt()));
+        blockEntityDataPacket.setData(BlockEntityTranslatorRegistry.translateToBedrock(packet.getNbt(), session.getChunkCache().getJavaBlockAt(position)));
 
         session.sendPacket(blockEntityDataPacket);
     }

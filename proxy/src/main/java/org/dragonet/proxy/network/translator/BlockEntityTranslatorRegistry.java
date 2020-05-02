@@ -1,5 +1,6 @@
 package org.dragonet.proxy.network.translator;
 
+import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.github.steveice10.mc.protocol.data.message.ChatColor;
 import com.github.steveice10.mc.protocol.data.message.Message;
 import com.github.steveice10.mc.protocol.data.message.MessageStyle;
@@ -11,6 +12,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.session.ProxySession;
+import org.dragonet.proxy.network.translator.misc.BlockTranslator;
 import org.dragonet.proxy.network.translator.misc.MessageTranslator;
 import org.dragonet.proxy.network.translator.misc.tile.IBlockEntityTranslator;
 import org.dragonet.proxy.util.TextFormat;
@@ -83,7 +85,7 @@ public class BlockEntityTranslatorRegistry extends Registry {
         blockEntityMap.put(legacyJavaId, bedrockId);
     }
 
-    public static CompoundTag translateToBedrock(com.github.steveice10.opennbt.tag.builtin.CompoundTag javaTag) {
+    public static CompoundTag translateToBedrock(com.github.steveice10.opennbt.tag.builtin.CompoundTag javaTag, BlockState javaBlock) {
         CompoundTagBuilder root = CompoundTagBuilder.builder(); //ItemTranslate.translateRawNBT(javaTag).toBuilder()
 
         if(!javaTag.contains("id")) {
@@ -101,7 +103,7 @@ public class BlockEntityTranslatorRegistry extends Registry {
 
         // Execute custom translators
         if(customTranslators.containsKey(bedrockId)) {
-            customTranslators.get(bedrockId).translateToBedrock(root, javaTag);
+            customTranslators.get(bedrockId).translateToBedrock(root, javaTag, BlockTranslator.javaProtocolToJavaId(javaBlock.getId()));
         }
 
         root.stringTag("id", bedrockId);
