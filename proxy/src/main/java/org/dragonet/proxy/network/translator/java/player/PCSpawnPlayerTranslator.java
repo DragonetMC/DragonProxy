@@ -66,19 +66,18 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
         }
         cachedPlayer.spawn(session);
 
-        if(session.getProxy().getConfiguration().getRemoteServer().getAuthType() == RemoteAuthType.OFFLINE) {
-            return;
-        }
+        //Profile sometimes null?
+        log.warn("Player has been spawned: " + playerListEntry.getProfile().getName());
 
         if(session.getProxy().getConfiguration().getPlayerConfig().isFetchSkin()) {
             session.getProxy().getGeneralThreadPool().execute(() -> {
                 GameProfile profile = playerListEntry.getProfile();
 
                 ImageData skinData = SkinUtils.fetchSkin(session, profile);
-                if (skinData == null) return;
+                if (skinData == null) skinData = SkinUtils.STEVE_SKIN;
 
                 ImageData capeData = SkinUtils.fetchCape(session, profile);
-                if(capeData == null) capeData = ImageData.EMPTY;
+                if(capeData == null) capeData = SkinUtils.DEFAULT_CAPE;
 
                 GameProfile.TextureModel model = null;
                 try {

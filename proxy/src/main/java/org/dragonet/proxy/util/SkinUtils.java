@@ -34,6 +34,7 @@ import org.dragonet.proxy.network.session.cache.PlayerListCache;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -45,10 +46,12 @@ public class SkinUtils {
     private static final SessionService service = new SessionService();
 
     public static ImageData STEVE_SKIN;
+    public static ImageData DEFAULT_CAPE;
 
     static {
         try {
             STEVE_SKIN = parseBufferedImage(ImageIO.read(DragonProxy.class.getClassLoader().getResource("skin_steve.png")), false);
+            DEFAULT_CAPE = parseBufferedImage(ImageIO.read(DragonProxy.class.getClassLoader().getResource("elytra.png")), false);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -78,9 +81,13 @@ public class SkinUtils {
         // TODO: HANDLE RATE LIMITING
         PlayerListCache playerListCache = session.getPlayerListCache();
 
+        //Make sure not an invalid ID
+        if(profile.getId() == null) {
+            return STEVE_SKIN;
+        }
+
         // Check if the skin is already cached
         if(playerListCache.getRemoteSkinCache().containsKey(profile.getId())) {
-            //log.warn("Retrieving from cache: " + profile.getName());
             return playerListCache.getRemoteSkinCache().get(profile.getId());
         }
 
@@ -89,7 +96,7 @@ public class SkinUtils {
             texture = profile.getTexture(GameProfile.TextureType.SKIN);
         } catch (PropertyException e) {
             log.warn("Failed to get skin for player " + profile.getName(), e);
-            return null;
+            return STEVE_SKIN;
         }
         if(texture != null) {
             try {
@@ -100,7 +107,7 @@ public class SkinUtils {
                 log.warn("Failed to fetch skin for player " + profile.getName() + ": " + e.getMessage());
             }
         }
-        return null;
+        return STEVE_SKIN;
     }
 
     /**
@@ -139,7 +146,6 @@ public class SkinUtils {
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
                     if (connection.getResponseCode() != 404) {
-                        log.warn(String.format("%s has cape at %s", profile.getName(), texture.getURL()));
                         return parseBufferedImage(ImageIO.read(connection.getInputStream()), true);
                     }
                 } catch (IOException e) {
@@ -147,7 +153,7 @@ public class SkinUtils {
                 }
             }
         }
-        return ImageData.EMPTY;
+        return null;
     }
 
     @RequiredArgsConstructor
@@ -175,21 +181,23 @@ public class SkinUtils {
     }
 
     private static ImageData parseBufferedImage(BufferedImage image, boolean cape) {
-        int imageWidth = image.getWidth();
-        int imageHeight = image.getHeight();
-        int bedrockSkinSize = (imageWidth * imageHeight) * 4;
-
-        //Capes need to be 64x32, 128x64 etc otherwise they will render weird. This is an issue i had on MinecratCapes
+        //Capes need to be 64x32 on bedrock, unlike java where they can be HD
         if(cape) {
-            imageWidth = 64;
-            imageHeight = 32;
-            while((imageWidth < image.getWidth()) || (imageHeight < image.getHeight())) {
-                imageWidth *= 2;
-                imageHeight *= 2;
+            BufferedImage imgNew = new BufferedImage(64, 32, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = imgNew.createGraphics();
+            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+
+            int scale = 1;
+            while(image.getWidth() / scale > 64 && image.getHeight() / scale > 32) {
+                scale++;
             }
+
+            g.drawImage(image, 0, 0, image.getWidth() / scale, image.getHeight() / scale, null);
+            g.dispose();
+            image = imgNew;
         }
 
-        FastByteArrayOutputStream out = new FastByteArrayOutputStream(bedrockSkinSize);
+        FastByteArrayOutputStream out = new FastByteArrayOutputStream((image.getWidth() * image.getHeight()) * 4);
         for(int y = 0; y < image.getHeight(); ++y) {
             for(int x = 0; x < image.getWidth(); ++x) {
                 Color color = new Color(image.getRGB(x, y), true);
@@ -201,7 +209,6 @@ public class SkinUtils {
         }
 
         image.flush();
-
         return ImageData.of(image.getWidth(), image.getHeight(), out.array);
     }
 

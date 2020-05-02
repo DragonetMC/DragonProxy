@@ -60,7 +60,7 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
 
                     bedrockEntry.setEntityId(proxyEid);
                     bedrockEntry.setName(displayName);
-                    bedrockEntry.setSkin(SkinUtils.createSkinEntry(SkinUtils.STEVE_SKIN, GameProfile.TextureModel.NORMAL, ImageData.EMPTY));
+                    bedrockEntry.setSkin(SkinUtils.createSkinEntry(SkinUtils.STEVE_SKIN, GameProfile.TextureModel.NORMAL, SkinUtils.DEFAULT_CAPE));
                     bedrockEntry.setXuid("");
                     bedrockEntry.setPlatformChatId("");
 
