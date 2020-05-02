@@ -60,8 +60,8 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
 
         cachedPlayer.setJavaUuid(packet.getUuid());
         cachedPlayer.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
-
         cachedPlayer.setRotation(Vector3f.from(packet.getPitch(), packet.getYaw(), 0));
+        
         if(cachedPlayer.getProfile().getName() != null) {
             cachedPlayer.getMetadata().put(EntityData.NAMETAG, cachedPlayer.getProfile().getName());
         }
