@@ -42,8 +42,6 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
 
         for(PlayerListEntry entry : packet.getEntries()) {
 
-            if(entry.getDisplayName() == null || entry.getDisplayName().toString().isEmpty()) { return; }
-
             PlayerListPacket.Entry bedrockEntry = new PlayerListPacket.Entry(entry.getProfile().getId());
             String displayName = entry.getProfile().getName();
             //Check player name is a valid minecraft name
