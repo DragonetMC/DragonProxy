@@ -81,11 +81,6 @@ public class SkinUtils {
         // TODO: HANDLE RATE LIMITING
         PlayerListCache playerListCache = session.getPlayerListCache();
 
-        //Make sure not an invalid ID
-        if(profile.getId() == null) {
-            return STEVE_SKIN;
-        }
-
         // Check if the skin is already cached
         if(playerListCache.getRemoteSkinCache().containsKey(profile.getId())) {
             return playerListCache.getRemoteSkinCache().get(profile.getId());
@@ -128,7 +123,7 @@ public class SkinUtils {
         try {
             texture = profile.getTexture(GameProfile.TextureType.CAPE);
         } catch (PropertyException e) {
-            return null;
+            return DEFAULT_CAPE;
         }
 
         if(texture != null) {
@@ -153,7 +148,7 @@ public class SkinUtils {
                 }
             }
         }
-        return null;
+        return DEFAULT_CAPE;
     }
 
     @RequiredArgsConstructor
