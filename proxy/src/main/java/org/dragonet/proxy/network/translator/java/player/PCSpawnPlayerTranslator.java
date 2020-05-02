@@ -66,9 +66,6 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
         }
         cachedPlayer.spawn(session);
 
-        //Profile sometimes null?
-        log.warn("Player has been spawned: " + playerListEntry.getProfile().getName());
-
         if(session.getProxy().getConfiguration().getPlayerConfig().isFetchSkin()) {
             session.getProxy().getGeneralThreadPool().execute(() -> {
                 GameProfile profile = playerListEntry.getProfile();
