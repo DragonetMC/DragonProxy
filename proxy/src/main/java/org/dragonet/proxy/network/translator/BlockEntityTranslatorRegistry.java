@@ -109,23 +109,6 @@ public class BlockEntityTranslatorRegistry extends Registry {
         return root.buildRootTag();
     }
 
-    public static void createPistonArm(ProxySession session, Vector3i position, float progress, boolean sticky) {
-        CompoundTagBuilder root = CompoundTagBuilder.builder();
-        root.stringTag("id", "PistonArm")
-            .floatTag("Progress", progress)
-            .byteTag("State", (byte) 1)
-            .booleanTag("Sticky", sticky)
-            .intTag("x", position.getX())
-            .intTag("y", position.getY())
-            .intTag("z", position.getZ());
-
-        BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
-        blockEntityDataPacket.setBlockPosition(position);
-        blockEntityDataPacket.setData(root.buildRootTag());
-
-        session.sendPacket(blockEntityDataPacket);
-    }
-
     public static String getBedrockIdentifier(String javaIdentifier) {
         return blockEntityMap.get(javaIdentifier);
     }
