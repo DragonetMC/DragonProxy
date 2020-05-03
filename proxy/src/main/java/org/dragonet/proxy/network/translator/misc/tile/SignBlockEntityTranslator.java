@@ -20,7 +20,7 @@ public class SignBlockEntityTranslator implements IBlockEntityTranslator {
 
             //Signs have different color names than chat color ugh
             String color = ChatColor.BLACK.toString();
-            if(javaTag.get("color") != null) {
+            if(javaTag.contains("color")) {
                 color = javaTag.get("Color").getValue().toString()
                     .replaceAll("\\bblue\\b", "dark_blue")
                     .replaceAll("\\bgray\\b", "dark_gray")
