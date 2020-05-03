@@ -48,12 +48,10 @@ public class PCPlaySoundTranslator extends PacketTranslator<ServerPlaySoundPacke
             return;
         }
 
-        //log.info("translating sound: " + sound.name().toLowerCase() + "  ///  " + soundName);
-
         PlaySoundPacket playSoundPacket = new PlaySoundPacket();
         playSoundPacket.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
         playSoundPacket.setPitch(packet.getPitch());
-        playSoundPacket.setVolume(2);
+        playSoundPacket.setVolume(packet.getVolume());
         playSoundPacket.setSound(soundName);
 
         session.sendPacket(playSoundPacket);

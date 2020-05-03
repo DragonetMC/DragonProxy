@@ -1,7 +1,5 @@
 package org.dragonet.proxy.network.translator.misc.tile;
 
-
-import com.github.steveice10.mc.protocol.data.message.ChatColor;
 import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
 import com.nukkitx.nbt.CompoundTagBuilder;
 import lombok.extern.log4j.Log4j2;

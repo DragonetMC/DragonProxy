@@ -1,14 +1,11 @@
 package org.dragonet.proxy.network.translator;
 
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
-import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.nbt.tag.CompoundTag;
-import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.network.session.ProxySession;
 import org.dragonet.proxy.network.translator.misc.BlockTranslator;
 import org.dragonet.proxy.network.translator.misc.tile.IBlockEntityTranslator;
 import org.dragonet.proxy.util.TextFormat;
@@ -56,7 +53,7 @@ public class BlockEntityTranslatorRegistry extends Registry {
         register("minecraft:banner", "Banner");
         register("minecraft:comparator", "Comparator");
         register("minecraft:jukebox", "Jukebox", "RecordPlayer");
-        register("minecraft:piston", "PistonArm");
+        register("minecraft:piston_head", "PistonArm");
         register("minecraft:noteblock", "Noteblock");
         register("minecraft:enchanting_table", "EnchantTable");
         register("minecraft:brewing_stand", "BrewingStand");
