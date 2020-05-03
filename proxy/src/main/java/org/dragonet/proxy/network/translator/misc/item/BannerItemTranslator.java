@@ -26,14 +26,15 @@ public class BannerItemTranslator implements IItemTranslator {
 
         CompoundTag blockEntityTag = javaTag.get("BlockEntityTag");
         ListTag patterns = blockEntityTag.get("Patterns");
-        log.warn(patterns.getValue());
 
         List<com.nukkitx.nbt.tag.CompoundTag> patternList = new ArrayList<>();
         for(Tag pattern : patterns) {
-            patternList.add(convertPattern(pattern));
+            com.nukkitx.nbt.tag.CompoundTag convertedPattern = convertPattern(pattern);
+            if(convertedPattern != null)
+                patternList.add(convertedPattern);
         }
         root.listTag("Patterns", com.nukkitx.nbt.tag.CompoundTag.class, patternList);
-        
+
         return itemEntry.toItemData(item.getAmount(), root.buildRootTag());
     }
 

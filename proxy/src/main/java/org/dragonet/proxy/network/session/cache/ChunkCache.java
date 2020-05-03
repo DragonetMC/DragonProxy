@@ -80,9 +80,9 @@ public class ChunkCache implements Cache {
 
             List<CompoundTag> bedrockBlockEntities = new ArrayList<>();
             for(int i = 0; i < column.getTileEntities().length; i++) {
-                int x = Integer.parseInt(column.getTileEntities()[i].get("x").getValue().toString());
-                int y = Integer.parseInt(column.getTileEntities()[i].get("y").getValue().toString());
-                int z = Integer.parseInt(column.getTileEntities()[i].get("z").getValue().toString());
+                int x = (int) column.getTileEntities()[i].get("x").getValue();
+                int y = (int) column.getTileEntities()[i].get("y").getValue();
+                int z = (int) column.getTileEntities()[i].get("z").getValue();
                 BlockState block = getJavaBlockAt(Vector3i.from(x, y, z));
                 CompoundTag tag = BlockEntityTranslatorRegistry.translateToBedrock(column.getTileEntities()[i], block);
                 if(tag != null) {

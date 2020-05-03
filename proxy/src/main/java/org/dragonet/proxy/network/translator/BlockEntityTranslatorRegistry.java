@@ -109,10 +109,10 @@ public class BlockEntityTranslatorRegistry extends Registry {
         return root.buildRootTag();
     }
 
-    public static void createPistonArm(ProxySession session, Vector3i position, boolean sticky) {
+    public static void createPistonArm(ProxySession session, Vector3i position, float progress, boolean sticky) {
         CompoundTagBuilder root = CompoundTagBuilder.builder();
         root.stringTag("id", "PistonArm")
-            .floatTag("Progress", 1f)
+            .floatTag("Progress", progress)
             .byteTag("State", (byte) 1)
             .booleanTag("Sticky", sticky)
             .intTag("x", position.getX())
