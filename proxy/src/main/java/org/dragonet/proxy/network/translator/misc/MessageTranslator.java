@@ -73,8 +73,8 @@ public class MessageTranslator {
         }
         StringBuilder builder = new StringBuilder();
 
-        builder.append(toBedrockFormat(message.getStyle().getFormats()));
         builder.append(toBedrockColor(message.getStyle().getColor()));
+        builder.append(toBedrockFormat(message.getStyle().getFormats()));
         builder.append(message.getText());
         builder.append(toBedrockColor(ChatColor.NONE));
 

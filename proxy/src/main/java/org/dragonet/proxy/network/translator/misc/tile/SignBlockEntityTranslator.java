@@ -4,12 +4,15 @@ import com.github.steveice10.mc.protocol.data.message.ChatColor;
 import com.github.steveice10.mc.protocol.data.message.Message;
 import com.github.steveice10.mc.protocol.data.message.MessageStyle;
 import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
+import com.nimbusds.jose.util.Base64;
 import com.nukkitx.nbt.CompoundTagBuilder;
+import io.netty.handler.codec.base64.Base64Encoder;
+import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.translator.misc.MessageTranslator;
 import org.dragonet.proxy.util.registry.BlockEntityRegisterInfo;
 
+@Log4j2
 @BlockEntityRegisterInfo(bedrockId = "Sign")
-
 public class SignBlockEntityTranslator implements IBlockEntityTranslator {
 
     @Override
@@ -17,25 +20,13 @@ public class SignBlockEntityTranslator implements IBlockEntityTranslator {
         StringBuilder signText = new StringBuilder();
         for(int i = 0; i < 4; i++) {
             int currentLine = i+1;
-
-            //Signs have different color names than chat color ugh
-            String color = ChatColor.BLACK.toString();
-            if(javaTag.get("color") != null) {
-                color = javaTag.get("Color").getValue().toString()
-                    .replaceAll("\\bblue\\b", "dark_blue")
-                    .replaceAll("\\bgray\\b", "dark_gray")
-                    .replaceAll("\\blight_blue\\b", "blue")
-                    .replaceAll("\\blight_gray\\b", "gray");
-            }
-
-            //Lambda requiring stupid stuff
-            String finalColor = color;
-
             Message message = Message.fromString(javaTag.get("Text" + currentLine).getValue().toString());
-            message.getExtra().forEach(messageExtra -> {
-                messageExtra.setStyle(new MessageStyle().setColor(ChatColor.byName(finalColor)));
-            });
-            signText.append(MessageTranslator.translate(message)).append("\n");
+            String signLine = MessageTranslator.translate(message);
+
+            if(signLine.contains("="))
+                signLine = signLine.substring(0, Math.min(signLine.length(), 18));
+
+            signText.append(signLine).append("\n");
         }
         builder.stringTag("Text", signText.toString());
     }
