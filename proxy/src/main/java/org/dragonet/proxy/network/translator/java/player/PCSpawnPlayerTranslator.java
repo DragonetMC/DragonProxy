@@ -60,25 +60,22 @@ public class PCSpawnPlayerTranslator extends PacketTranslator<ServerSpawnPlayerP
 
         cachedPlayer.setJavaUuid(packet.getUuid());
         cachedPlayer.setPosition(Vector3f.from(packet.getX(), packet.getY(), packet.getZ()));
-        cachedPlayer.setRotation(Vector3f.from(packet.getYaw(), packet.getPitch(), 0));
+        cachedPlayer.setRotation(Vector3f.from(packet.getPitch(), packet.getYaw(), 0));
+        
         if(cachedPlayer.getProfile().getName() != null) {
             cachedPlayer.getMetadata().put(EntityData.NAMETAG, cachedPlayer.getProfile().getName());
         }
         cachedPlayer.spawn(session);
-
-        if(session.getProxy().getConfiguration().getRemoteServer().getAuthType() == RemoteAuthType.OFFLINE) {
-            return;
-        }
 
         if(session.getProxy().getConfiguration().getPlayerConfig().isFetchSkin()) {
             session.getProxy().getGeneralThreadPool().execute(() -> {
                 GameProfile profile = playerListEntry.getProfile();
 
                 ImageData skinData = SkinUtils.fetchSkin(session, profile);
-                if (skinData == null) return;
+                if (skinData == null) skinData = SkinUtils.STEVE_SKIN;
 
                 ImageData capeData = SkinUtils.fetchCape(session, profile);
-                if(capeData == null) capeData = ImageData.EMPTY;
+                if(capeData == null) capeData = SkinUtils.DEFAULT_CAPE;
 
                 GameProfile.TextureModel model = null;
                 try {
