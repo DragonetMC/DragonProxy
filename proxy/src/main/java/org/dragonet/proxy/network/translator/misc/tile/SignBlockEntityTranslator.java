@@ -9,6 +9,7 @@ import com.nukkitx.nbt.CompoundTagBuilder;
 import io.netty.handler.codec.base64.Base64Encoder;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.translator.misc.MessageTranslator;
+import org.dragonet.proxy.util.DyeColor;
 import org.dragonet.proxy.util.registry.BlockEntityRegisterInfo;
 
 @Log4j2
@@ -21,6 +22,14 @@ public class SignBlockEntityTranslator implements IBlockEntityTranslator {
         for(int i = 0; i < 4; i++) {
             int currentLine = i+1;
             Message message = Message.fromString(javaTag.get("Text" + currentLine).getValue().toString());
+
+            String signColor = javaTag.get("Color").getValue().toString().toUpperCase();
+            if(!signColor.equalsIgnoreCase("BLACK")) {
+                message.getExtra().forEach(messageExtra -> {
+                    messageExtra.setStyle(new MessageStyle().setColor(DyeColor.valueOf(signColor).getChatColor()));
+                });
+            }
+
             String signLine = MessageTranslator.translate(message);
 
             if(signLine.contains("="))
@@ -28,6 +37,7 @@ public class SignBlockEntityTranslator implements IBlockEntityTranslator {
 
             signText.append(signLine).append("\n");
         }
+
         builder.stringTag("Text", signText.toString());
     }
 }
