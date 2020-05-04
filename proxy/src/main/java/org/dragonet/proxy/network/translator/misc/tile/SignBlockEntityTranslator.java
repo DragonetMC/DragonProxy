@@ -13,14 +13,14 @@ import org.dragonet.proxy.util.registry.BlockEntityRegisterInfo;
 public class SignBlockEntityTranslator implements IBlockEntityTranslator {
 
     @Override
-    public void translateToBedrock(CompoundTagBuilder builder, CompoundTag javaTag) {
+    public void translateToBedrock(CompoundTagBuilder builder, CompoundTag javaTag, String javaId) {
         StringBuilder signText = new StringBuilder();
         for(int i = 0; i < 4; i++) {
             int currentLine = i+1;
 
             //Signs have different color names than chat color ugh
             String color = ChatColor.BLACK.toString();
-            if(javaTag.get("color") != null) {
+            if(javaTag.contains("color")) {
                 color = javaTag.get("Color").getValue().toString()
                     .replaceAll("\\bblue\\b", "dark_blue")
                     .replaceAll("\\bgray\\b", "dark_gray")

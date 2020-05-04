@@ -1,17 +1,12 @@
 package org.dragonet.proxy.network.translator;
 
-import com.github.steveice10.mc.protocol.data.message.ChatColor;
-import com.github.steveice10.mc.protocol.data.message.Message;
-import com.github.steveice10.mc.protocol.data.message.MessageStyle;
-import com.nukkitx.math.vector.Vector3i;
+import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.nbt.tag.CompoundTag;
-import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
-import org.dragonet.proxy.network.session.ProxySession;
-import org.dragonet.proxy.network.translator.misc.MessageTranslator;
+import org.dragonet.proxy.network.translator.misc.BlockTranslator;
 import org.dragonet.proxy.network.translator.misc.tile.IBlockEntityTranslator;
 import org.dragonet.proxy.util.TextFormat;
 import org.dragonet.proxy.util.registry.BlockEntityRegisterInfo;
@@ -58,7 +53,7 @@ public class BlockEntityTranslatorRegistry extends Registry {
         register("minecraft:banner", "Banner");
         register("minecraft:comparator", "Comparator");
         register("minecraft:jukebox", "Jukebox", "RecordPlayer");
-        register("minecraft:piston", "PistonArm");
+        register("minecraft:piston_head", "PistonArm");
         register("minecraft:noteblock", "Noteblock");
         register("minecraft:enchanting_table", "EnchantTable");
         register("minecraft:brewing_stand", "BrewingStand");
@@ -83,7 +78,7 @@ public class BlockEntityTranslatorRegistry extends Registry {
         blockEntityMap.put(legacyJavaId, bedrockId);
     }
 
-    public static CompoundTag translateToBedrock(com.github.steveice10.opennbt.tag.builtin.CompoundTag javaTag) {
+    public static CompoundTag translateToBedrock(com.github.steveice10.opennbt.tag.builtin.CompoundTag javaTag, BlockState javaBlock) {
         CompoundTagBuilder root = CompoundTagBuilder.builder(); //ItemTranslate.translateRawNBT(javaTag).toBuilder()
 
         if(!javaTag.contains("id")) {
@@ -101,7 +96,7 @@ public class BlockEntityTranslatorRegistry extends Registry {
 
         // Execute custom translators
         if(customTranslators.containsKey(bedrockId)) {
-            customTranslators.get(bedrockId).translateToBedrock(root, javaTag);
+            customTranslators.get(bedrockId).translateToBedrock(root, javaTag, BlockTranslator.javaProtocolToJavaId(javaBlock.getId()));
         }
 
         root.stringTag("id", bedrockId);
@@ -109,23 +104,6 @@ public class BlockEntityTranslatorRegistry extends Registry {
         root.intTag("y", (int) javaTag.get("y").getValue());
         root.intTag("z", (int) javaTag.get("z").getValue());
         return root.buildRootTag();
-    }
-
-    public static void createPistonArm(ProxySession session, Vector3i position, boolean sticky) {
-        CompoundTagBuilder root = CompoundTagBuilder.builder();
-        root.stringTag("id", "PistonArm")
-            .floatTag("Progress", 1f)
-            .byteTag("State", (byte) 1)
-            .booleanTag("Sticky", sticky)
-            .intTag("x", position.getX())
-            .intTag("y", position.getY())
-            .intTag("z", position.getZ());
-
-        BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
-        blockEntityDataPacket.setBlockPosition(position);
-        blockEntityDataPacket.setData(root.buildRootTag());
-
-        session.sendPacket(blockEntityDataPacket);
     }
 
     public static String getBedrockIdentifier(String javaIdentifier) {

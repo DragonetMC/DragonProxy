@@ -16,7 +16,7 @@ import java.util.List;
 public class EndGatewayEntityTranslator implements IBlockEntityTranslator {
 
     @Override
-    public void translateToBedrock(CompoundTagBuilder builder, CompoundTag javaTag) {
+    public void translateToBedrock(CompoundTagBuilder builder, CompoundTag javaTag, String javaId) {
         builder.intTag("Age", Long.valueOf(javaTag.get("Age").getValue().toString()).intValue());
         builder.byteTag("ExactLocation", (byte) 1);
 
