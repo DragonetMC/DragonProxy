@@ -37,7 +37,7 @@ public class PCUpdateTileEntityTranslator extends PacketTranslator<ServerUpdateT
 
         BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
         blockEntityDataPacket.setBlockPosition(position);
-        blockEntityDataPacket.setData(BlockEntityTranslatorRegistry.translateToBedrock(packet.getNbt()));
+        blockEntityDataPacket.setData(BlockEntityTranslatorRegistry.translateToBedrock(packet.getNbt(), session.getChunkCache().getJavaBlockAt(position)));
 
         session.sendPacket(blockEntityDataPacket);
     }

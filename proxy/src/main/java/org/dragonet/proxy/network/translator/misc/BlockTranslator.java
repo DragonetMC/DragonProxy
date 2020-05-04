@@ -69,6 +69,7 @@ public class BlockTranslator {
 
     private static Object2IntMap<String> bedrockId2RuntimeMap = new Object2IntOpenHashMap<>();
     private static Int2ObjectMap<String> bedrockRuntime2IdMap = new Int2ObjectOpenHashMap<>();
+    private static Int2ObjectMap<String> javaProto2JavaIdMap = new Int2ObjectOpenHashMap<>();
 
     // TOOD: HACK
     public static Int2ObjectMap<BlockMappingEntry> ID_TO_ENTRY = new Int2ObjectLinkedOpenHashMap<>();
@@ -132,6 +133,7 @@ public class BlockTranslator {
             }
 
             bedrock2JavaMap.putIfAbsent(bedrockRuntimeId, new BlockState(javaProtocolId));
+            javaProto2JavaIdMap.put(javaProtocolId, javaIdentifier);
 
             CompoundTag runtimeTag = blockStateMap.remove(blockTag);
             if(runtimeTag != null) {
@@ -201,6 +203,8 @@ public class BlockTranslator {
     public static String bedrockRuntimeToId(int runtimeId) {
         return bedrockRuntime2IdMap.get(runtimeId);
     }
+
+    public static String javaProtocolToJavaId(int runtimeId) { return javaProto2JavaIdMap.get(runtimeId); }
 
     public static boolean isWaterlogged(BlockState state) {
         return waterlogged.contains(state.getId());
