@@ -17,8 +17,9 @@ public class SkullEntityTranslator implements IBlockEntityTranslator {
 
         String skullType = javaId.substring(0, javaId.indexOf("[")).replace("minecraft:", "");
         if(javaId.contains("wall")) {
-            skullType = skullType.replace("_wall_head", "").toUpperCase();
-            builder.byteTag("SkullType", (byte) SkullType.valueOf(skullType).getId());
+            skullType = skullType.replace("_wall_skull", "_skull");
+            skullType = skullType.replace("_wall_head", "");
+            builder.byteTag("SkullType", (byte) SkullType.valueOf(skullType.toUpperCase()).getId());
         } else {
             skullType = skullType.replace("_head", "").toUpperCase();
             float rotation = getRotation(Float.parseFloat(javaId.substring(javaId.indexOf("rotation=") + 9, javaId.indexOf("]"))));
