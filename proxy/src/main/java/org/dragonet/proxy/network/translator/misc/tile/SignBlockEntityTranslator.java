@@ -1,12 +1,9 @@
 package org.dragonet.proxy.network.translator.misc.tile;
 
-import com.github.steveice10.mc.protocol.data.message.ChatColor;
 import com.github.steveice10.mc.protocol.data.message.Message;
 import com.github.steveice10.mc.protocol.data.message.MessageStyle;
 import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
-import com.nimbusds.jose.util.Base64;
 import com.nukkitx.nbt.CompoundTagBuilder;
-import io.netty.handler.codec.base64.Base64Encoder;
 import lombok.extern.log4j.Log4j2;
 import org.dragonet.proxy.network.translator.misc.MessageTranslator;
 import org.dragonet.proxy.util.DyeColor;
