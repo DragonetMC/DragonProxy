@@ -19,7 +19,11 @@
 package org.dragonet.proxy.network.translator.java;
 
 import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
+import com.github.steveice10.mc.protocol.data.game.entity.player.Hand;
+import com.github.steveice10.mc.protocol.data.game.setting.ChatVisibility;
+import com.github.steveice10.mc.protocol.data.game.setting.SkinPart;
 import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.ClientSettingsPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
 import com.github.steveice10.packetlib.io.buffer.ByteBufferNetOutput;
 import com.google.common.io.ByteArrayDataOutput;
@@ -39,6 +43,8 @@ import org.dragonet.proxy.util.registry.PacketRegisterInfo;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.List;
 
 
 @Log4j2
@@ -98,6 +104,11 @@ public class PCJoinGameTranslator extends PacketTranslator<ServerJoinGamePacket>
         PlayStatusPacket playStatus = new PlayStatusPacket();
         playStatus.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
         session.sendPacket(playStatus);
+
+        // Send client settings to the server
+        List<SkinPart> skinParts = Arrays.asList(SkinPart.values());
+        ClientSettingsPacket clientSettingsPacket = new ClientSettingsPacket("en_GB", (byte) session.getRenderDistance(), ChatVisibility.FULL, true, skinParts, Hand.MAIN_HAND);
+        session.sendRemotePacket(clientSettingsPacket);
 
         // Send brand
         sendClientBrand(session);

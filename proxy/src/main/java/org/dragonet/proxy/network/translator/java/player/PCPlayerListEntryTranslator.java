@@ -42,10 +42,13 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
 
         for(PlayerListEntry entry : packet.getEntries()) {
 
+            //Profile will sometime be empty, if it is lets not update/add the player
+            if(entry.getProfile().getName() == null) { return; }
+
             PlayerListPacket.Entry bedrockEntry = new PlayerListPacket.Entry(entry.getProfile().getId());
             String displayName = entry.getProfile().getName();
             //Check player name is a valid minecraft name
-            if(displayName != null && (!displayName.matches("^[a-zA-Z0-9_]{0,17}+$") || displayName.equalsIgnoreCase(session.getUsername()))) {
+            if(!displayName.matches("^[a-zA-Z0-9_]{0,17}+$") || displayName.equalsIgnoreCase(session.getUsername())) {
                 displayName = null;
             }
 
@@ -60,7 +63,7 @@ public class PCPlayerListEntryTranslator extends PacketTranslator<ServerPlayerLi
 
                     bedrockEntry.setEntityId(proxyEid);
                     bedrockEntry.setName(displayName);
-                    bedrockEntry.setSkin(SkinUtils.createSkinEntry(SkinUtils.STEVE_SKIN, GameProfile.TextureModel.NORMAL, ImageData.EMPTY));
+                    bedrockEntry.setSkin(SkinUtils.createSkinEntry(SkinUtils.STEVE_SKIN, GameProfile.TextureModel.NORMAL, SkinUtils.DEFAULT_CAPE));
                     bedrockEntry.setXuid("");
                     bedrockEntry.setPlatformChatId("");
 
