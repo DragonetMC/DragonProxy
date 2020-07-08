@@ -1,3 +1,5 @@
+# This project is now abandoned. Please use [Geyser](https://github.com/GeyserMC/Geyser/) instead.
+
 # DragonProxy
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
