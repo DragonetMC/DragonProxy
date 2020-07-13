@@ -30,6 +30,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
+import org.dragonet.proxy.data.WorldBorder;
 import org.dragonet.proxy.data.stats.StatInfo;
 import org.dragonet.proxy.network.session.ProxySession;
 
@@ -47,6 +48,9 @@ public class WorldCache implements Cache {
 
     @Setter(value = AccessLevel.NONE)
     private boolean showCoordinates = true;
+
+    @Setter
+    private WorldBorder worldBorder;
 
 
     /**
